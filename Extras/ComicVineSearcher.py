@@ -1,6 +1,7 @@
-import Entidades.Publishers.Publisher
+from Entidades.Publishers import Publisher
 from Entidades.ComicBooks import ComicBook
-from Entidades.ArcosArgumentales import  ArcoArgumental,ArcosArgumentales
+from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
+from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
 from Entidades.Series import Serie
 import datetime
 import urllib.request
@@ -52,6 +53,7 @@ class ComicVineSearcher():
             ##                item[7],'---',item[1],'---', item[3])
 
     def setEntidad(self, entidad):
+
         if entidad in ComicVineSearcher.EntidadesPermitidas:
             self.entidad = entidad
             self.filter = ''
@@ -152,13 +154,13 @@ class ComicVineSearcher():
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def vineSearch(self, io_offset=0):
-        print("Hasta aca llegamos")
         if self.entidad == '':
             self.statusMessage = ('falta ingresar la entidad')
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
-
+        print("clave vine")
+        print(self.vinekey)
         print(
             'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                 self.offset) + '&sort=date_added:asc')
@@ -230,9 +232,11 @@ class ComicVineSearcher():
                     #                                'start_year': start_year})
             elif self.entidad == 'publishers':
                 # print("publisher")
-                print(results)
+
+
                 for item in results:
-                    # print(item)
+                    help(item)
+                    print(item.tostring())
                     publisher = Publisher(item.find('id').text, item.find('name').text)
                     publisher.descripcion = item.find('description').text
                     publisher.deck = item.find('deck').text

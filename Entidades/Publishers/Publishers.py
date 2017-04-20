@@ -1,6 +1,8 @@
 
-from Entidades.Publishers import Publisher
-from Extras import BabelComicBookManagerConfig,ComicVineSearcher
+from Entidades.Publishers.Publisher import Publisher
+# from Extras.BabelComicBookManagerConfig import BabelComicBookManagerConfig
+import Extras.BabelComicBookManagerConfig as BC
+import Extras.ComicVineSearcher as CV
 import xml.etree.ElementTree as ET
 import shutil
 import os
@@ -10,7 +12,7 @@ import codecs
 
 class Publishers:
     def __init__(self):
-        self.conexion = sqlite3.connect('BabelComic.db')
+        self.conexion = sqlite3.connect('..\\..\\BabelComic.db')
         self.conexion.row_factory = sqlite3.Row
         self.status = 1
         self.listaComicVineSearch = []
@@ -24,9 +26,9 @@ Values(?,?,?,?,?)''', (publisher.id,publisher.name,publisher.deck,publisher.desc
         de lo que he guardados'''
         file_name = publisher.logoImagePath.split('/')[-1]
         file_name_no_ext = (file_name[:-4])
-        if os.path.exists(BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg"):
-            shutil.copyfile(BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg",
-                            BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg")
+        if os.path.exists(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg"):
+            shutil.copyfile(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg",
+                            BC.BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg")
 
     def rm(self,Id):
         cursor=self.conexion.cursor()
@@ -95,7 +97,7 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
         if filtro:
             c.execute('''SELECT id, name, deck, description, logoImagePath From publishers where '''+filtro+' '+orden, valores)
         else:
-            c.execute('''id, name, deck, description, logoImagePath From publishers'''+' '+orden)
+            c.execute('''SELECT id, name, deck, description, logoImagePath From publishers'''+' '+orden)
         rows=c.fetchall()
         lista=[]
         for row in rows:
@@ -112,9 +114,9 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
 
     def searchInComicVine(self, filtro):
         path = "publishers\\temp\\"
-        config = BabelComicBookManagerConfig.BabelComicBookManagerConfig()
+        config = BC.BabelComicBookManagerConfig()
         clave = config.getClave('publishers')
-        comic_searcher = ComicVineSearcher.ComicVineSearcher(clave)
+        comic_searcher = CV.ComicVineSearcher(clave)
         comic_searcher.setEntidad('publishers')
         comic_searcher.addFilter("name:"+filtro.replace(" ","%20"))
         comic_searcher.vineSearch(0)
@@ -126,17 +128,13 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
 
 if __name__ == "__main__":
     publishers = Publishers()
-    # p = Publisher(12134,"pedro")
     publishers.searchInComicVine("Marvel")
+    publishers.rmAll()
+    publisher = Publisher('0','Sin Editoriaasa')
+    publishers.add(publisher)
 
-##    publishers.rmAll()
-##    series.loadFromFiles()
-##    series.rmAll()
-##    publisher = Publisher('0','Sin Editoriaasa')
-##    publishers.add(publisher)
-##    series.rm('-1')
-##    series.add(serie)
+
     for publisher in publishers.listaComicVineSearch:
         print(publisher.name,publisher.id)
+    publishers.rmAll()
     publishers.close()
-    # print(p)

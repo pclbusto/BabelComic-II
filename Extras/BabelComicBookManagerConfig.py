@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
-from Extras import ComicVineSearcher
+import Extras
+#  import ComicVineSearcher
 import os
 
 '''
@@ -19,7 +20,7 @@ se deja por uso futuo cuando surjan necesidades.
 
 class BabelComicBookManagerConfig():
     def __init__(self):
-        self.conexion = sqlite3.connect('..\\..\\BabelComic.db')
+        self.conexion = sqlite3.connect('C:\\Users\\bustoped\\PycharmProjects\\\BabelComic-II\\BabelComic.db')
         self.conexion.row_factory = sqlite3.Row
         self.listaTipos = []
         self.listaDirectorios = []
@@ -79,7 +80,7 @@ class BabelComicBookManagerConfig():
         cursor.execute('''SELECT key FROM config_VineKeysStatus WHERE key=:key AND recurso=:recurso''', {"key": clave,"recurso":'volumes'})
         row = cursor.fetchone()
         if (not row):
-            for entidad in ComicVineSearcher.EntidadesPermitidas:
+            for entidad in Extras.ComicVineSearcher.ComicVineSearcher.EntidadesPermitidas:
                 cursor.execute('''INSERT INTO config_VineKeysStatus (key, recurso, cantidadTotalConsultas, fechaHoraInicioConsulta) values (?,?,?,?)''', (clave,entidad,0,datetime.datetime.now().timestamp() ))
         self.conexion.commit()
 
@@ -182,8 +183,7 @@ class BabelComicBookManagerConfig():
     def getClave(self, recurso):
         if self.validarRecurso(recurso):
             clave = self.__getClaveMenosUsadaPorRecurso__(recurso)
-            print("dsdas")
-            print(clave)
+            print("CLAVE: "+clave)
             return clave
         else:
             print("no existe el recurso " + recurso)
