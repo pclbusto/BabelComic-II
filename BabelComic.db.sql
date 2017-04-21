@@ -36,6 +36,7 @@ CREATE TABLE "Publishers" (
 	`description`	text,
 	`logoImagePath`	TEXT,
 	`localLogoImagePath`	TEXT,
+	`siteDetailUrl`	TEXT,
 	PRIMARY KEY(`id`)
 );
 CREATE TABLE Listas (nombreLista text, sublistaDe text, descripcion text, nombreVista text, sqlText text, PRIMARY KEY (nombreLista));

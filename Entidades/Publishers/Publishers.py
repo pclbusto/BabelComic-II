@@ -135,6 +135,6 @@ if __name__ == "__main__":
 
 
     for publisher in publishers.listaComicVineSearch:
-        print(publisher.name,publisher.id)
+        print(publisher.name,publisher.id, publisher.siteDetailUrl)
     publishers.rmAll()
     publishers.close()

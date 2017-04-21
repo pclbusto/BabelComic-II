@@ -8,6 +8,7 @@ class Publisher:
         self.deck = ""
         self.description=""
         self.logoImagePath=""
+        self.siteDetailUrl=""
     # def hasLocalLogo(self):
     #     if self.logoImagePath:
     #         file_name = self.logoImagePath.split('/')[-1]

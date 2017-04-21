@@ -159,8 +159,6 @@ class ComicVineSearcher():
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
-        print("clave vine")
-        print(self.vinekey)
         print(
             'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                 self.offset) + '&sort=date_added:asc')
@@ -173,7 +171,7 @@ class ComicVineSearcher():
 
 
         html = response.read()
-        print(html.decode())
+        # print(html.decode())
         xml = html.decode()
         #xml = xml[:130640]+xml[130642:]
 
@@ -235,22 +233,16 @@ class ComicVineSearcher():
 
 
                 for item in results:
-                    help(item)
-                    print(item.tostring())
-                    publisher = Publisher(item.find('id').text, item.find('name').text)
+                    # help(item)
+                    # print(item.tostring())
+                    publisher = Publisher.Publisher(item.find('id').text, item.find('name').text)
                     publisher.descripcion = item.find('description').text
                     publisher.deck = item.find('deck').text
                     if item.find('image').find('super_url') != None:
                         publisher.logoImagePath = item.find('image').find('super_url').text
                     else:
                         publisher.logoImagePath = ''
-                    '''
-                    self.listaBusquedaVine.append({'id': publisher.id,
-                                                   'name': publisher.name,
-                                                   'description': publisher.descripcion,
-                                                   'deck': publisher.deck,
-                                                   'logoImagePath': publisher.logoImagePath})
-                    '''
+                    publisher.siteDetailUrl = item.find('site_detail_url').text
                     self.listaBusquedaVine.append(publisher)
                     #Publishers().add(publisher)
             self.statusMessage = 'Recuperados: ' + str(self.offset) + ' de ' + str(self.cantidadResultados)
