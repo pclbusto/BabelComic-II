@@ -1,6 +1,6 @@
 import sqlite3
 import datetime
-import Extras
+import Extras.ComicVineSearcher
 #  import ComicVineSearcher
 import os
 

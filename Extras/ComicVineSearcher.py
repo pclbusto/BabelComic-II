@@ -173,7 +173,7 @@ class ComicVineSearcher():
 
 
         html = response.read()
-        #print(html.decode())
+        print(html.decode())
         xml = html.decode()
         #xml = xml[:130640]+xml[130642:]
 
