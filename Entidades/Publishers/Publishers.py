@@ -12,7 +12,7 @@ import codecs
 
 class Publishers:
     def __init__(self):
-        self.conexion = sqlite3.connect('..\\..\\BabelComic.db')
+        self.conexion = sqlite3.connect(BC.BabelComicBookManagerConfig.PATH)
         self.conexion.row_factory = sqlite3.Row
         self.status = 1
         self.listaComicVineSearch = []

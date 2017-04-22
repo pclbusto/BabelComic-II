@@ -17,10 +17,11 @@ se deja por uso futuo cuando surjan necesidades.
 
 '''
 
-
 class BabelComicBookManagerConfig():
+    PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
     def __init__(self):
-        self.conexion = sqlite3.connect('C:\\Users\\bustoped\\PycharmProjects\\\BabelComic-II\\BabelComic.db')
+        print (BabelComicBookManagerConfig.PATH)
+        self.conexion = sqlite3.connect(BabelComicBookManagerConfig.PATH)
         self.conexion.row_factory = sqlite3.Row
         self.listaTipos = []
         self.listaDirectorios = []
