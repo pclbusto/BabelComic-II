@@ -18,7 +18,8 @@ se deja por uso futuo cuando surjan necesidades.
 '''
 
 class BabelComicBookManagerConfig():
-    PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
+    # PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
+    PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     def __init__(self):
         print (BabelComicBookManagerConfig.PATH)
         self.conexion = sqlite3.connect(BabelComicBookManagerConfig.PATH)

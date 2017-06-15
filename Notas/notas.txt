@@ -1,2 +1,5 @@
 llamada al servicio web de comic vine ejemplo de volumens
 https://comicvine.gamespot.com/api/volumes/?api_key=7e4368b71c5a66d710a62e996a660024f6a868d4&filter=name%3ABatman&format=xml
+
+los labels tienen un pady al parecer. Entonces cuando pones un label y un entry al mismo y el label se ve centrado a comparaacion
+del entry.
