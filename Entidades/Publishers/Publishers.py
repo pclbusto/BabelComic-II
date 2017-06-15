@@ -34,18 +34,20 @@ Values(?,?,?,?,?)''', (publisher.id,publisher.name,publisher.deck,publisher.desc
         cursor=self.conexion.cursor()
         cursor.execute('''DELETE From publishers where id=?''', (Id,))
         self.conexion.commit()
+
     def rmAll(self):
         cursor=self.conexion.cursor()
         cursor.execute('''DELETE From publishers''')
         self.conexion.commit()
+
     def __loadRowToObject__(self,row):
         Publisher(row['id'], row['name'])
         publisher = Publisher(row['id'], row['name'])
         publisher.descripcion = row['description']
         publisher.deck = row['deck']
         publisher.logoImagePath = row['logoImagePath']
-
         return publisher
+
     def get(self,Id):
         cursor=self.conexion.cursor()
         cursor.execute('''SELECT id, name, deck, description, logoImagePath From publishers where id=?''', (Id,))
