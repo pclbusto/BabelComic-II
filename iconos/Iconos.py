@@ -1,13 +1,16 @@
 import PIL.Image, PIL.ImageTk
 
 class Iconos:
-    pilImagenLookup = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\Magnifying-Glass-icon.png")
-    pilImageLogo = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\Logo-Editorial.png")
-    pilImageExpansion = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\expansion.png")
-    pilImageFirst = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\first.png")
-    pilImagePrev = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\prev.png")
-    pilImageNext = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\next.png")
-    pilImageLast = PIL.Image.open("C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\last.png")
+
+    path="/home/pedro/Documentos/pycharmProjects/BabelComic-II/iconos/"
+    pilImagenLookup = PIL.Image.open(path+"Magnifying-Glass-icon.png")
+    pilImageLogo = PIL.Image.open(path+"Logo-Editorial.png")
+    pilImageExpansion = PIL.Image.open(path+"expansion.png")
+    pilImageFirst = PIL.Image.open(path+"first.png")
+    pilImagePrev = PIL.Image.open(path+"prev.png")
+    pilImageNext = PIL.Image.open(path+"next.png")
+    pilImageLast = PIL.Image.open(path+"last.png")
+
 
 
 

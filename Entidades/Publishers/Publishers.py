@@ -1,6 +1,7 @@
 
 from Entidades.Publishers.Publisher import Publisher
-# from Extras.BabelComicBookManagerConfig import BabelComicBookManagerConfig
+from Entidades import Init
+
 import Extras.BabelComicBookManagerConfig as BC
 import Extras.ComicVineSearcher as CV
 import xml.etree.ElementTree as ET
@@ -16,6 +17,9 @@ class Publishers:
         self.conexion.row_factory = sqlite3.Row
         self.status = 1
         self.listaComicVineSearch = []
+        self.currentKeyName='id'
+        self.currentKeyValue=''
+
     def add(self,publisher):
         c=self.conexion.cursor()
         c.execute('''INSERT INTO publishers (id, name, deck, description, logoImagePath)
@@ -46,18 +50,13 @@ Values(?,?,?,?,?)''', (publisher.id,publisher.name,publisher.deck,publisher.desc
         publisher.descripcion = row['description']
         publisher.deck = row['deck']
         publisher.logoImagePath = row['logoImagePath']
+        publisher.siteDetailUrl = row['siteDetailUrl']
+        publisher.localLogoImagePath =row['localLogoImagePath']
         return publisher
 
     def get(self,Id):
-        cursor=self.conexion.cursor()
-        cursor.execute('''SELECT id, name, deck, description, logoImagePath From publishers where id=?''', (Id,))
-        row = cursor.fetchone()
-        if (row):
-            self.status=1
-            return self.__loadRowToObject__(row)
-        else:
-            self.status=0
-            return None
+        publisher  = Init.Session().query(Publisher).get(Id)
+        return publisher
 
 
     def update(self,publisher):
@@ -108,8 +107,42 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
         print(len(lista))
         return lista
 
-    def getNext(self, campo='id'):
-        print('falta implementar')
+    def getNext(self):
+        publisher = None
+        if self.currentKeyValue == '':
+            publisher = self.getLast()
+        else:
+            last=Init.Session().query(Publisher).get(self.currentKeyValue)
+            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher > self.currentKeyValue).first()
+            print(publisher)
+            if publisher == None:
+                publisher = last
+        return publisher
+
+    def getPrev(self):
+        publisher = None
+        if self.currentKeyValue == '':
+            publisher = self.getFirst()
+        else:
+            first = Init.Session().query(Publisher).get(self.currentKeyValue)
+            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher < self.currentKeyValue).first()
+            print(publisher)
+            if publisher == None:
+                publisher = first
+        return publisher
+
+    def getFirst(self):
+        publisher = Init.Session().query(Publisher).first()
+        if publisher!=None:
+            self.currentKeyValue = publisher.id_publisher
+            print('cargamos valores'+publisher.__repr__())
+        return publisher
+
+    def getLast(self):
+        publisher = Init.Session().query(Publisher).order_by(Publisher.id_publisher.desc()).first()
+        if publisher!=None:
+            self.currentKeyValue = publisher.id_publisher
+        return publisher
 
     def close(self):
         self.conexion.close()

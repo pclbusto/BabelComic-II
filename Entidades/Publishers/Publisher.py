@@ -1,23 +1,17 @@
-# from Extras.BabelComicBookManagerConfig import BabelComicBookManagerConfig
-import os
+from sqlalchemy import Column, Integer, String
+import Entidades.Init
 
-class Publisher:
-    def __init__(self,id,name):
-        self.id = id
-        self.name = name
-        self.deck = ""
-        self.description=""
-        self.logoImagePath=""
-        self.siteDetailUrl=""
-    # def hasLocalLogo(self):
-    #     if self.logoImagePath:
-    #         file_name = self.logoImagePath.split('/')[-1]
-    #         file_name_no_ext = (file_name[:-4])
-    #         if os.path.exists(BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg"):
-    #             return True
-    #     return False
-    # def getLogoLocalPath(self):
-    #     file_name = self.logoImagePath.split('/')[-1]
-    #     file_name_no_ext = (file_name[:-4])
-    #     if self.hasLocalLogo():
-    #         return BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg"
+
+class Publisher(Entidades.Init.Base):
+    __tablename__='Publishers'
+    id_publisher = Column(String, primary_key=True)
+    name = Column(String)
+    deck = Column(String)
+    description = Column(String)
+    logoImagePath  = Column(String)
+    localLogoImagePath = Column(String)
+    siteDetailUrl = Column(String)
+
+    def __repr__(self):
+        return "<Publisher(id_publisher='%s',name='%s')>" %(self.id_publisher, self.name)
+
