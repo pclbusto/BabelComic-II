@@ -104,10 +104,13 @@ class PublisherGui(Frame):
 
     def _copyToWindow(self,publisher):
         self.clearWindow()
-        self.entradaId.insert(0, publisher.id_publisher)
-        self.entradaNombre.insert(0, publisher.name)
-        self.entradaUrl.insert(0, publisher.siteDetailUrl)
-        self.textoDescripcion.config(text=publisher.deck)
+        if publisher is not None:
+            self.entradaId.insert(0, publisher.id_publisher)
+            self.entradaNombre.insert(0, publisher.name)
+            self.entradaUrl.insert(0, publisher.siteDetailUrl)
+            self.textoDescripcion.config(text=publisher.deck)
+
+
 if __name__ == '__main__':
     root = Tk()
     publisher = PublisherGui(root, width=507, height=358)
