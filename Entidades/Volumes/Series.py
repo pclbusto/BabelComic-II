@@ -1,7 +1,7 @@
 import codecs
 import xml.etree.ElementTree as ET
 import sqlite3
-from Entidades.Series import Serie
+from Entidades.Volumes import Volume
 from Extras import  Config
 #importamos ComicVineSearcher para poder hacer la rutina que cargue datos desde comicvine
 from Extras import ComicVineSearcher
@@ -43,7 +43,7 @@ Values(?,?,?,?,?,?,?)''', (
         r = cursor.fetchone()
         if (r):
             self.status = 1
-            serie = Serie.Serie(r['id'], r['nombre'])
+            serie = Volume.Serie(r['id'], r['nombre'])
             serie.descripcion = r['descripcion']
             serie.image_url = r['image_url']
             serie.publisherId = r['publisherId']
@@ -84,7 +84,7 @@ where id=?''', (
             root = ET.fromstring(xml)
             results = root.find('results')
             for item in results:
-                serie = Serie(item.find('id').text, item.find('name').text)
+                serie = Volume(item.find('id').text, item.find('name').text)
                 serie.cantidadNumeros = int(item.find('count_of_issues').text)
                 serie.descripcion = item.find('description').text
                 if item.find('image').find('super_url') != None:
@@ -119,7 +119,7 @@ Values(?,?,?,?,?,?,?)''', (
         rows = c.fetchall()
         lista = []
         for row in rows:
-            serie = Serie.Serie(row['id'], row['nombre'])
+            serie = Volume.Serie(row['id'], row['nombre'])
             serie.descripcion = row['descripcion']
             serie.image_url = row['image_url']
             serie.publisherId = row['publisherId']

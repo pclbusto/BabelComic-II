@@ -1,8 +1,9 @@
 from Entidades import Init
 import Entidades.Publishers.Publisher
 import Entidades.Setups.SetupTipoArchivo
-import Entidades.Setups.SetupDirctorios
-import Entidades.Setups.SetupVineKeys
+import Entidades.Setups.SetupDirctorio
+import Entidades.Setups.SetupVineKey
+import Entidades.Setups.SetupVinekeysStatus
 
 
 

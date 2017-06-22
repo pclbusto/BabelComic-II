@@ -2,7 +2,7 @@ from Entidades.Publishers import Publisher
 from Entidades.ComicBooks import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
-from Entidades.Series import Serie
+from Entidades.Volumes import Volume
 import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -206,7 +206,7 @@ class ComicVineSearcher():
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Serie.Serie(item.find('id').text, item.find('name').text)
+                    l_serie = Volume.Serie(item.find('id').text, item.find('name').text)
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
                     if item.find('image').find('thumb_url') != None:

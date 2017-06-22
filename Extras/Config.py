@@ -1,11 +1,13 @@
 import sqlite3
-import datetime
-# import Extras.ComicVineSearcher
+from _datetime import datetime
+import Extras.ComicVineSearcher
 import os
 import Entidades.Init
 import Entidades.Setups.SetupTipoArchivo
-import Entidades.Setups.SetupDirctorios
-
+import Entidades.Setups.SetupDirctorio
+import Entidades.Setups.SetupVineKey
+import Entidades.Setups.SetupVinekeysStatus
+from sqlalchemy import and_
 '''
 
 configuracion->lista de directorios
@@ -24,31 +26,21 @@ class Config:
     # PATH = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     #PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     def __init__(self):
-        print (Config.PATH)
-        self.conexion = sqlite3.connect(Config.PATH)
-        self.conexion.row_factory = sqlite3.Row
+        # print (Config.PATH)
+        # self.conexion = sqlite3.connect(Config.PATH)
+        # self.conexion.row_factory = sqlite3.Row
         self.listaTipos = []
         self.listaDirectorios = []
         self.listaClaves = []
 
-        cursor = self.conexion.cursor()
-        # recuperamos la lista de tipos
+        # recuperamos la lista de tipos, claves y directorios
+
         for setupTipoArchivo in Entidades.Init.Session().query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo):
             self.listaTipos.append(setupTipoArchivo.tipoArchivo)
-        for setupDirectorio in Entidades.Init.Session().query(Entidades.Setups.SetupDirctorios.SetupDirectorios):
+        for setupDirectorio in Entidades.Init.Session().query(Entidades.Setups.SetupDirctorio.SetupDirectorio):
             self.listaDirectorios.append(setupDirectorio.pathDirectorio)
-
-        # # recuperamos la lista de directorios
-        # cursor.execute('''SELECT pathDirectorio From config_Directorios''')
-        # rows = cursor.fetchall()
-        # for row in rows:
-        #     self.listaDirectorios.append(row['pathDirectorio'])
-        # # recuperamos la lista de claves
-        # cursor.execute('''SELECT key  From config_VineKeys''')
-        # rows = cursor.fetchall()
-        # for row in rows:
-        #     # print(row['key'])
-        #     self.listaClaves.append(row['key'])
+        for setupVinekey in Entidades.Init.Session().query(Entidades.Setups.SetupVineKey.SetupVinekey):
+            self.listaClaves.append(setupVinekey.key)
 
     def getPublisherTempLogoPath(self):
         return self.__getTempPath__("publisher")
@@ -57,10 +49,10 @@ class Config:
         return self.__getPath__("publisher")
 
     def getSerieCoverPath(self):
-        return self.__getPath__("serie")
+        return self.__getPath__("volume")
 
     def getSerieTempCoverPath(self):
-        return self.__getTempPath__("serie")
+        return self.__getTempPath__("volume")
 
     def __getTempPath__(self,entidad):
         path = "imagenes\\{}\\temp\\".format(entidad)
@@ -82,26 +74,27 @@ class Config:
         :param clave: key del sitio comicvine.
         :return:None
         """
-        cursor = self.conexion.cursor()
-        cursor.execute('''SELECT key FROM config_VineKeysStatus WHERE key=:key AND recurso=:recurso''', {"key": clave,"recurso":'volumes'})
-        row = cursor.fetchone()
-        if (not row):
+
+        session = Entidades.Init.Session()
+        vinekey = Entidades.Setups.SetupVineKey.SetupVinekey()
+
+        vinekey = session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).first()
+        if (vinekey):
             for entidad in Extras.ComicVineSearcher.ComicVineSearcher.EntidadesPermitidas:
-                cursor.execute('''INSERT INTO config_VineKeysStatus (key, recurso, cantidadTotalConsultas, fechaHoraInicioConsulta) values (?,?,?,?)''', (clave,entidad,0,datetime.datetime.now().timestamp() ))
-        self.conexion.commit()
+                status = Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus(key=vinekey.key, recursoId = entidad,cantidadConsultas =0,fechaHoraInicioConsulta=0)
+                session.add(status)
+        session.commit()
 
     def addClave(self, clave):
-        cursor = self.conexion.cursor()
-        cursor.execute('''INSERT INTO config_VineKeys (key) values (:key)''', {"key":clave})
-        self.listaClaves.append(clave)
-        self.conexion.commit()
-        self.__initStatus__(clave)
-
+        session = Entidades.Init.Session()
+        claveObj = Entidades.Setups.SetupVineKey.SetupVinekey(key=clave)
+        session.add(claveObj)
+        session.commit()
     def addTipo(self, tipo):
-        cursor = self.conexion.cursor()
-        cursor.execute('''INSERT INTO config_TipoArchivo (tipo) values (:tipo)''', {"tipo":tipo})
-        self.listaTipos.append(tipo)
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        tipoObj = Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo(tipoArchivo=tipo)
+        session.add(tipoObj)
+        session.commit()
 
     def __updateStatus__(self, key, recurso):
         '''
@@ -110,33 +103,44 @@ class Config:
         :param recurso: identifica si es volumes, comic, editoria, etc
         :return: None
         '''
-        cursor = self.conexion.cursor()
+        session = Entidades.Init.Session()
+        statusVinekey = session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).filter(
+            and_(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.key==key,
+                 Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.recursoId==recurso)).first()
+        print(statusVinekey)
+        if (statusVinekey):
+            fecha_previa_stamp = statusVinekey.fechaHoraInicioConsulta
+            fecha_actual_stamp = datetime.now().timestamp()
+            if (fecha_actual_stamp - fecha_previa_stamp) >3600:
+                statusVinekey.cantidadConsultas = 0
+                statusVinekey.fechaHoraInicioConsulta = datetime.now().timestamp()
+            else:
+                statusVinekey.cantidadConsultas += 1
         #actualizamos
-        cursor.execute('''UPDATE config_VineKeysStatus SET cantidadTotalConsultas = cantidadTotalConsultas+1 , fechaHoraInicioConsulta = :fechaHoraInicioConsulta where key=:key and recurso = :recurso''', {"key":key, "recurso":recurso, "fechaHoraInicioConsulta":datetime.datetime.now().timestamp()})
-        self.conexion.commit()
+        session.commit()
 
     def addDirectorio(self, directorio):
-        cursor = self.conexion.cursor()
-        cursor.execute('''INSERT INTO config_Directorios (pathDirectorio) values (:path)''', {"path":directorio})
-        self.listaDirectorios.append(directorio)
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        directorioObj = Entidades.Setups.SetupDirctorio.SetupDirectorio(pathDirectorio=directorio)
+        session.add(directorioObj)
+        session.commit()
 
     def __delAllTipos__(self):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_TipoArchivo''')
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).delete()
+        session.commit()
         self.listaTipos = []
 
     def __delAllDirectorios__(self):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_Directorios''')
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupDirctorio.SetupDirectorio).delete()
+        session.commit()
         self.listaDirectorios = []
 
     def __delAllClaves__(self):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_VineKeys''')
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupVineKey.SetupVinekey).delete()
+        session.commit()
         self.listaClaves = []
 
     def setListaTipos(self, listaTipos=[]):
@@ -146,22 +150,22 @@ class Config:
                 self.addTipo(tipo)
 
     def delClave(self, clave):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_VineKeys WHERE key=?''', (clave,))
-        self.listaClaves.remove(clave)
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(
+            Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).delete()
+        session.commit()
 
     def delTipo(self, tipo):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_TipoArchivo WHERE tipo=?''', (tipo,))
-        self.listaTipos.remove(tipo)
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
+            Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo.tipoArchivo==tipo).delete()
+        session.commit()
 
     def delDirectorio(self, directorio):
-        cursor = self.conexion.cursor()
-        cursor.execute('''DELETE FROM config_Directorios WHERE pathDirectorio=?''', (directorio,))
-        self.listaDirectorios.remove(directorio)
-        self.conexion.commit()
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
+            Entidades.Setups.SetupDirctorio.SetupDirectorio.pathDirectorio == directorio).delete()
+        session.commit()
 
     def setListaDirectorios(self, listaDirectorios=[]):
         self.__delAllDirectorios__()
@@ -197,21 +201,26 @@ class Config:
 
 if __name__ == "__main__":
     config = Config()
-    config.__delAllClaves__()
-    config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
-    clave = config.getClave("volumes")
-    print(clave)
+    # config.addTipo('cbz')
+    config.delTipo('cbz')
+    # config.__delAllClaves__()
+    # config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
+    # config.__initStatus__('64f7e65686c40cc016b8b8e499f46d6657d26752')
+    # config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    # config.__initStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    # config.__updateStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4','volumes')
+    # clave = config.getClave("volumes")
+    # print(clave)
     #    config.addDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
     #    config.delDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
     #    config.addTipo('cbz')
-    cursor = config.conexion.cursor()
+    # cursor = config.conexion.cursor()
 
     #    config.delTipo('cb7')
     #    config.delDirectorio('home')
 
-    for dire in config.listaClaves:
-      print(dire)
+    # for dire in config.listaClaves:
+    #   print(dire)
 #    config.addTipo('cb7')
 
 

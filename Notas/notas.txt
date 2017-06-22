@@ -3,3 +3,5 @@ https://comicvine.gamespot.com/api/volumes/?api_key=7e4368b71c5a66d710a62e996a66
 
 los labels tienen un pady al parecer. Entonces cuando pones un label y un entry al mismo y el label se ve centrado a comparaacion
 del entry.
+
+https://comicvine.gamespot.com/api/

@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 import Entidades.Init
 
 
-class SetupDirectorios(Entidades.Init.Base):
+class SetupVinekey(Entidades.Init.Base):
     __tablename__='SetupVineKeys'
     key = Column(String, primary_key=True)
 
