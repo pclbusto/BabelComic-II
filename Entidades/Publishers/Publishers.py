@@ -2,7 +2,7 @@
 from Entidades.Publishers.Publisher import Publisher
 from Entidades import Init
 
-import Extras.BabelComicBookManagerConfig as BC
+import Extras.Config as BC
 import Extras.ComicVineSearcher as CV
 import xml.etree.ElementTree as ET
 import shutil

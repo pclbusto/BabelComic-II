@@ -1,7 +1,6 @@
 import sqlite3
 import datetime
-import Extras.ComicVineSearcher
-#  import ComicVineSearcher
+# import Extras.ComicVineSearcher
 import os
 
 '''
@@ -17,12 +16,13 @@ se deja por uso futuo cuando surjan necesidades.
 
 '''
 
-class BabelComicBookManagerConfig():
-    #PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
-    PATH = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\BabelComic.db"
+class Config:
+    # PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
+    # PATH = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\BabelComic.db"
+    PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     def __init__(self):
-        print (BabelComicBookManagerConfig.PATH)
-        self.conexion = sqlite3.connect(BabelComicBookManagerConfig.PATH)
+        print (Config.PATH)
+        self.conexion = sqlite3.connect(Config.PATH)
         self.conexion.row_factory = sqlite3.Row
         self.listaTipos = []
         self.listaDirectorios = []
@@ -192,22 +192,22 @@ class BabelComicBookManagerConfig():
         return ""
 
 if __name__ == "__main__":
-    config = BabelComicBookManagerConfig()
+    config = Config()
     config.__delAllClaves__()
     config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
     config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
     clave = config.getClave("volumes")
     print(clave)
-    ##    config.addDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
-    ##    config.delDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
-    ##    config.addTipo('cbz')
-    # cursor = config.conexion.cursor()
+    #    config.addDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
+    #    config.delDirectorio('c:\\Users\\bustoped\\Downloads\\Comics\\')
+    #    config.addTipo('cbz')
+    cursor = config.conexion.cursor()
 
-    ##    config.delTipo('cb7')
-    ##    config.delDirectorio('home')
+    #    config.delTipo('cb7')
+    #    config.delDirectorio('home')
 
-    #for dire in config.listaClaves:
-    #   print(dire)
-##    config.addTipo('cb7')
+    for dire in config.listaClaves:
+      print(dire)
+#    config.addTipo('cb7')
 
 

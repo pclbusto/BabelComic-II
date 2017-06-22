@@ -2,7 +2,7 @@ import codecs
 import xml.etree.ElementTree as ET
 import sqlite3
 from Entidades.Series import Serie
-from Extras import  BabelComicBookManagerConfig
+from Extras import  Config
 #importamos ComicVineSearcher para poder hacer la rutina que cargue datos desde comicvine
 from Extras import ComicVineSearcher
 
@@ -21,9 +21,9 @@ Values(?,?,?,?,?,?,?)''', (
         self.conexion.commit()
         file_name = serie.image_url.split('/')[-1]
         file_name_no_ext = (file_name[:-4])
-        if os.path.exists(BabelComicBookManagerConfig().getSerieTempCoverPath() + file_name_no_ext + ".jpg"):
-            shutil.copyfile(BabelComicBookManagerConfig().getSerieTempCoverPath() + file_name_no_ext + ".jpg",
-                            BabelComicBookManagerConfig().getSerieCoverPath() + file_name_no_ext + ".jpg")
+        if os.path.exists(Config().getSerieTempCoverPath() + file_name_no_ext + ".jpg"):
+            shutil.copyfile(Config().getSerieTempCoverPath() + file_name_no_ext + ".jpg",
+                            Config().getSerieCoverPath() + file_name_no_ext + ".jpg")
 
     def rm(self, Id):
         cursor = self.conexion.cursor()
@@ -138,7 +138,7 @@ Values(?,?,?,?,?,?,?)''', (
         self.conexion.close()
 
     def loadDataFromComicVine(self):
-        config = BabelComicBookManagerConfig()
+        config = Config()
         clave = config.getClave('volumes')
         print(clave)
         comic_searcher = ComicVineSearcher(clave)
@@ -152,7 +152,7 @@ Values(?,?,?,?,?,?,?)''', (
         print('porcentaje completado: '+str((100*(len(lista_series)/comic_searcher.cantidadResultados))))
 
     def searchInComicVine(self, filtro):
-        config = BabelComicBookManagerConfig()
+        config = Config()
         clave = config.getClave(self.entityName)
         comic_searcher = ComicVineSearcher(clave)
         comic_searcher.setEntidad(self.entityName)

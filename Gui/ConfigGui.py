@@ -1,17 +1,18 @@
 from tkinter import *
 from tkinter import Tk, ttk
 from tkinter import filedialog
-from BabelComicBookManagerConfig import BabelComicBookManagerConfig
+import Extras.Config
 
 
-class BabelComicConfigGui(Frame):
+
+class ConfigGui(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.babelComicConfig = BabelComicBookManagerConfig()
+        self.babelComicConfig = Extras.Config.Config()
 
         # agregado directorios
         self.frameDirectorios = ttk.LabelFrame(self)
@@ -95,7 +96,7 @@ class BabelComicConfigGui(Frame):
 
 if (__name__ == '__main__'):
     root = Tk()
-    config = BabelComicConfigGui(root)
+    config = ConfigGui(root)
     config.grid(sticky=(N, S, W, E))
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)

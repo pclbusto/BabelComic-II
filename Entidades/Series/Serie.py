@@ -2,7 +2,7 @@ from PIL import Image, ImageTk
 from tkinter import Tk, ttk
 import os
 import urllib.request
-import Extras.BabelComicBookManagerConfig
+import Extras.Config
 
 class Serie():
     def __init__(self, Id, nombre):
