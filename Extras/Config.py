@@ -2,6 +2,9 @@ import sqlite3
 import datetime
 # import Extras.ComicVineSearcher
 import os
+import Entidades.Init
+import Entidades.Setups.SetupTipoArchivo
+import Entidades.Setups.SetupDirctorios
 
 '''
 
@@ -17,9 +20,9 @@ se deja por uso futuo cuando surjan necesidades.
 '''
 
 class Config:
-    # PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
+    PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
     # PATH = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\BabelComic.db"
-    PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
+    #PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     def __init__(self):
         print (Config.PATH)
         self.conexion = sqlite3.connect(Config.PATH)
@@ -30,21 +33,22 @@ class Config:
 
         cursor = self.conexion.cursor()
         # recuperamos la lista de tipos
-        cursor.execute('''SELECT tipo From config_TipoArchivo''')
-        rows = cursor.fetchall()
-        for row in rows:
-            self.listaTipos.append(row['tipo'])
-        # recuperamos la lista de directorios
-        cursor.execute('''SELECT pathDirectorio From config_Directorios''')
-        rows = cursor.fetchall()
-        for row in rows:
-            self.listaDirectorios.append(row['pathDirectorio'])
-        # recuperamos la lista de claves
-        cursor.execute('''SELECT key  From config_VineKeys''')
-        rows = cursor.fetchall()
-        for row in rows:
-            # print(row['key'])
-            self.listaClaves.append(row['key'])
+        for setupTipoArchivo in Entidades.Init.Session().query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo):
+            self.listaTipos.append(setupTipoArchivo.tipoArchivo)
+        for setupDirectorio in Entidades.Init.Session().query(Entidades.Setups.SetupDirctorios.SetupDirectorios):
+            self.listaDirectorios.append(setupDirectorio.pathDirectorio)
+
+        # # recuperamos la lista de directorios
+        # cursor.execute('''SELECT pathDirectorio From config_Directorios''')
+        # rows = cursor.fetchall()
+        # for row in rows:
+        #     self.listaDirectorios.append(row['pathDirectorio'])
+        # # recuperamos la lista de claves
+        # cursor.execute('''SELECT key  From config_VineKeys''')
+        # rows = cursor.fetchall()
+        # for row in rows:
+        #     # print(row['key'])
+        #     self.listaClaves.append(row['key'])
 
     def getPublisherTempLogoPath(self):
         return self.__getTempPath__("publisher")
