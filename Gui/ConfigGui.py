@@ -39,12 +39,21 @@ class ConfigGui(Frame):
         self.claveEntry = None
 
         self.extensionVar = StringVar()
-        ttk.Label(self, text='Lista de extensiones soportadas').grid(column=0, row=2, sticky=(W))
-        listaExtensiones = ttk.Entry(self, textvariable=self.extensionVar).grid(column=1, row=2, sticky=(W, E),
-                                                                                columnspan=2)
+        # Panel para que los campos de texto no se vayan a la derecha
+        self.panelinferior = ttk.Frame(self)
+        self.panelinferior.grid(column=0,row=1,sticky=W+E,columnspan=2)
+        Label(self.panelinferior, text='Lista de extensiones soportadas').grid(column=0, row=0, sticky=(W))
+        self.listaExtensiones = ttk.Entry(self.panelinferior, textvariable=self.extensionVar)
+        self.listaExtensiones.grid(column=1, row=0, sticky=W+E,columnspan=2)
 
         #directorios de imagenes
-        ttk.Label(self, text='Directorio Imagenes').grid(column=0, row=3, sticky=(W))
+        ttk.Label(self.panelinferior, text='Directorio Imagenes').grid(column=0, row=1, sticky=(W))
+        self.imagenesVar = StringVar()
+        self.directorioRaizImagenes = ttk.Entry(self.panelinferior, textvariable=self.imagenesVar)
+        self.directorioRaizImagenes.grid(column=1,row=1, sticky=(E),columnspan=2)
+        self.botonDirecotrioImagenes = ttk.Button(self.panelinferior, text='...')
+        self.botonDirecotrioImagenes.grid(column=4, row=1, sticky=(E))
+
         for directorio in self.babelComicConfig.listaDirectorios:
             self.listaDirectorios.insert(END, directorio)
 
