@@ -40,8 +40,11 @@ class ConfigGui(Frame):
 
         self.extensionVar = StringVar()
         ttk.Label(self, text='Lista de extensiones soportadas').grid(column=0, row=2, sticky=(W))
-        listaExtensiones = ttk.Entry(self, textvariable=self.extensionVar).grid(column=0, row=3, sticky=(W, E),
+        listaExtensiones = ttk.Entry(self, textvariable=self.extensionVar).grid(column=1, row=2, sticky=(W, E),
                                                                                 columnspan=2)
+
+        #directorios de imagenes
+        ttk.Label(self, text='Directorio Imagenes').grid(column=0, row=3, sticky=(W))
         for directorio in self.babelComicConfig.listaDirectorios:
             self.listaDirectorios.insert(END, directorio)
 
@@ -51,6 +54,7 @@ class ConfigGui(Frame):
         for extension in self.babelComicConfig.listaTipos:
             self.extensionVar.set(self.extensionVar.get() + ',' + extension)
         self.extensionVar.set(self.extensionVar.get()[1:])
+
 
         ttk.Button(self, text='Guardar', command=self.save).grid(column=1, row=4, sticky=E)
         self.statusText = StringVar()
