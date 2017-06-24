@@ -7,6 +7,7 @@ import Entidades.Setups.SetupTipoArchivo
 import Entidades.Setups.SetupDirctorio
 import Entidades.Setups.SetupVineKey
 import Entidades.Setups.SetupVinekeysStatus
+import Entidades.Setups.Setup
 from sqlalchemy import and_
 '''
 
@@ -41,6 +42,8 @@ class Config:
             self.listaDirectorios.append(setupDirectorio.pathDirectorio)
         for setupVinekey in Entidades.Init.Session().query(Entidades.Setups.SetupVineKey.SetupVinekey):
             self.listaClaves.append(setupVinekey.key)
+
+        self.setup = Entidades.Init.Session().query(Entidades.Setups.Setup.Setup).first()
 
     def getPublisherTempLogoPath(self):
         return self.__getTempPath__("publisher")
@@ -178,6 +181,24 @@ class Config:
         if listaClaves:
             for clave in listaClaves:
                 self.addClave(clave)
+
+    def __dellAllConfig__(self):
+        session = Entidades.Init.Session()
+        session.query(Entidades.Setups.Setup.Setup).delete()
+        session.commit()
+
+    def setConfig(self, directorioBaseImagenes):
+        self.__dellAllConfig__()
+        if directorioBaseImagenes  is not None:
+            self.addDirectorioImagenBase(directorioBaseImagenes)
+
+    def addDirectorioImagenBase(self, directorioBaseImagenes):
+        session = Entidades.Init.Session()
+        setupObj = Entidades.Setups.Setup.Setup()
+        setupObj.directorioBaseImagenes = directorioBaseImagenes
+        session.add(setupObj)
+        session.commit()
+
 
     def __getClaveMenosUsadaPorRecurso__(self, recurso):
         cursor = self.conexion.cursor()

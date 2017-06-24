@@ -8,4 +8,3 @@ class SetupDirectorio(Entidades.Init.Base):
 
     def __repr__(self):
         return "<SetupDirectorio(Directorio='%s')>" %(self.pathDirectorio)
-
