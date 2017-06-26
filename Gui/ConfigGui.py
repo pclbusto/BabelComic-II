@@ -41,18 +41,19 @@ class ConfigGui(Frame):
         self.extensionVar = StringVar()
         # Panel para que los campos de texto no se vayan a la derecha
         self.panelinferior = ttk.Frame(self)
+        self.columnconfigure(1,weight=4)
         self.panelinferior.grid(column=0,row=1,sticky=W+E+S+N,columnspan=2)
         Label(self.panelinferior, text='Lista de extensiones soportadas').grid(column=0, row=0, sticky=(W))
         self.listaExtensiones = ttk.Entry(self.panelinferior, textvariable=self.extensionVar)
         self.listaExtensiones.grid(column=1, row=0, sticky=W+E,columnspan=2)
 
-        #directorios de imagenes
-        ttk.Label(self.panelinferior, text='Directorio Imagenes').grid(column=0, row=1, sticky=(W))
-        self.imagenesVar = StringVar()
-        self.entradaDirectorioRaizImagenes = ttk.Entry(self.panelinferior, textvariable=self.imagenesVar)
-        self.entradaDirectorioRaizImagenes.grid(column=1,row=1, sticky=(E),columnspan=2)
-        self.botonDirecotrioImagenes = ttk.Button(self.panelinferior, text='...', command=self.openImageDirectoryChooser)
-        self.botonDirecotrioImagenes.grid(column=6, row=1, sticky=(W))
+        #directorios base
+        ttk.Label(self.panelinferior, text='Directorio Base').grid(column=0, row=1, sticky=(W))
+        self.directorioVar = StringVar()
+        self.entradaDirectorioBase = ttk.Entry(self.panelinferior, textvariable=self.directorioVar)
+        self.entradaDirectorioBase.grid(column=1,row=1, sticky=(E),columnspan=2)
+        self.botonDirecotrioBase = ttk.Button(self.panelinferior, text='...', command=self.openBaseDirectoryChooser)
+        self.botonDirecotrioBase.grid(column=6, row=1, sticky=(W))
 
         for directorio in self.babelComicConfig.listaDirectorios:
             self.listaDirectorios.insert(END, directorio)
@@ -65,8 +66,8 @@ class ConfigGui(Frame):
         self.extensionVar.set(self.extensionVar.get()[1:])
 
         if self.babelComicConfig.setup is not None:
-            self.entradaDirectorioRaizImagenes.insert(0, self.babelComicConfig.setup.directorioBaseImagenes)
-
+            self.entradaDirectorioBase.insert(0, self.babelComicConfig.setup.directorioBase)
+            print("NADA")
         ttk.Button(self, text='Guardar', command=self.save).grid(column=1, row=4, sticky=E)
         self.statusText = StringVar()
         self.statusbar = ttk.Label(self, text='Status:', textvariable=self.statusText).grid(column=0, row=4,
@@ -81,11 +82,11 @@ class ConfigGui(Frame):
         if salida:
             self.listaDirectorios.insert(END, salida)
 
-    def openImageDirectoryChooser(self):
+    def openBaseDirectoryChooser(self):
         salida = filedialog.askdirectory(title='Selección de Directorios de Imagenes')
         if salida:
-            self.entradaDirectorioRaizImagenes.delete(0,END)
-            self.entradaDirectorioRaizImagenes.insert(0, salida)
+            self.entradaDirectorioBase.delete(0,END)
+            self.entradaDirectorioBase.insert(0, salida)
     def delDirectorio(self):
         if (self.listaDirectorios.curselection()):
             self.listaDirectorios.delete(self.listaDirectorios.curselection())
@@ -96,7 +97,7 @@ class ConfigGui(Frame):
         self.babelComicConfig.setListaDirectorios(directorios)
         self.babelComicConfig.setListaTipos(self.extensionVar.get().split(','))
         self.babelComicConfig.setListaClaves(claves)
-        self.babelComicConfig.setConfig(self.entradaDirectorioRaizImagenes.get())
+        self.babelComicConfig.setConfig(self.entradaDirectorioBase.get())
         self.statusText.set('Status: Gurdado exitosamente')
 
     def openClaveEntry(self):

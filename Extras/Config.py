@@ -44,6 +44,10 @@ class Config:
             self.listaClaves.append(setupVinekey.key)
 
         self.setup = Entidades.Init.Session().query(Entidades.Setups.Setup.Setup).first()
+        if not self.setup:
+            self.setup = Entidades.Setups.Setup.Setup()
+            self.setup.setupkey=1
+            self.setup.directorioBase=""
 
     def getPublisherTempLogoPath(self):
         return self.__getTempPath__("publisher")
@@ -93,6 +97,7 @@ class Config:
         claveObj = Entidades.Setups.SetupVineKey.SetupVinekey(key=clave)
         session.add(claveObj)
         session.commit()
+
     def addTipo(self, tipo):
         session = Entidades.Init.Session()
         tipoObj = Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo(tipoArchivo=tipo)
@@ -148,7 +153,7 @@ class Config:
 
     def setListaTipos(self, listaTipos=[]):
         self.__delAllTipos__()
-        if listaTipos:
+        if listaTipos is not None:
             for tipo in listaTipos:
                 self.addTipo(tipo)
 
@@ -187,15 +192,19 @@ class Config:
         session.query(Entidades.Setups.Setup.Setup).delete()
         session.commit()
 
-    def setConfig(self, directorioBaseImagenes):
-        self.__dellAllConfig__()
-        if directorioBaseImagenes  is not None:
-            self.addDirectorioImagenBase(directorioBaseImagenes)
+    def setConfig(self, directorioBase):
+        #self.__dellAllConfig__()
+        #print("DIRECTORIO: "+directorioBase)
+        if directorioBase is not None:
+         #   print("por aca")
+            self.setup.directorioBase = directorioBase
+        else:
+            self.setup.directorioBase = ''
+        self.addSetup(self.setup)
 
-    def addDirectorioImagenBase(self, directorioBaseImagenes):
+    def addSetup(self, setup):
         session = Entidades.Init.Session()
-        setupObj = Entidades.Setups.Setup.Setup()
-        setupObj.directorioBaseImagenes = directorioBaseImagenes
+        setupObj = setup
         session.add(setupObj)
         session.commit()
 
