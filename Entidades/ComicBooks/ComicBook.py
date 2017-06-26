@@ -8,6 +8,8 @@ import Entidades.Init
 
 class ComicBook(Entidades.Init.Base):
     __tablename__='Comicbooks'
+    extensionesSoportadas = ['jpg', 'png', 'gif']
+
     path = Column(String, primary_key=True)
     comicId = Column(String)
     titulo = Column(String)
@@ -23,7 +25,7 @@ class ComicBook(Entidades.Init.Base):
     ratingExterno = Column(Numeric)
 
     def __repr__(self):
-        return "<Comicbooks(nombre='%s', numero='%s')>" %(self.volumeNombre, self.numero)
+        return "<Comicbooks(nombre='%s', numero='%s', path='%s')>" %(self.volumeNombre, self.numero,self.path)
 
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
@@ -48,7 +50,7 @@ class ComicBook(Entidades.Init.Base):
             self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
         elif (self.getTipo().lower()=='cbr'):
             self.cbFile = rarfile.RarFile(self.path, 'r')
-            self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in self.extensionesSoportadas)]
+            self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
         #print(len(self.paginas))
         self.paginas.sort()
         self.indicePaginaActual = 0

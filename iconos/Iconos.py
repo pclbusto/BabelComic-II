@@ -1,10 +1,10 @@
 import PIL.Image, PIL.ImageTk
-
+from Entidades.Setups import Setup
+import Entidades.Init
+import os
 class Iconos:
-
-    #path="/home/pedro/Documentos/pycharmProjects/BabelComic-II/iconos/"
-    #path = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\iconos\\"
-    path = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\iconos\\"
+    setup = Entidades.Init.Session().query(Setup.Setup).first()
+    path = setup.directorioBase+os.sep+"iconos"+os.sep
     pilImagenLookup = PIL.Image.open(path+"Magnifying-Glass-icon.png")
     pilImageLogo = PIL.Image.open(path+"Logo-Editorial.png")
     pilImageExpansion = PIL.Image.open(path+"expansion.png")

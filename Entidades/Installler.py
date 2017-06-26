@@ -4,7 +4,7 @@ import Entidades.Setups.SetupTipoArchivo
 import Entidades.Setups.SetupDirctorio
 import Entidades.Setups.SetupVineKey
 import Entidades.Setups.SetupVinekeysStatus
-#import Entidades.Setups.Setup
+import Entidades.Setups.Setup
 import Entidades.ComicBooks.ComicBook
 
 if __name__ == '__main__':
