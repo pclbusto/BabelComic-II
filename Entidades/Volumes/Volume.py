@@ -6,10 +6,11 @@ import urllib.request
 import Extras.Config
 from sqlalchemy import Column, Integer, String
 import Entidades.Init
+from Entidades.Setups.Setup import Setup
 
 
 
-class Volume():
+class Volume(Entidades.Init.Base):
     __tablename__='Volumes'
     id = Column(String, primary_key=True)  # idExterno-por cuestiones de como lo tabaja comicVine vamos a hacerlo clave.
     nombre = Column(String)
@@ -36,11 +37,13 @@ class Volume():
 
     def getImageCover(self):
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
-        fullPath = 'C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\images\\covers\\coverImagesCache' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
+        session = Entidades.Init.Session()
+        setup = session.query(Setup).first()
+
+        fullPath = setup.directorioBase+'\\images\\covers\\coverImagesCache' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
         size = (320, 496)
         if not (os.path.isfile(fullPath)):
             print('No existe el cover recuperando de : '+self.image_url)
-
             jpg = urllib.request.urlopen(self.image_url)
             jpgImage = jpg.read()
             fImage = open(fullPath, 'wb')

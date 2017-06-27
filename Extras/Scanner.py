@@ -13,7 +13,7 @@ class BabelComicBookScanner():
         self.scanerDir = threading.Thread(target=self.scanearDirtorios)
         self.createThumnails = threading.Thread(target=self.crearThumbnails)
         self.comics = []
-
+        # self.session = Entidades.Init.Session()
     def crearThumbnails(self):
         # comics = KivyComicBooks()
         print("iniciando creacion de thumnails")
@@ -79,7 +79,7 @@ class BabelComicBookScanner():
 
     def iniciarScaneo(self):
         self.scanerDir.start()
-
+        # self.scanearDirtorios()
     def iniciarThumnails(self):
         self.createThumnails.start()
 
@@ -93,5 +93,5 @@ if __name__ == "__main__":
     config = Extras.Config.Config()
     manager = BabelComicBookScanner(config.listaDirectorios, config.listaTipos)
     manager.iniciarScaneo()
-    t = threading.Thread(target=testScanning)
-    t.start()
+    # t = threading.Thread(target=testScanning)
+    # t.start()

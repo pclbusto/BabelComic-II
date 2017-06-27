@@ -4,7 +4,7 @@ from Gui.FrameMaestro import FrameMaestro
 from PIL import Image, ImageTk
 
 from Entidades.ComicBooks import ComicBook
-from Entidades.Volumes import Volume
+from Entidades.Volumes.Volume import Volume
 import Entidades.Init
 
 
@@ -12,6 +12,7 @@ class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
         comic = self.comic = comicBook
+
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
         resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
@@ -33,29 +34,23 @@ class ComicBookGui(FrameMaestro):
         #tienen 9 lineas de alto y 59 chars de largo el texto
         self.resumenText = Text(resumen, width=50, height=9)
         self.resumenText.grid(column=1, row=1, sticky=(N,S,W,S), columnspan = 4)
-
-
         self.labelTipoyTamanio =  ttk.Label(resumen)
         self.labelTipoyTamanio.grid(column=0, row=5, sticky=(N, W))
-
-
-        ttk.Label(resumen, text="Páginas: "+str(self.comic.getCantidadPaginas())).grid(column=0, row=6, sticky=(N, W))
-        ttk.Label(resumen, text="Mi Valoración:").grid(column=1, row=5, sticky=(N, W))
-
-        ttk.Label(resumen, text="Valoración de la comunidad:").grid(column=1, row=6, sticky=(N, W))
-        donde = ttk.Label(resumen)
-        donde.config(text="Dónde: {:.90s}".format(self.comic.path))
-        donde.grid(column=0, row=7,columnspan=2, sticky=(N, W))
-        donde.bind("<Button-1>",self.click)
-        ttk.Label(detalle, text='Serie:').grid(column=0, row=0, sticky=(N, W))
-        self.entradaSerie = ttk.Entry(detalle, width=50)
-        self.entradaSerie.grid(column=0, row=1, padx=5, sticky=(N, W), columnspan=2)
-        #entrada.insert(END, self.serie.nombre)
-
-        ttk.Label(detalle, text='Volumen:').grid(column=2, row=0, sticky=(N, W))
-        self.entradaVolume = ttk.Entry(detalle, width=6)
-        self.entradaVolume.grid(column=2, row=1, padx=5, sticky=(N, W))
-#        entrada.insert(END, self.comic.volumen)
+        self.labelPaginas =  ttk.Label(resumen)
+        self.labelPaginas.grid(column=0, row=6, sticky=(N, W))
+        self.labelMiValoracion =ttk.Label(resumen)
+        self.labelMiValoracion.grid(column=1, row=5, sticky=(N, W))
+        self.labelValorecionComunidad=ttk.Label(resumen)
+        self.labelValorecionComunidad.grid(column=1, row=6, sticky=(N, W))
+        self.labelDonde = ttk.Label(resumen)
+        self.labelDonde.grid(column=0, row=7,columnspan=2, sticky=(N, W))
+        self.labelDonde.bind("<Button-1>",self.click)
+        ttk.Label(detalle, text='Volumen:').grid(column=0, row=0, sticky=(N, W))
+        self.entradaVolume = ttk.Entry(detalle, width=50)
+        self.entradaVolume.grid(column=0, row=1, padx=5, sticky=(N, W), columnspan=2)
+        ttk.Label(detalle, text='Nro Volumen:').grid(column=2, row=0, sticky=(N, W))
+        self.entradaNroVolume = ttk.Entry(detalle, width=10)
+        self.entradaNroVolume.grid(column=2, row=1, padx=5, sticky=(N, W),columnspan=2)
 
         ttk.Label(detalle, text='Número:').grid(column=3, row=0, sticky=(N, W))
         self.entradaNumero = Spinbox(detalle, from_=0, to=10000, width=6)
@@ -102,12 +97,13 @@ class ComicBookGui(FrameMaestro):
         self.varaible = StringVar(self).trace(mode='w', callback=self.__Changed__)
         self.changed = False
         self.loadComic()
+
     def loadComic(self):
         self.comic.openCbFile()
         self.comic.goto(0)
         im = Image.open(self.comic.getPage())
         size = (int(320 * 0.5), int(496 * 0.5))
-        self.fImage = ImageTk.PhotoImage(im.resize(self.size))
+        self.fImage = ImageTk.PhotoImage(im.resize(self.size,Image.BICUBIC))
         self.cover.create_image((0, 0), image=self.fImage,
                                 anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
         self.labelNombre.configure(text=self.comic.getNombreArchivo(False))
@@ -115,6 +111,18 @@ class ComicBookGui(FrameMaestro):
             self.resumenText.insert(END, self.comic.resumen)
         self.labelTipoyTamanio.configure(
             text="Tipo: " + self.comic.getTipo() + ' '  + str("%0.2f" % (self.comic.getSize() / (1024 * 1024))) + 'M')
+        self.labelPaginas.configure(text="Páginas: " + str(self.comic.getCantidadPaginas()))
+        self.labelMiValoracion.configure(text="Mi Valoración:")
+        self.labelValorecionComunidad.configure(text="Valoración de la comunidad:")
+        self.labelDonde.config(text="Dónde: {:.90s}".format(self.comic.path))
+        if self.comic.volumeId != '':
+            volume = session.query(Volume).filter(Volume.id==self.comic.volumeId).first()
+            print(volume)
+            self.entradaVolume.insert(END, volume.nombre)
+            self.entradaNroVolume.insert(END, volume.deck)
+
+
+
     def click(self,event):
         help(Toplevel)
         window = Toplevel(self)
@@ -126,6 +134,7 @@ class ComicBookGui(FrameMaestro):
         entry.grid(sticky=(W,E))
         print('{}x20+{}+{}'.format(len(self.comic.path)*6,event.x_root,event.y_root))
         window.geometry('{}x20+{}+{}'.format(len(self.comic.path)*6,event.x_root,event.y_root))
+
 
     def __Changed__(self, e, r, t):
         self.changed = True
@@ -146,10 +155,8 @@ class ComicBookGui(FrameMaestro):
 if (__name__ == '__main__'):
     session = Entidades.Init.Session()
     comic =ComicBook.ComicBook()
-
-    comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == 'E:\\Comics\\DC\\new 52\\DC New 52\\Aquaman\\Aquaman #018.cbr').first()
-    comic.create('E:\\Comics\\DC\\new 52\\DC New 52\\Aquaman\\Aquaman #018.cbr')
-    print(comic)
+    path = 'C:\\comics\\Green Lantern\\068 Grand Opening\\Aquaman V1994 #10 (1995).cbz'
+    comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == path).first()
     root = Tk()
     frameComic = ComicBookGui(root, comic)
     frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))

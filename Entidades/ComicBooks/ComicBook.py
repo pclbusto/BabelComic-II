@@ -2,7 +2,7 @@ import os
 import zipfile
 import rarfile
 from PIL import Image, ImageTk
-from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import Column, Integer, String, Float
 import Entidades.Init
 
 
@@ -11,35 +11,23 @@ class ComicBook(Entidades.Init.Base):
     extensionesSoportadas = ['jpg', 'png', 'gif']
 
     path = Column(String, primary_key=True)
-    comicId = Column(String)
-    titulo = Column(String)
-    volumeId = Column(String)
-    volumeNombre = Column(String)
-    numero = Column(Integer)
-    fechaTapa = Column(Integer)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    arcoArgumentalId = Column(Integer) #id arco
-    arcoArgumentalNumero = Column(Integer) #numero dentro del arco
-    resumen = Column(String)
-    nota = Column(String)
-    rating = Column(Numeric)
-    ratingExterno = Column(Numeric)
+    comicId = Column(String,nullable=False,default='')
+    titulo = Column(String,nullable=False,default='')
+    volumeId = Column(String,nullable=False,default='')
+    volumeNombre = Column(String,nullable=False,default='')
+    numero = Column(Integer,nullable=False,default=0)
+    fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
+    arcoArgumentalId = Column(Integer,nullable=False,default=0) #id arco
+    arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
+    resumen = Column(String,nullable=False,default='')
+    nota = Column(String,nullable=False,default='')
+    rating = Column(Float,nullable=False,default=0.0)
+    ratingExterno = Column(Float,nullable=False,default=0.0)
 
     def __repr__(self):
-        return "<Comicbooks(nombre='%s', numero='%s', path='%s')>" %(self.volumeNombre, self.numero,self.path)
+        return "<Comicbooks(Nombre id-Volumen='%s-%s', numero='%s', path='%s')>" %(self.volumeId,self.volumeNombre, self.titulo,self.path)
 
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
-
-    def create(self, path, titulo='', volume=-1, numero=-1):
-        self.path = path
-        self.comicId = -1
-        self.titulo = titulo
-        self.volumeId = volume  # de descubre que el campo deck de volume tiene la version del volumen.
-        self.numero= numero
-        self.fechaTapa = 1 # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-        self.arcoArgumentalId = -1
-        self.arcoArgumentalNumero = -1
-        self.resumen = ''
-        self.paginas = []
 
     def tieneArcoAlterno(self):
          return self.arcoArgumentalId != -1
@@ -52,7 +40,6 @@ class ComicBook(Entidades.Init.Base):
         elif (self.getTipo().lower()=='cbr'):
             self.cbFile = rarfile.RarFile(self.path, 'r')
             self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-        #print(len(self.paginas))
         self.paginas.sort()
         self.indicePaginaActual = 0
 
