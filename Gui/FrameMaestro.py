@@ -45,8 +45,26 @@ class FrameMaestro(Frame):
         self.botonGuardar.grid(row=0, column=2, sticky=E)
         self.botonGuardar = Button(self.frameBotonesAcciones, text="Cargar desde Web")
         self.botonGuardar.grid(row=0, column=3, sticky=E)
+        self.botonFirst.config(command=self.getFirst)
+        self.botonNext.config(command=self.getNext)
+        self.botonPrev.config(command=self.getPrev)
+        self.botonLast.config(command=self.getLast)
+
+    def getFirst(self):
+        pass
+
+    def getPrev(self):
+        pass
+
+    def getNext(self):
+        pass
+
+    def getLast(self):
+        pass
+
     def getPanelPrincipal(self):
         return self.panelPrincipal
+
 
 class Paciente(FrameMaestro):
     def __init__(self, parent, cnf={}, **kw):

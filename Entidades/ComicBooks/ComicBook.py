@@ -30,7 +30,7 @@ class ComicBook(Entidades.Init.Base):
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
     def tieneArcoAlterno(self):
-         return self.arcoArgumentalId != -1
+         return self.arcoArgumentalId != 0
 
     def openCbFile(self):
         #print('En openCbFile: '+self.getTipo())

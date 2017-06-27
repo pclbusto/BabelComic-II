@@ -50,7 +50,7 @@ class ConfigGui(Frame):
         #directorios base
         ttk.Label(self.panelinferior, text='Directorio Base').grid(column=0, row=1, sticky=(W))
         self.directorioVar = StringVar()
-        self.entradaDirectorioBase = ttk.Entry(self.panelinferior, textvariable=self.directorioVar)
+        self.entradaDirectorioBase = ttk.Entry(self.panelinferior, textvariable=self.directorioVar, width=60)
         self.entradaDirectorioBase.grid(column=1,row=1, sticky=(E),columnspan=2)
         self.botonDirecotrioBase = ttk.Button(self.panelinferior, text='...', command=self.openBaseDirectoryChooser)
         self.botonDirecotrioBase.grid(column=6, row=1, sticky=(W))

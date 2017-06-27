@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import Tk, ttk
 from Gui.FrameMaestro import FrameMaestro
 from PIL import Image, ImageTk
-
+from datetime import date
 from Entidades.ComicBooks import ComicBook
 from Entidades.Volumes.Volume import Volume
 import Entidades.Init
@@ -11,7 +11,7 @@ import Entidades.Init
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        comic = self.comic = comicBook
+        self.setComic(comicBook)
 
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
@@ -45,9 +45,11 @@ class ComicBookGui(FrameMaestro):
         self.labelDonde = ttk.Label(resumen)
         self.labelDonde.grid(column=0, row=7,columnspan=2, sticky=(N, W))
         self.labelDonde.bind("<Button-1>",self.click)
+
         ttk.Label(detalle, text='Volumen:').grid(column=0, row=0, sticky=(N, W))
         self.entradaVolume = ttk.Entry(detalle, width=50)
         self.entradaVolume.grid(column=0, row=1, padx=5, sticky=(N, W), columnspan=2)
+
         ttk.Label(detalle, text='Nro Volumen:').grid(column=2, row=0, sticky=(N, W))
         self.entradaNroVolume = ttk.Entry(detalle, width=10)
         self.entradaNroVolume.grid(column=2, row=1, padx=5, sticky=(N, W),columnspan=2)
@@ -55,23 +57,18 @@ class ComicBookGui(FrameMaestro):
         ttk.Label(detalle, text='Número:').grid(column=3, row=0, sticky=(N, W))
         self.entradaNumero = Spinbox(detalle, from_=0, to=10000, width=6)
         self.entradaNumero.grid(column=3, row=1, padx=5, sticky=(N, W))
-        self.entradaNumero.delete(0)
-        self.entradaNumero.insert(END, self.comic.numero)
 
         ttk.Label(detalle, text='de:').grid(column=4, row=0, sticky=(N, W))
         self.entradaDe = Spinbox(detalle, from_=0, to=10000, width=6)
         self.entradaDe.grid(column=4, row=1, padx=5, sticky=(N, W))
-        self.entradaDe.delete(0)
 
         ttk.Label(detalle, text='Título:').grid(column=0, row=2, sticky=(N, W))
-        self.entradaTitulo = ttk.Entry(detalle, text='Título', width=50)
+        self.entradaTitulo = ttk.Entry(detalle, width=50)
         self.entradaTitulo.grid(column=0, row=3, padx=5, sticky=(N, W), columnspan=2)
-        self.entradaTitulo.insert(END, self.comic.titulo)
 
         ttk.Label(detalle, text='Fecha:').grid(column=2, row=2, sticky=(N, W))
-        entrada = ttk.Entry(detalle, width=10)
-        entrada.grid(column=2, row=3, padx=5, sticky=(N, W), columnspan=2)
-        entrada.insert(END, self.comic.fechaTapa)
+        self.entradaFecha= ttk.Entry(detalle, width=10)
+        self.entradaFecha.grid(column=2, row=3, padx=5, sticky=(N, W), columnspan=2)
 
         ttk.Label(detalle, text='Arco Argumental:').grid(column=0, row=4, sticky=(N, W))
         self.entradaArco = ttk.Entry(detalle, text='', width=50)
@@ -83,20 +80,44 @@ class ComicBookGui(FrameMaestro):
         self.entradaArcoArgumentalDe = Spinbox(detalle, text='', from_=0, to=10000, width=6)
         self.entradaArcoArgumentalDe.grid(column=3, row=5, padx=5, sticky=(N, W))
 
-        # if comic.tieneArcoAlterno():
-        #     entradaArco.insert(END, ArcosArgumentales().get(comic.seriesAlternasNumero[0][0]).nombre)
-        #     entradaNumero.delete(0)
-        #     entradaNumero.insert(END, comic.seriesAlternasNumero[0][1])
-        #     arco = ArcosArgumentales().get(comic.seriesAlternasNumero[0][0])
-        #     entradaDe.delete(0)
-        #     entradaDe.insert(END, arco.getCantidadTitulos())
-
         notebook.select(0)
         self.entries = {}
         self.variables = {}
         self.varaible = StringVar(self).trace(mode='w', callback=self.__Changed__)
         self.changed = False
         self.loadComic()
+
+    def getLast(self):
+        super().getLast()
+        session = Entidades.Init.Session()
+        comic = session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.desc()).first()
+        if comic is not None:
+            self.setComic(comic)
+            self.loadComic()
+
+    def getPrev(self):
+        super().getPrev()
+        if self.comic is not None:
+            session = Entidades.Init.Session()
+            comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path<self.comic.path).order_by(ComicBook.ComicBook.path.desc()).first()
+            if comic is not None:
+                self.setComic(comic)
+                self.loadComic()
+        else:
+            self.getFirst()
+
+    def getNext(self):
+        super().getNext()
+        if self.comic is not None:
+            session = Entidades.Init.Session()
+            comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path>self.comic.path).order_by(ComicBook.ComicBook.path.asc()).first()
+            if comic is not None:
+                self.setComic(comic)
+                self.loadComic()
+        else:
+            self.getLast()
+    def setComic(self,comicBook):
+        self.comic = comicBook
 
     def loadComic(self):
         self.comic.openCbFile()
@@ -115,13 +136,31 @@ class ComicBookGui(FrameMaestro):
         self.labelMiValoracion.configure(text="Mi Valoración:")
         self.labelValorecionComunidad.configure(text="Valoración de la comunidad:")
         self.labelDonde.config(text="Dónde: {:.90s}".format(self.comic.path))
+        #limpiamos los campos tenga o no volumen para no dejar el anterior
+        self.entradaVolume.delete(0,END)
+        self.entradaNroVolume.delete(0,END)
+        self.entradaDe.delete(0,END)
+
         if self.comic.volumeId != '':
             volume = session.query(Volume).filter(Volume.id==self.comic.volumeId).first()
-            print(volume)
             self.entradaVolume.insert(END, volume.nombre)
             self.entradaNroVolume.insert(END, volume.deck)
+            self.entradaDe.insert(END, volume.cantidadNumeros)
+        self.entradaNumero.delete(0,END)
+        self.entradaNumero.insert(END, self.comic.numero)
+        self.entradaTitulo.delete(0,END)
+        self.entradaTitulo.insert(END, self.comic.titulo)
+        self.entradaFecha.delete(0,END)
+        self.entradaFecha.insert(END, date.fromtimestamp(self.comic.fechaTapa))
 
-
+        if comic.tieneArcoAlterno():
+            print('falta entidad arco')
+            # entradaArco.insert(END, ArcosArgumentales().get(comic.seriesAlternasNumero[0][0]).nombre)
+            # entradaNumero.delete(0)
+            # entradaNumero.insert(END, comic.seriesAlternasNumero[0][1])
+            # arco = ArcosArgumentales().get(comic.seriesAlternasNumero[0][0])
+            # entradaDe.delete(0)
+            # entradaDe.insert(END, arco.getCantidadTitulos())
 
     def click(self,event):
         help(Toplevel)
@@ -141,7 +180,13 @@ class ComicBookGui(FrameMaestro):
 
     def getFirst(self):
         session = Entidades.Init.Session()
-        session.query(ComicBook).first()
+        comic = session.query(ComicBook.ComicBook).first()
+        if comic is not None:
+            self.setComic(comic)
+            self.loadComic()
+
+
+
     def guardar(self):
         if (self.changed):
             self.comic.path = self.entries['Path'].get()

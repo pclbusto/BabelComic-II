@@ -13,13 +13,13 @@ from Entidades.Setups.Setup import Setup
 class Volume(Entidades.Init.Base):
     __tablename__='Volumes'
     id = Column(String, primary_key=True)  # idExterno-por cuestiones de como lo tabaja comicVine vamos a hacerlo clave.
-    nombre = Column(String)
-    deck = Column(String)
-    descripcion = Column(String)
-    image_url = Column(String)  # la mas grande. Las chicas las hacemos locales.
-    publisherId = Column(String)
-    AnioInicio = Column(Integer)
-    cantidadNumeros = Column(Integer)
+    nombre = Column(String,nullable=False,default='')
+    deck = Column(String,nullable=False,default='')
+    descripcion = Column(String,nullable=False,default='')
+    image_url = Column(String,nullable=False,default='')  # la mas grande. Las chicas las hacemos locales.
+    publisherId = Column(String,nullable=False,default='')
+    AnioInicio = Column(Integer,nullable=False,default=0)
+    cantidadNumeros = Column(Integer,nullable=False,default=0)
 
     def hasLocalCover(self):
         if self.image_url:
