@@ -39,6 +39,7 @@ class ComicBook(Entidades.Init.Base):
         self.arcoArgumentalId = -1
         self.arcoArgumentalNumero = -1
         self.resumen = ''
+        self.paginas = []
 
     def tieneArcoAlterno(self):
          return self.arcoArgumentalId != -1
