@@ -12,7 +12,7 @@ class BabelComicScannerGui():
     def __init__(self,master=None):
         ventanaPrincipal = Toplevel(master)
         ventanaPrincipal.title('Babel Comics  Scanner')
-        panelPrincipal = ttk.Frame(ventanaPrincipal)
+        panelPrincipal = ttk.Frame(ventanaPrincfireipal)
         panelBajo = ttk.Frame(ventanaPrincipal)
         panelPrincipal.grid(sticky=(W,E))
         panelBajo.grid()

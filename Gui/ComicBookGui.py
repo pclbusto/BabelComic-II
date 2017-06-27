@@ -9,9 +9,8 @@ import Entidades.Init
 
 
 class ComicBookGui(FrameMaestro):
-    def __init__(self, parent, comicBook, cnf={}, **kw):
+    def __init__(self, parent, comicBook=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        self.setComic(comicBook)
 
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
@@ -80,12 +79,23 @@ class ComicBookGui(FrameMaestro):
         self.entradaArcoArgumentalDe = Spinbox(detalle, text='', from_=0, to=10000, width=6)
         self.entradaArcoArgumentalDe.grid(column=3, row=5, padx=5, sticky=(N, W))
 
+        #agregamos otro boton mas
+        self.botonComicVine = Button(self.frameBotonesAcciones, text="Comic Vine",command=self.abrirCatalogadorComicVine)
+        self.botonComicVine.grid(row=0, column=4, sticky=E)
+
         notebook.select(0)
         self.entries = {}
         self.variables = {}
         self.varaible = StringVar(self).trace(mode='w', callback=self.__Changed__)
         self.changed = False
-        self.loadComic()
+        if comicBook is not None:
+            self.setComic(comicBook)
+            self.loadComic()
+        else:
+            self.getFirst()
+
+    def abrirCatalogadorComicVine(self):
+
 
     def getLast(self):
         super().getLast()
@@ -153,7 +163,7 @@ class ComicBookGui(FrameMaestro):
         self.entradaFecha.delete(0,END)
         self.entradaFecha.insert(END, date.fromtimestamp(self.comic.fechaTapa))
 
-        if comic.tieneArcoAlterno():
+        if self.comic.tieneArcoAlterno():
             print('falta entidad arco')
             # entradaArco.insert(END, ArcosArgumentales().get(comic.seriesAlternasNumero[0][0]).nombre)
             # entradaNumero.delete(0)
@@ -182,6 +192,7 @@ class ComicBookGui(FrameMaestro):
         session = Entidades.Init.Session()
         comic = session.query(ComicBook.ComicBook).first()
         if comic is not None:
+            print(comic)
             self.setComic(comic)
             self.loadComic()
 
@@ -203,7 +214,7 @@ if (__name__ == '__main__'):
     path = 'C:\\comics\\Green Lantern\\068 Grand Opening\\Aquaman V1994 #10 (1995).cbz'
     comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == path).first()
     root = Tk()
-    frameComic = ComicBookGui(root, comic)
+    frameComic = ComicBookGui(root)
     frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
