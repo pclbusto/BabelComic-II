@@ -54,7 +54,7 @@ class ComicCatalogerGui(Frame):
 
     def openSerieLookup(self):
         window = Toplevel()
-        serieRetorno = Serie(1880, '')
+        volumeRetorno = Volume(1880, '')
         lk = SeriesLookupGui(window, serieRetorno)
         lk.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
@@ -93,14 +93,17 @@ class ComicCatalogerGui(Frame):
         self.seriesLookupFrame = ttk.Frame(self.panelBusqueda)
         self.seriesLookupFrame.grid(column=1, row=0, sticky=(W), pady=5)
         ttk.Label(self.panelBusqueda, text='Serie: ').grid(column=0, row=0, sticky=(W), pady=5)
+
         self.pilImagenLookup = Iconos.pilImagenLookup
-        self.lookupImage = PhotoImage(self.pilImagenLookup)
+        self.lookupImage = ImageTk.PhotoImage(self.pilImagenLookup)
+
+
+
 
         ttk.Label(self.panelBusqueda, text='Título: ').grid(column=2, row=0, sticky=(W), pady=5)
         ttk.Entry(self.panelBusqueda, textvariable=self.entryTitulo).grid(column=3, row=0, sticky=(W), pady=5)
-#, command=self.openSerieLookup
-        ttk.Button(self.seriesLookupFrame, image=self.lookupImage).grid(column=1, row=0, sticky=(N, S),
-                                                                                                      pady=5)
+#
+        ttk.Button(self.seriesLookupFrame, image=self.lookupImage, command=self.openSerieLookup).grid(column=1, row=0, sticky=(N, S), pady=5)
 
         ttk.Entry(self.seriesLookupFrame, textvariable=self.entrySerie).grid(column=0, row=0, sticky=(W), pady=5)
         ttk.Label(self.panelBusqueda, text='Número: ').grid(column=4, row=0, sticky=(W), pady=5)

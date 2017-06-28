@@ -95,7 +95,7 @@ class ComicBookGui(FrameMaestro):
             self.getFirst()
 
     def abrirCatalogadorComicVine(self):
-
+        pass
 
     def getLast(self):
         super().getLast()
@@ -126,6 +126,7 @@ class ComicBookGui(FrameMaestro):
                 self.loadComic()
         else:
             self.getLast()
+
     def setComic(self,comicBook):
         self.comic = comicBook
 
@@ -190,7 +191,7 @@ class ComicBookGui(FrameMaestro):
 
     def getFirst(self):
         session = Entidades.Init.Session()
-        comic = session.query(ComicBook.ComicBook).first()
+        comic = session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.asc()).first()
         if comic is not None:
             print(comic)
             self.setComic(comic)
