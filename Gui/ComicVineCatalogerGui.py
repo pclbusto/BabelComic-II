@@ -4,8 +4,10 @@ from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Volumes.Volume import Volume
 from datetime import date
 from iconos.Iconos import Iconos
-#from SeriesLookup import SeriesLookupGui
-#from ComicBooks import ComicBooks
+from Gui.VolumeLookupGui import VolumesLookupGui
+from Extras.ComicVineSearcher import ComicVineSearcher
+from Entidades.Setups.Setup import Setup
+
 #from ComicVineSearcher import *
 from PIL import Image, ImageTk
 import urllib.request
@@ -43,8 +45,8 @@ class ComicCatalogerGui(Frame):
 
         archivo = ttk.Label(panelInfo, text='Archivo: ' + comicbook.getNombreArchivo())
         tituloEjemplar = ttk.Label(panelInfo, text='Título: ' + comicbook.titulo)
-
-        arcoAlternativo = ttk.Label(panelInfo, text='Fecha Tapa: ' + str(date.fromtimestamp(comicbook.fechaTapa)))
+        print(comicbook.fechaTapa)
+        arcoAlternativo = ttk.Label(panelInfo, text='Fecha Tapa: ' + str(comicbook.fechaTapa))
         archivo.grid(sticky=(W), padx=5)
         nombreSerie.grid(sticky=(W), padx=5)
         tituloEjemplar.grid(sticky=(W), padx=5)
@@ -54,8 +56,8 @@ class ComicCatalogerGui(Frame):
 
     def openSerieLookup(self):
         window = Toplevel()
-        volumeRetorno = Volume(1880, '')
-        lk =  SeriesLookupGui(window, serieRetorno)
+        volumeRetorno = Volume()
+        lk =  VolumesLookupGui(window, volumeRetorno)
         lk.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)
@@ -137,14 +139,18 @@ class ComicCatalogerGui(Frame):
         print('------------------------------------')
 
     def copiarInfo(self):
-        cnf = BabelComicBookManagerConfig()
-        print('clave: ' + cnf.getClave())
-        cv = ComicVineSearcher(cnf.getClave())
+        cnf = Config()
+        print('clave: ' + cnf.getClave('issue'))
+        cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
         completComicInfo.path = self.comicbook.path
+        session = Entidades.Init.Session()
+        session.add(completComicInfo)
+        session.commit()
         # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
-        ComicBooks().update(completComicInfo)
+        # ComicBooks().update(completComicInfo)
+
         self.parent.destroy()
 
     def itemClicked(self, event):
@@ -157,16 +163,22 @@ class ComicCatalogerGui(Frame):
             if not (os.path.isfile('searchCache\\' + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
+                setup = Entidades.Init.Session().query(Setup).first()
+                path = setup.directorioBase + os.sep + "images\\searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
-                fImage = open('searchCache\\' + nombreImagen, 'wb')
+                fImage = open(path  + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()
-            fImage = open('searchCache\\' + nombreImagen, 'rb')
+            fImage = open(path  + nombreImagen, 'rb')
             im = Image.open(fImage)
 
         # print(item['values'][8],item['values'][4])
-        self.comicBookVine = ComicBook('Path', str(item['values'][1]), item['values'][8], item['values'][4])
+        self.comicBookVine = ComicBook()
+        self.comicBookVine.path = 'Path'
+        self.comicBookVine.titulo = str(item['values'][1])
+        self.comicBookVine.volumeId = item['values'][8]
+        self.comicBookVine.numero = item['values'][4]
         self.comicBookVine.fechaTapa = item['values'][0]
         self.comicBookVine.resumen = item['values'][2]
         self.comicBookVine.idExterno = item['values'][3]
@@ -177,9 +189,7 @@ class ComicCatalogerGui(Frame):
 
     def buscarSerie(self):
         # recuperarla de la configuracion
-        config = BabelComicBookManagerConfig()
-
-
+        config = Config()
         buscador = ComicVineSearcher(config.getClave("issues"))
 
         buscador.setEntidad('issues')
@@ -206,29 +216,14 @@ class ComicCatalogerGui(Frame):
                                                         ))
 
 
-##        lista = []
-##        lista.append({'count_of_issues':15,'description':'description','Id':'Id000015','image':'https://cdn1.iconfinder.com/data/icons/UltraBuuf/512/capo.png','name':'Batman','publisher':'DC-publisher','start_year':1970})
-##        lista.append({'count_of_issues':1,'description':'description','Id':'Id000017','image':'https://cdn1.iconfinder.com/data/icons/UltraBuuf/512/Hellboy.png','name':'The Flash','publisher':'DC-publisher','start_year':1990})
-##        lista.append({'count_of_issues':135,'description':'description','Id':'Id000005','image':'https://cdn1.iconfinder.com/data/icons/UltraBuuf/512/Magneto.png','name':'X-men','publisher':'Marvel-publisher','start_year':1940})
-##        lista.append({'count_of_issues':55,'description':'description','Id':'Id0000978','image':'https://cdn1.iconfinder.com/data/icons/UltraBuuf/512/Lantern.png','name':'Green Lantern','publisher':'DC-publisher','start_year':1956})
-##        for comic in lista:
-##            self.grillaSeries.insert('', 0, '', text=comic['name'], values=(comic['count_of_issues'],
-##                                                                            comic['description'],
-##                                                                            comic['Id'],
-##                                                                            comic['image'],
-##                                                                            comic['name'],
-##                                                                            comic['publisher'],
-##                                                                            comic['start_year']))
-##
-
-
-##(count_of_issues,description,Id,image,name,publisher,start_year)
 
 if __name__ == '__main__':
     root = Tk()
     session = Entidades.Init.Session()
     comic = session.query(ComicBook).order_by(ComicBook.path.asc()).first()
     cvs = ComicCatalogerGui(root, comic)
+    cvs.entrySerie.set('4363')
+    cvs.spinNumero.set(80)
     cvs.grid(sticky=(N, W, S, E))
     cvs.grid()
     root.columnconfigure(0, weight=1)

@@ -12,6 +12,7 @@ class Iconos:
     pilImagePrev = PIL.Image.open(path+"prev.png")
     pilImageNext = PIL.Image.open(path+"next.png")
     pilImageLast = PIL.Image.open(path+"last.png")
+    pilImageCoverGenerica =  PIL.Image.open(path+"CoverGenerica.png")
 
 
 

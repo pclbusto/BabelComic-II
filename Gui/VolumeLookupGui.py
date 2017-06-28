@@ -3,16 +3,17 @@ from tkinter import Tk, ttk
 from tkinter import filedialog
 from Entidades.Volumes.Volume import Volume
 from PIL import Image, ImageTk
+from iconos.Iconos import Iconos
+import Entidades.Init
 
-
-class SeriesLookupData():
+class VolumesLookupData():
     ATRIBUTO_ID = 'id'
     ATRIBUTO_NOMBRE = 'nombre'
     ATRIBUTO_DESCRIPCION = 'descripcion'
     ATRIBUTO_ANIO = 'AnioInicio'
 
     def __init__(self):
-        self.atributoBusqueda = SeriesLookupData.ATRIBUTO_NOMBRE
+        self.atributoBusqueda = VolumesLookupData.ATRIBUTO_NOMBRE
 
 
 class VolumesLookupGui(Frame):
@@ -25,20 +26,42 @@ class VolumesLookupGui(Frame):
         # panel busqueda opciones entrada y boton buscar
         self.panelBusqueda = ttk.Frame(self)
         self.panelBusqueda.grid(column=0, row=0, sticky=(E, W, N))
-        self.panelBusqueda.columnconfigure(1, weight=1)
-        self.comboOpcionBusqueda = StringVar()
-        self.opcionesBusqueda = ttk.Combobox(self.panelBusqueda, textvariable=self.comboOpcionBusqueda)
-        self.comboOpcionBusqueda.trace(mode='w', callback=self.__ChangedComboboxFilter__)
-        self.opcionesBusqueda['values'] = (
-        'Buscar por Nombre', 'Buscar por Número', 'Buscar por Editorial', 'Buscar por Año')
-        self.filtros = {'nombre': [''], 'name': [], 'cantidadNumeros': [], 'AnioInicio': []}
-        self.opcionesBusqueda.grid(sticky=(W))
-        self.varaiblePatronBusqueda = StringVar()
-        self.entryFiltro = ttk.Entry(self.panelBusqueda, textvariable=self.varaiblePatronBusqueda)
-        self.varaiblePatronBusqueda.trace(mode='w', callback=self.__ChangedFilter__)
-        self.entryFiltro.grid(column=1, row=0, sticky=(W, E))
 
-        ttk.Button(self.panelBusqueda, text='Buscar', command=self.buscarSerie).grid(sticky=(E), column=3, row=0)
+        self.panelBusqueda.columnconfigure(0, weight=1)
+        self.panelBusqueda.columnconfigure(1, weight=4)
+        self.panelBusqueda.columnconfigure(2, weight=1)
+        self.panelBusqueda.columnconfigure(3, weight=4)
+
+        ttk.Label(self.panelBusqueda, text="Nombre: ").grid(column=0, row=0, sticky=W)
+        self.entradaBuscarPorNombre = ttk.Entry(self.panelBusqueda)
+        self.entradaBuscarPorNombre.grid(column=1, row=0, sticky=(W, E),padx=5)
+
+        ttk.Label(self.panelBusqueda, text="Cantidad Números: ").grid(column=0, row=1, sticky=W)
+        self.entradaBuscarPorCantidadNumeros = ttk.Entry(self.panelBusqueda)
+        self.entradaBuscarPorCantidadNumeros.grid(column=1, row=1, sticky=(W, E),padx=5)
+
+        ttk.Label(self.panelBusqueda, text="Año Inicio: ").grid(column=2, row=0, sticky=W)
+        self.entradaBuscarPorAñoInicio = ttk.Entry(self.panelBusqueda)
+        self.entradaBuscarPorAñoInicio.grid(column=3, row=0, sticky=(W, E),padx=5)
+
+        ttk.Label(self.panelBusqueda, text="Editorial: ").grid(column=2, row=1, sticky=W)
+        self.entradaBuscarPorEditorial = ttk.Entry(self.panelBusqueda)
+        self.entradaBuscarPorEditorial.grid(column=3, row=1, sticky=(W, E),padx=5)
+
+
+        # self.comboOpcionBusqueda = StringVar()
+        # self.opcionesBusqueda = ttk.Combobox(self.panelBusqueda, textvariable=self.comboOpcionBusqueda)
+        # self.comboOpcionBusqueda.trace(mode='w', callback=self.__ChangedComboboxFilter__)
+        # self.opcionesBusqueda['values'] = (
+        # 'Buscar por Nombre', 'Buscar por Número', 'Buscar por Editorial', 'Buscar por Año')
+        # self.filtros = {'nombre': [''], 'name': [], 'cantidadNumeros': [], 'AnioInicio': []}
+        # self.opcionesBusqueda.grid(sticky=(W))
+        # self.varaiblePatronBusqueda = StringVar()
+        # self.entryFiltro = ttk.Entry(self.panelBusqueda, textvariable=self.varaiblePatronBusqueda)
+        # self.varaiblePatronBusqueda.trace(mode='w', callback=self.__ChangedFilter__)
+        # self.entryFiltro.grid(column=1, row=0, sticky=(W, E))
+
+        ttk.Button(self.panelBusqueda, text='Buscar', command=self.buscarVolume).grid(sticky=(E), column=4, row=0)
         # self.opcionesBusqueda.current(1)
 
 
@@ -59,7 +82,7 @@ class VolumesLookupGui(Frame):
         self.frameGrilla.columnconfigure(0, weight=1)
         ##config grilla series
         self.grillaSeries = ttk.Treeview(self.frameGrilla, columns=(
-        'name', 'count_of_issues', 'description', 'Id', 'image', 'publisher', 'start_year'),
+            'name', 'count_of_issues', 'description', 'Id', 'image', 'publisher', 'start_year'),
                                          displaycolumns=('Id', 'name', 'count_of_issues', 'publisher', 'start_year'))
         self.grillaSeries.grid(column=0, row=0, rowspan=1, sticky=(N, S, E, W))
 
@@ -93,62 +116,63 @@ class VolumesLookupGui(Frame):
         self.labelImagen.grid(column=3, row=0)
 
         # boton parte inferior formulario
-        ttk.Button(self, text='seleccionar', command=self.seleccionarSerie).grid(column=0, row=2, sticky=(E))
+        ttk.Button(self, text='seleccionar', command=self.seleccionarVolume).grid(column=0, row=2, sticky=(E))
         self.desc = True
-        self.opcionesBusqueda.current(0)
-        self.entryFiltro.focus()
-        self.cover = ImageTk.PhotoImage(Image.open('CoverGenerica.jpg').resize(self.coverSize))
+
+        self.pilImageCoverGenerica = Iconos.pilImageCoverGenerica
+        self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
-
-    def __ChangedFilter__(self, *args):  # recordar siempre que son 4 paramentros sino da errores raros
-        print('__ChangedFilter__ current: ', str(self.opcionesBusqueda.current()))
-        if (self.opcionesBusqueda.current() == 0):
-            print('limpiando filtro nombre')
-            del self.filtros['nombre']
-            cadena = self.varaiblePatronBusqueda.get()
-            self.filtros['nombre'] = [cadena]
-            print('filtro cargado: ' + str(self.filtros['nombre']))
-        if (self.opcionesBusqueda.current() == 1):
-            del self.filtros['cantidadNumeros']
-            cadena = self.varaiblePatronBusqueda.get()
-            print('cantidadNumeros: ' + str(self.filtros))
-            print(len(cadena))
-            if len(cadena) > 0:
-                self.filtros['cantidadNumeros'] = [self.varaiblePatronBusqueda.get()]
-
-        if (self.opcionesBusqueda.current() == 2):
-            del self.filtros['name']
-            self.filtros['name'] = [self.varaiblePatronBusqueda.get()]
-        if (self.opcionesBusqueda.current() == 3):
-            del self.filtros['AnioInicio']
-            print('AnioInicio: ' + str(self.filtros))
-            cadena = self.varaiblePatronBusqueda.get()
-            if len(cadena) > 0:
-                self.filtros['AnioInicio'] = [self.varaiblePatronBusqueda.get()]
-
-    def __ChangedComboboxFilter__(self, *args):
-        lista = []
-        if (self.opcionesBusqueda.current() == 0):
-            if ('nombre' in self.filtros):
-                lista = self.filtros['nombre']
-        elif (self.opcionesBusqueda.current() == 1):
-            if ('cantidadNumeros' in self.filtros):
-                lista = self.filtros['cantidadNumeros']
-        elif (self.opcionesBusqueda.current() == 2):
-            if ('name' in self.filtros):
-                lista = self.filtros['name']
-        elif (self.opcionesBusqueda.current() == 3):
-            if ('AnioInicio' in self.filtros):
-                lista = self.filtros['AnioInicio']
-
-        self.entryFiltro.delete(0, END)
-        cadena = ''
-        if lista:
-            print('lista de palabras: ' + str(lista))
-        for palabra in lista:
-            print('palabra: ' + palabra)
-            cadena += palabra + " "
-        self.entryFiltro.insert(END, cadena[:-1])
+    #
+    # def __ChangedFilter__(self, *args):  # recordar siempre que son 4 paramentros sino da errores raros
+    #     print('__ChangedFilter__ current: ', str(self.opcionesBusqueda.current()))
+    #     if (self.opcionesBusqueda.current() == 0):
+    #         print('limpiando filtro nombre')
+    #         del self.filtros['nombre']
+    #         cadena = self.varaiblePatronBusqueda.get()
+    #         self.filtros['nombre'] = [cadena]
+    #         print('filtro cargado: ' + str(self.filtros['nombre']))
+    #     if (self.opcionesBusqueda.current() == 1):
+    #         del self.filtros['cantidadNumeros']
+    #         cadena = self.varaiblePatronBusqueda.get()
+    #         print('cantidadNumeros: ' + str(self.filtros))
+    #         print(len(cadena))
+    #         if len(cadena) > 0:
+    #             self.filtros['cantidadNumeros'] = [self.varaiblePatronBusqueda.get()]
+    #
+    #     if (self.opcionesBusqueda.current() == 2):
+    #         del self.filtros['name']
+    #         self.filtros['name'] = [self.varaiblePatronBusqueda.get()]
+    #     if (self.opcionesBusqueda.current() == 3):
+    #         del self.filtros['AnioInicio']
+    #         print('AnioInicio: ' + str(self.filtros))
+    #         cadena = self.varaiblePatronBusqueda.get()
+    #         if len(cadena) > 0:
+    #             self.filtros['AnioInicio'] = [self.varaiblePatronBusqueda.get()]
+    #
+    # def __ChangedComboboxFilter__(self, *args):
+    #     lista = []
+    #     if (self.opcionesBusqueda.current() == 0):
+    #         if ('nombre' in self.filtros):
+    #             lista = self.filtros['nombre']
+    #     elif (self.opcionesBusqueda.current() == 1):
+    #         if ('cantidadNumeros' in self.filtros):
+    #             lista = self.filtros['cantidadNumeros']
+    #     elif (self.opcionesBusqueda.current() == 2):
+    #         if ('name' in self.filtros):
+    #             lista = self.filtros['name']
+    #     elif (self.opcionesBusqueda.current() == 3):
+    #         if ('AnioInicio' in self.filtros):
+    #             lista = self.filtros['AnioInicio']
+    #
+    #     self.entryFiltro.delete(0, END)
+    #     cadena = ''
+    #     if lista:
+    #         print('lista de palabras: ' + str(lista))
+    #     for palabra in lista:
+    #         print('palabra: ' + palabra)
+    #         cadena += palabra + " "
+    #     self.entryFiltro.insert(END, cadena[:-1])
+    #
 
     def getSerie(self):
         print('retornando serie: ' + self.serie.nombre)
@@ -156,94 +180,49 @@ class VolumesLookupGui(Frame):
 
     def itemClicked(self, event):
         if (self.grillaSeries.selection()):
-            item = self.grillaSeries.item(self.grillaSeries.selection())
-            print(item['values'][3])
-            self.serie = Series().get(item['values'][3])
+            seleccion = self.grillaSeries.selection()
+            self.serie = self.volumes[self.grillaSeries.index(seleccion[0])]
+            self.grillaSeries.index(seleccion[0])
             imagen = self.serie.getImageCover()
-            print(self.labelImagen)
             self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
             self.labelImagen['image'] = self.cover
-            # self.labelImagen.config(image=self.cover)
-            # Label(self.frameGrilla, image=self.cover).grid(column=3,row=0)
 
-    def seleccionarSerie(self):
+    def seleccionarVolume(self):
         print(self.serie.id)
 
-    def sortby(self, col):
-        print('sort: ' + str(self.opcionesBusqueda.current()))
+    # def sortby(self, col):
+    #     print('sort: ' + str(self.opcionesBusqueda.current()))
+    #
+    #     if col == 'nombre':
+    #         self.opcionesBusqueda.current(0)
+    #     elif col == 'cantidadNumeros':
+    #         self.opcionesBusqueda.current(1)
+    #     elif col == 'name':
+    #         self.opcionesBusqueda.current(2)
+    #     elif col == 'AnioInicio':
+    #         print('antes de cambiar sort:')
+    #         self.opcionesBusqueda.current(3)
+    #         print('despues de cambiar sort: ' + str(self.opcionesBusqueda.current()))
+    #
+    #     if (not self.desc):
+    #         self.buscarVolume('order by ' + col + ' desc')
+    #     else:
+    #         self.buscarVolume(('order by ' + col + ' asc')
+    #
+    def buscarVolume(self, orderBy=None):
 
-        if col == 'nombre':
-            self.opcionesBusqueda.current(0)
-        elif col == 'cantidadNumeros':
-            self.opcionesBusqueda.current(1)
-        elif col == 'name':
-            self.opcionesBusqueda.current(2)
-        elif col == 'AnioInicio':
-            print('antes de cambiar sort:')
-            self.opcionesBusqueda.current(3)
-            print('despues de cambiar sort: ' + str(self.opcionesBusqueda.current()))
-
-        if (not self.desc):
-            self.buscarSerie('order by ' + col + ' desc')
-        else:
-            self.buscarSerie('order by ' + col + ' asc')
-        self.desc = not self.desc
-        '''
-        data = [(tree.set(child, col), child) for child in tree.get_children('')]
-
-        # reorder data
-        data.sort(reverse=descending)
-        for indx, item in enumerate(data):
-            tree.move(item[1], '', indx)
-            '''
-
-    def buscarSerie(self, orderBy=None):
-        # print(self.filtros)
-        primerfiltro = True
-        filtro = ''
-        filtrosNoVacios = {}
-        listaValores = []
-        # al parecer el for acede a la estructura en forma paralela y no tengo forma de determinar el primero. por esto se hace lo siguiente
-        # sacamos las listas filtros vacias y solo dejamos la que tienen valores despues obtenemos la lista en la pos 1 y despues concatenemos el resto
-        for nombreLista in self.filtros.keys():
-            if len(self.filtros[nombreLista]) > 0:
-                print('lista: ' + nombreLista + ' long: ' + str(len(self.filtros[nombreLista])))
-                filtrosNoVacios[nombreLista] = self.filtros[nombreLista]
-        listaKeys = [x for x in filtrosNoVacios.keys()]
-        print(filtrosNoVacios)
-        if len(listaKeys) > 0:
-            primeraLista = filtrosNoVacios[listaKeys[0]]
-            print('Primera lista: ' + str(filtrosNoVacios[listaKeys[0]]))
-            for valor in primeraLista:
-                filtro += listaKeys[0] + ' like ? or '
-                listaValores.append(valor)
-        print(listaKeys[1:])
-        for key in listaKeys[1:]:
-            filtro = filtro[:-4] + ' and '
-            filtrolocal = ''
-            print('lista: ' + str(filtrosNoVacios[key]))
-            for valor in filtrosNoVacios[key]:
-                filtrolocal += key + ' like ? or '
-                listaValores.append(valor)
-            filtro = filtro + filtrolocal
-        filtro = filtro[:-4]
-
-        if (len(filtro) > 0):
-            print(filtro)
-            print(listaValores)
-            series = Series().getList(listaValores, filtro, orderBy)
-        else:
-            series = Series().getList(listaValores, '', orderBy)
         for item in self.grillaSeries.get_children():
             self.grillaSeries.delete(item)
-        for serie in series:
-            self.grillaSeries.insert('', 0, '', text='', values=(serie.nombre,
-                                                                 serie.cantidadNumeros,
-                                                                 serie.descripcion,
-                                                                 serie.id,
-                                                                 serie.image_url,
-                                                                 serie.publisherName,
-                                                                 serie.AnioInicio))
+        session = Entidades.Init.Session()
+        self.volumes = session.query(Volume)
+        for volume in self.volumes:
+            self.grillaSeries.insert('', 'end', '', text='', values=(volume.nombre,
+                                                                 volume.cantidadNumeros,
+                                                                 volume.descripcion,
+                                                                 volume.id,
+                                                                 volume.image_url,
+                                                                 "volume.publisherName",
+                                                                 volume.AnioInicio))
 
 
 if (__name__ == '__main__'):

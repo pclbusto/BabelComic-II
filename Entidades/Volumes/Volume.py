@@ -36,6 +36,7 @@ class Volume(Entidades.Init.Base):
             return Extras.Config().getSerieCoverPath() + file_name_no_ext + ".jpg"
 
     def getImageCover(self):
+        print("imagen"+self.image_url)
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()

@@ -1,4 +1,4 @@
-import sqlite3
+
 from _datetime import datetime
 import Extras.ComicVineSearcher
 import os
@@ -6,7 +6,7 @@ import Entidades.Init
 import Entidades.Setups.SetupTipoArchivo
 import Entidades.Setups.SetupDirctorio
 import Entidades.Setups.SetupVineKey
-import Entidades.Setups.SetupVinekeysStatus
+from Entidades.Setups.SetupVinekeysStatus import SetupVinekeyStatus
 import Entidades.Setups.Setup
 from sqlalchemy import and_
 '''
@@ -210,16 +210,15 @@ class Config:
 
 
     def __getClaveMenosUsadaPorRecurso__(self, recurso):
-        cursor = self.conexion.cursor()
-        print("SELECT key,min(cantidadTotalConsultas) as cantidadTotalConsultas FROM config_VineKeysStatus WHERE recurso="+ recurso)
-        cursor.execute('''SELECT key,min(cantidadTotalConsultas) as cantidadTotalConsultas FROM config_VineKeysStatus WHERE recurso=?''', (recurso,))
-        row = cursor.fetchone()
-        if row:
-            self.__updateStatus__(row['key'],recurso)
-            return  row['key']
+        session = Entidades.Init.Session()
+        statusVineStatus = session.query(SetupVinekeyStatus).filter(SetupVinekeyStatus.recursoId==recurso).order_by(
+            SetupVinekeyStatus.cantidadConsultas.desc()).first()
+        if statusVineStatus is not None:
+            self.__updateStatus__(statusVineStatus.key,recurso)
+            return  statusVineStatus.key
         return ""
     def validarRecurso(self,recurso):
-        return recurso in ["volumes","issues", "publishers"]
+        return recurso in ["volumes","issues", "publishers","issue"]
     def getClave(self, recurso):
         if self.validarRecurso(recurso):
             clave = self.__getClaveMenosUsadaPorRecurso__(recurso)

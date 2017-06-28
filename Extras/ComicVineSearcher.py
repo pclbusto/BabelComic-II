@@ -1,5 +1,5 @@
 from Entidades.Publishers import Publisher
-from Entidades.ComicBooks import ComicBook
+from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
 from Entidades.Volumes import Volume
@@ -91,7 +91,8 @@ class ComicVineSearcher():
         if self.statusCode == 1:
             if (self.entidad == 'issue'):
                 # dummy comic me interesa el resto de los campos que los sacamos de la consulta a comic vine
-                comic = ComicBook('path')
+                comic = ComicBook()
+                comic.path = 'path'
                 issue = root.find('results')
                 comic.titulo = issue.find('name').text
                 comic.numero = issue.find('issue_number').text
