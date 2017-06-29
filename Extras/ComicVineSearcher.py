@@ -1,3 +1,4 @@
+from datetime import datetime
 from Entidades.Publishers import Publisher
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
@@ -5,7 +6,6 @@ from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 
 from Entidades.Volumes import Volume
-import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
 import Entidades.Init
@@ -97,15 +97,20 @@ class ComicVineSearcher():
                 issue = root.find('results')
                 comic.titulo = issue.find('name').text
                 comic.numero = issue.find('issue_number').text
-                comic.fechaTapa = issue.find('cover_date').text
+                comic.fechaTapa = datetime.strptime(issue.find('cover_date').text,"%Y-%m-%d").timestamp()
                 comic.serieId = issue.find('volume').find('id').text
                 comic.volumeId = issue.find('volume').find('id').text
                 comic.volumeName = issue.find('volume').find('name').text
                 comic.idExterno = int(issue.find('id').text)
-                comic.resumen = issue.find('description').text
+                if issue.find('description').text is not None:
+                    comic.resumen = issue.find('description').text
+                else:
+                    comic.resumen = ''
                 comic.ratingExterno=0
                 comic.rating=0
                 comic.nota=""
+                comic.arcoArgumentalId = ''
+                comic.arcoArgumentalNumero = 0
                 if (issue.find('story_arc_credits') != None):
                     # vamos a verificar si existe el arco si no existe lo damos de alta
                     # al dar de alta el arco tenemos que recuperar el numero u orden dentro del arco.
@@ -132,8 +137,7 @@ class ComicVineSearcher():
                         print(numeroDentroArco)
                         comic.arcoArgumentalId = arco.id
                         comic.arcoArgumentalNumero = numeroDentroArco
-                else:
-                    print('sin arco')
+
                 return comic
 
             if (self.entidad == 'story_arc_credits'):

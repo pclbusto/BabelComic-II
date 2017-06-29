@@ -17,7 +17,7 @@ class ComicBook(Entidades.Init.Base):
     volumeNombre = Column(String,nullable=False,default='')
     numero = Column(Integer,nullable=False,default=0)
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    arcoArgumentalId = Column(Integer,nullable=False,default=0) #id arco
+    arcoArgumentalId = Column(String,nullable=False,default=0) #id arco
     arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
@@ -25,7 +25,8 @@ class ComicBook(Entidades.Init.Base):
     ratingExterno = Column(Float,nullable=False,default=0.0)
 
     def __repr__(self):
-        return "<Comicbooks(Nombre id-Volumen='%s-%s', numero='%s', path='%s')>" %(self.volumeId,self.volumeNombre, self.titulo,self.path)
+        return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n)>" % (
+        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero)
 
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 

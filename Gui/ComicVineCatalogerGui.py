@@ -179,7 +179,6 @@ class ComicCatalogerGui(Frame):
                 path = setup.directorioBase + os.sep + "images\\searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
-                help(open)
                 fImage = open(path  + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()

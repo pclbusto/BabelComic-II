@@ -7,6 +7,7 @@ from Entidades.ComicBooks import ComicBook
 from Entidades.Volumes.Volume import Volume
 import Entidades.Init
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
+from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook=None, cnf={}, **kw):
@@ -146,6 +147,7 @@ class ComicBookGui(FrameMaestro):
         self.cover.create_image((0, 0), image=self.fImage,
                                 anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
         self.labelNombre.configure(text=self.comic.getNombreArchivo(False))
+        self.resumenText.delete(1.0,END)
         if (self.comic.resumen):
             self.resumenText.insert(END, self.comic.resumen)
         self.labelTipoyTamanio.configure(
@@ -158,7 +160,7 @@ class ComicBookGui(FrameMaestro):
         self.entradaVolume.delete(0,END)
         self.entradaNroVolume.delete(0,END)
         self.entradaDe.delete(0,END)
-
+        session = Entidades.Init.Session()
         if self.comic.volumeId != '':
             volume = session.query(Volume).filter(Volume.id==self.comic.volumeId).first()
             self.entradaVolume.insert(END, volume.nombre)
@@ -170,15 +172,16 @@ class ComicBookGui(FrameMaestro):
         self.entradaTitulo.insert(END, self.comic.titulo)
         self.entradaFecha.delete(0,END)
         self.entradaFecha.insert(END, date.fromtimestamp(self.comic.fechaTapa))
+        self.entradaArco.delete(0, END)
+        self.entradaArcoArgumentalNumero.delete(0,END)
+        self.entradaArcoArgumentalDe.delete(0,END)
 
         if self.comic.tieneArcoAlterno():
-            print('falta entidad arco')
-            # entradaArco.insert(END, ArcosArgumentales().get(comic.seriesAlternasNumero[0][0]).nombre)
-            # entradaNumero.delete(0)
-            # entradaNumero.insert(END, comic.seriesAlternasNumero[0][1])
-            # arco = ArcosArgumentales().get(comic.seriesAlternasNumero[0][0])
-            # entradaDe.delete(0)
-            # entradaDe.insert(END, arco.getCantidadTitulos())
+            arco = session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
+            self.entradaArco.insert(0, arco.nombre)
+            print("Arco Numero :"+str(self.comic.arcoArgumentalNumero))
+            self.entradaArcoArgumentalNumero.insert(0, self.comic.arcoArgumentalNumero)
+            self.entradaArcoArgumentalDe.insert(0, arco.getIssuesCount())
 
     def click(self,event):
         help(Toplevel)
@@ -219,10 +222,10 @@ class ComicBookGui(FrameMaestro):
 if (__name__ == '__main__'):
     session = Entidades.Init.Session()
     comic =ComicBook.ComicBook()
-    path = 'E:\\Comics\\DC\\new 52\\DC New 52\\Aquaman\\Aquaman #011.cbr'
-    comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == path).first()
+    # path = 'E:\\Comics\\DC\\new 52\\DC New 52\\Aquaman\\Aquaman #011.cbr'
+    # comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == path).first()
     root = Tk()
-    frameComic = ComicBookGui(root,comicBook=comic)
+    frameComic = ComicBookGui(root)
     frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)

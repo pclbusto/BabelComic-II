@@ -17,6 +17,10 @@ class ArcoArgumental(Entidades.Init.Base):
         if orden is not None:
             return orden.orden
         return -1
+    def getIssuesCount(self):
+        session = Entidades.Init.Session()
+        cantidad = session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == self.id).count()
+        return cantidad
 
     def getCantidadTitulos(self):
         return (len(self.comics))
