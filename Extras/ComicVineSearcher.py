@@ -99,9 +99,13 @@ class ComicVineSearcher():
                 comic.numero = issue.find('issue_number').text
                 comic.fechaTapa = issue.find('cover_date').text
                 comic.serieId = issue.find('volume').find('id').text
+                comic.volumeId = issue.find('volume').find('id').text
                 comic.volumeName = issue.find('volume').find('name').text
                 comic.idExterno = int(issue.find('id').text)
                 comic.resumen = issue.find('description').text
+                comic.ratingExterno=0
+                comic.rating=0
+                comic.nota=""
                 if (issue.find('story_arc_credits') != None):
                     # vamos a verificar si existe el arco si no existe lo damos de alta
                     # al dar de alta el arco tenemos que recuperar el numero u orden dentro del arco.
