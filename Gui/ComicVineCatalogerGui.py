@@ -136,7 +136,7 @@ class ComicCatalogerGui(Frame):
         self.grillaComics.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
         # boton copiar datos
         ttk.Button(self, text='copiar info', command=self.copiarInfo).grid(column=0, row=1)
-        print('------------------------------------')
+        print('--------------------------------------')
 
     def copiarInfo(self):
         cnf = Config()
