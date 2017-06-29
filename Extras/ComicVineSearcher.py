@@ -2,12 +2,13 @@ from Entidades.Publishers import Publisher
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
+from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
+
 from Entidades.Volumes import Volume
 import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
-
-
+import Entidades.Init
 
 
 class ComicVineSearcher():
@@ -105,11 +106,12 @@ class ComicVineSearcher():
                     # vamos a verificar si existe el arco si no existe lo damos de alta
                     # al dar de alta el arco tenemos que recuperar el numero u orden dentro del arco.
                     print('buscamos arco')
+                    session = Entidades.Init.Session()
                     for item in issue.find('story_arc_credits').findall('story_arc'):
                         idArco = int(item.find('id').text)
                         # .find('story_arc_credits').find('story_arc')
                         print('ARCOOOOOOO: ' + str(idArco))
-                        arco = ArcosArgumentales().get(idArco)
+                        arco = session.query(ArcoArgumental).get(idArco)
                         if arco:
                             print('el arco existe. obtenemos el numero del comic')
                             numeroDentroArco = arco.getIssueOrder(comic.idExterno)
@@ -118,25 +120,41 @@ class ComicVineSearcher():
                             print('el arco  NO EXISTEexiste. Cargamos el arco y luego obtenemos el numero del comic')
                             self.entidad = 'story_arc_credits'
                             arco = self.getVineEntity(idArco)
-                            ArcosArgumentales().add(arco)
+                            session.add(arco)
+                            session.commit()
                             numeroDentroArco = arco.getIssueOrder(comic.idExterno)
 
-                        comic.seriesAlternasNumero.append((idArco, numeroDentroArco))
+                        print(arco.id)
+                        print(numeroDentroArco)
+                        comic.arcoArgumentalId = arco.id
+                        comic.arcoArgumentalNumero = numeroDentroArco
                 else:
                     print('sin arco')
                 return comic
 
             if (self.entidad == 'story_arc_credits'):
                 story_arc = root.find('results')
-                arco = ArcoArgumental(story_arc.find('id').text, story_arc.find('name').text)
+                arco = ArcoArgumental()
+                arco.id = story_arc.find('id').text
+                arco.nombre = story_arc.find('name').text
                 arco.deck = story_arc.find('deck').text
                 arco.descripcion = story_arc.find('description').text
                 arco.ultimaFechaActualizacion = datetime.datetime.today().toordinal()
                 issues = story_arc.find('issues')
                 pos = 1
+                session = Entidades.Init.Session()
+                session.add(arco)
+                session.commit()
+                session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == arco.id).delete()
+                session.commit()
                 for issue in issues:
-                    arco.comics.append((issue.find('id').text, pos))
+                    arcoComic = ArcosArgumentalesComics()
+                    arcoComic.idArco = arco.id
+                    arcoComic.idComic = issue.find('id').text
+                    arcoComic.orden = pos
+                    session.add(arcoComic)
                     pos += 1
+                session.commit()
                 return arco
             else:
                 print('Entidad %1 sin implementar', self.entidad)

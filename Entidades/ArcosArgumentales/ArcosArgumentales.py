@@ -1,5 +1,7 @@
 import sqlite3
-from Entidades.ArcosArgumentales import ArcoArgumental
+from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
+from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
+import Entidades.Init
 
 class ArcosArgumentales():
     def __init__(self):
@@ -7,24 +9,8 @@ class ArcosArgumentales():
         self.conexion.row_factory = sqlite3.Row
     def get(self,Id):
         print('recuperando arcooooooooooooooooo: '+str(Id))
-        cursor = self.conexion.cursor()
-        cursor.execute('''select id, nombre, descripcion, ultimaFechaActualizacion from ArcosArgumentales where id = ?''',(Id,))
-        row = cursor.fetchone()
-        if(row):
-            print('cargando arco: ' + str(Id))
-            arco = ArcoArgumental(row['id'],row['nombre'])
-            arco.descricion = row['descripcion']
-            arco.ultimaFechaActualizacion = row['ultimaFechaActualizacion']
-            cursor.execute('''select idArco, idComic, orden from ArcosArgumentalesComics where idArco = ?''',(Id,))
-            rows = cursor.fetchall()
-            print('recuperando comics del arco: ' + str(Id))
-            for row in rows:
-                print(row['idComic'])
-                arco.comics.append((row['idComic'],row['orden']))
-            return arco
-        else:
-            return  None
-
+        arcoArgumental = Entidades.Init.Session().query(ArcoArgumental).get(Id)
+        return arcoArgumental
 
     def add(self, arco):
         cursor = self.conexion.cursor()

@@ -144,9 +144,20 @@ class ComicCatalogerGui(Frame):
         cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
-        completComicInfo.path = self.comicbook.path
         session = Entidades.Init.Session()
-        session.add(completComicInfo)
+        self.comicbook = session.query(ComicBook).get(self.comicbook.comicId)
+        self.comicbook.arcoArgumentalId = completComicInfo.arcoArgumentalId
+        self.comicbook.arcoArgumentalNumero = completComicInfo.arcoArgumentalNumero
+        self.comicbook.fechaTapa = completComicInfo.fechaTapa
+        self.comicbook.titulo = completComicInfo.titulo
+        self.comicbook.volumeId = completComicInfo.volumeId
+        self.comicbook.numero = completComicInfo.numero
+        self.comicbook.resumen = completComicInfo.resumen
+        self.comicbook.nota = completComicInfo.nota
+        self.comicbook.rating = completComicInfo.rating
+        self.comicbook.ratingExterno = completComicInfo.ratingExterno
+
+        session.add(self.comicbook)
         session.commit()
         # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
         # ComicBooks().update(completComicInfo)
@@ -167,6 +178,7 @@ class ComicCatalogerGui(Frame):
                 path = setup.directorioBase + os.sep + "images\\searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
+                help(open)
                 fImage = open(path  + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()
@@ -214,7 +226,6 @@ class ComicCatalogerGui(Frame):
                                                         issue['volumeName'],
                                                         issue['volumeId']
                                                         ))
-
 
 
 if __name__ == '__main__':

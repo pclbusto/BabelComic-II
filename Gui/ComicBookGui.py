@@ -6,12 +6,12 @@ from datetime import date
 from Entidades.ComicBooks import ComicBook
 from Entidades.Volumes.Volume import Volume
 import Entidades.Init
-
+from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-
+        print(comicBook)
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
         resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
@@ -95,8 +95,15 @@ class ComicBookGui(FrameMaestro):
             self.getFirst()
 
     def abrirCatalogadorComicVine(self):
-        pass
+        window = Toplevel()
+        cvc = ComicCatalogerGui(window,self.comic)
+        cvc.grid(sticky=(E, W, S, N))
+        window.columnconfigure(0, weight=1)
+        window.rowconfigure(0, weight=1)
+        window.geometry("+0+0")
+        window.wm_title(string="Catalogador Comic Vine")
 
+        self.wait_window(window)
     def getLast(self):
         super().getLast()
         session = Entidades.Init.Session()
@@ -212,10 +219,10 @@ class ComicBookGui(FrameMaestro):
 if (__name__ == '__main__'):
     session = Entidades.Init.Session()
     comic =ComicBook.ComicBook()
-    path = 'C:\\comics\\Green Lantern\\068 Grand Opening\\Aquaman V1994 #10 (1995).cbz'
+    path = 'E:\\Comics\\DC\\new 52\\DC New 52\\Aquaman\\Aquaman #011.cbr'
     comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path == path).first()
     root = Tk()
-    frameComic = ComicBookGui(root)
+    frameComic = ComicBookGui(root,comicBook=comic)
     frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
