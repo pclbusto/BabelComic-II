@@ -147,7 +147,7 @@ class ComicVineSearcher():
                 arco.nombre = story_arc.find('name').text
                 arco.deck = story_arc.find('deck').text
                 arco.descripcion = story_arc.find('description').text
-                arco.ultimaFechaActualizacion = datetime.datetime.today().toordinal()
+                arco.ultimaFechaActualizacion = datetime.today().toordinal()
                 issues = story_arc.find('issues')
                 pos = 1
                 session = Entidades.Init.Session()

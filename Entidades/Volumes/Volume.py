@@ -21,6 +21,8 @@ class Volume(Entidades.Init.Base):
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
 
+    def __repr__(self):
+        return "<Volume(id_volume='%s',name='%s')>" %(self.id, self.nombre)
     def hasLocalCover(self):
         if self.image_url:
             file_name = self.image_url.split('/')[-1]
@@ -36,12 +38,14 @@ class Volume(Entidades.Init.Base):
             return Extras.Config().getSerieCoverPath() + file_name_no_ext + ".jpg"
 
     def getImageCover(self):
-        print("imagen"+self.image_url)
+
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()
 
-        fullPath = setup.directorioBase+'\\images\\covers\\coverImagesCache' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
+        fullPath = setup.directorioBase+'\\images\\coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
+        print("imagen: "+ fullPath)
+
         size = (320, 496)
         if not (os.path.isfile(fullPath)):
             print('No existe el cover recuperando de : '+self.image_url)

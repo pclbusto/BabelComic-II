@@ -12,7 +12,6 @@ from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        print(comicBook)
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
         resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
@@ -46,7 +45,8 @@ class ComicBookGui(FrameMaestro):
         self.labelDonde.grid(column=0, row=7,columnspan=2, sticky=(N, W))
         self.labelDonde.bind("<Button-1>",self.click)
 
-        ttk.Label(detalle, text='Volumen:').grid(column=0, row=0, sticky=(N, W))
+        self.labelVolume =  ttk.Label(detalle, text='Volumen:').grid(column=0, row=0, sticky=(N, W))
+        # self.labelDonde.bind("<Button-1>",self.zoom)
         self.entradaVolume = ttk.Entry(detalle, width=50)
         self.entradaVolume.grid(column=0, row=1, padx=5, sticky=(N, W), columnspan=2)
 
@@ -95,6 +95,9 @@ class ComicBookGui(FrameMaestro):
         else:
             self.getFirst()
 
+    def zoom(self,event):
+        print("Zoooom")
+
     def abrirCatalogadorComicVine(self):
         window = Toplevel()
         cvc = ComicCatalogerGui(window,self.comic)
@@ -103,8 +106,8 @@ class ComicBookGui(FrameMaestro):
         window.rowconfigure(0, weight=1)
         window.geometry("+0+0")
         window.wm_title(string="Catalogador Comic Vine")
-
         self.wait_window(window)
+
     def getLast(self):
         super().getLast()
         session = Entidades.Init.Session()
@@ -179,7 +182,6 @@ class ComicBookGui(FrameMaestro):
         if self.comic.tieneArcoAlterno():
             arco = session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
             self.entradaArco.insert(0, arco.nombre)
-            print("Arco Numero :"+str(self.comic.arcoArgumentalNumero))
             self.entradaArcoArgumentalNumero.insert(0, self.comic.arcoArgumentalNumero)
             self.entradaArcoArgumentalDe.insert(0, arco.getIssuesCount())
 
