@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, and_
 import Entidades.Init
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
-
+#----
 
 class ArcoArgumental(Entidades.Init.Base):
     __tablename__ = 'ArcosArgumentales'
