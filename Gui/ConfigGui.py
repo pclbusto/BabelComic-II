@@ -87,6 +87,7 @@ class ConfigGui(Frame):
         if salida:
             self.entradaDirectorioBase.delete(0,END)
             self.entradaDirectorioBase.insert(0, salida)
+
     def delDirectorio(self):
         if (self.listaDirectorios.curselection()):
             self.listaDirectorios.delete(self.listaDirectorios.curselection())

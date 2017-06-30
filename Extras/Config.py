@@ -9,6 +9,7 @@ import Entidades.Setups.SetupVineKey
 from Entidades.Setups.SetupVinekeysStatus import SetupVinekeyStatus
 import Entidades.Setups.Setup
 from sqlalchemy import and_
+import shutil
 '''
 
 configuracion->lista de directorios
@@ -197,14 +198,21 @@ class Config:
         session.commit()
 
     def setConfig(self, directorioBase):
-        #self.__dellAllConfig__()
-        #print("DIRECTORIO: "+directorioBase)
+        self.__borrarCrearDirectoriosDesdeBase__(directorioBase)
         if directorioBase is not None:
-         #   print("por aca")
             self.setup.directorioBase = directorioBase
         else:
             self.setup.directorioBase = ''
         self.addSetup(self.setup)
+
+    def __borrarCrearDirectoriosDesdeBase__(self,directorioBase):
+        if os.path.exists(self.setup.directorioBase+os.sep+'images'):
+            shutil.rmtree(self.setup.directorioBase+os.sep+'images')
+        os.makedirs(directorioBase+os.sep+'images')
+        os.makedirs(directorioBase + os.sep + 'images'+os.sep+'coversvolumes')
+        os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'logo publisher')
+        os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'searchCache')
+        os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coversissues')
 
     def addSetup(self, setup):
         session = Entidades.Init.Session()

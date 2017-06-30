@@ -7,7 +7,7 @@ import Extras.Config
 from sqlalchemy import Column, Integer, String
 import Entidades.Init
 from Entidades.Setups.Setup import Setup
-
+from  iconos.Iconos import Iconos
 
 
 class Volume(Entidades.Init.Base):
@@ -20,6 +20,9 @@ class Volume(Entidades.Init.Base):
     publisherId = Column(String,nullable=False,default='')
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
+
+    def hasPublisher(self):
+        return (self.publisherId!='0')
 
     def __repr__(self):
         return "<Volume(id_volume='%s',name='%s')>" %(self.id, self.nombre)
@@ -37,14 +40,45 @@ class Volume(Entidades.Init.Base):
         if self.hasLocalCover():
             return Extras.Config().getSerieCoverPath() + file_name_no_ext + ".jpg"
 
+    def hasImageCover(self):
+        '''
+        que validar aca. es una url no sabemos si tiene o no algo
+        asi que solo valido si tiene la barra como para calcular el
+
+        '''
+        if "/" in self.image_url:
+            nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
+            session = Entidades.Init.Session()
+            setup = session.query(Setup).first()
+            fullPath = setup.directorioBase + os.sep + 'images' + os.sep + 'coversvolumes' + os.sep + self.image_url[
+                                                                                                      self.image_url.rindex(
+                                                                                                          '/') + 1:]
+            if not (os.path.isfile(fullPath)):
+                jpg = urllib.request.urlopen(self.image_url)
+                jpgImage = jpg.read()
+                fImage = open(fullPath, 'wb')
+                fImage.write(jpgImage)
+                fImage.close()
+                if jpgImage is not None:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        else:
+            return False
+
     def getImageCover(self):
 
+        if not self.hasImageCover():
+            return (Iconos.pilImageCoverGenerica)
+        '''Asumo que se llamo antes al has cover'''
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()
 
         fullPath = setup.directorioBase+os.sep+'images'+os.sep+'coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
-        print("imagen: "+ fullPath)
+        # print("imagen: "+ fullPath)
 
         size = (320, 496)
         if not (os.path.isfile(fullPath)):

@@ -49,7 +49,13 @@ class FrameMaestro(Frame):
         self.botonNext.config(command=self.getNext)
         self.botonPrev.config(command=self.getPrev)
         self.botonLast.config(command=self.getLast)
+        self.botonGuardar.config(command=self.guardar)
+        self.botonBorrar.config(command=self.borrar)
 
+    def borrar(self):
+        pass
+    def guardar(self):
+        pass
     def getFirst(self):
         pass
 
