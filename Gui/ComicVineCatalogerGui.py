@@ -176,7 +176,7 @@ class ComicCatalogerGui(Frame):
                 print('no existe')
                 print(nombreImagen)
                 setup = Entidades.Init.Session().query(Setup).first()
-                path = setup.directorioBase + os.sep + "images\\searchCache" + os.sep
+                path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
                 fImage = open(path  + nombreImagen, 'wb')

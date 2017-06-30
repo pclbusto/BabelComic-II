@@ -43,7 +43,7 @@ class Volume(Entidades.Init.Base):
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()
 
-        fullPath = setup.directorioBase+'\\images\\coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
+        fullPath = setup.directorioBase+os.sep+'images'+os.sep+'coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
         print("imagen: "+ fullPath)
 
         size = (320, 496)
