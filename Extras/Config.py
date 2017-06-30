@@ -132,6 +132,10 @@ class Config:
         directorioObj = Entidades.Setups.SetupDirctorio.SetupDirectorio(pathDirectorio=directorio)
         session.add(directorioObj)
         session.commit()
+        if not os.path.exists(directorio):
+            os.makedirs(directorio+os.sep+'images'+os.sep+'coversvolumes')
+
+
 
     def __delAllTipos__(self):
         session = Entidades.Init.Session()
