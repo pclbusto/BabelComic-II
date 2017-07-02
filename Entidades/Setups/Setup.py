@@ -10,5 +10,8 @@ class Setup(Entidades.Init.Base):
     '''
     directorioBase = Column(String)
 
+    '''sirve para paginar la consulta. Manejar tanatos elementos de una puede ser bloqueante para la gui'''
+    cantidadComicsPorPagina = Column(Integer,nullable=False,default=18)
+
     def __repr__(self):
         return "<Setup(directorioBaseImagene='%s')>" %(self.directorioBase)

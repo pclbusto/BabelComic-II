@@ -37,27 +37,31 @@ class VolumeGui(FrameMaestro):
         self.entradaUrl = ttk.Entry(self.panelPrincipal)
         self.entradaUrl .grid(column=1, row=2, padx=5, pady=2, sticky=W)
 
-        ttk.Label(self.panelPrincipal, text='Editorial').grid(column=0, row=3, sticky=W)
+        ttk.Label(self.panelPrincipal, text='Url Cover').grid(column=0, row=3, sticky=W)
+        self.entradaUrlImagen = ttk.Entry(self.panelPrincipal)
+        self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W)
+
+        ttk.Label(self.panelPrincipal, text='Editorial').grid(column=0, row=4, sticky=W)
         self.entradaEditorial = ttk.Entry(self.panelPrincipal)
-        self.entradaEditorial.grid(column=1, row=3, padx=5, pady=2, sticky=W)
+        self.entradaEditorial.grid(column=1, row=4, padx=5, pady=2, sticky=W)
         self.botonLookupEditorial = ttk.Button(self.panelPrincipal, image=self.imagenLookup)
-        self.botonLookupEditorial.grid(column=2, row=3, padx=5, pady=2)
+        self.botonLookupEditorial.grid(column=2, row=4, padx=5, pady=2)
 
-        ttk.Label(self.panelPrincipal, text='Año Inicio').grid(column=0, row=4, sticky=W)
+        ttk.Label(self.panelPrincipal, text='Año Inicio').grid(column=0, row=5, sticky=W)
         self.entradaAnioInicio = ttk.Entry(self.panelPrincipal, width=8)
-        self.entradaAnioInicio.grid(column=1, row=4, padx=5, pady=2, sticky=W)
+        self.entradaAnioInicio.grid(column=1, row=5, padx=5, pady=2, sticky=W)
 
-        ttk.Label(self.panelPrincipal, text='Resumen').grid(column=0, row=6, sticky=W)
+        ttk.Label(self.panelPrincipal, text='Resumen').grid(column=0, row=7, sticky=W)
         self.botonExpansionResumen = ttk.Button(self.panelPrincipal, image=self.imageExpansion)
-        self.botonExpansionResumen.grid(column=1, row=6, sticky=W)
+        self.botonExpansionResumen.grid(column=1, row=7, sticky=W)
 
-        ttk.Label(self.panelPrincipal, text='Cantidad Números').grid(column=0, row=5, sticky=W)
+        ttk.Label(self.panelPrincipal, text='Cantidad Números').grid(column=0, row=6, sticky=W)
         self.entradaCantidadNumeros = ttk.Entry(self.panelPrincipal, width=10)
-        self.entradaCantidadNumeros.grid(column=1, row=5, padx=5, pady=2, sticky=W)
+        self.entradaCantidadNumeros.grid(column=1, row=6, padx=5, pady=2, sticky=W)
 
         self.coverVolumen = Canvas(self.panelPrincipal)
         self.coverVolumen.create_image(180,250, image=self.imageLogo)
-        self.coverVolumen.grid(column=3, row=0, rowspan=7, columnspan=2)
+        self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=2)
 
         if volume is not None:
             self.setVolume(volume)
@@ -77,14 +81,13 @@ class VolumeGui(FrameMaestro):
 
         self.entradaId.insert(0,self.volume.id)
         self.entradaNombre.insert(0,self.volume.nombre)
-        self.entradaUrl.insert(0,"falta implementar")
+        self.entradaUrlImagen.insert(0,self.volume.image_url)
         print(self.volume)
         if (self.volume.hasPublisher()):
             self.entradaEditorial.insert(0,self.editorial.name)
         self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
         self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
 
-        self.coverVolumen.delete(ALL)
         im = self.volume.getImageCover()
         self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
         self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
@@ -100,7 +103,6 @@ class VolumeGui(FrameMaestro):
     def borrar(self):
         super().borrar()
         volume = Volume(publisherId='0')
-        print("volumen: "+volume.publisherId)
         self.setVolume(volume)
         self.clear()
 
@@ -111,6 +113,8 @@ class VolumeGui(FrameMaestro):
         self.entradaEditorial.delete(0, END)
         self.entradaAnioInicio.delete(0, END)
         self.entradaCantidadNumeros.delete(0, END)
+        self.entradaUrlImagen.delete(0,END)
+        self.coverVolumen.delete(ALL)
 
     def getNext(self):
         super().getNext()
@@ -129,7 +133,7 @@ class VolumeGui(FrameMaestro):
         self.volume.nombre = self.entradaNombre.get()
         # self.volume.deck = self..get()
         # self.volume.descripcion = self.entradaId.get()
-        # self.volume.image_url = self.entradaUrl.get()
+        self.volume.image_url = self.entradaUrlImagen.get()
         if self.editorial is not None:
             self.volume.publisherId = self.editorial.id_publisher
         self.volume.AnioInicio = self.entradaAnioInicio.get()

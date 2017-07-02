@@ -8,6 +8,7 @@ from Entidades.Volumes.Volume import Volume
 import Entidades.Init
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
+from Gui.ComicVisorGui import ComicVisorGui
 
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook=None, cnf={}, **kw):
@@ -83,6 +84,9 @@ class ComicBookGui(FrameMaestro):
         #agregamos otro boton mas
         self.botonComicVine = Button(self.frameBotonesAcciones, text="Comic Vine",command=self.abrirCatalogadorComicVine)
         self.botonComicVine.grid(row=0, column=4, sticky=E)
+        self.botonVisorComic = Button(self.frameBotonesAcciones, text="Leer Comic",
+                                     command=self.openVisorComic)
+        self.botonVisorComic.grid(row=0, column=5, sticky=E)
 
         notebook.select(0)
         self.entries = {}
@@ -94,6 +98,10 @@ class ComicBookGui(FrameMaestro):
             self.loadComic()
         else:
             self.getFirst()
+
+    def openVisorComic(self):
+        #ventana = Toplevel()
+        ComicVisorGui(None, self.comic)
 
     def zoom(self,event):
         print("Zoooom")

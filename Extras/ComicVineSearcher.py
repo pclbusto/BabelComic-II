@@ -95,7 +95,10 @@ class ComicVineSearcher():
                 comic = ComicBook()
                 comic.path = 'path'
                 issue = root.find('results')
-                comic.titulo = issue.find('name').text
+                if issue.find('name').text is not None:
+                    comic.titulo = issue.find('name').text
+                else:
+                    comic.titulo =''
                 comic.numero = issue.find('issue_number').text
                 comic.fechaTapa = datetime.strptime(issue.find('cover_date').text,"%Y-%m-%d").timestamp()
                 comic.serieId = issue.find('volume').find('id').text

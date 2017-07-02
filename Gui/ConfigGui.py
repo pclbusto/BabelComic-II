@@ -54,6 +54,9 @@ class ConfigGui(Frame):
         self.entradaDirectorioBase.grid(column=1,row=1, sticky=(E),columnspan=2)
         self.botonDirecotrioBase = ttk.Button(self.panelinferior, text='...', command=self.openBaseDirectoryChooser)
         self.botonDirecotrioBase.grid(column=6, row=1, sticky=(W))
+        ttk.Label(self.panelinferior, text='Cantidad Comics por Página').grid(column=0, row=2, sticky=(W))
+        self.spinnerCantidadComicsPorPagina = Spinbox(self.panelinferior,from_=1, to=30)
+        self.spinnerCantidadComicsPorPagina.grid(column=1,row=2, sticky=(W))
 
         for directorio in self.babelComicConfig.listaDirectorios:
             self.listaDirectorios.insert(END, directorio)
@@ -67,7 +70,8 @@ class ConfigGui(Frame):
 
         if self.babelComicConfig.setup is not None:
             self.entradaDirectorioBase.insert(0, self.babelComicConfig.setup.directorioBase)
-            print("NADA")
+            self.spinnerCantidadComicsPorPagina.delete(0,END)
+            self.spinnerCantidadComicsPorPagina.insert(0,self.babelComicConfig.setup.cantidadComicsPorPagina)
         ttk.Button(self, text='Guardar', command=self.save).grid(column=1, row=4, sticky=E)
         self.statusText = StringVar()
         self.statusbar = ttk.Label(self, text='Status:', textvariable=self.statusText).grid(column=0, row=4,
@@ -98,7 +102,7 @@ class ConfigGui(Frame):
         self.babelComicConfig.setListaDirectorios(directorios)
         self.babelComicConfig.setListaTipos(self.extensionVar.get().split(','))
         self.babelComicConfig.setListaClaves(claves)
-        self.babelComicConfig.setConfig(self.entradaDirectorioBase.get())
+        self.babelComicConfig.setConfig(self.entradaDirectorioBase.get(),int(self.spinnerCantidadComicsPorPagina.get()))
         self.statusText.set('Status: Gurdado exitosamente')
 
     def openClaveEntry(self):

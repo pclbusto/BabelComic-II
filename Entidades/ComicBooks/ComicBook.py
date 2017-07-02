@@ -4,14 +4,18 @@ import rarfile
 from PIL import Image, ImageTk
 from sqlalchemy import Column, Integer, String, Float
 import Entidades.Init
+from sqlalchemy import Sequence
 
 
 class ComicBook(Entidades.Init.Base):
     __tablename__='Comicbooks'
+    __table_args__ = {'sqlite_autoincrement': True}
+
     extensionesSoportadas = ['jpg', 'png', 'gif']
 
-    path = Column(String, primary_key=True)
-    comicId = Column(String,nullable=False,default='')
+
+    path = Column(String,unique=True)
+    comicVineId = Column(String,nullable=False,default='')
     titulo = Column(String,nullable=False,default='')
     volumeId = Column(String,nullable=False,default='')
     volumeNombre = Column(String,nullable=False,default='')
@@ -23,6 +27,7 @@ class ComicBook(Entidades.Init.Base):
     nota = Column(String,nullable=False,default='')
     rating = Column(Float,nullable=False,default=0.0)
     ratingExterno = Column(Float,nullable=False,default=0.0)
+    comicId = Column(Integer, primary_key=True)
 
     def __repr__(self):
         return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n)>" % (
@@ -31,7 +36,6 @@ class ComicBook(Entidades.Init.Base):
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
     def tieneArcoAlterno(self):
-        print('Arco:  '+self.arcoArgumentalId )
         return self.arcoArgumentalId != '0'
 
     def openCbFile(self):

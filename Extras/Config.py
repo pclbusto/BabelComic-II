@@ -197,12 +197,15 @@ class Config:
         session.query(Entidades.Setups.Setup.Setup).delete()
         session.commit()
 
-    def setConfig(self, directorioBase):
+    def setConfig(self, directorioBase, cantidadComicsPorPagina):
         self.__borrarCrearDirectoriosDesdeBase__(directorioBase)
         if directorioBase is not None:
             self.setup.directorioBase = directorioBase
         else:
             self.setup.directorioBase = ''
+        if cantidadComicsPorPagina<=30 and cantidadComicsPorPagina>=1:
+            self.setup.cantidadComicsPorPagina = cantidadComicsPorPagina
+
         self.addSetup(self.setup)
 
     def __borrarCrearDirectoriosDesdeBase__(self,directorioBase):
@@ -212,7 +215,7 @@ class Config:
         os.makedirs(directorioBase + os.sep + 'images'+os.sep+'coversvolumes')
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'logo publisher')
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'searchCache')
-        os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coversissues')
+        os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coverIssuesThumbnails')
 
     def addSetup(self, setup):
         session = Entidades.Init.Session()
