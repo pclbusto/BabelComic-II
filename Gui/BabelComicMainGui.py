@@ -37,6 +37,7 @@ class BabelComicMainGui(Frame):
 
         self.session = Entidades.Init.Session()
         self.listaComics = []
+        self.consulta = ComicBook.path.like("%%")
 
         # opciones de barra de tareas
         self.buscarEntry = ttk.Entry(self.barraHerramientas)
@@ -63,7 +64,8 @@ class BabelComicMainGui(Frame):
         self.treeListas.grid()
         self.biblioteca = ''
         self.biblioteca = self.treeListas.insert('', 0, 'Biblioteca', text='Biblioteca')
-        self.treeListas.insert(self.biblioteca, 'end', 'BlackestNight', text='La noche mas oscura')
+        self.editoriales = self.treeListas.insert(self.biblioteca, 'end', 'Editoriales', text='Editoriales')
+        self.treeListas.insert(self.editoriales, 'end', 'DC Comics', text='DC Comics')
 
         # creamos menu popup para agregar vistas
         self. popup = Menu(self.treeListas, tearoff=0)
@@ -148,7 +150,7 @@ class BabelComicMainGui(Frame):
 
     def buscar(self, statusBar):
         listaAtributos = [ComicBook.path]
-        filter = (listaAtributos[0].like(("%batman%")))
+        filter = (listaAtributos[0].like(("%%")))
         self.listaComics = self.session.query(ComicBook).filter(filter).filter(ComicBook.path.like("%legends%")).order_by(ComicBook.path.asc()).all()
         self.paginaActual = 0
         busqueda = self.buscarEntry.get()
@@ -241,7 +243,7 @@ class BabelComicMainGui(Frame):
         self.panelComics.cantidadColumnas = int(event.width/(self.panelComics.size[0] + self.panelComics.space))
         #self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
         self.loadPage()
-        print(event.width/(self.size[0] + self.panelComics.space))
+        #print(event.width/(self.size[0] + self.panelComics.space))
 
     def refrescar(self):
         #solo refrescar cuando el tamañio sume o reste columnas
@@ -265,8 +267,8 @@ class BabelComicMainGui(Frame):
             self.popupThumbnails.grab_release()
 
     def selectVista(self,event):
-        print(treeListas.selection())
-        comics.vistaConsultas = treeListas.selection()[0]
+        print("SELECON: "+self.treeListas.selection()[0])
+        self.comics.vistaConsultas = self.treeListas.selection()[0]
 
     def loadPage(self):
         if len(self.listaComics)<(self.paginaActual + 1) * self.setup.cantidadComicsPorPagina:

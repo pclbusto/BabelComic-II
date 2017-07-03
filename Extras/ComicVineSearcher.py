@@ -5,7 +5,7 @@ from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 
-from Entidades.Volumes import Volume
+import Entidades.Volumes.Volume
 import urllib.request
 import xml.etree.ElementTree as ET
 import Entidades.Init
@@ -52,6 +52,10 @@ class ComicVineSearcher():
         for item in self.listaBusquedaLocal:
             print([item[x] for x in self.columnas])
             ##                item[7],'---',item[1],'---', item[3])
+
+    def clearFilter(self):
+        self.filter=""
+        self.listaBusquedaVine.clear()
 
     def setEntidad(self, entidad):
 
@@ -236,7 +240,8 @@ class ComicVineSearcher():
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Volume.Serie(item.find('id').text, item.find('name').text)
+                    l_serie = Volume(id = item.find('id').text, nombre = item.find('name').text)
+
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
                     if item.find('image').find('thumb_url') != None:
@@ -258,6 +263,7 @@ class ComicVineSearcher():
                     #                                'name': name,
                     #                                'publisher': publisher,
                     #                                'start_year': start_year})
+
             elif self.entidad == 'publishers':
                 # print("publisher")
 
@@ -265,7 +271,9 @@ class ComicVineSearcher():
                 for item in results:
                     # help(item)
                     # print(item.tostring())
-                    publisher = Publisher.Publisher(item.find('id').text, item.find('name').text)
+                    publisher = Publisher.Publisher()
+                    publisher.id_publisher = item.find('id').text
+                    publisher.name  = item.find('name').text
                     publisher.descripcion = item.find('description').text
                     publisher.deck = item.find('deck').text
                     if item.find('image').find('super_url') != None:
@@ -274,7 +282,6 @@ class ComicVineSearcher():
                         publisher.logoImagePath = ''
                     publisher.siteDetailUrl = item.find('site_detail_url').text
                     self.listaBusquedaVine.append(publisher)
-                    #Publishers().add(publisher)
             self.statusMessage = 'Recuperados: ' + str(self.offset) + ' de ' + str(self.cantidadResultados)
 
         elif self.statusCode == 100:

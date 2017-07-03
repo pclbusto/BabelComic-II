@@ -2,6 +2,7 @@ import PIL.Image, PIL.ImageTk
 from Entidades.Setups import Setup
 import Entidades.Init
 import os
+
 class Iconos:
     setup = Entidades.Init.Session().query(Setup.Setup).first()
     path = setup.directorioBase+os.sep+"iconos"+os.sep
