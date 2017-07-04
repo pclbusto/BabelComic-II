@@ -192,8 +192,8 @@ class BabelComicMainGui(Frame):
         print("estamos pro abrir")
         #if (panelComics.comicActual):
         print("abriendo")
-        comic = panelComics.getComicActual()
-        visor = BabelComicVisor(root, comic,height = root.winfo_screenheight(),width = root.winfo_screenwidth())
+        comic = self.panelComics.getComicActual()
+        visor = ComicVisorGui(root, comic,height = root.winfo_screenheight(),width = root.winfo_screenwidth())
         visor.title = ('Babel Comics Visor')
         visor.wm_state('zoomed')
 

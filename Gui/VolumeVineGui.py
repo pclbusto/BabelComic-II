@@ -7,6 +7,7 @@ from Extras.Config import Config
 from PIL import Image, ImageTk
 import Entidades.Init
 from Entidades.Volumes.Volume import Volume
+from Gui.VolumeLookupGui import VolumesLookupGui
 
 class VolumeVineGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
@@ -20,7 +21,7 @@ class VolumeVineGui(Frame):
         self.labelId = Label(self, text="Nombre Volumen: ")
         self.labelId.grid(row=0,column=0, sticky=W ,padx=5,pady=5)
         self.entradaNombreEditorial = Entry(self, width=150)
-        self.labelId = Label(self, text="Id Volumen: ")
+        self.labelId = Label(self, text="Publisher: ")
         self.labelId.grid(row=1, column=0, sticky=W, padx=5, pady=5)
         self.entradaNombreEditorial = Entry(self, width=150)
 
@@ -66,6 +67,19 @@ class VolumeVineGui(Frame):
         session = Entidades.Init.Session()
         session.add(self.publisher)
         session.commit()
+
+    def openSerieLookup(self):
+        window = Toplevel()
+        volumeRetorno = Volume()
+        lk = VolumesLookupGui(window, volumeRetorno)
+        lk.grid(sticky=(E, W, S, N))
+        window.columnconfigure(0, weight=1)
+        window.rowconfigure(0, weight=1)
+        window.geometry("+0+0")
+        window.wm_title(string="Series")
+        self.wait_window(window)
+        serieRetorno = lk.getSerie()
+        self.entrySerie.set(serieRetorno.id)
 
     def buscar(self):
         if (self.entradaNombreEditorial.get()!=''):
