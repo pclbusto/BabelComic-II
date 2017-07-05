@@ -18,6 +18,7 @@ class Volume(Entidades.Init.Base):
     descripcion = Column(String,nullable=False,default='')
     image_url = Column(String,nullable=False,default='')  # la mas grande. Las chicas las hacemos locales.
     publisherId = Column(String,nullable=False,default='')
+    publisher_name=Column(String,nullable=False,default='')
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
 

@@ -187,6 +187,9 @@ class ComicVineSearcher():
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
+    def vineSearchMore(self):
+        return self.vineSearch(self.offset+self.limit)
+
     def vineSearch(self, io_offset=0):
         if self.entidad == '':
             self.statusMessage = ('falta ingresar la entidad')
@@ -240,7 +243,7 @@ class ComicVineSearcher():
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Volume(id = item.find('id').text, nombre = item.find('name').text)
+                    l_serie = Entidades.Volumes.Volume.Volume(id = item.find('id').text, nombre = item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
@@ -251,6 +254,7 @@ class ComicVineSearcher():
 
                     if item.find('publisher').find('id')!= None:
                         l_serie.publisherId = item.find('publisher').find('id').text
+                        l_serie.publisher_name = item.find('publisher').find('name').text
                     else:
                         l_serie.publisherId = "-1"
                     l_serie.AnioInicio = item.find('start_year').text
