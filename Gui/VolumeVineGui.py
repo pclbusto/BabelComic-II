@@ -7,7 +7,8 @@ from Extras.Config import Config
 from PIL import Image, ImageTk
 import Entidades.Init
 from Entidades.Volumes.Volume import Volume
-from Gui.VolumeLookupGui import VolumesLookupGui
+from Entidades.Publishers.Publisher import Publisher
+from Gui.PublisherLookupGui import PublisherLookupGui
 
 class VolumeVineGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
@@ -41,7 +42,7 @@ class VolumeVineGui(Frame):
         self.botonBuscar = Button(self.frameParametros, text='buscar mas', command=self.buscarMas)
         self.botonBuscar.grid(row=0, column=4)
 
-        self.botonLookupPublisher = Button(self.frameParametros, image=self.imageLookup,command=self.openSerieLookup)
+        self.botonLookupPublisher = Button(self.frameParametros, image=self.imageLookup,command=self.openLookupPublisher)
         self.botonLookupPublisher.grid(row=1,column=3)
         self.labelImagen = Label(self, text="cover volumen")
         self.coverSize = (150,150)
@@ -72,7 +73,7 @@ class VolumeVineGui(Frame):
         self.grillaVolumes.heading('start_year', text='Año')
         self.grillaVolumes.config(show='headings')  # tree, headings
 
-        self.botonLookupPublisher = Button(self,text="agregar",command = self.agregarEditorial)
+        self.botonLookupPublisher = Button(self,text="agregar",command = self.openLookupPublisher)
         self.botonLookupPublisher.grid(row=0, column=4, pady=3, sticky=(E,W))
         self.statusBar = Label(self, text='status', relief=GROOVE, anchor=E)
         self.statusBar.grid(column=0, row=4, sticky=(E,W),columnspan=5)
@@ -82,35 +83,33 @@ class VolumeVineGui(Frame):
         session.add(self.publisher)
         session.commit()
 
-    def openSerieLookup(self):
+    def openLookupPublisher(self):
         window = Toplevel()
-        volumeRetorno = Volume()
-        lk = VolumesLookupGui(window, volumeRetorno)
+        publisherRetorno = Publisher()
+        lk = PublisherLookupGui(window, publisherRetorno)
         lk.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)
         window.geometry("+0+0")
-        window.wm_title(string="Series")
+        window.wm_title(string="Editoriales")
         self.wait_window(window)
-        serieRetorno = lk.getSerie()
-        self.entrySerie.set(serieRetorno.id)
+        publisherRetorno = lk.getPublisher()
+        self.entradaNombreEditorial.insert(0,publisherRetorno.name)
 
     def buscarMas(self):
-        self.__buscar__()
-
+        self.comicVineSearcher.vineSearchMore()
+        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
     def __buscar__(self):
         print("buscando....")
         if (self.entradaNombreVolume.get() != ''):
             print("BUSCANDO....")
-            self.comicVineSearcher.addFilter("name:" + self.entradaNombreVolume.get())
-            self.comicVineSearcher.vineSearch(self.offset)
             self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
     def buscar(self):
         self.offset = 0
         self.comicVineSearcher.clearFilter()
-        for item in self.grillaVolumes.get_children():
-            self.grillaVolumes.delete(item)
-        self.__buscar__()
+        self.comicVineSearcher.addFilter("name:" + self.entradaNombreVolume.get())
+        self.comicVineSearcher.vineSearch(self.offset)
+        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
     def itemClicked(self, event):
         if (self.grillaVolumes.selection()):
@@ -122,6 +121,9 @@ class VolumeVineGui(Frame):
             self.labelImagen['image'] = self.cover
 
     def cargarResultado(self,listavolumes):
+        for item in self.grillaVolumes.get_children():
+            self.grillaVolumes.delete(item)
+        self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
                 if self.publisher.id_publisher==Volume.publisherId:
@@ -137,7 +139,7 @@ class VolumeVineGui(Frame):
                                                                       volume.publisher_name,
                                                                       volume.AnioInicio)
                                       )
-        self.statusBar.config(text = "Cantidad Resultados: %d - Cantidad Resultados sin filtro: %d- Cantidad Total de Resultados en ComicVine: %d"%(len(listaFiltrada),
+        self.statusBar.config(text = "Cantidad Resultados: %d - Cantidad Resultados sin filtro: %d- Cantidad Total de Resultados en ComicVine: %d"%(len(self.listaFiltrada),
                                                                                                                                                     len(self.comicVineSearcher.listaBusquedaVine),
                                                                                                                                                     self.comicVineSearcher.cantidadResultados)
                               )

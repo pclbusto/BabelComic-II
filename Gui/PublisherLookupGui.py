@@ -83,7 +83,7 @@ class PublisherLookupGui(Frame):
         self.labelImagen.grid(column=3, row=0)
 
         # boton parte inferior formulario
-        ttk.Button(self, text='seleccionar', command=self.seleccionarVolume).grid(column=0, row=2, sticky=(E))
+        ttk.Button(self, text='seleccionar', command=self.seleccionarPublisher).grid(column=0, row=2, sticky=(E))
         self.desc = True
 
         self.pilImageCoverGenerica = Iconos.pilImageLogo
@@ -142,19 +142,19 @@ class PublisherLookupGui(Frame):
     #
 
     def getPublisher(self):
-        print('retornando serie: ' + self.serie.nombre)
-        return self.serie
+        print('retornando serie: ' + self.publisher.name)
+        return self.publisher
 
     def itemClicked(self, event):
         if (self.grillaPublisher.selection()):
             seleccion = self.grillaPublisher.selection()
-            self.serie = self.publishers[self.grillaPublisher.index(seleccion[0])]
+            self.publisher = self.publishers[self.grillaPublisher.index(seleccion[0])]
             self.grillaPublisher.index(seleccion[0])
-            imagen = self.serie.getImageCover()
+            imagen = self.publisher.getImageCover()
             self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
             self.labelImagen['image'] = self.cover
 
-    def seleccionarVolume(self):
+    def seleccionarPublisher(self):
         print(self.publisher.id)
 
     # def sortby(self, col):

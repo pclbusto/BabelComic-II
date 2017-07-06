@@ -72,12 +72,12 @@ class PublisherGui(Frame):
         self.frameBotonesAcciones.grid(row=7, column=4, sticky=E)
         self.botonGuardar = Button(self.frameBotonesAcciones, text="Guardar")
         self.botonGuardar.grid(row=0, column=0, sticky=E)
-        self.botonGuardar = Button(self.frameBotonesAcciones, text="Borrar", command=self.clearWindow)
-        self.botonGuardar.grid(row=0, column=1, sticky=E)
-        self.botonGuardar = Button(self.frameBotonesAcciones, text="Eliminar")
-        self.botonGuardar.grid(row=0, column=2, sticky=E)
-        self.botonGuardar = Button(self.frameBotonesAcciones, text="Cargar desde Web")
-        self.botonGuardar.grid(row=0, column=3, sticky=E)
+        self.botonBorrar = Button(self.frameBotonesAcciones, text="Borrar", command=self.clearWindow)
+        self.botonBorrar.grid(row=0, column=1, sticky=E)
+        self.botonEliminar = Button(self.frameBotonesAcciones, text="Eliminar")
+        self.botonEliminar.grid(row=0, column=2, sticky=E)
+        self.botonCargarWeb = Button(self.frameBotonesAcciones, text="Cargar desde Web")
+        self.botonCargarWeb.grid(row=0, column=3, sticky=E)
         self.publishersManager= Publishers.Publishers()
 
     def getFirst(self):

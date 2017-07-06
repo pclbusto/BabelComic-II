@@ -112,10 +112,12 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
             publisher = self.getLast()
         else:
             last=Init.Session().query(Publisher).get(self.currentKeyValue)
-            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher > self.currentKeyValue).first()
+            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher > self.currentKeyValue).order_by(Publisher.id_publisher.asc()).first()
             print(publisher)
             if publisher == None:
                 publisher = last
+            else:
+                self.currentKeyValue = publisher.id_publisher
         return publisher
 
     def getPrev(self):
@@ -124,15 +126,17 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
             publisher = self.getFirst()
         else:
             first = Init.Session().query(Publisher).get(self.currentKeyValue)
-            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher < self.currentKeyValue).first()
+            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher < self.currentKeyValue).order_by(Publisher.id_publisher.desc()).first()
             print(publisher)
             if publisher == None:
                 publisher = first
+            else:
+                self.currentKeyValue = publisher.id_publisher
         return publisher
 
     def getFirst(self):
-        publisher = Init.Session().query(Publisher).first()
-        if publisher!=None:
+        publisher = Init.Session().query(Publisher).order_by(Publisher.id_publisher.asc()).first()
+        if publisher is not None:
             self.currentKeyValue = publisher.id_publisher
             print('cargamos valores'+publisher.__repr__())
         return publisher
