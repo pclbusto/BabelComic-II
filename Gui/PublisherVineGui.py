@@ -21,6 +21,7 @@ class PublisherVineGui(Frame):
         self.labelId = Label(self, text="Nombre Editorial: ")
         self.labelId.grid(row=0,column=0, sticky=W ,padx=5,pady=5)
         self.entradaNombreEditorial = Entry(self, width=50)
+
         self.varID=StringVar()
         self.entradaNombreEditorial.grid(row=0,column=1, sticky=W + E,padx=5,pady=5,columnspan=2 )
         self.botonLookupPublisher=Button(self, command=self.buscar)
@@ -57,6 +58,7 @@ class PublisherVineGui(Frame):
         session = Entidades.Init.Session()
         session.add(self.publisher)
         session.commit()
+
     def buscar(self):
         if (self.entradaNombreEditorial.get()!=''):
             self.comicVineSearcher.clearFilter()

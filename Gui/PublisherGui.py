@@ -76,9 +76,16 @@ class PublisherGui(Frame):
         self.botonBorrar.grid(row=0, column=1, sticky=E)
         self.botonEliminar = Button(self.frameBotonesAcciones, text="Eliminar")
         self.botonEliminar.grid(row=0, column=2, sticky=E)
-        self.botonCargarWeb = Button(self.frameBotonesAcciones, text="Cargar desde Web")
+        self.botonCargarWeb = Button(self.frameBotonesAcciones, text="Cargar desde Web", command=self.openPublisherComicVine)
         self.botonCargarWeb.grid(row=0, column=3, sticky=E)
         self.publishersManager= Publishers.Publishers()
+
+    def openPublisherComicVine(self):
+        window = Toplevel()
+        window.geometry("+0+0")
+        window.wm_title(string="Editorial desde Comic Vine")
+        publisher = PublisherVineGui(window, width=507, height=358)
+        publisher.grid(sticky=(N, S, E, W))
 
     def getFirst(self):
         publisher = self.publishersManager.getFirst()
