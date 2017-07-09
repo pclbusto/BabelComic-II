@@ -182,7 +182,7 @@ class ComicBookGui(FrameMaestro):
         self.entradaTitulo.delete(0,END)
         self.entradaTitulo.insert(END, self.comic.titulo)
         self.entradaFecha.delete(0,END)
-        self.entradaFecha.insert(END, date.fromtimestamp(self.comic.fechaTapa))
+        self.entradaFecha.insert(END, date.fromordinal(self.comic.fechaTapa))
         self.entradaArco.delete(0, END)
         self.entradaArcoArgumentalNumero.delete(0,END)
         self.entradaArcoArgumentalDe.delete(0,END)

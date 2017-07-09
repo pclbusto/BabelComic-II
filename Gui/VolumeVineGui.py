@@ -48,6 +48,7 @@ class VolumeVineGui(Frame):
         self.coverSize = (150,150)
         self.labelImagen.grid(column=4,row=2)
 
+        self.volume = None
         self.publisher = None
         #
         # ##config grilla series
@@ -60,7 +61,6 @@ class VolumeVineGui(Frame):
 
         self.grillaVolumes.grid(column=0, row=0,  columnspan=3, sticky=(N, S, E, W))
         self.grillaVolumes.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
-
         scrollGrid = ttk.Scrollbar(self.panelGrilla, orient=VERTICAL, command=self.grillaVolumes.yview)
         scrollGrid.grid(column=3, row=0, sticky=(N, S,E,W),columnspan=2)
 
@@ -73,32 +73,33 @@ class VolumeVineGui(Frame):
         self.grillaVolumes.heading('start_year', text='Año')
         self.grillaVolumes.config(show='headings')  # tree, headings
 
-        self.botonLookupPublisher = Button(self,text="agregar",command = self.openLookupPublisher)
+        self.botonLookupPublisher = Button(self,text="agregar",command = self.agregarVolumen)
         self.botonLookupPublisher.grid(row=0, column=4, pady=3, sticky=(E,W))
         self.statusBar = Label(self, text='status', relief=GROOVE, anchor=E)
         self.statusBar.grid(column=0, row=4, sticky=(E,W),columnspan=5)
 
-    def agregarEditorial(self):
+    def agregarVolumen(self):
         session = Entidades.Init.Session()
-        session.add(self.publisher)
+        session.add(self.volume)
         session.commit()
 
     def openLookupPublisher(self):
         window = Toplevel()
-        publisherRetorno = Publisher()
-        lk = PublisherLookupGui(window, publisherRetorno)
+        self.publisher = Publisher()
+        lk = PublisherLookupGui(window, self.publisher)
         lk.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)
         window.geometry("+0+0")
         window.wm_title(string="Editoriales")
         self.wait_window(window)
-        publisherRetorno = lk.getPublisher()
-        self.entradaNombreEditorial.insert(0,publisherRetorno.name)
+        self.publisher = lk.getPublisher()
+        self.entradaNombreEditorial.insert(0,self.publisher.name)
 
     def buscarMas(self):
         self.comicVineSearcher.vineSearchMore()
         self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+
     def __buscar__(self):
         print("buscando....")
         if (self.entradaNombreVolume.get() != ''):
@@ -114,9 +115,9 @@ class VolumeVineGui(Frame):
     def itemClicked(self, event):
         if (self.grillaVolumes.selection()):
             seleccion = self.grillaVolumes.selection()
-            self.publisher = self.comicVineSearcher.listaBusquedaVine[self.grillaVolumes.index(seleccion[0])]
+            self.volume = self.comicVineSearcher.listaBusquedaVine[self.grillaVolumes.index(seleccion[0])]
             self.grillaVolumes.index(seleccion[0])
-            imagen = self.publisher.getImageCover()
+            imagen = self.volume.getImageCover()
             self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
             self.labelImagen['image'] = self.cover
 

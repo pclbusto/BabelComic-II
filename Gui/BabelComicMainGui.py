@@ -12,6 +12,8 @@ import Entidades.Init
 
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
+from Entidades.Publishers.Publisher import Publisher
+from Entidades.Volumes.Volume import Volume
 
 class BabelComicMainGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
@@ -24,7 +26,7 @@ class BabelComicMainGui(Frame):
         self.setup = Entidades.Init.Session().query(Setup).first()
         self.root = parent
         pilImagenLookup = Iconos.pilImagenLookup
-        imagenLookup = ImageTk.PhotoImage(pilImagenLookup)
+        self.imagenLookup = ImageTk.PhotoImage(pilImagenLookup)
 
         self.pilImageFirst = Iconos.pilImageFirst
         self.imageFirst = ImageTk.PhotoImage(self.pilImageFirst)
@@ -36,13 +38,16 @@ class BabelComicMainGui(Frame):
         self.imageLast = ImageTk.PhotoImage(self.pilImageLast)
 
         self.session = Entidades.Init.Session()
+        '''Aca vamos a guardar las consulta para cada nodo del arbol de biblioteca'''
+        self.listaConsultas=[]
+        self.consultaActual = None
         self.listaComics = []
         self.consulta = ComicBook.path.like("%%")
 
         # opciones de barra de tareas
         self.buscarEntry = ttk.Entry(self.barraHerramientas)
 
-        image = imagenLookup
+        image = self.imagenLookup
         self.buscarBoton = ttk.Button(self.barraHerramientas, width=1, compound=CENTER, image=image,
                                  command=lambda: self.buscar(self.statusBar))
         self.buscarEntry.grid(column=6, row=0, sticky=E)
@@ -63,9 +68,17 @@ class BabelComicMainGui(Frame):
         self.treeListas = ttk.Treeview(self.panedWindow)
         self.treeListas.grid()
         self.biblioteca = ''
-        self.biblioteca = self.treeListas.insert('', 0, 'Biblioteca', text='Biblioteca')
-        self.editoriales = self.treeListas.insert(self.biblioteca, 'end', 'Editoriales', text='Editoriales')
-        self.treeListas.insert(self.editoriales, 'end', 'DC Comics', text='DC Comics')
+        '''Tomamos el indice o Id del nodo como la longitud de la lista para identificar la consulta asociada al nodo.
+        este nodo indica la raiz del arbol con el nodo Biblioteca este nodo hace una consulta por todo comic sin tener 
+        en cuenta editorial, volumen o arco. Trae todo.'''
+        self.biblioteca = self.treeListas.insert('', 'end', len(self.listaConsultas), text='Biblioteca')
+        self.listaConsultas.append(self.session.query(ComicBook))
+        self.editoriales = self.treeListas.insert(self.biblioteca, 'end', len(self.listaConsultas), text='Editoriales')
+        '''1 al igual que el 0 tienen la misma consulta Trae todo.'''
+        self.listaConsultas.append(self.session.query(ComicBook))
+        self.crearArbolBibiloteca()
+
+
 
         # creamos menu popup para agregar vistas
         self. popup = Menu(self.treeListas, tearoff=0)
@@ -131,8 +144,41 @@ class BabelComicMainGui(Frame):
         cantidadColumnas = 4
         # variables globales
         desc = False
+
+    def crearArbolBibiloteca(self):
+        publishers = self.session.query(Publisher).all()
+        for publisher in publishers:
+            editorialNode = self.treeListas.insert(self.editoriales, 'end', len(self.listaConsultas), text=publisher.name)
+            '''Craemos consulta para el nodo'''
+            self.listaConsultas.append(self.session.query(ComicBook).filter(ComicBook.publisherId==publisher.id_publisher))
+            '''le pones -01 para poder diferemciar el  nodo volumen de una editorial a otra. De no hacerlo asi da error
+            de nodo duplicado'''
+            editorialNode = self.treeListas.insert(editorialNode, 'end', str(len(self.listaConsultas))+"-01", text='Volumenes')
+            self.listaConsultas.append(
+                self.session.query(ComicBook).filter(ComicBook.publisherId == publisher.id_publisher))
+            self.crearArbolVolume(publisher.id_publisher, editorialNode, len(self.listaConsultas)-1)
+        self.consultaActual = self.listaConsultas[0]
+
+    def crearArbolVolume(self, publisherID, editorialNode, indiceConsultaPadre):
+        '''
+        Aca tenemos que armar los nodos para la editoral. Estos nodos son los volumenes que pertenecen a esta
+        editorial. Ahora cada nodo tiene una consulta que es filtrar todo comic que tenga cumpla la conslta del
+        padre mas que sea de este volumen
+        :param publisherID: identifica la editorial
+        :param editorialNode: identifica el nodo que representa la editorial
+        :param indiceConsultaPadre: es el indice de la consulta del padre en la lista de consultas
+        :return:
+        '''
+        volumes = self.session.query(Volume).filter(Volume.publisherId==publisherID).all()
+        for volume in volumes:
+            self.treeListas.insert(editorialNode,'end',str(len(self.listaConsultas)), text = volume.nombre)
+            consultaPadre = self.listaConsultas[indiceConsultaPadre]
+            self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id))
+
+
     def salir(self):
         self.root.destroy()
+
     def CheckThumbnailsGeneration(self):
         while self.panelComics.threadLoadAndCreateThumbnails.isAlive():
             if self.panelComics.cantidadThumnailsAGenerar>0:
@@ -149,15 +195,12 @@ class BabelComicMainGui(Frame):
         threadCheckThumbnailsGeneration.start()
 
     def buscar(self, statusBar):
-        listaAtributos = [ComicBook.path]
-        filter = (listaAtributos[0].like(("%%")))
-        self.listaComics = self.session.query(ComicBook).filter(filter).filter(ComicBook.path.like("%legends%")).order_by(ComicBook.path.asc()).all()
+        #listaAtributos = [ComicBook.path]
+        #filter = (listaAtributos[0].like(("%%")))
+        self.listaComics = self.consultaActual.filter(ComicBook.path.like("%"+self.buscarEntry.get()+"%")).order_by(ComicBook.path.asc()).all()
         self.paginaActual = 0
         busqueda = self.buscarEntry.get()
-        if not busqueda:
-            busqueda='%%'
-            #self.buscarEntry.insert(0,busqueda)
-            self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
+        self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
         self.statusThumbnails()
         statusBar.set('Cantidad de Registros: {} / {}'.format(30,len(self.listaComics)))
 
@@ -182,7 +225,7 @@ class BabelComicMainGui(Frame):
     def openBabelComicConfig(self, event):
         window = Toplevel(root)
         window.title('Babel Comics Configuración')
-        config = BabelComicConfigGui(window)
+        config = ConfigGui(window)
         config.grid(sticky=(N, S, W, E))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)
@@ -198,12 +241,12 @@ class BabelComicMainGui(Frame):
         visor.wm_state('zoomed')
 
     def openComicVine(self):
-        if (panelComics.comicActual):
+        if (self.panelComics.comicActual):
             window = Toplevel()
             window.title('Catalogador')
             window.geometry('+0+0')
-            comics = ComicBooks()
-            comic = panelComics.getComicActual()
+            #comics = ComicBooks()
+            comic = self.panelComics.getComicActual()
 
             cvs = ComicCatalogerGui(window, comic)
             #cvs.grid(sticky=(N, W, S, E))
@@ -248,7 +291,7 @@ class BabelComicMainGui(Frame):
     def refrescar(self):
         #solo refrescar cuando el tamañio sume o reste columnas
         #if cantidadColumnas!=int(event.width/(panelComics.size[0] + panelComics.space)):
-        panelComics.loadComics(comics.listaConsulta)
+        self.panelComics.loadComics(self.listaComics)
         #print(event.width/(panelComics.size[0] + panelComics.space))
 
     def popupListas(self,event):
@@ -267,8 +310,11 @@ class BabelComicMainGui(Frame):
             self.popupThumbnails.grab_release()
 
     def selectVista(self,event):
+        print(self.treeListas.selection()[0])
         print("SELECON: "+self.treeListas.selection()[0])
-        self.comics.vistaConsultas = self.treeListas.selection()[0]
+        self.consultaActual= self.listaConsultas[int(self.treeListas.selection()[0])]
+        self.buscar(self.statusBar)
+        #self.comics.vistaConsultas = self.treeListas.selection()[0]
 
     def loadPage(self):
         if len(self.listaComics)<(self.paginaActual + 1) * self.setup.cantidadComicsPorPagina:

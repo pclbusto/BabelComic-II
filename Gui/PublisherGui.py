@@ -3,7 +3,7 @@ from tkinter import Tk, ttk, Frame
 import PIL.Image, PIL.ImageTk
 from iconos import Iconos
 from Entidades.Publishers import Publishers
-#import Entidades.Publishers.Publishers
+from Gui.PublisherVineGui import PublisherVineGui
 
 
 

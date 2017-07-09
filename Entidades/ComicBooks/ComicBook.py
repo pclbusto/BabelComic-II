@@ -2,7 +2,7 @@ import os
 import zipfile
 import rarfile
 from PIL import Image, ImageTk
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float,ForeignKey
 import Entidades.Init
 from sqlalchemy import Sequence
 
@@ -17,7 +17,7 @@ class ComicBook(Entidades.Init.Base):
     path = Column(String,unique=True)
     comicVineId = Column(String,nullable=False,default='')
     titulo = Column(String,nullable=False,default='')
-    volumeId = Column(String,nullable=False,default='')
+    volumeId = Column(String, nullable=False, default='')
     volumeNombre = Column(String,nullable=False,default='')
     numero = Column(Integer,nullable=False,default=0)
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
@@ -28,6 +28,7 @@ class ComicBook(Entidades.Init.Base):
     rating = Column(Float,nullable=False,default=0.0)
     ratingExterno = Column(Float,nullable=False,default=0.0)
     comicId = Column(Integer, primary_key=True)
+    publisherId = Column(String,nullable=False,default='')
 
     def __repr__(self):
         return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n)>" % (

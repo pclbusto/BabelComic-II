@@ -145,10 +145,14 @@ class ComicCatalogerGui(Frame):
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
         session = Entidades.Init.Session()
-        self.comicbook = session.query(ComicBook).get(self.comicbook.path)
-        print("arco: "+str(completComicInfo.arcoArgumentalId))
-        self.comicbook.arcoArgumentalId = completComicInfo.arcoArgumentalId
-        self.comicbook.arcoArgumentalNumero = completComicInfo.arcoArgumentalNumero
+        self.comicbook = session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
+        if completComicInfo.arcoArgumentalId is not None:
+            self.comicbook.arcoArgumentalId = completComicInfo.arcoArgumentalId
+            self.comicbook.arcoArgumentalNumero = completComicInfo.arcoArgumentalNumero
+        if completComicInfo.volumeId is not None:
+            volume = session.query(Volume).get(completComicInfo.volumeId)
+            self.comicbook.publisherId = volume.publisherId
+
         self.comicbook.fechaTapa = completComicInfo.fechaTapa
         self.comicbook.titulo = completComicInfo.titulo
         self.comicbook.volumeId = completComicInfo.volumeId

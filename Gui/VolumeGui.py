@@ -9,6 +9,8 @@ from PIL import Image, ImageTk
 
 from Gui.FrameMaestro import FrameMaestro
 import Entidades.Init
+from sqlalchemy import and_
+from Gui.VolumeVineGui import VolumeVineGui
 
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, cnf={}, **kw):
@@ -63,11 +65,22 @@ class VolumeGui(FrameMaestro):
         self.coverVolumen.create_image(180,250, image=self.imageLogo)
         self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=2)
 
+        self.botonCargarWeb.config(command=self.openVolumeComicVine)
+        self.offset = 0
+        self.cantidadRegistros = self.session.query(Volume).count()
+
         if volume is not None:
             self.setVolume(volume)
             self.loadVolume()
         else:
             self.getFirst()
+
+    def openVolumeComicVine(self):
+        window = Toplevel()
+        window.geometry("+0+0")
+        window.wm_title(string="Editorial desde Comic Vine")
+        volumenVineGui = VolumeVineGui(window, width=507, height=358)
+        volumenVineGui.grid(sticky=(N, S, E, W))
 
     def setVolume(self, volume):
         self.volume = volume
@@ -94,7 +107,8 @@ class VolumeGui(FrameMaestro):
 
     def getFirst(self):
         super().getNext()
-        volume = self.session.query(Volume).order_by(Volume.nombre.asc()).first()
+        self.offset=0
+        volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:
             print(volume)
             self.setVolume(volume)
@@ -118,11 +132,11 @@ class VolumeGui(FrameMaestro):
 
     def getNext(self):
         super().getNext()
+        if self.offset < self.cantidadRegistros-1:
+            self.offset += 1
         if self.volume is not None:
-            volume = self.session.query(Volume).filter(Volume.nombre > self.volume.nombre).order_by(
-                Volume.nombre.asc()).first()
+            volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
             if volume is not None:
-
                 self.setVolume(volume)
                 self.loadVolume()
         else:
@@ -147,9 +161,10 @@ class VolumeGui(FrameMaestro):
 
     def getPrev(self):
         super().getPrev()
+        if self.offset >0:
+            self.offset -= 1
         if self.volume is not None:
-            volume = self.session.query(Volume).filter(Volume.nombre < self.volume.nombre).order_by(
-                Volume.nombre.desc()).first()
+            volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
             if volume is not None:
                 self.setVolume(volume)
                 self.loadVolume()
@@ -157,7 +172,8 @@ class VolumeGui(FrameMaestro):
             self.getLast()
     def getLast(self):
         super().getNext()
-        volume = self.session.query(Volume).order_by(Volume.nombre.desc()).first()
+        self.offset = self.cantidadRegistros -1
+        volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:
             print(volume)
             self.setVolume(volume)

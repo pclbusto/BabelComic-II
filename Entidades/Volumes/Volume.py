@@ -22,6 +22,7 @@ class Volume(Entidades.Init.Base):
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
 
+
     def hasPublisher(self):
         return (self.publisherId!='0')
 
