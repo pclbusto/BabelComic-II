@@ -33,8 +33,7 @@ class ComicCatalogerGui(Frame):
         panelInfo = ttk.LabelFrame(panelComic, text='--')
         panelInfo.grid(column=1, row=0, sticky=(W, E, N))
         if comicbook.volumeId!=0:
-            session = Entidades.Init.Session()
-            volume = session.query(Volume).filter(Volume.id==comicbook.volumeId).first()
+            volume = self.session.query(Volume).filter(Volume.id==comicbook.volumeId).first()
             if volume is None:
                 print('No se pudo recueperar la serie')
                 nombreSerie = ttk.Label(panelInfo, text='Volume: ' + "")
@@ -67,7 +66,7 @@ class ComicCatalogerGui(Frame):
         serieRetorno = lk.getSerie()
         self.entrySerie.set(serieRetorno.id)
 
-    def __init__(self, parent, comicbook, *cnf, **kw):
+    def __init__(self, parent, comicbook,session =None, *cnf, **kw):
         Frame.__init__(self, parent, *cnf, **kw)
         self.rowconfigure(0, weight=1)
         self.parent = parent
@@ -75,6 +74,10 @@ class ComicCatalogerGui(Frame):
         self.comicCovers = []
         # representa lo que vamos a catalogar. tomando como fuente de datos ComicVine
         self.comicbook = comicbook
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Entidades.Init.Session()
 
         self.comicbook.openCbFile()
         self.comicbook.goto(0)
@@ -144,13 +147,13 @@ class ComicCatalogerGui(Frame):
         cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
-        session = Entidades.Init.Session()
-        self.comicbook = session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
+
+        self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         if completComicInfo.arcoArgumentalId is not None:
             self.comicbook.arcoArgumentalId = completComicInfo.arcoArgumentalId
             self.comicbook.arcoArgumentalNumero = completComicInfo.arcoArgumentalNumero
         if completComicInfo.volumeId is not None:
-            volume = session.query(Volume).get(completComicInfo.volumeId)
+            volume = self.session.query(Volume).get(completComicInfo.volumeId)
             self.comicbook.publisherId = volume.publisherId
 
         self.comicbook.fechaTapa = completComicInfo.fechaTapa
@@ -161,9 +164,10 @@ class ComicCatalogerGui(Frame):
         self.comicbook.nota = completComicInfo.nota
         self.comicbook.rating = completComicInfo.rating
         self.comicbook.ratingExterno = completComicInfo.ratingExterno
+        self.comicbook.comicVineId  = completComicInfo.comicVineId
 
-        session.add(self.comicbook)
-        session.commit()
+        self.session.add(self.comicbook)
+        self.session.commit()
         # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
         # ComicBooks().update(completComicInfo)
 
@@ -179,7 +183,7 @@ class ComicCatalogerGui(Frame):
             if not (os.path.isfile('searchCache\\' + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
-                setup = Entidades.Init.Session().query(Setup).first()
+                setup = self.session.query(Setup).first()
                 path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()

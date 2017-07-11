@@ -1,7 +1,6 @@
 from PIL import Image, ImageTk
-from tkinter import CENTER, N, E, W, S, ALL, NW
-from tkinter import Tk, ttk, Canvas
-from Entidades.ComicBooks.ComicBook import ComicBook
+from tkinter import ALL, NW
+from tkinter import Tk, Canvas
 
 import Entidades.Init
 from Entidades.Setups.Setup import Setup
@@ -13,12 +12,15 @@ import threading
 
 
 class PanelThumbnailComics(Canvas):
-    def __init__(self, master, listaComics=None, cnf={}, **kw):
+    def __init__(self, master, listaComics=None, session = None, cnf={}, **kw):
         Canvas.__init__(self, master, cnf, **kw)
         self.size = self.size = (int(320 / 2), int(496 / 2))
         self.space = 58
+        if session is not None:
+            self.session = session
+        else:
+            self.pahThumnails = Entidades.Init.Session().query(Setup).first().directorioBase+ os.path.sep +"images"+os.path.sep +"coverIssuesThumbnails"+os.path.sep
 
-        self.pahThumnails = Entidades.Init.Session().query(Setup).first().directorioBase+ os.path.sep +"images"+os.path.sep +"coverIssuesThumbnails"+os.path.sep
         print(self.pahThumnails)
 
         print(self.size[0])
@@ -28,7 +30,6 @@ class PanelThumbnailComics(Canvas):
         self.halfSize = (int(self.size[0] / 2), int(self.size[1] / 2))
         self.bind("<Button-1>", self.comicClicked)
         self.paginaDoblada = Iconos.pilImagePaginaDoblada
-        #Image.open('paginaDoblada.png')
         self.cantidadColumnas = 6
 
     def __insertThumnail(self, X, Y, thumbnail, comic):
@@ -52,11 +53,9 @@ class PanelThumbnailComics(Canvas):
     def loadAndCreateThumbnails(self):
         x = 0
         y = 0
-        print("cantidad de comics: ",len(self.listaComics))
+        print("cantidad de comics: ", len(self.listaComics))
         self.cantidadThumnailsAGenerar = len(self.listaComics)
         self.cantidadThumnailsGenerados = 0
-        if not os.path.exists("coversThumbnails"):
-            os.mkdir("coversThumbnails")
         for comic in self.listaComics:
             self.cantidadThumnailsGenerados += 1
             try:
@@ -69,9 +68,10 @@ class PanelThumbnailComics(Canvas):
                 else:
                     cover = Image.open(nombreThumnail)
                     print(nombreThumnail)
+                print("Generando thumnails: "+comic.comicVineId)
                 if (comic.comicVineId != ''):
-                    comicvineLogo = Image.open(('cv-logo.png')).resize((50, 42), Image.BICUBIC)
-                    cover.paste(comicvineLogo, (cover.size[0] - 50, cover.size[1] - 42, cover.size[0], cover.size[1]),
+                    comicvineLogo = Iconos.pilImageCataloged
+                    cover.paste(comicvineLogo, (cover.size[0] - 64, cover.size[1] - 64, cover.size[0], cover.size[1]),
                                 comicvineLogo)
 
                 tkimage = ImageTk.PhotoImage(cover)
@@ -123,6 +123,7 @@ class PanelThumbnailComics(Canvas):
     def loadComics(self, lista):
         print('loadComics: '+str(len(lista)))
         self.deleteLista()
+        '''borramos todas las imagenes puestas en el canvas'''
         self.delete(ALL)
         self.listaComics = lista
         self.threadLoadAndCreateThumbnails = threading.Thread(target=self.loadAndCreateThumbnails)
@@ -143,6 +144,7 @@ class PanelThumbnailComics(Canvas):
                 self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
                 self.comicActual = indice
                 self.itemconfig(tagComic[4], outline='blue')
+        print(self.getComicActual())
 
     def recreateThumbnails(self):
         if self.comicActual:

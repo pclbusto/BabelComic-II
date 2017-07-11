@@ -17,10 +17,14 @@ class VolumesLookupData():
 
 
 class VolumesLookupGui(Frame):
-    def __init__(self, parent, serie, cnf={}, **kw):
+    def __init__(self, parent, serie, session=None, cnf={}, **kw):
         Frame.__init__(self, parent, cnf={}, **kw)
         self.columnconfigure(0, weight=1)
         self.serie = serie
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
 
         self.rowconfigure(1, weight=1)
         # panel busqueda opciones entrada y boton buscar
@@ -81,36 +85,29 @@ class VolumesLookupGui(Frame):
         self.frameGrilla.rowconfigure(0, weight=1)
         self.frameGrilla.columnconfigure(0, weight=1)
         ##config grilla series
-        self.grillaSeries = ttk.Treeview(self.frameGrilla, columns=(
+        self.grillaVolumes = ttk.Treeview(self.frameGrilla, columns=(
             'name', 'count_of_issues', 'description', 'Id', 'image', 'publisher', 'start_year'),
                                          displaycolumns=('Id', 'name', 'count_of_issues', 'publisher', 'start_year'))
-        self.grillaSeries.grid(column=0, row=0, rowspan=1, sticky=(N, S, E, W))
+        self.grillaVolumes.grid(column=0, row=0, rowspan=1, sticky=(N, S, E, W))
 
-        scrollGrid = ttk.Scrollbar(self.frameGrilla, orient=VERTICAL, command=self.grillaSeries.yview)
+        scrollGrid = ttk.Scrollbar(self.frameGrilla, orient=VERTICAL, command=self.grillaVolumes.yview)
         scrollGrid.grid(column=1, row=0, rowspan=1, sticky=(N, S))
 
-        self.grillaSeries.configure(yscrollcommand=scrollGrid.set)
+        self.grillaVolumes.configure(yscrollcommand=scrollGrid.set)
 
-        self.grillaSeries.heading('Id', text='Id')
-        self.grillaSeries.heading('name', text='Nombre')
-        self.grillaSeries.heading('count_of_issues', text='Numeros')
-        self.grillaSeries.heading('publisher', text='Editorial')
-        self.grillaSeries.heading('start_year', text='Año')
-        self.grillaSeries.config(show='headings')  # tree, headings
+        self.grillaVolumes.heading('Id', text='Id')
+        self.grillaVolumes.heading('name', text='Nombre')
+        self.grillaVolumes.heading('count_of_issues', text='Numeros')
+        self.grillaVolumes.heading('publisher', text='Editorial')
+        self.grillaVolumes.heading('start_year', text='Año')
+        self.grillaVolumes.config(show='headings')  # tree, headings
 
-        self.grillaSeries.heading('start_year', command=lambda col='AnioInicio': self.sortby(col))
-        self.grillaSeries.heading('name', command=lambda col='nombre': self.sortby(col))
-        self.grillaSeries.heading('count_of_issues', command=lambda col='cantidadNumeros': self.sortby(col))
-        self.grillaSeries.heading('publisher', command=lambda col='name': self.sortby(col))
+        self.grillaVolumes.heading('start_year',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'start_year', False))
+        self.grillaVolumes.heading('name',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'name', False))
+        self.grillaVolumes.heading('count_of_issues',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'count_of_issues', False))
+        self.grillaVolumes.heading('publisher',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'publisher', False))
 
-        ''' no ordena bien con 70000 registros es lento es mas facil tirar una nueva consutla contra el SQL
-        self.grillaSeries.heading('start_year', command=lambda col='start_year': self.sortby(self.grillaSeries, 'start_year', int(True)))
-        self.grillaSeries.heading('name', command=lambda col='name': self.sortby(self.grillaSeries, 'name', int(True)))
-        self.grillaSeries.heading('count_of_issues', command=lambda col='count_of_issues': self.sortby(self.grillaSeries, 'count_of_issues', int(True)))
-        self.grillaSeries.heading('publisher', command=lambda col='publisher': self.sortby(self.grillaSeries, 'publisher', int(True)))
-        '''
-
-        self.grillaSeries.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
+        self.grillaVolumes.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
 
         self.labelImagen = Label(self.frameGrilla)
         self.labelImagen.grid(column=3, row=0)
@@ -122,6 +119,24 @@ class VolumesLookupGui(Frame):
         self.pilImageCoverGenerica = Iconos.pilImageCoverGenerica
         self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
+
+    def int(self,t):
+        return(int(t[0]))
+
+    def treeview_sort_column(self, tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        if col in['start_year','count_of_issues']:
+            l.sort(reverse=reverse,key=self.int)
+        else:
+            l.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+        # reverse sort next time
+        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
+
+
     #
     # def __ChangedFilter__(self, *args):  # recordar siempre que son 4 paramentros sino da errores raros
     #     print('__ChangedFilter__ current: ', str(self.opcionesBusqueda.current()))
@@ -179,10 +194,15 @@ class VolumesLookupGui(Frame):
         return self.serie
 
     def itemClicked(self, event):
-        if (self.grillaSeries.selection()):
-            seleccion = self.grillaSeries.selection()
-            self.serie = self.volumes[self.grillaSeries.index(seleccion[0])]
-            self.grillaSeries.index(seleccion[0])
+        if (self.grillaVolumes.selection()):
+            seleccion = self.grillaVolumes.selection()
+            id = self.grillaVolumes.item(seleccion,'values')[3]
+            for volume in self.volumes:
+                if volume.id == id:
+                    break;
+            self.serie = volume
+                #self.volumes[self.grillaVolumes.index(seleccion[0])]
+            self.grillaVolumes.index(seleccion[0])
             imagen = self.serie.getImageCover()
             self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
             self.labelImagen['image'] = self.cover
@@ -208,20 +228,19 @@ class VolumesLookupGui(Frame):
     #         self.buscarVolume('order by ' + col + ' desc')
     #     else:
     #         self.buscarVolume(('order by ' + col + ' asc')
-    #
+
     def buscarVolume(self, orderBy=None):
 
-        for item in self.grillaSeries.get_children():
-            self.grillaSeries.delete(item)
-        session = Entidades.Init.Session()
-        self.volumes = session.query(Volume)
+        for item in self.grillaVolumes.get_children():
+            self.grillaVolumes.delete(item)
+        self.volumes = self.session.query(Volume)
         for volume in self.volumes:
-            self.grillaSeries.insert('', 'end', '', text='', values=(volume.nombre,
+            self.grillaVolumes.insert('', 'end', '', text='', values=(volume.nombre,
                                                                  volume.cantidadNumeros,
                                                                  volume.descripcion,
                                                                  volume.id,
                                                                  volume.image_url,
-                                                                 "volume.publisherName",
+                                                                 volume.publisher_name,
                                                                  volume.AnioInicio))
 
 

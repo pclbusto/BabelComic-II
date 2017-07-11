@@ -31,8 +31,8 @@ class ComicBook(Entidades.Init.Base):
     publisherId = Column(String,nullable=False,default='')
 
     def __repr__(self):
-        return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n)>" % (
-        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero)
+        return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n, id Comic Vine:'%s')\n>" % (
+        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId)
 
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 

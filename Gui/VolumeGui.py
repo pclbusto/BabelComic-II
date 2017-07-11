@@ -13,7 +13,7 @@ from sqlalchemy import and_
 from Gui.VolumeVineGui import VolumeVineGui
 
 class VolumeGui(FrameMaestro):
-    def __init__(self, parent, volume=None, cnf={}, **kw):
+    def __init__(self, parent, volume=None, session=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
         self.pilImagenLookup = Iconos.Iconos.pilImagenLookup
         self.imagenLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
@@ -21,7 +21,10 @@ class VolumeGui(FrameMaestro):
         self.imageExpansion = PIL.ImageTk.PhotoImage(self.pilImageExpansion)
         self.pilImageLogo = Iconos.Iconos.pilImageLogo
         self.imageLogo = PIL.ImageTk.PhotoImage(self.pilImageLogo)
-        self.session = Entidades.Init.Session()
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Entidades.Init.Session()
         self.size = (int(320 * 0.5), int(496 * 0.5))
 
         self.panelPrincipal = self.getPanelPrincipal()

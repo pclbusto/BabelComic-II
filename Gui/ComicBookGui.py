@@ -11,12 +11,17 @@ from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Gui.ComicVisorGui import ComicVisorGui
 
 class ComicBookGui(FrameMaestro):
-    def __init__(self, parent, comicBook=None, cnf={}, **kw):
+    def __init__(self, parent, comicBook=None, session = None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
         panelPrincipal = self.getPanelPrincipal()
         notebook = ttk.Notebook(panelPrincipal)
         resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
         detalle = ttk.Frame(notebook)  # second page
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Entidades.Init.Session()
+
         resumen.grid()
         detalle.grid()
         notebook.add(resumen, text='Resumen')
@@ -108,7 +113,7 @@ class ComicBookGui(FrameMaestro):
 
     def abrirCatalogadorComicVine(self):
         window = Toplevel()
-        cvc = ComicCatalogerGui(window,self.comic)
+        cvc = ComicCatalogerGui(window,self.comic,session=self.session)
         cvc.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)
@@ -118,8 +123,7 @@ class ComicBookGui(FrameMaestro):
 
     def getLast(self):
         super().getLast()
-        session = Entidades.Init.Session()
-        comic = session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.desc()).first()
+        comic = self.session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.desc()).first()
         if comic is not None:
             self.setComic(comic)
             self.loadComic()
@@ -127,8 +131,7 @@ class ComicBookGui(FrameMaestro):
     def getPrev(self):
         super().getPrev()
         if self.comic is not None:
-            session = Entidades.Init.Session()
-            comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path<self.comic.path).order_by(ComicBook.ComicBook.path.desc()).first()
+            comic = self.session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path<self.comic.path).order_by(ComicBook.ComicBook.path.desc()).first()
             if comic is not None:
                 self.setComic(comic)
                 self.loadComic()
@@ -138,8 +141,7 @@ class ComicBookGui(FrameMaestro):
     def getNext(self):
         super().getNext()
         if self.comic is not None:
-            session = Entidades.Init.Session()
-            comic = session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path>self.comic.path).order_by(ComicBook.ComicBook.path.asc()).first()
+            comic = self.session.query(ComicBook.ComicBook).filter(ComicBook.ComicBook.path>self.comic.path).order_by(ComicBook.ComicBook.path.asc()).first()
             if comic is not None:
                 self.setComic(comic)
                 self.loadComic()
@@ -171,9 +173,8 @@ class ComicBookGui(FrameMaestro):
         self.entradaVolume.delete(0,END)
         self.entradaNroVolume.delete(0,END)
         self.entradaDe.delete(0,END)
-        session = Entidades.Init.Session()
         if self.comic.volumeId != '':
-            volume = session.query(Volume).filter(Volume.id==self.comic.volumeId).first()
+            volume = self.session.query(Volume).filter(Volume.id==self.comic.volumeId).first()
             self.entradaVolume.insert(END, volume.nombre)
             self.entradaNroVolume.insert(END, volume.deck)
             self.entradaDe.insert(END, volume.cantidadNumeros)
@@ -188,7 +189,7 @@ class ComicBookGui(FrameMaestro):
         self.entradaArcoArgumentalDe.delete(0,END)
 
         if self.comic.tieneArcoAlterno():
-            arco = session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
+            arco = self.session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
             self.entradaArco.insert(0, arco.nombre)
             self.entradaArcoArgumentalNumero.insert(0, self.comic.arcoArgumentalNumero)
             self.entradaArcoArgumentalDe.insert(0, arco.getIssuesCount())
@@ -210,8 +211,7 @@ class ComicBookGui(FrameMaestro):
         self.changed = True
 
     def getFirst(self):
-        session = Entidades.Init.Session()
-        comic = session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.asc()).first()
+        comic = self.session.query(ComicBook.ComicBook).order_by(ComicBook.ComicBook.path.asc()).first()
         if comic is not None:
             print(comic)
             self.setComic(comic)

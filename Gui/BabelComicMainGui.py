@@ -2,6 +2,7 @@ from Gui.ComicBookGui import ComicBookGui
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Gui.ConfigGui import ConfigGui
 from Gui.ComicVisorGui import ComicVisorGui
+from Gui.VolumeGui import VolumeGui
 from PIL import Image, ImageTk
 from iconos.Iconos import Iconos
 from Gui.PanelThumbnailComics import PanelThumbnailComics
@@ -82,7 +83,8 @@ class BabelComicMainGui(Frame):
 
         # creamos menu popup para agregar vistas
         self. popup = Menu(self.treeListas, tearoff=0)
-        self.popup.add_command(label="Agregar Lista")  # , command=next) etc...
+        self.popup.add_command(label="Abrir Volumenes", command=self.openVolume)
+
         self.treeListas.bind("<Button-3>", self.popupListas)
 
         self.treeListas.bind("<<TreeviewSelect>>", self.selectVista)
@@ -106,23 +108,13 @@ class BabelComicMainGui(Frame):
 
         # creamos menu popup para abrir el catalogador el visor el editor de info y calcular el thumnails de nuevo
         self.popupThumbnails = Menu(self.panelComics, tearoff=0)
-        self.popupThumbnails.add_command(label="Info comic", command=self.openComicEditor)  # , command=next) etc...
-        self.popupThumbnails.add_command(label="Leer comic", command=self.openBabelComicVisor)  # , command=next) etc...
-        self.popupThumbnails.add_command(label="Catalogar comic", command=self.openComicVine)  # , command=next) etc...
+        self.popupThumbnails.add_command(label="Info comic", command=self.openComicEditor)
+        self.popupThumbnails.add_command(label="Leer comic", command=self.openBabelComicVisor)
+        self.popupThumbnails.add_command(label="Catalogar comic", command=self.openComicVine)
         self.popupThumbnails.add_separator()
         self.popupThumbnails.add_command(label="Refresh Thumbnail",
-                                    command=self.panelComics.recreateThumbnails)  # , command=next) etc...
+                                    command=self.panelComics.recreateThumbnails)
         self.panelComics.bind("<Button-3>", self.popupPanelThumbnails)
-        # popup.add_separator()
-        # popup.add_command(label="Home")
-
-
-
-        # treeComics.heading('serie', text='Serie',command=lambda col='serie': sortby(col))
-        # treeComics.heading('numero', text='Número',command=lambda col='numero': sortby(col))
-        # treeComics.heading('archivo', text='Archivo',command=lambda col='archivo': sortby(col))
-        # treeComics.heading('nombre', text='Nombre', command=lambda col='nombre': sortby(col))
-        # treeComics.config(show='headings')  # tree, headings
 
         parent.bind('<Control-c>', lambda x: self.openComicEditor())
         parent.bind('<Control-v>', lambda x: self.openComicVine())
@@ -175,6 +167,13 @@ class BabelComicMainGui(Frame):
             consultaPadre = self.listaConsultas[indiceConsultaPadre]
             self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id))
 
+    def openVolume(self):
+        window = Toplevel()
+        window.geometry("+0+0")
+        window.wm_title(string="Volumen")
+        volumenGui = VolumeGui(window, width=507, height=358, session=self.session)
+
+        volumenGui.grid(sticky=(N, S, E, W))
 
     def salir(self):
         self.root.destroy()
@@ -184,11 +183,12 @@ class BabelComicMainGui(Frame):
             if self.panelComics.cantidadThumnailsAGenerar>0:
                 self.statusBar.set('Porcentaje de carga de thumnails: {1:.2f} Cantidad de Registros: {0:}'.format(len(self.listaComics),100*(self.panelComics.cantidadThumnailsGenerados/self.panelComics.cantidadThumnailsAGenerar)))
 
-        print('generados {} totales {} porcentaje: '.format(self.panelComics.cantidadThumnailsGenerados, self.panelComics.cantidadThumnailsAGenerar))
+        #print('generados {} totales {} porcentaje: '.format(self.panelComics.cantidadThumnailsGenerados, self.panelComics.cantidadThumnailsAGenerar))
                                                                   #,100 * (panelComics.cantidadThumnailsGenerados / panelComics.cantidadThumnailsAGenerar)))
-        self.statusBar.set('Porcentaje de carga de thumnails: {1:.2f} Cantidad de Registros: {0:}'.format(
+        '''if len(self.listaComics)>0:
+            self.statusBar.set('Porcentaje de carga de thumnails: {1:.2f} Cantidad de Registros: {0:}'.format(
             len(self.listaComics),
-            100 * (self.panelComics.cantidadThumnailsGenerados / self.panelComics.cantidadThumnailsAGenerar)))
+            100 * (self.panelComics.cantidadThumnailsGenerados / self.panelComics.cantidadThumnailsAGenerar)))'''
 
     def statusThumbnails(self):
         threadCheckThumbnailsGeneration = threading.Thread(target=self.CheckThumbnailsGeneration)
@@ -197,14 +197,12 @@ class BabelComicMainGui(Frame):
     def buscar(self, statusBar):
         #listaAtributos = [ComicBook.path]
         #filter = (listaAtributos[0].like(("%%")))
+        self.listaComics.clear()
         self.listaComics = self.consultaActual.filter(ComicBook.path.like("%"+self.buscarEntry.get()+"%")).order_by(ComicBook.path.asc()).all()
         self.paginaActual = 0
-        busqueda = self.buscarEntry.get()
-        self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
+        self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina):((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
         self.statusThumbnails()
         statusBar.set('Cantidad de Registros: {} / {}'.format(30,len(self.listaComics)))
-
-
 
     def enterEventEntryBuscar(self):
         self.buscar(self.statusBar)
@@ -215,7 +213,7 @@ class BabelComicMainGui(Frame):
             comic = self.session.query(ComicBook).filter(ComicBook.path==self.panelComics.getComicActual().path).first()
             #comic = comics.get(panelComics.getComicActual().path)
             ventana = Toplevel()
-            frameComic = ComicBookGui(ventana, comic)
+            frameComic = ComicBookGui(ventana, comic, session=self.session)
             frameComic.grid()
     ##        frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))
     ##        frameComic.columnconfigure(0, weight=1)
@@ -248,7 +246,7 @@ class BabelComicMainGui(Frame):
             #comics = ComicBooks()
             comic = self.panelComics.getComicActual()
 
-            cvs = ComicCatalogerGui(window, comic)
+            cvs = ComicCatalogerGui(window, comic, self.session)
             #cvs.grid(sticky=(N, W, S, E))
             cvs.grid()
             window.columnconfigure(0, weight=1)
@@ -282,6 +280,7 @@ class BabelComicMainGui(Frame):
             panelComics.prevComic()
 
     def on_resize(self,event):
+        #pass
         #solo refrescar cuando el tamañio sume o reste columnas
         self.panelComics.cantidadColumnas = int(event.width/(self.panelComics.size[0] + self.panelComics.space))
         #self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
@@ -297,10 +296,11 @@ class BabelComicMainGui(Frame):
     def popupListas(self,event):
         # display the popup menu
         try:
-            self.popup.tk_popup(event.x_root, event.y_root, 0)
+            if self.treeListas.item(self.treeListas.selection())["text"]=='Volumenes':
+                self.popup.tk_popup(event.x_root, event.y_root, 0)
         finally:
             # make sure to release the grab (Tk 8.0a1 only)
-            popup.grab_release()
+            self.popup.grab_release()
 
     def popupPanelThumbnails(self,event):
         try:
@@ -353,6 +353,7 @@ if __name__ == "__main__":
     #root.wm_state('zoomed')
     root.title('Babel Comic Manager GitHub')
     root.attributes('-fullscreen', True)
+    #bc.buscar(bc.statusBar)
     #w, h = root.winfo_screenwidth(), root.winfo_screenheight()
     #root.geometry("%dx%d+0+0" % (w, h))
     root.mainloop()

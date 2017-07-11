@@ -11,7 +11,7 @@ from Entidades.Publishers.Publisher import Publisher
 from Gui.PublisherLookupGui import PublisherLookupGui
 
 class VolumeVineGui(Frame):
-    def __init__(self, parent, cnf={}, **kw):
+    def __init__(self, parent, session=None, cnf={}, **kw):
         Frame.__init__(self, parent, cnf, **kw)
 
         config = Config()
@@ -21,6 +21,10 @@ class VolumeVineGui(Frame):
         self.frameParametros = Frame(self)
         self.frameParametros.grid(row=0,column=0)
         self.listaFiltrada=[]
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
         self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'))
         self.comicVineSearcher.setEntidad("volumes")
 
@@ -29,11 +33,6 @@ class VolumeVineGui(Frame):
         self.entradaNombreVolume = Entry(self.frameParametros,width=30)
         self.entradaNombreVolume.grid(column=1,row=0)
         Label(self.frameParametros, text="Publisher: ").grid(row=1, column=0, sticky=W, padx=5, pady=5)
-
-        #self.entradaNombreEditorial =
-        #
-        #self.botonLookupEditorial = Button(self,image =self.imageLookup)
-
         self.varID=StringVar()
         self.entradaNombreEditorial = Entry(self.frameParametros,width=30)
         self.entradaNombreEditorial.grid(row=1,column=1, sticky=W + E,padx=5,pady=5 )
@@ -46,7 +45,7 @@ class VolumeVineGui(Frame):
         self.botonLookupPublisher.grid(row=1,column=3)
         self.labelImagen = Label(self, text="cover volumen")
         self.coverSize = (150,150)
-        self.labelImagen.grid(column=4,row=2)
+        self.labelImagen.grid(column=4,row=1)
 
         self.volume = None
         self.publisher = None
@@ -61,16 +60,17 @@ class VolumeVineGui(Frame):
 
         self.grillaVolumes.grid(column=0, row=0,  columnspan=3, sticky=(N, S, E, W))
         self.grillaVolumes.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
+
         scrollGrid = ttk.Scrollbar(self.panelGrilla, orient=VERTICAL, command=self.grillaVolumes.yview)
         scrollGrid.grid(column=3, row=0, sticky=(N, S,E,W),columnspan=2)
 
         self.grillaVolumes.configure(yscrollcommand=scrollGrid.set)
 
-        self.grillaVolumes.heading('Id', text='Id')
-        self.grillaVolumes.heading('name', text='Nombre')
-        self.grillaVolumes.heading('count_of_issues', text='Numeros')
-        self.grillaVolumes.heading('publisher', text='Editorial')
-        self.grillaVolumes.heading('start_year', text='Año')
+        self.grillaVolumes.heading('Id', text='Id',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'Id', False))
+        self.grillaVolumes.heading('name', text='Nombre',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'name', False))
+        self.grillaVolumes.heading('count_of_issues', text='Numeros',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'count_of_issues', False))
+        self.grillaVolumes.heading('publisher', text='Editorial',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'publisher', False))
+        self.grillaVolumes.heading('start_year', text='Año',command=lambda: self.treeview_sort_column(self.grillaVolumes, 'start_year', False))
         self.grillaVolumes.config(show='headings')  # tree, headings
 
         self.botonLookupPublisher = Button(self,text="agregar",command = self.agregarVolumen)
@@ -78,10 +78,25 @@ class VolumeVineGui(Frame):
         self.statusBar = Label(self, text='status', relief=GROOVE, anchor=E)
         self.statusBar.grid(column=0, row=4, sticky=(E,W),columnspan=5)
 
+    def int(self,t):
+        return(int(t[0]))
+
+    def treeview_sort_column(self, tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        if col in['count_of_issues','start_year']:
+            l.sort(reverse=reverse,key=self.int)
+        else:
+            l.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+        # reverse sort next time
+        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
+
     def agregarVolumen(self):
-        session = Entidades.Init.Session()
-        session.add(self.volume)
-        session.commit()
+        self.session.add(self.volume)
+        self.session.commit()
 
     def openLookupPublisher(self):
         window = Toplevel()
@@ -115,7 +130,13 @@ class VolumeVineGui(Frame):
     def itemClicked(self, event):
         if (self.grillaVolumes.selection()):
             seleccion = self.grillaVolumes.selection()
-            self.volume = self.comicVineSearcher.listaBusquedaVine[self.grillaVolumes.index(seleccion[0])]
+            id = self.grillaVolumes.item(seleccion, 'values')[3]
+            for volume in self.comicVineSearcher.listaBusquedaVine:
+                if volume.id == id:
+                    self.volume = volume
+                    break
+
+            #self.volume = self.comicVineSearcher.listaBusquedaVine[self.grillaVolumes.index(seleccion[0])]
             self.grillaVolumes.index(seleccion[0])
             imagen = self.volume.getImageCover()
             self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))

@@ -109,7 +109,7 @@ class ComicVineSearcher():
                 comic.serieId = issue.find('volume').find('id').text
                 comic.volumeId = issue.find('volume').find('id').text
                 comic.volumeName = issue.find('volume').find('name').text
-                comic.idExterno = int(issue.find('id').text)
+                comic.comicVineId = int(issue.find('id').text)
                 if issue.find('description').text is not None:
                     comic.resumen = issue.find('description').text
                 else:
@@ -117,7 +117,7 @@ class ComicVineSearcher():
                 comic.ratingExterno=0
                 comic.rating=0
                 comic.nota=""
-                comic.arcoArgumentalId = ''
+                comic.arcoArgumentalId = '0'
                 comic.arcoArgumentalNumero = 0
                 if (issue.find('story_arc_credits') != None):
                     # vamos a verificar si existe el arco si no existe lo damos de alta
@@ -131,7 +131,7 @@ class ComicVineSearcher():
                         arco = session.query(ArcoArgumental).get(idArco)
                         if arco:
                             print('el arco existe. obtenemos el numero del comic')
-                            numeroDentroArco = arco.getIssueOrder(comic.idExterno)
+                            numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
                             print('Arco y numero:', arco.id, str(numeroDentroArco))
                         else:
                             print('el arco  NO EXISTEexiste. Cargamos el arco y luego obtenemos el numero del comic')
