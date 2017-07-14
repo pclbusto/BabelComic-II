@@ -3,6 +3,8 @@ from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Gui.ConfigGui import ConfigGui
 from Gui.ComicVisorGui import ComicVisorGui
 from Gui.VolumeGui import VolumeGui
+from Gui.PublisherGui import PublisherGui
+
 from PIL import Image, ImageTk
 from iconos.Iconos import Iconos
 from Gui.PanelThumbnailComics import PanelThumbnailComics
@@ -119,6 +121,8 @@ class BabelComicMainGui(Frame):
         parent.bind('<Control-c>', lambda x: self.openComicEditor())
         parent.bind('<Control-v>', lambda x: self.openComicVine())
         parent.bind('<Control-b>', lambda x: self.openBabelComicVisor())
+        parent.bind('<Control-o>', lambda x: self.openVolume())
+        parent.bind('<Control-p>', lambda x: self.openPublisher())
 
         parent.bind('<Control-s>', self.openBabelComicConfig)
         parent.bind('<Control-x>', self.openBabelComicScanner)
@@ -166,6 +170,13 @@ class BabelComicMainGui(Frame):
             self.treeListas.insert(editorialNode,'end',str(len(self.listaConsultas)), text = volume.nombre)
             consultaPadre = self.listaConsultas[indiceConsultaPadre]
             self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id))
+
+    def openPublisher(self):
+        window = Toplevel()
+        window.geometry("+0+0")
+        window.wm_title(string="Editorial")
+        publisherGui = PublisherGui(window, width=507, height=358, session=self.session)
+        publisherGui.grid(sticky=(N, S, E, W))
 
     def openVolume(self):
         window = Toplevel()
@@ -243,11 +254,9 @@ class BabelComicMainGui(Frame):
             window = Toplevel()
             window.title('Catalogador')
             window.geometry('+0+0')
-            #comics = ComicBooks()
             comic = self.panelComics.getComicActual()
 
             cvs = ComicCatalogerGui(window, comic, self.session)
-            #cvs.grid(sticky=(N, W, S, E))
             cvs.grid()
             window.columnconfigure(0, weight=1)
             window.rowconfigure(0, weight=1)
@@ -267,17 +276,17 @@ class BabelComicMainGui(Frame):
     def scrollupKeyboard(self, event):
         print(event.keycode)
         if (event.keycode == 116) | (event.keycode == 117) | (event.keycode == 34)| (event.keycode == 40):
-            panelComics.yview_scroll(1, "units")
+            self.panelComics.yview_scroll(1, "units")
             print('para abajo')
         if (event.keycode == 112) | (event.keycode == 111) | (event.keycode == 33)| (event.keycode == 38):
-            panelComics.yview_scroll(-1, "units")
+            self.panelComics.yview_scroll(-1, "units")
             print('para abajo')
         #el 114 es en linux y el 39 en windows
         if (event.keycode==114)|(event.keycode==39):#derecha
-            panelComics.nextComic()
+            self.panelComics.nextComic()
         # el 113 es en linux y el 37 en windows
         if (event.keycode == 113)|(event.keycode==37):  # izquierda
-            panelComics.prevComic()
+            self.panelComics.prevComic()
 
     def on_resize(self,event):
         #pass

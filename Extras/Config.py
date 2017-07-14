@@ -27,13 +27,14 @@ class Config:
     PATH = "/home/pedro/Documentos/pycharmProjects/BabelComic-II/BabelComic.db"
     # PATH = "C:\\Users\\pclbu\\PycharmProjects\\BabelComic-II\\BabelComic.db"
     #PATH = "C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II\\BabelComic.db"
-    def __init__(self):
-        # print (Config.PATH)
-        # self.conexion = sqlite3.connect(Config.PATH)
-        # self.conexion.row_factory = sqlite3.Row
+    def __init__(self, session=None):
         self.listaTipos = []
         self.listaDirectorios = []
         self.listaClaves = []
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
 
         # recuperamos la lista de tipos, claves y directorios
 
@@ -44,7 +45,7 @@ class Config:
         for setupVinekey in Entidades.Init.Session().query(Entidades.Setups.SetupVineKey.SetupVinekey):
             self.listaClaves.append(setupVinekey.key)
 
-        self.setup = Entidades.Init.Session().query(Entidades.Setups.Setup.Setup).first()
+        self.setup = self.session.query(Entidades.Setups.Setup.Setup).first()
         if not self.setup:
             self.setup = Entidades.Setups.Setup.Setup()
             self.setup.setupkey=1
@@ -83,27 +84,27 @@ class Config:
         :return:None
         """
 
-        session = Entidades.Init.Session()
+
         vinekey = Entidades.Setups.SetupVineKey.SetupVinekey()
 
-        vinekey = session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).first()
+        vinekey = self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).first()
         if (vinekey):
             for entidad in Extras.ComicVineSearcher.ComicVineSearcher.EntidadesPermitidas:
                 status = Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus(key=vinekey.key, recursoId = entidad,cantidadConsultas =0,fechaHoraInicioConsulta=0)
-                session.add(status)
-        session.commit()
+                self.session.add(status)
+            self.session.commit()
 
     def addClave(self, clave):
-        session = Entidades.Init.Session()
+
         claveObj = Entidades.Setups.SetupVineKey.SetupVinekey(key=clave)
-        session.add(claveObj)
-        session.commit()
+        self.session.add(claveObj)
+        self.session.commit()
 
     def addTipo(self, tipo):
-        session = Entidades.Init.Session()
+
         tipoObj = Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo(tipoArchivo=tipo)
-        session.add(tipoObj)
-        session.commit()
+        self.session.add(tipoObj)
+        self.session.commit()
 
     def __updateStatus__(self, key, recurso):
         '''
@@ -112,8 +113,7 @@ class Config:
         :param recurso: identifica si es volumes, comic, editoria, etc
         :return: None
         '''
-        session = Entidades.Init.Session()
-        statusVinekey = session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).filter(
+        statusVinekey = self.session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).filter(
             and_(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.key==key,
                  Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.recursoId==recurso)).first()
         print(statusVinekey)
@@ -126,34 +126,30 @@ class Config:
             else:
                 statusVinekey.cantidadConsultas += 1
         #actualizamos
-        session.commit()
+        self.session.commit()
 
     def addDirectorio(self, directorio):
-        session = Entidades.Init.Session()
         directorioObj = Entidades.Setups.SetupDirctorio.SetupDirectorio(pathDirectorio=directorio)
-        session.add(directorioObj)
-        session.commit()
+        self.session.add(directorioObj)
+        self.session.commit()
         if not os.path.exists(directorio):
             os.makedirs(directorio+os.sep+'images'+os.sep+'coversvolumes')
 
 
 
     def __delAllTipos__(self):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).delete()
-        session.commit()
+        self.session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).delete()
+        self.session.commit()
         self.listaTipos = []
 
     def __delAllDirectorios__(self):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupDirctorio.SetupDirectorio).delete()
-        session.commit()
+        self.session.query(Entidades.Setups.SetupDirctorio.SetupDirectorio).delete()
+        self.session.commit()
         self.listaDirectorios = []
 
     def __delAllClaves__(self):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupVineKey.SetupVinekey).delete()
-        session.commit()
+        self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).delete()
+        self.session.commit()
         self.listaClaves = []
 
     def setListaTipos(self, listaTipos=[]):
@@ -163,22 +159,19 @@ class Config:
                 self.addTipo(tipo)
 
     def delClave(self, clave):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(
+        self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(
             Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).delete()
-        session.commit()
+        self.session.commit()
 
     def delTipo(self, tipo):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
+        self.session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
             Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo.tipoArchivo==tipo).delete()
-        session.commit()
+        self.session.commit()
 
     def delDirectorio(self, directorio):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
+        self.session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).filter(
             Entidades.Setups.SetupDirctorio.SetupDirectorio.pathDirectorio == directorio).delete()
-        session.commit()
+        self.session.commit()
 
     def setListaDirectorios(self, listaDirectorios=[]):
         self.__delAllDirectorios__()
@@ -193,9 +186,8 @@ class Config:
                 self.addClave(clave)
 
     def __dellAllConfig__(self):
-        session = Entidades.Init.Session()
-        session.query(Entidades.Setups.Setup.Setup).delete()
-        session.commit()
+        self.session.query(Entidades.Setups.Setup.Setup).delete()
+        self.session.commit()
 
     def setConfig(self, directorioBase, cantidadComicsPorPagina):
         self.__borrarCrearDirectoriosDesdeBase__(directorioBase)
@@ -218,15 +210,13 @@ class Config:
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coverIssuesThumbnails')
 
     def addSetup(self, setup):
-        session = Entidades.Init.Session()
         setupObj = setup
-        session.add(setupObj)
-        session.commit()
+        self.session.add(setupObj)
+        self.session.commit()
 
 
     def __getClaveMenosUsadaPorRecurso__(self, recurso):
-        session = Entidades.Init.Session()
-        statusVineStatus = session.query(SetupVinekeyStatus).filter(SetupVinekeyStatus.recursoId==recurso).order_by(
+        statusVineStatus = self.session.query(SetupVinekeyStatus).filter(SetupVinekeyStatus.recursoId==recurso).order_by(
             SetupVinekeyStatus.cantidadConsultas.desc()).first()
         if statusVineStatus is not None:
             self.__updateStatus__(statusVineStatus.key,recurso)

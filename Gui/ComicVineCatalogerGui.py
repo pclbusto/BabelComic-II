@@ -98,13 +98,8 @@ class ComicCatalogerGui(Frame):
         self.seriesLookupFrame = ttk.Frame(self.panelBusqueda)
         self.seriesLookupFrame.grid(column=1, row=0, sticky=(W), pady=5)
         ttk.Label(self.panelBusqueda, text='Serie: ').grid(column=0, row=0, sticky=(W), pady=5)
-
         self.pilImagenLookup = Iconos.pilImagenLookup
         self.lookupImage = ImageTk.PhotoImage(self.pilImagenLookup)
-
-
-
-
         ttk.Label(self.panelBusqueda, text='Título: ').grid(column=2, row=0, sticky=(W), pady=5)
         ttk.Entry(self.panelBusqueda, textvariable=self.entryTitulo).grid(column=3, row=0, sticky=(W), pady=5)
 #
@@ -142,7 +137,7 @@ class ComicCatalogerGui(Frame):
         print('--------------------------------------')
 
     def copiarInfo(self):
-        cnf = Config()
+        cnf = Config(self.session)
         print('clave: ' + cnf.getClave('issue'))
         cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
@@ -166,7 +161,7 @@ class ComicCatalogerGui(Frame):
         self.comicbook.ratingExterno = completComicInfo.ratingExterno
         self.comicbook.comicVineId  = completComicInfo.comicVineId
 
-        self.session.add(self.comicbook)
+        #self.session.add(self.comicbook)
         self.session.commit()
         # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
         # ComicBooks().update(completComicInfo)

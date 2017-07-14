@@ -94,19 +94,19 @@ class VolumeGui(FrameMaestro):
 
     def loadVolume(self):
         self.clear()
+        if self.volume is not None:
+            self.entradaId.insert(0,self.volume.id)
+            self.entradaNombre.insert(0,self.volume.nombre)
+            self.entradaUrlImagen.insert(0,self.volume.image_url)
+            print(self.volume)
+            if (self.volume.hasPublisher()):
+                self.entradaEditorial.insert(0,self.editorial.name)
+            self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
+            self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
 
-        self.entradaId.insert(0,self.volume.id)
-        self.entradaNombre.insert(0,self.volume.nombre)
-        self.entradaUrlImagen.insert(0,self.volume.image_url)
-        print(self.volume)
-        if (self.volume.hasPublisher()):
-            self.entradaEditorial.insert(0,self.editorial.name)
-        self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
-        self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
-
-        im = self.volume.getImageCover()
-        self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
-        self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
+            im = self.volume.getImageCover()
+            self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
+            self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
 
     def getFirst(self):
         super().getNext()

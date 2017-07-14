@@ -68,7 +68,7 @@ class PanelThumbnailComics(Canvas):
                 else:
                     cover = Image.open(nombreThumnail)
                     print(nombreThumnail)
-                print("Generando thumnails: "+comic.comicVineId)
+                #print("Generando thumnails: "+comic.comicVineId)
                 if (comic.comicVineId != ''):
                     comicvineLogo = Iconos.pilImageCataloged
                     cover.paste(comicvineLogo, (cover.size[0] - 64, cover.size[1] - 64, cover.size[0], cover.size[1]),

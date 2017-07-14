@@ -2,17 +2,23 @@ from tkinter import *
 from tkinter import Tk, ttk
 from tkinter import filedialog
 import Extras.Config
+import Entidades.Init
 
 
 
 class ConfigGui(Frame):
-    def __init__(self, parent):
+    def __init__(self, parent,session=None):
         Frame.__init__(self, parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-        self.babelComicConfig = Extras.Config.Config()
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
+
+        self.babelComicConfig = Extras.Config.Config(self.session)
 
         # agregado directorios
         self.frameDirectorios = ttk.LabelFrame(self)

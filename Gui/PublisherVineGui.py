@@ -12,12 +12,9 @@ from Entidades.Publishers.Publisher import Publisher
 class PublisherVineGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
         Frame.__init__(self, parent, cnf, **kw)
-
         config = Config()
-
         self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'))
         self.comicVineSearcher.setEntidad("publishers")
-
         self.labelId = Label(self, text="Nombre Editorial: ")
         self.labelId.grid(row=0,column=0, sticky=W ,padx=5,pady=5)
         self.entradaNombreEditorial = Entry(self, width=50)

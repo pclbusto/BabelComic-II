@@ -4,12 +4,19 @@ import PIL.Image, PIL.ImageTk
 from iconos import Iconos
 from Entidades.Publishers import Publishers
 from Gui.PublisherVineGui import PublisherVineGui
-
+import Entidades.Init
 
 
 class PublisherGui(Frame):
-    def __init__(self, parent, cnf={}, **kw):
+    def __init__(self, parent, cnf={}, session = None, **kw):
         Frame.__init__(self, parent, cnf, **kw)
+
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Entidades.Init.Session()
+
+
         self.height=358
         self.width = 507
         self.labelId = Label(self, text="ID")
@@ -109,7 +116,7 @@ class PublisherGui(Frame):
         self.entradaUrl.delete(0, END)
         self.textoDescripcion.config(text='')
 
-    def _copyToWindow(self,publisher):
+    def _copyToWindow(self, publisher):
         self.clearWindow()
         if publisher is not None:
             self.entradaId.insert(0, publisher.id_publisher)
