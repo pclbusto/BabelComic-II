@@ -19,7 +19,7 @@ class VolumeVineGui(Frame):
         self.imageLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
         self.offset=0
         self.frameParametros = Frame(self)
-        self.frameParametros.grid(row=0,column=0)
+        self.frameParametros.grid(row=0,column=0, sticky=(W,E,N,S))
         self.listaFiltrada=[]
         if session is None:
             self.session = Entidades.Init.Session()
@@ -29,13 +29,13 @@ class VolumeVineGui(Frame):
         self.comicVineSearcher.setEntidad("volumes")
 
         self.labelId = Label(self.frameParametros, text="Nombre Volumen: ")
-        self.labelId.grid(row=0,column=0, sticky=W + E ,padx=5,pady=5)
-        self.entradaNombreVolume = Entry(self.frameParametros,width=30)
-        self.entradaNombreVolume.grid(column=1,row=0)
-        Label(self.frameParametros, text="Publisher: ").grid(row=1, column=0, sticky=W, padx=5, pady=5)
+        self.labelId.grid(row=0, column=0, sticky=(W, E), padx=5, pady=5)
+        self.entradaNombreVolume = Entry(self.frameParametros, width=70)
+        self.entradaNombreVolume.grid(column=1, row=0)
+        Label(self.frameParametros, text="Editorial: ").grid(row=1, column=0, sticky=W, padx=5, pady=5)
         self.varID=StringVar()
-        self.entradaNombreEditorial = Entry(self.frameParametros,width=30)
-        self.entradaNombreEditorial.grid(row=1,column=1, sticky=W + E,padx=5,pady=5 )
+        self.entradaNombreEditorial = Entry(self.frameParametros, width=30)
+        self.entradaNombreEditorial.grid(row=1, column=1, sticky=W + E, padx=5,pady=5 )
         self.botonBuscar=Button(self.frameParametros, text = 'buscar', command=self.buscar)
         self.botonBuscar.grid(row=0,column=3)
         self.botonBuscar = Button(self.frameParametros, text='buscar mas', command=self.buscarMas)
