@@ -257,7 +257,6 @@ class BabelComicMainGui(Frame):
             window.title('Catalogador')
             window.geometry('+0+0')
             comic = self.panelComics.getComicActual()
-
             cvs = ComicCatalogerGui(window, comic, self.session)
             cvs.grid()
             window.columnconfigure(0, weight=1)

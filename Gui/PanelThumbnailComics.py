@@ -143,10 +143,14 @@ class PanelThumbnailComics(Canvas):
             tagComic = self.tagAndComic[indice]
             # for tagComic in self.tagAndComic:
             if tagClicked == tagComic[0]:
-                self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
+                for i in self.comicsSelected:
+                    print("limpiando: "+str(i))
+                    self.itemconfig(self.tagAndComic[i][4], outline='black')
+                self.comicsSelected.clear()
+                self.comicsSelected.append(indice)
                 self.comicActual = indice
                 self.itemconfig(tagComic[4], outline='blue')
-        print(self.getComicActual())
+        print("comic Actual: "+str(self.getComicActual()))
 
     def multipleComicsClicked(self, event):
         print("multiple clicked at", event.x, event.y)
@@ -160,12 +164,22 @@ class PanelThumbnailComics(Canvas):
             tagComic = self.tagAndComic[indice]
             # for tagComic in self.tagAndComic:
             if tagClicked == tagComic[0]:
-                self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
+                # self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
+                self.comicsSelected.clear()
                 '''vemos si el seleccionado es menor o mayor al seleccioando previamente para saber como marcar en azul'''
                 if self.comicActual>indice:
-                    for tagClicked
-                self.comicsSelected.append(indice)
-                self.itemconfig(tagComic[4], outline='blue')
+                    print("Por aca")
+                    for i in range(indice,self.comicActual+1):
+                        self.comicsSelected.append(i)
+                    for tag in self.tagAndComic[indice:self.comicActual]:
+                        print("TAG: "+str(tag))
+                        self.itemconfig(tag[4], outline='blue')
+                else:
+                    for i in range(self.comicActual,indice+1):
+                        self.comicsSelected.append(i)
+                    for tag in self.tagAndComic[self.comicActual:indice+1]:
+                        print("TAG: "+str(tag))
+                        self.itemconfig(tag[4], outline='blue')
         print(self.getComicActual())
 
     def recreateThumbnails(self):
