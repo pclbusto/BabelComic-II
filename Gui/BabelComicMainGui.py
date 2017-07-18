@@ -75,7 +75,7 @@ class BabelComicMainGui(Frame):
         este nodo indica la raiz del arbol con el nodo Biblioteca este nodo hace una consulta por todo comic sin tener 
         en cuenta editorial, volumen o arco. Trae todo.'''
         self.biblioteca = self.treeListas.insert('', 'end', len(self.listaConsultas), text='Biblioteca')
-        self.listaConsultas.append(self.session.query(ComicBook))
+        self.listaConsultas.append(self.session.query(ComicBook).filter(ComicBook.comicVineId==''))
         self.editoriales = self.treeListas.insert(self.biblioteca, 'end', len(self.listaConsultas), text='Editoriales')
         '''1 al igual que el 0 tienen la misma consulta Trae todo.'''
         self.listaConsultas.append(self.session.query(ComicBook))
@@ -124,6 +124,7 @@ class BabelComicMainGui(Frame):
         parent.bind('<Control-o>', lambda x: self.openVolume())
         parent.bind('<Control-p>', lambda x: self.openPublisher())
 
+
         parent.bind('<Control-s>', self.openBabelComicConfig)
         parent.bind('<Control-x>', self.openBabelComicScanner)
 
@@ -140,7 +141,8 @@ class BabelComicMainGui(Frame):
         cantidadColumnas = 4
         # variables globales
         desc = False
-
+    def multipleSelection(self):
+        print("algo va")
     def crearArbolBibiloteca(self):
         publishers = self.session.query(Publisher).all()
         for publisher in publishers:
@@ -321,7 +323,11 @@ class BabelComicMainGui(Frame):
     def selectVista(self,event):
         print(self.treeListas.selection()[0])
         print("SELECON: "+self.treeListas.selection()[0])
-        self.consultaActual= self.listaConsultas[int(self.treeListas.selection()[0])]
+        print("Padre: "+ self.treeListas.parent(self.treeListas.selection()[0]))
+        if (self.treeListas.parent(self.treeListas.selection()[0])==''):
+            self.consultaActual = self.listaConsultas[0]
+        else:
+            self.consultaActual= self.listaConsultas[int(self.treeListas.selection()[0])]
         self.buscar(self.statusBar)
         #self.comics.vistaConsultas = self.treeListas.selection()[0]
 

@@ -26,9 +26,11 @@ class PanelThumbnailComics(Canvas):
         print(self.size[0])
         self.listaComics = listaComics
         self.thumbnail = []
+        self.comicsSelected=[]
         self.tagAndComic = []
         self.halfSize = (int(self.size[0] / 2), int(self.size[1] / 2))
         self.bind("<Button-1>", self.comicClicked)
+        self.bind('<Shift-Button-1>', self.multipleComicsClicked)
         self.paginaDoblada = Iconos.pilImagePaginaDoblada
         self.cantidadColumnas = 6
 
@@ -143,6 +145,26 @@ class PanelThumbnailComics(Canvas):
             if tagClicked == tagComic[0]:
                 self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
                 self.comicActual = indice
+                self.itemconfig(tagComic[4], outline='blue')
+        print(self.getComicActual())
+
+    def multipleComicsClicked(self, event):
+        print("multiple clicked at", event.x, event.y)
+        x = self.canvasx(event.x)
+        y = self.canvasy(event.y)
+        tagClicked = self.find_closest(x, y)[0]
+        print(tagClicked)
+        X = 0
+        Y = 0
+        for indice in range(0, len(self.tagAndComic)):
+            tagComic = self.tagAndComic[indice]
+            # for tagComic in self.tagAndComic:
+            if tagClicked == tagComic[0]:
+                self.itemconfig(self.tagAndComic[self.comicActual][4], outline='black')
+                '''vemos si el seleccionado es menor o mayor al seleccioando previamente para saber como marcar en azul'''
+                if self.comicActual>indice:
+                    for tagClicked
+                self.comicsSelected.append(indice)
                 self.itemconfig(tagComic[4], outline='blue')
         print(self.getComicActual())
 
