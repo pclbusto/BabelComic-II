@@ -95,22 +95,22 @@ class ComicCatalogerGui(Frame):
         self.spinAnio = IntVar()
 
         self.seriesLookupFrame = ttk.Frame(self.panelBusqueda)
-        self.seriesLookupFrame.grid(column=1, row=0, sticky=(W), pady=5)
+        self.seriesLookupFrame.grid(column=1, row=0, sticky=(W,E), pady=5)
+
+        panelVolumenLookup=ttk.Frame(self.seriesLookupFrame)
+        panelVolumenLookup.grid(column=1, row=0,sticky=(W,E))
         ttk.Label(self.seriesLookupFrame, text='Volumen:').grid(column=0, row=0, sticky=(W), pady=5)
         self.pilImagenLookup = Iconos.pilImagenLookup
         self.lookupImage = ImageTk.PhotoImage(self.pilImagenLookup)
-        #ttk.Label(self.panelBusqueda, text='Título: ').grid(column=2, row=0, sticky=(W), pady=5)
-        #ttk.Entry(self.panelBusqueda, textvariable=self.entryTitulo).grid(column=3, row=0, sticky=(W), pady=5)
-#
-        ttk.Button(self.seriesLookupFrame, image=self.lookupImage, command=self.openSerieLookup).grid(column=2, row=0, sticky=(E), pady=5)
+        ttk.Button(panelVolumenLookup, image=self.lookupImage, command=self.openSerieLookup).grid(column=2, row=0, sticky=(E), pady=5)
 
-        ttk.Entry(self.seriesLookupFrame, textvariable=self.entrySerie).grid(column=1, row=0, sticky=(W), pady=5)
+        ttk.Entry(panelVolumenLookup, textvariable=self.entrySerie).grid(column=1, row=0, sticky=(W), pady=5)
         ttk.Label(self.seriesLookupFrame, text='Número:').grid(column=0, row=1, sticky=(W), pady=5)
         Spinbox(self.seriesLookupFrame, textvariable=self.spinNumero, from_=0, to=9999).grid(column=1, row=1, sticky=(W),
                                                                                          pady=5)
 
         botonBuscar = ttk.Button(self.seriesLookupFrame, text='Buscar', command=self.buscarSerie)
-        botonBuscar.grid(column=6, row=0, pady=5, columnspan=6)
+        botonBuscar.grid(column=2, row=0, pady=5)
 
         ##config grilla comics
         self.grillaComics = ttk.Treeview(self.seriesLookupFrame,
@@ -131,8 +131,9 @@ class ComicCatalogerGui(Frame):
         self.grillaComics.config(show='headings')  # tree, headings
         self.grillaComics.grid(column=0, row=2, columnspan=10, sticky=(N, E, S, W))
         self.grillaComics.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
+        self.grillaComics.column('numero',width=65)
         # boton copiar datos
-        ttk.Button(self, text='copiar info', command=self.copiarInfo).grid(column=0, row=1)
+        ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=2, row=1)
         print('--------------------------------------')
 
     def copiarInfo(self):
