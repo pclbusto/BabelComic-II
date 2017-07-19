@@ -180,8 +180,7 @@ class ComicCatalogerGui(Frame):
             if not (os.path.isfile(path  + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
-
-                path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
+                # path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
                 fImage = open(path  + nombreImagen, 'wb')
@@ -202,7 +201,7 @@ class ComicCatalogerGui(Frame):
 
         self.panelVineComic = self.__createPanelComic__(self, self.comicBookVine, im.resize(self.size),
                                                         'Vine Info')
-        self.panelVineComic.grid(column=0, row=2, sticky=(N, S, E, W))
+        self.panelVineComic.grid(column=2, row=0, sticky=(N, S, E, W))
 
     def buscarSerie(self):
         # recuperarla de la configuracion
