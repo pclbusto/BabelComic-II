@@ -233,7 +233,7 @@ class ComicVineSearcher():
                     idExterno = item.find('id').text
                     numero = item.find('issue_number').text
                     api_detail_url = item.find('api_detail_url').text
-                    thumb_url = item.find('image').find('thumb_url').text
+                    thumb_url = item.find('image').find('small_url').text
                     volumeName = item.find('volume').find('name').text
                     volumeId = item.find('volume').find('id').text
                     print(volumeName, volumeId)
@@ -241,6 +241,7 @@ class ComicVineSearcher():
                         {'fecha': fecha, 'titulo': titulo, 'descripcion': descripcion, 'idExterno': idExterno,
                          'numero': numero, 'api_detail_url': api_detail_url, 'thumb_url': thumb_url,
                          'volumeName': volumeName, 'volumeId': volumeId})
+
 
             elif self.entidad == 'volumes':
                 for item in results:
