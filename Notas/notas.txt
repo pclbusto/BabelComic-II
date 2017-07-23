@@ -5,3 +5,8 @@ los labels tienen un pady al parecer. Entonces cuando pones un label y un entry 
 del entry.
 
 https://comicvine.gamespot.com/api/
+
+agregar tabla detalle comic. encargada de clasificar las paginas de un comic como Tipo y orden.
+revisar proceso de scaneo para que no de error cuando existe. y ademas agrear para cada pagina una entrada en la tabla entrada de pagina con el tipo pagina. y el orden que da el nombre
+del archivo.
+

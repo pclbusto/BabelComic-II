@@ -79,7 +79,9 @@ class VolumeVineGui(Frame):
         self.statusBar.grid(column=0, row=4, sticky=(E,W),columnspan=5)
 
     def int(self,t):
-        return(int(t[0]))
+        if t[0].isdigit():
+            return(int(t[0]))
+        return 0
 
     def treeview_sort_column(self, tv, col, reverse):
         l = [(tv.set(k, col), k) for k in tv.get_children('')]
