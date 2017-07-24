@@ -6,14 +6,18 @@ import Extras.Config
 
 
 class BabelComicBookScanner():
-    def __init__(self, listaDirectorios, listaTipos):
+    def __init__(self, listaDirectorios, listaTipos, session = None):
         self.listaDirectorios = listaDirectorios
         self.listaTipos = listaTipos
         self.porcentajeCompletado = 0.0
         self.scanerDir = threading.Thread(target=self.scanearDirtorios)
         self.createThumnails = threading.Thread(target=self.crearThumbnails)
         self.comics = []
-        # self.session = Entidades.Init.Session()
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
+
     def crearThumbnails(self):
         # comics = KivyComicBooks()
         print("iniciando creacion de thumnails")
@@ -69,12 +73,15 @@ class BabelComicBookScanner():
                 self.listaDirectorios.append(dir)
             self.listaDirectorios.remove(valor)
             self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
-        session = Entidades.Init.Session()
-        for item in self.comics:
-            session.add(item)
-            cantidadProcesada += 1
-            self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
-        session.commit()
+        #session = Entidades.Init.Session()
+        try:
+            for item in self.comics:
+                self.session.add(item)
+                cantidadProcesada += 1
+                self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
+            self.session.commit()
+        except :
+            print("Hubo algunos repetidos")
 
 
     def iniciarScaneo(self):
@@ -83,15 +90,16 @@ class BabelComicBookScanner():
     def iniciarThumnails(self):
         self.createThumnails.start()
 
-def testScanning():
-    while (manager.scanerDir.isAlive()):
-        print(manager.porcentajeCompletado)
-    print(manager.porcentajeCompletado)
+# def testScanning():
+#     while (manager.scanerDir.isAlive()):
+#         print(manager.porcentajeCompletado)
+#     print(manager.porcentajeCompletado)
 
 
 if __name__ == "__main__":
     config = Extras.Config.Config()
     manager = BabelComicBookScanner(config.listaDirectorios, config.listaTipos)
     manager.iniciarScaneo()
-    # t = threading.Thread(target=testScanning)
-    # t.start()
+    #t = threading.Thread(target=testScanning)
+
+    #t.start()
