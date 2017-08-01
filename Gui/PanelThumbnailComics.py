@@ -222,7 +222,7 @@ def scrollupKeyboard(event):
 
 
 if (__name__ == '__main__'):
-    lista = ComicBooks().list(('%flash%',), 'path like ?', )
+    #lista = ComicBooks().list(('%flash%',), 'path like ?', )
     root = Tk()
     # for comic in lista:
     #    print(comic.rowId)

@@ -5,12 +5,11 @@ from iconos import Iconos
 from Entidades.Volumes.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 from PIL import Image, ImageTk
-
-
 from Gui.FrameMaestro import FrameMaestro
 import Entidades.Init
-from sqlalchemy import and_
+from Gui.VolumeLookupGui import VolumesLookupGui
 from Gui.VolumeVineGui import VolumeVineGui
+from Extras.ComicVineSearcher import ComicVineSearcher
 
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, session=None, cnf={}, **kw):
@@ -29,9 +28,11 @@ class VolumeGui(FrameMaestro):
 
         self.panelPrincipal = self.getPanelPrincipal()
         ttk.Label(self.panelPrincipal, text='ID').grid(column=0,row=0, sticky=W)
-        self.entradaId = ttk.Entry(self.panelPrincipal)
+        self.panelId = Frame(self.panelPrincipal)
+        self.panelId.grid(column=1,row=0,sticky=(W,E))
+        self.entradaId = ttk.Entry(self.panelId)
         self.entradaId.grid(column=1, row=0, padx=5, pady=2, sticky=W)
-        self.botonLookupVolume = ttk.Button(self.panelPrincipal, image=self.imagenLookup)
+        self.botonLookupVolume = ttk.Button(self.panelId, image=self.imagenLookup, command=self.openLookupVolume)
         self.botonLookupVolume.grid(column=2, row = 0, padx=5, pady=2, sticky=W)
 
         ttk.Label(self.panelPrincipal, text='Nombre').grid(column=0,row=1, sticky=W)
@@ -39,17 +40,20 @@ class VolumeGui(FrameMaestro):
         self.entradaNombre.grid(column=1, row=1, padx=5, pady=2, columnspan=2, sticky=W)
 
         ttk.Label(self.panelPrincipal, text='Url').grid(column=0, row=2, sticky=W)
-        self.entradaUrl = ttk.Entry(self.panelPrincipal)
+        self.entradaUrl = ttk.Entry(self.panelPrincipal, width=50)
         self.entradaUrl .grid(column=1, row=2, padx=5, pady=2, sticky=W)
 
         ttk.Label(self.panelPrincipal, text='Url Cover').grid(column=0, row=3, sticky=W)
-        self.entradaUrlImagen = ttk.Entry(self.panelPrincipal)
-        self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W)
+        self.entradaUrlImagen = ttk.Entry(self.panelPrincipal, width=90)
+        self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W,columnspan=2)
 
         ttk.Label(self.panelPrincipal, text='Editorial').grid(column=0, row=4, sticky=W)
-        self.entradaEditorial = ttk.Entry(self.panelPrincipal)
+        self.panelEditorial = Frame(self.panelPrincipal)
+        self.panelEditorial.grid(column=1,row=4,sticky=(W,E))
+
+        self.entradaEditorial = ttk.Entry(self.panelEditorial)
         self.entradaEditorial.grid(column=1, row=4, padx=5, pady=2, sticky=W)
-        self.botonLookupEditorial = ttk.Button(self.panelPrincipal, image=self.imagenLookup)
+        self.botonLookupEditorial = ttk.Button(self.panelEditorial, image=self.imagenLookup)
         self.botonLookupEditorial.grid(column=2, row=4, padx=5, pady=2)
 
         ttk.Label(self.panelPrincipal, text='Año Inicio').grid(column=0, row=5, sticky=W)
@@ -66,17 +70,52 @@ class VolumeGui(FrameMaestro):
 
         self.coverVolumen = Canvas(self.panelPrincipal)
         self.coverVolumen.create_image(180,250, image=self.imageLogo)
-        self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=2)
+        self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=1)
 
         self.botonCargarWeb.config(command=self.openVolumeComicVine)
         self.offset = 0
         self.cantidadRegistros = self.session.query(Volume).count()
+        self.botonActualizarVolumen = Button(self.frameBotonesAcciones, text='Actualizar desde web',command=self.updateVolume)
+        self.botonActualizarVolumen.grid(row=0, column=4, sticky=E)
+
 
         if volume is not None:
             self.setVolume(volume)
             self.loadVolume()
         else:
             self.getFirst()
+
+    def updateVolume(self):
+        cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4')
+        cv.entidad='volume'
+        volumeUpdated = cv.getVineEntity(self.volume.id)
+
+        self.volume.cantidadNumeros = volumeUpdated.cantidadNumeros
+        self.volume.nombre = volumeUpdated.nombre
+        print(volumeUpdated.image_url)
+        self.volume.image_url = volumeUpdated.image_url
+        self.volume.publisher_name = volumeUpdated.publisher_name
+        self.volume.publisherId = volumeUpdated.publisherId
+        self.setVolume(self.volume)
+        self.loadVolume()
+        print('cantidad {}'.format(self.volume.cantidadNumeros))
+        self.guardar()
+
+    def openLookupVolume(self):
+        window = Toplevel()
+        volumeRetorno = Volume()
+        lk = VolumesLookupGui(window, volumeRetorno)
+        lk.grid(sticky=(E, W, S, N))
+        window.columnconfigure(0, weight=1)
+        window.rowconfigure(0, weight=1)
+        window.geometry("+0+0")
+        window.wm_title(string="Series")
+        lk.buscarVolume()
+        lk.treeview_sort_column(lk.grillaVolumes, 'name', False)
+        self.wait_window(window)
+        serieRetorno = lk.getSerie()
+        self.volume = serieRetorno
+        self.loadVolume()
 
     def openVolumeComicVine(self):
         window = Toplevel()
@@ -88,7 +127,9 @@ class VolumeGui(FrameMaestro):
     def setVolume(self, volume):
         self.volume = volume
         if (self.volume.publisherId != 0):
+            print('recuperando editorioa')
             self.editorial = self.session.query(Publisher).get(self.volume.publisherId)
+            print(self.editorial)
         else:
             self.editorial = None
 
@@ -97,10 +138,10 @@ class VolumeGui(FrameMaestro):
         if self.volume is not None:
             self.entradaId.insert(0,self.volume.id)
             self.entradaNombre.insert(0,self.volume.nombre)
-            self.entradaUrlImagen.insert(0,self.volume.image_url)
+            self.entradaUrlImagen.insert(0, self.volume.image_url)
             print(self.volume)
             if (self.volume.hasPublisher()):
-                self.entradaEditorial.insert(0,self.editorial.name)
+                self.entradaEditorial.insert(0, self.editorial.name)
             self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
             self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
 
@@ -185,7 +226,7 @@ class VolumeGui(FrameMaestro):
 if __name__ == '__main__':
     root = Tk()
     # root.title = "Volume"
-    volumen = VolumeGui(root, width=507, height=358)
+    volumen = VolumeGui(root, width=307, height=358)
     volumen.pack()
     # root.columnconfigure(0, weight=1)
     # root.rowconfigure(0, weight=1)

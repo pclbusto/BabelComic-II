@@ -171,7 +171,7 @@ class BabelComicMainGui(Frame):
         for volume in volumes:
             self.treeListas.insert(editorialNode,'end',str(len(self.listaConsultas)), text = volume.nombre)
             consultaPadre = self.listaConsultas[indiceConsultaPadre]
-            self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id))
+            self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id).order_by(ComicBook.numero))
 
     def openPublisher(self):
         window = Toplevel()
@@ -336,7 +336,7 @@ class BabelComicMainGui(Frame):
             print("indice menor:" + str(self.paginaActual * self.setup.cantidadComicsPorPagina))
             print("indice mayor:" + str(len(self.listaComics)-1))
 
-            self.panelComics.loadComics(self.listaComics[(self.paginaActual * self.setup.cantidadComicsPorPagina):len(self.listaComics)-1])
+            self.panelComics.loadComics(self.listaComics[(self.paginaActual * self.setup.cantidadComicsPorPagina):len(self.listaComics)])
         else:
             self.panelComics.loadComics(self.listaComics[(self.paginaActual * self.setup.cantidadComicsPorPagina):(
             (self.paginaActual + 1) * self.setup.cantidadComicsPorPagina)])

@@ -74,15 +74,15 @@ class BabelComicBookScanner():
             self.listaDirectorios.remove(valor)
             self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
         #session = Entidades.Init.Session()
-        try:
-            for item in self.comics:
+        for item in self.comics:
+            try:
                 self.session.add(item)
-                cantidadProcesada += 1
-                self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
-            self.session.commit()
-        except :
-            print("Hubo algunos repetidos")
-
+                self.session.commit()
+            except :
+                print("Hubo algunos repetidos")
+            cantidadProcesada += 1
+            self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
+            print(cantidadProcesada)
 
     def iniciarScaneo(self):
         self.scanerDir.start()

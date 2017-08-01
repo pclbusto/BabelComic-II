@@ -8,11 +8,13 @@ from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentale
 import Entidades.Volumes.Volume
 import urllib.request
 import xml.etree.ElementTree as ET
+
 import Entidades.Init
+#from Entidades.Volumes.Volume import Volume
 
 
 class ComicVineSearcher():
-    EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits']
+    EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits','volume']
     def __init__(self, vinekey):
 
         self.vinekey = vinekey
@@ -83,6 +85,10 @@ class ComicVineSearcher():
             print('http://comicvine.gamespot.com/api/story_arc/4045-' + str(id) + '/?api_key=' + self.vinekey)
             response = urllib.request.urlopen(
                 'http://comicvine.gamespot.com/api/story_arc/4045-' + str(id) + '/?api_key=' + self.vinekey)
+        elif (self.entidad == 'volume'):
+            print('http://comicvine.gamespot.com/api/volume/4050-' + str(id) + '/?api_key=' + self.vinekey)
+            response = urllib.request.urlopen(
+                'http://comicvine.gamespot.com/api/volume/4050-' + str(id) + '/?api_key=' + self.vinekey)
 
         else:
             print("entidad invalidad: " + self.entidad)
@@ -90,6 +96,7 @@ class ComicVineSearcher():
         # si estamos aca entoces la consulta se ralizao porque la entidad estaba OK.
         html = response.read()
         xml = html.decode()
+        #root = ET.parse('e:\\descarga.xml')
         print(xml)
         root = ET.fromstring(xml)
         self.statusCode = int(root.find('status_code').text)
@@ -172,6 +179,29 @@ class ComicVineSearcher():
                     pos += 1
                 session.commit()
                 return arco
+
+            if (self.entidad == 'volume'):
+                volumeVine = root.find('results')
+                volume = Entidades.Volumes.Volume.Volume()
+                volume.id = volumeVine.find('id').text
+                volume.nombre = volumeVine.find('name').text
+                volume.deck = volumeVine.find('deck').text
+
+                volume.descripcion = volumeVine.find('description').text
+                volume.cantidadNumeros = volumeVine.find('count_of_issues').text
+                if volumeVine.find('image').find('super_url') is not None:
+                    volume.image_url = volumeVine.find('image').find('super_url').text
+                if volumeVine.find('publisher').find('id') is not None:
+                    print("Recuperando Editorial")
+                    volume.publisherId = volumeVine.find('publisher').find('id').text
+                    volume.publisher_name = volumeVine.find('publisher').find('name').text
+                if volumeVine.find('issues'):
+                    '''
+                    La cantidad de numeros esta mal en el xml al menos para linterna verde vol2 
+                    estaba mal. Por esto se decide contar los issues
+                    '''
+                    volume.cantidadNumeros = len(volumeVine.find('issues').findall('issue'))
+                return volume
             else:
                 print('Entidad %1 sin implementar', self.entidad)
 
@@ -309,15 +339,17 @@ class ComicVineSearcher():
 if __name__ == '__main__':
     cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4')
     ##    cv = comicVineSearcher('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    cv.setEntidad('volumes')
+    cv.setEntidad('volume')
+    volumen = cv.getVineEntity('2839')
+    print(volumen)
     #arco = cv.getVineEntity(55691)
     #print(arco.comics)
 ##    cv.addFilter('')
-    cv.vineSearch()
-    print(cv.statusMessage)
-    cv.print()
-    for serie in cv.listaBusquedaVine:
-        print(serie.nombre)
+    # cv.vineSearch()
+    # print(cv.statusMessage)
+    # cv.print()
+    # for serie in cv.listaBusquedaVine:
+    #     print(serie.nombre)
 # for offset in range(2300,5900,100):
 ##    for offset in range(0, 5900, 100):
 ##        cv.vineSearch(offset)

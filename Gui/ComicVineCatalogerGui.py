@@ -61,6 +61,8 @@ class ComicCatalogerGui(Frame):
         window.rowconfigure(0, weight=1)
         window.geometry("+0+0")
         window.wm_title(string="Series")
+        lk.buscarVolume()
+        lk.treeview_sort_column(lk.grillaVolumes, 'name', False)
         self.wait_window(window)
         serieRetorno = lk.getSerie()
         self.entrySerie.set(serieRetorno.id)
