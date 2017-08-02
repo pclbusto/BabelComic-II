@@ -8,6 +8,7 @@ from sqlalchemy import Sequence
 
 
 class ComicBook(Entidades.Init.Base):
+
     __tablename__='Comicbooks'
     __table_args__ = {'sqlite_autoincrement': True}
 
@@ -29,6 +30,9 @@ class ComicBook(Entidades.Init.Base):
     ratingExterno = Column(Float,nullable=False,default=0.0)
     comicId = Column(Integer, primary_key=True)
     publisherId = Column(String,nullable=False,default='')
+
+    calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
+
 
     def __repr__(self):
         return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n, id Comic Vine:'%s')\n>" % (

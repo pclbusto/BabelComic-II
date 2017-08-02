@@ -4,10 +4,12 @@ from Gui.ConfigGui import ConfigGui
 from Gui.ComicVisorGui import ComicVisorGui
 from Gui.VolumeGui import VolumeGui
 from Gui.PublisherGui import PublisherGui
+from Gui.ScannerGui import BabelComicScannerGui
 
 from PIL import Image, ImageTk
 from iconos.Iconos import Iconos
 from Gui.PanelThumbnailComics import PanelThumbnailComics
+
 import threading
 from tkinter import Tk, ttk
 from tkinter import *
@@ -136,7 +138,7 @@ class BabelComicMainGui(Frame):
         self.panedWindow.add(self.panelGrillaComics)
         self.paginaActual=0
         # menu
-        # comics = ComicBooks()
+        # comics = ComicBooks() m,
         self.buscar(self.statusBar)
         cantidadColumnas = 4
         # variables globales
@@ -268,8 +270,10 @@ class BabelComicMainGui(Frame):
         if desc:
             self.buscarSerie('order by ' + col + ' desc')
 
-    def openBabelComicScanner(event):
-        scanner = BabelComicScannerGui(root)
+    def openBabelComicScanner(self, event):
+        print("Abriendo scanner")
+        BabelComicScannerGui(root)
+        #scanner = BabelComicMainGui()
 
     def scrollupMouse(self, event):
         self.panelComics.yview_scroll(-1 * (int)(event.delta / 120), "units")

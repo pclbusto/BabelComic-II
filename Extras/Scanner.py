@@ -1,4 +1,4 @@
-from Entidades.ComicBooks import ComicBook
+from Entidades.ComicBooks.ComicBook import ComicBook
 from pathlib import Path
 import threading
 import Entidades.Init
@@ -64,7 +64,7 @@ class BabelComicBookScanner():
             lst = [x for x in p.iterdir() if (x.is_file() and x.name[-3:] in self.listaTipos)]
             dirs = [x for x in p.iterdir() if (x.is_dir())]
             for item in lst:
-                comic = ComicBook.ComicBook()
+                comic = ComicBook()
                 comic.path = str(item)
                 print(comic.path)
                 self.comics.append(comic)
@@ -76,8 +76,11 @@ class BabelComicBookScanner():
         #session = Entidades.Init.Session()
         for item in self.comics:
             try:
-                self.session.add(item)
-                self.session.commit()
+                comic = self.session.query(ComicBook).filter(ComicBook.path==item.path).first()
+                if comic is None:
+                    self.session.add(item)
+                    self.session.commit()
+                    print('Se agrego{}'.format(item.path))
             except :
                 print("Hubo algunos repetidos")
             cantidadProcesada += 1
