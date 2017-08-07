@@ -69,12 +69,23 @@ class PanelThumbnailComics(Canvas):
                     cover.save(nombreThumnail)
                 else:
                     cover = Image.open(nombreThumnail)
-                    print(nombreThumnail)
+                    #print(nombreThumnail)
                 #print("Generando thumnails: "+comic.comicVineId)
                 if (comic.comicVineId != ''):
                     comicvineLogo = Iconos.pilImageCataloged
                     cover.paste(comicvineLogo, (cover.size[0] - 64, cover.size[1] - 64, cover.size[0], cover.size[1]),
                                 comicvineLogo)
+                if (comic.calidad == 0):
+                    calidadIcon = Iconos.pilCalidadSinCalificacion
+                if (comic.calidad == 1):
+                    calidadIcon = Iconos.pilCalidadMala
+                if (comic.calidad == 2):
+                    calidadIcon = Iconos.pilCalidadMedia
+                if (comic.calidad == 3):
+                    calidadIcon = Iconos.pilCalidadBuena
+                if (comic.calidad == 4):
+                    calidadIcon = Iconos.pilCalidadDigital
+                cover.paste(calidadIcon,(0,cover.size[1]-64),calidadIcon)
 
                 tkimage = ImageTk.PhotoImage(cover)
                 # self.thumbnail.append(ImageTk.PhotoImage(cover))

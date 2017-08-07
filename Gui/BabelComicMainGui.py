@@ -67,10 +67,13 @@ class BabelComicMainGui(Frame):
         ttk.Button(self.barraHerramientas, text='Salir', command=self.salir).grid(column=0, row=0, sticky=W)
 
         self.panedWindow = ttk.Panedwindow(parent, orient=HORIZONTAL)
+
         self.panedWindow.grid(column=0, row=1, sticky=(E, W, S, N))
 
         # arbol donde tenenmos las listas de comics.
         self.treeListas = ttk.Treeview(self.panedWindow)
+        self.treeListas.column("#0", minwidth=0, width=350)
+
         self.treeListas.grid()
         self.biblioteca = ''
         '''Tomamos el indice o Id del nodo como la longitud de la lista para identificar la consulta asociada al nodo.
@@ -98,17 +101,20 @@ class BabelComicMainGui(Frame):
         self.panelGrillaComics.rowconfigure(0, weight=1)
         self.panelGrillaComics.grid(sticky=(N, S, W, E))
 
-        self.scrollbar = ttk.Scrollbar(self.panelGrillaComics)
-        self.scrollbar.grid(column=1, row=0, sticky=(S, N))
+        #self.scrollbar = ttk.Scrollbar(self.panelGrillaComics)
+        #self.scrollbar.grid(column=1, row=0, sticky=(S, N))
 
-        self.panelComics = PanelThumbnailComics(self.panelGrillaComics, yscrollcommand=self.scrollbar.set)
+        #self.panelComics = PanelThumbnailComics(self.panedWindow, yscrollcommand=self.scrollbar.set)
+        self.panelComics = PanelThumbnailComics(self.panedWindow)
         self.panelComics.bind("<Configure>", self.on_resize)
 
-        self.scrollbar.config(command=self.panelComics.yview)
+
+
+        #self.scrollbar.config(command=self.panelComics.yview)
         #    treeComics.grid()
-        self.panelComics.bind('<MouseWheel>', self.scrollupMouse)
-        parent.bind('<Down>', self.scrollupKeyboard)
-        parent.bind('<Key>', self.scrollupKeyboard)
+        #self.panelComics.bind('<MouseWheel>', self.scrollupMouse)
+        #parent.bind('<Down>', self.scrollupKeyboard)
+        #parent.bind('<Key>', self.scrollupKeyboard)
 
         # creamos menu popup para abrir el catalogador el visor el editor de info y calcular el thumnails de nuevo
         self.popupThumbnails = Menu(self.panelComics, tearoff=0)
@@ -135,7 +141,7 @@ class BabelComicMainGui(Frame):
 
         self.panelComics.grid(column=0, row=0, sticky=(N, S, W, E))
         self.panedWindow.add(self.treeListas)
-        self.panedWindow.add(self.panelGrillaComics)
+        self.panedWindow.add(self.panelComics)
         self.paginaActual=0
         # menu
         # comics = ComicBooks() m,
@@ -299,14 +305,15 @@ class BabelComicMainGui(Frame):
         self.panelComics.cantidadColumnas = int(event.width/(self.panelComics.size[0] + self.panelComics.space))
         #self.panelComics.loadComics(self.listaComics[(self.paginaActual*self.setup.cantidadComicsPorPagina) :((self.paginaActual+1)*self.setup.cantidadComicsPorPagina)])
         self.loadPage()
-        #print(event.width/(self.size[0] + self.panelComics.space))
+        print(self.panelGrillaComics.configure)
 
     def refrescar(self):
         #solo refrescar cuando el tamañio sume o reste columnas
         #if cantidadColumnas!=int(event.width/(panelComics.size[0] + panelComics.space)):
-        self.panelComics.loadComics(self.listaComics)
+        #self.panelComics.loadComics(self.listaComics)
+        #self.treeListas.column("#0",width=100)
         #print(event.width/(panelComics.size[0] + panelComics.space))
-
+        pass
     def popupListas(self,event):
         # display the popup menu
         try:
@@ -374,4 +381,7 @@ if __name__ == "__main__":
     #bc.buscar(bc.statusBar)
     #w, h = root.winfo_screenwidth(), root.winfo_screenheight()
     #root.geometry("%dx%d+0+0" % (w, h))
+    #print(bc.panelComics.configure())
+    bc.panelComics.configure(width=10)
+    bc.update()
     root.mainloop()

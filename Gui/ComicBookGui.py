@@ -10,18 +10,19 @@ from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Gui.ComicVisorGui import ComicVisorGui
 
+
 class ComicBookGui(FrameMaestro):
     def __init__(self, parent, comicBook=None, session = None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        panelPrincipal = self.getPanelPrincipal()
-        notebook = ttk.Notebook(panelPrincipal)
-        resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
-        detalle = ttk.Frame(notebook)  # second page
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
 
+        panelPrincipal = self.getPanelPrincipal()
+        notebook = ttk.Notebook(panelPrincipal)
+        resumen = ttk.Frame(notebook)  # first page, which would get widgets gridded into it
+        detalle = ttk.Frame(notebook)  # second page
         resumen.grid()
         detalle.grid()
         notebook.add(resumen, text='Resumen')
@@ -37,7 +38,10 @@ class ComicBookGui(FrameMaestro):
         resumen.columnconfigure(1,weight=1)
         resumen.rowconfigure(1, weight=1)
         #tienen 9 lineas de alto y 59 chars de largo el texto
-        self.resumenText = Text(resumen, width=50, height=9)
+        self.varResumen = StringVar()
+        self.varResumen.trace(mode='w', callback=self.__Changed__)
+        self.resumenText = Text(resumen, width=50, height=9,wrap='word',relief = 'flat', bg=parent['bg'])
+
         self.resumenText.grid(column=1, row=1, sticky=(N,S,W,S), columnspan = 4)
         self.labelTipoyTamanio =  ttk.Label(resumen)
         self.labelTipoyTamanio.grid(column=0, row=5, sticky=(N, W))
@@ -68,8 +72,10 @@ class ComicBookGui(FrameMaestro):
         self.entradaDe = Spinbox(detalle, from_=0, to=10000, width=6)
         self.entradaDe.grid(column=4, row=1, padx=5, sticky=(N, W))
 
+        self.varTitulo = StringVar()
+        self.varTitulo.trace(mode='w', callback=self.__Changed__)
         ttk.Label(detalle, text='Título:').grid(column=0, row=2, sticky=(N, W))
-        self.entradaTitulo = ttk.Entry(detalle, width=50)
+        self.entradaTitulo = ttk.Entry(detalle, width=50, textvariable=self.varTitulo)
         self.entradaTitulo.grid(column=0, row=3, padx=5, sticky=(N, W), columnspan=2)
 
         ttk.Label(detalle, text='Fecha:').grid(column=2, row=2, sticky=(N, W))
@@ -86,6 +92,15 @@ class ComicBookGui(FrameMaestro):
         self.entradaArcoArgumentalDe = Spinbox(detalle, text='', from_=0, to=10000, width=6)
         self.entradaArcoArgumentalDe.grid(column=3, row=5, padx=5, sticky=(N, W))
 
+        self.valCombo = ('Sin calificar', 'Pobre', 'Media','Buena','Digital')
+        self.varCombo = StringVar()
+        self.varCombo.set('Sin calificar')
+        self.varCombo.trace(mode='w', callback=self.__Changed__)
+        ttk.Label(detalle, text='Calidad:').grid(column=0, row=6, sticky=(N, W))
+        self.dropDownCalidad = ttk.Combobox(detalle, values=self.valCombo, textvariable=self.varCombo)
+
+        self.dropDownCalidad.grid(column=0, row=7, padx=5, sticky=(N, W), columnspan=1)
+
         #agregamos otro boton mas
         self.botonComicVine = Button(self.frameBotonesAcciones, text="Comic Vine",command=self.abrirCatalogadorComicVine)
         self.botonComicVine.grid(row=0, column=4, sticky=E)
@@ -96,12 +111,14 @@ class ComicBookGui(FrameMaestro):
         notebook.select(0)
         self.entries = {}
         self.variables = {}
-        self.varaible = StringVar(self).trace(mode='w', callback=self.__Changed__)
+        self.variable = StringVar(self).trace(mode='w', callback=self.__Changed__)
         self.changed = False
         if comicBook is not None:
+            print("entramos por aca?")
             self.setComic(comicBook)
             self.loadComic()
         else:
+
             self.getFirst()
 
     def openVisorComic(self):
@@ -183,10 +200,14 @@ class ComicBookGui(FrameMaestro):
         self.entradaTitulo.delete(0,END)
         self.entradaTitulo.insert(END, self.comic.titulo)
         self.entradaFecha.delete(0,END)
-        self.entradaFecha.insert(END, date.fromordinal(self.comic.fechaTapa))
+        if self.comic.fechaTapa>0:
+            self.entradaFecha.insert(END, date.fromordinal(self.comic.fechaTapa))
+        else:
+            self.entradaFecha.insert(END, '')
         self.entradaArco.delete(0, END)
         self.entradaArcoArgumentalNumero.delete(0,END)
         self.entradaArcoArgumentalDe.delete(0,END)
+        self.dropDownCalidad.set(self.valCombo[self.comic.calidad])
 
         if self.comic.tieneArcoAlterno():
             arco = self.session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
@@ -220,12 +241,15 @@ class ComicBookGui(FrameMaestro):
 
 
     def guardar(self):
+        print('guardando')
         if (self.changed):
-            self.comic.path = self.entries['Path'].get()
-            self.comic.titulo = self.entries['Título'].get()
-            self.comic.volumen = self.entries['Volumen'].get()
-            self.comic.numero = self.entries['Número'].get()
-            self.comic.cantidadPaginas = self.entries['Cantidad de Paginas'].get()
+            #self.comic.path = self.entries['Path'].get()
+            self.comic.titulo = self.entradaTitulo.get()
+            self.comic.volumen = self.entradaVolume.get()
+            self.comic.numero = self.entradaNumero.get()
+            #self.comic.cantidadPaginas = self.entries['Cantidad de Paginas'].get()
+            self.comic.calidad = self.valCombo.index(self.varCombo.get())
+            self.session.commit()
 
 
 

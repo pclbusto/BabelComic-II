@@ -16,6 +16,13 @@ class Iconos:
     pilImageCoverGenerica =  PIL.Image.open(path+"CoverGenerica.png")
     pilImagePaginaDoblada = PIL.Image.open(path + "paginaDoblada.png")
     pilImageCataloged = PIL.Image.open(path + "Cataloged.png")
+    pilCalidadSinCalificacion=PIL.Image.open(path + "01-Scan Sin calificacion.png")
+    pilCalidadMala = PIL.Image.open(path + "02-Scan Mala Calidad.png")
+    pilCalidadMedia = PIL.Image.open(path + "03-Scan Media Calidad.png")
+    pilCalidadBuena = PIL.Image.open(path + "04-Scan Buena Calidad.png")
+    pilCalidadDigital = PIL.Image.open(path + "05-Scan Excelente Calidad.png")
+
+
 
 
 
