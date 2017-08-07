@@ -312,7 +312,7 @@ class BabelComicMainGui(Frame):
         #if cantidadColumnas!=int(event.width/(panelComics.size[0] + panelComics.space)):
         #self.panelComics.loadComics(self.listaComics)
         #self.treeListas.column("#0",width=100)
-        #print(event.width/(panelComics.size[0] + panelComics.space))
+        print("dsadas")
         pass
     def popupListas(self,event):
         # display the popup menu
