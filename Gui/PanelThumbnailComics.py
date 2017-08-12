@@ -110,6 +110,10 @@ class PanelThumbnailComics(Canvas):
     def getComicActual(self):
         return self.tagAndComic[self.comicActual][1]
 
+    def getComicAt(self, index):
+        return self.tagAndComic[index][1]
+
+
     def thumbnailTurned(self):
         x = 0
         y = 0

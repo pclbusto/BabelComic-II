@@ -19,6 +19,7 @@ from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
 from Entidades.Publishers.Publisher import Publisher
 from Entidades.Volumes.Volume import Volume
+import Extras.ComicCataloger
 
 class BabelComicMainGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
@@ -126,15 +127,17 @@ class BabelComicMainGui(Frame):
                                     command=self.panelComics.recreateThumbnails)
         self.panelComics.bind("<Button-3>", self.popupPanelThumbnails)
 
-        parent.bind('<Control-c>', lambda x: self.openComicEditor())
-        parent.bind('<Control-v>', lambda x: self.openComicVine())
+        parent.bind('<Control-m>', lambda x: self.openComicEditor())
+        parent.bind('<Control-r>', lambda x: self.openComicVine())
         parent.bind('<Control-b>', lambda x: self.openBabelComicVisor())
-        parent.bind('<Control-o>', lambda x: self.openVolume())
+        parent.bind('<Control-l>', lambda x: self.openVolume())
         parent.bind('<Control-p>', lambda x: self.openPublisher())
 
 
         parent.bind('<Control-s>', self.openBabelComicConfig)
         parent.bind('<Control-x>', self.openBabelComicScanner)
+        parent.bind('<Control-c>', self.copiarInfoComic)
+        parent.bind('<Control-v>', self.pegarInfoComic)
 
         self.statusBar = StringVar()
         ttk.Label(parent, textvariable=self.statusBar, anchor="e", relief='groove').grid(column=0, row=3, sticky=(W, E))
@@ -149,8 +152,33 @@ class BabelComicMainGui(Frame):
         cantidadColumnas = 4
         # variables globales
         desc = False
+    def copiarInfoComic(self, event):
+        if len(self.panelComics.comicsSelected) == 1:
+            self.comicClipboard = self.panelComics.getComicAt( self.panelComics.comicsSelected[0])
+            print(self.comicClipboard)
+
+    def pegarInfoComic(self, event):
+        if self.comicClipboard is None:
+            print("no se copio porque el clipboard esta vacio")
+            return
+        listaComicsDestino = []
+        for index in self.panelComics.comicsSelected:
+            listaComicsDestino.append(self.panelComics.getComicAt(index))
+        if self.comicClipboard in listaComicsDestino:
+            print("no se copia porque la fuente esta entre los destinos")
+            return
+        if len(self.panelComics.comicsSelected)<1:
+            print("No se copia porque no hay destino")
+            return
+        catalogador = Extras.ComicCataloger.Catalogador(self.session)
+        for destino in listaComicsDestino:
+            catalogador.copyFromComicToComic(self.comicClipboard,
+                                             destino)
+
+
     def multipleSelection(self):
         print("algo va")
+
     def crearArbolBibiloteca(self):
         publishers = self.session.query(Publisher).all()
         for publisher in publishers:

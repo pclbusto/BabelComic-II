@@ -8,7 +8,7 @@ from Gui.VolumeLookupGui import VolumesLookupGui
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Setups.Setup import Setup
 
-#from ComicVineSearcher import *
+from Extras.ComicCataloger import Catalogador
 from PIL import Image, ImageTk
 import urllib.request
 import os
@@ -144,30 +144,9 @@ class ComicCatalogerGui(Frame):
         cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
-
         self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
-        if completComicInfo.arcoArgumentalId is not None:
-            self.comicbook.arcoArgumentalId = completComicInfo.arcoArgumentalId
-            self.comicbook.arcoArgumentalNumero = completComicInfo.arcoArgumentalNumero
-        if completComicInfo.volumeId is not None:
-            volume = self.session.query(Volume).get(completComicInfo.volumeId)
-            self.comicbook.publisherId = volume.publisherId
-
-        self.comicbook.fechaTapa = completComicInfo.fechaTapa
-        self.comicbook.titulo = completComicInfo.titulo
-        self.comicbook.volumeId = completComicInfo.volumeId
-        self.comicbook.numero = completComicInfo.numero
-        self.comicbook.resumen = completComicInfo.resumen
-        self.comicbook.nota = completComicInfo.nota
-        self.comicbook.rating = completComicInfo.rating
-        self.comicbook.ratingExterno = completComicInfo.ratingExterno
-        self.comicbook.comicVineId  = completComicInfo.comicVineId
-
-        #self.session.add(self.comicbook)
-        self.session.commit()
-        # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
-        # ComicBooks().update(completComicInfo)
-
+        catalogador = Catalogador(self.session)
+        catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
         self.parent.destroy()
 
     def itemClicked(self, event):
