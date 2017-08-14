@@ -67,26 +67,37 @@ class ComicCatalogerGui(Frame):
         serieRetorno = lk.getSerie()
         self.entrySerie.set(serieRetorno.id)
 
-    def __init__(self, parent, comicbook,session =None, *cnf, **kw):
+    def __init__(self, parent, comicbooks,session =None, *cnf, **kw):
         Frame.__init__(self, parent, *cnf, **kw)
         self.rowconfigure(0, weight=1)
         self.parent = parent
         self.rowconfigure(1, weight=1)
         self.comicCovers = []
         # representa lo que vamos a catalogar. tomando como fuente de datos ComicVine
-        self.comicbook = comicbook
+        self.comicbooks = comicbooks
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
 
-        self.comicbook.openCbFile()
-        self.comicbook.goto(0)
+        self.comicbooks[0].openCbFile()
+        self.comicbooks[0].goto(0)
         self.size = (160, 248)
-        self.panelSourceComic = self.__createPanelComic__(self, comicbook,
-                                                          self.comicbook.getImagePage().resize(self.size,resample=Image.BICUBIC),
+        self.panelSourceComic = self.__createPanelComic__(self, comicbooks[0],
+                                                          self.comicbooks[0].getImagePage().resize(self.size,resample=Image.BICUBIC),
                                                           'Comic info')
+
+
         self.panelSourceComic.grid(sticky=(N, W, S, E))
+        self.listViewComics = ttk.Treeview(self)
+
+        self.listViewComics['columns'] = ['Nombre_Archivo']
+        #, 'Total_Paginas', 'Porcentaje_Descargado']
+        self.listViewComics.heading('#0', text='Nro')
+        self.listViewComics.column('#0', width=3)
+        self.listViewComics.heading('Nombre_Archivo', text='Nombre Archivo')
+        self.listViewComics.column('Nombre_Archivo', width=230)
+        self.listViewComics.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=4)
         ##Panel opciones busqueda
 
         self.panelBusqueda = LabelFrame(self)
@@ -224,8 +235,13 @@ class ComicCatalogerGui(Frame):
 if __name__ == '__main__':
     root = Tk()
     session = Entidades.Init.Session()
-    comic = session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\Batman Collection\\Batman Family (v1+v2) (1975-2003)\\Batman Family v1 (001-020) (1975-1978)\\Batman Family v1 006 (1976) (c2c) (comicbookfan).cbr') .order_by(ComicBook.path.asc()).first()
-    cvs = ComicCatalogerGui(root, comic)
+    comics=[]
+    comics.append(session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\DC Week+ (01-11-2017)\\Hal Jordan & the Green Lantern Corps 012 (2017) (2 covers) (digital) (Minutemen-Slayer).cbr') .order_by(ComicBook.path.asc()).first())
+    comics.append(session.query(ComicBook).filter(
+    ComicBook.path == 'E:\\Comics\\DC\\DC Week+ (07-13-2016)\\Hal Jordan and the Green Lantern Corps - Rebirth 01 (2016) (Webrip) (The Last Kryptonian-DCP).cbr').order_by(
+        ComicBook.path.asc()).first())
+
+    cvs = ComicCatalogerGui(root, comics)
     #cvs.entrySerie.set('4363')
     #cvs.spinNumero.set(80)
     cvs.grid(sticky=(N, W, S, E))
