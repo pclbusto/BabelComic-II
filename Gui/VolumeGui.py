@@ -136,11 +136,13 @@ class VolumeGui(FrameMaestro):
     def loadVolume(self):
         self.clear()
         if self.volume is not None:
+            #print("Volumen {}".format(self.volume))
             self.entradaId.insert(0,self.volume.id)
             self.entradaNombre.insert(0,self.volume.nombre)
             self.entradaUrlImagen.insert(0, self.volume.image_url)
-            print(self.volume)
             if (self.volume.hasPublisher()):
+                print("*******VOLUMEN***********{}".format(self.volume.publisherId))
+                print("Nombre {}".format(self.editorial.name))
                 self.entradaEditorial.insert(0, self.editorial.name)
             self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
             self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)

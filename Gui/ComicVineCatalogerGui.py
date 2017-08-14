@@ -84,7 +84,7 @@ class ComicCatalogerGui(Frame):
         self.comicbook.goto(0)
         self.size = (160, 248)
         self.panelSourceComic = self.__createPanelComic__(self, comicbook,
-                                                          self.comicbook.getImagePage().resize(self.size),
+                                                          self.comicbook.getImagePage().resize(self.size,resample=Image.BICUBIC),
                                                           'Comic info')
         self.panelSourceComic.grid(sticky=(N, W, S, E))
         ##Panel opciones busqueda
@@ -137,6 +137,12 @@ class ComicCatalogerGui(Frame):
         # boton copiar datos
         ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=2, row=1)
         print('--------------------------------------')
+        '''
+        cargamos los datos que se guardaron de la ultima vez
+        '''
+        setup = self.session.query(Setup).first()
+        self.spinNumero.set(setup.ultimoNumeroConsultado)
+        self.entrySerie.set(setup.ultimoVolumeIdUtilizado)
 
     def copiarInfo(self):
         cnf = Config(self.session)
@@ -147,6 +153,10 @@ class ComicCatalogerGui(Frame):
         self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
+        setup = self.session.query(Setup).first()
+        setup.ultimoNumeroConsultado = self.spinNumero.get()
+        setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
+        self.session.commit()
         self.parent.destroy()
 
     def itemClicked(self, event):
@@ -214,10 +224,10 @@ class ComicCatalogerGui(Frame):
 if __name__ == '__main__':
     root = Tk()
     session = Entidades.Init.Session()
-    comic = session.query(ComicBook).order_by(ComicBook.path.asc()).first()
+    comic = session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\Batman Collection\\Batman Family (v1+v2) (1975-2003)\\Batman Family v1 (001-020) (1975-1978)\\Batman Family v1 006 (1976) (c2c) (comicbookfan).cbr') .order_by(ComicBook.path.asc()).first()
     cvs = ComicCatalogerGui(root, comic)
-    cvs.entrySerie.set('4363')
-    cvs.spinNumero.set(80)
+    #cvs.entrySerie.set('4363')
+    #cvs.spinNumero.set(80)
     cvs.grid(sticky=(N, W, S, E))
     cvs.grid()
     root.columnconfigure(0, weight=1)

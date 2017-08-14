@@ -20,6 +20,7 @@ from Entidades.Setups.Setup import Setup
 from Entidades.Publishers.Publisher import Publisher
 from Entidades.Volumes.Volume import Volume
 import Extras.ComicCataloger
+from sqlalchemy import or_
 
 class BabelComicMainGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
@@ -203,11 +204,37 @@ class BabelComicMainGui(Frame):
         :param indiceConsultaPadre: es el indice de la consulta del padre en la lista de consultas
         :return:
         '''
-        volumes = self.session.query(Volume).filter(Volume.publisherId==publisherID).all()
+        volumes = self.session.query(Volume).filter(Volume.publisherId==publisherID).distinct(Volume.nombre).group_by(Volume.nombre).order_by(Volume.nombre).all()
         for volume in volumes:
-            self.treeListas.insert(editorialNode,'end',str(len(self.listaConsultas)), text = volume.nombre)
-            consultaPadre = self.listaConsultas[indiceConsultaPadre]
-            self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id).order_by(ComicBook.numero))
+            #si hya mas de un volumen que se llama igual la cuenta por el nombre es mayor que 1 en ese caso
+            #creamos un nodo con el nombre para podermeter dentro los distintos volumenes por version
+            cantidadRepeticiones = self.session.query(Volume).filter(Volume.publisherId==publisherID).filter(Volume.nombre==volume.nombre).count()
+            print("Cantidad de repeticiones para{} {}".format(volume.nombre, cantidadRepeticiones))
+            if cantidadRepeticiones>1:
+                volumenes = self.session.query(Volume).filter(Volume.publisherId==publisherID).filter(Volume.nombre==volume.nombre).all()
+                OR = or_(ComicBook.volumeId==vi.id for vi in volumenes)
+
+                nodoVolumen = self.treeListas.insert(editorialNode, 'end', str(len(self.listaConsultas)), text=volume.nombre)
+                consultaPadre = self.listaConsultas[indiceConsultaPadre]
+                self.listaConsultas.append(
+                    consultaPadre.filter(OR).order_by(ComicBook.numero))
+                print("NOMBRE VOLUMEN: {}".format(volume.nombre))
+                self.crearSubArbolVolumenesVersion(volume.nombre, nodoVolumen, len(self.listaConsultas)-1)
+            else:
+                self.treeListas.insert(editorialNode,'end',str(len(self.listaConsultas)), text = volume.nombre)
+                consultaPadre = self.listaConsultas[indiceConsultaPadre]
+                self.listaConsultas.append(consultaPadre.filter(ComicBook.volumeId==volume.id).order_by(ComicBook.numero))
+
+    def crearSubArbolVolumenesVersion(self, nombreVolumen, nodoVolumen, indiceConsultaPadre):
+        print("NOMBRE VOLUMEN PARAMETRO: {}".format(nombreVolumen))
+        volumes = self.session.query(Volume).filter(Volume.nombre == nombreVolumen).order_by(Volume.AnioInicio).all()
+        consultaPadre = self.listaConsultas[indiceConsultaPadre]
+        for index,volume in enumerate(volumes,start=1):
+            print("Creando filtro para volumen {} - {} {}".format(volume.nombre,volume.AnioInicio, nombreVolumen))
+            self.treeListas.insert(nodoVolumen, 'end', str(len(self.listaConsultas)),
+                                                 text="{}- Ver. {}".format(volume.nombre,index))
+            self.listaConsultas.append(
+                consultaPadre.filter(ComicBook.volumeId == volume.id).order_by(ComicBook.numero))
 
     def openPublisher(self):
         window = Toplevel()
@@ -221,7 +248,6 @@ class BabelComicMainGui(Frame):
         window.geometry("+0+0")
         window.wm_title(string="Volumen")
         volumenGui = VolumeGui(window, width=507, height=358, session=self.session)
-
         volumenGui.grid(sticky=(N, S, E, W))
 
     def salir(self):
@@ -341,7 +367,8 @@ class BabelComicMainGui(Frame):
         #self.panelComics.loadComics(self.listaComics)
         #self.treeListas.column("#0",width=100)
         print("dsadas")
-        pass
+        self.loadPage()
+
     def popupListas(self,event):
         # display the popup menu
         try:

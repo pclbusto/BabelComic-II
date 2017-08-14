@@ -5,6 +5,7 @@ from Entidades.Volumes.Volume import Volume
 from PIL import Image, ImageTk
 from iconos.Iconos import Iconos
 import Entidades.Init
+from sqlalchemy import func
 
 class VolumesLookupData():
     ATRIBUTO_ID = 'id'
@@ -19,6 +20,7 @@ class VolumesLookupData():
 class VolumesLookupGui(Frame):
     def __init__(self, parent, serie, session=None, cnf={}, **kw):
         Frame.__init__(self, parent, cnf={}, **kw)
+        self.padre = parent
         self.columnconfigure(0, weight=1)
         self.serie = serie
         if session is None:
@@ -37,7 +39,10 @@ class VolumesLookupGui(Frame):
         self.panelBusqueda.columnconfigure(3, weight=4)
 
         ttk.Label(self.panelBusqueda, text="Nombre: ").grid(column=0, row=0, sticky=W)
-        self.entradaBuscarPorNombre = ttk.Entry(self.panelBusqueda)
+        self.variableBuscarPorNombre = StringVar()
+        self.variableBuscarPorNombre.trace("w", self.callbackVariableBuscarPor)
+        self.entradaBuscarPorNombre = ttk.Entry(self.panelBusqueda,textvariable=self.variableBuscarPorNombre)
+
         self.entradaBuscarPorNombre.grid(column=1, row=0, sticky=(W, E),padx=5)
 
         ttk.Label(self.panelBusqueda, text="Cantidad Números: ").grid(column=0, row=1, sticky=W)
@@ -49,21 +54,13 @@ class VolumesLookupGui(Frame):
         self.entradaBuscarPorAñoInicio.grid(column=3, row=0, sticky=(W, E),padx=5)
 
         ttk.Label(self.panelBusqueda, text="Editorial: ").grid(column=2, row=1, sticky=W)
-        self.entradaBuscarPorEditorial = ttk.Entry(self.panelBusqueda)
+        self.variableBuscarPorEditorial = StringVar()
+        self.variableBuscarPorEditorial.trace("w", self.callbackVariableBuscarPor)
+
+        self.entradaBuscarPorEditorial = ttk.Entry(self.panelBusqueda,textvariable=self.variableBuscarPorEditorial)
         self.entradaBuscarPorEditorial.grid(column=3, row=1, sticky=(W, E),padx=5)
 
-
-        # self.comboOpcionBusqueda = StringVar()
-        # self.opcionesBusqueda = ttk.Combobox(self.panelBusqueda, textvariable=self.comboOpcionBusqueda)
-        # self.comboOpcionBusqueda.trace(mode='w', callback=self.__ChangedComboboxFilter__)
-        # self.opcionesBusqueda['values'] = (
-        # 'Buscar por Nombre', 'Buscar por Número', 'Buscar por Editorial', 'Buscar por Año')
-        # self.filtros = {'nombre': [''], 'name': [], 'cantidadNumeros': [], 'AnioInicio': []}
-        # self.opcionesBusqueda.grid(sticky=(W))
-        # self.varaiblePatronBusqueda = StringVar()
-        # self.entryFiltro = ttk.Entry(self.panelBusqueda, textvariable=self.varaiblePatronBusqueda)
-        # self.varaiblePatronBusqueda.trace(mode='w', callback=self.__ChangedFilter__)
-        # self.entryFiltro.grid(column=1, row=0, sticky=(W, E))
+        self.padre.bind("<Control-s>",lambda x:  self.seleccionarVolume())
 
         ttk.Button(self.panelBusqueda, text='Buscar', command=self.buscarVolume).grid(sticky=(E), column=4, row=0)
         # self.opcionesBusqueda.current(1)
@@ -119,6 +116,9 @@ class VolumesLookupGui(Frame):
         self.pilImageCoverGenerica = Iconos.pilImageCoverGenerica
         self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
+
+    def callbackVariableBuscarPor(self,*args):
+        self.buscarVolume()
 
     def int(self,t):
         return(int(t[0]))
@@ -208,7 +208,7 @@ class VolumesLookupGui(Frame):
             self.labelImagen['image'] = self.cover
 
     def seleccionarVolume(self):
-        print(self.serie.id)
+        self.padre.destroy()
 
     # def sortby(self, col):
     #     print('sort: ' + str(self.opcionesBusqueda.current()))
@@ -233,7 +233,16 @@ class VolumesLookupGui(Frame):
 
         for item in self.grillaVolumes.get_children():
             self.grillaVolumes.delete(item)
-        self.volumes = self.session.query(Volume)
+        consulta = None
+        if self.entradaBuscarPorNombre.get()!='':
+            consulta = self.session.query(Volume).filter(func.lower(Volume.nombre.like("%{}%".format(self.entradaBuscarPorNombre.get()))))
+        else:
+            consulta = self.session.query(Volume)
+
+        if self.entradaBuscarPorEditorial.get()!='':
+            consulta = consulta.filter(func.lower(Volume.publisher_name.like("%{}%".format(self.entradaBuscarPorEditorial.get()))))
+
+        self.volumes = consulta.all()
         for volume in self.volumes:
             self.grillaVolumes.insert('', 'end', '', text='', values=(volume.nombre,
                                                                  volume.cantidadNumeros,
@@ -253,6 +262,8 @@ if (__name__ == '__main__'):
     ##    print(data.atributoBusqueda)
     ##
     lk.grid(sticky=(E, W, S, N))
+    lk.buscarVolume()
+    lk.treeview_sort_column(lk.grillaVolumes, 'name', False)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
     root.mainloop()

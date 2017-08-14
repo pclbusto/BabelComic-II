@@ -19,7 +19,8 @@ class PanelThumbnailComics(Canvas):
         if session is not None:
             self.session = session
         else:
-            self.pahThumnails = Entidades.Init.Session().query(Setup).first().directorioBase+ os.path.sep +"images"+os.path.sep +"coverIssuesThumbnails"+os.path.sep
+            self.session = Entidades.Init.Session()
+        self.pahThumnails = self.session.query(Setup).first().directorioBase+ os.path.sep +"images"+os.path.sep +"coverIssuesThumbnails"+os.path.sep
 
         print(self.pahThumnails)
 
@@ -198,10 +199,12 @@ class PanelThumbnailComics(Canvas):
         print(self.getComicActual())
 
     def recreateThumbnails(self):
-        if self.comicActual:
+        if self.comicActual is not None:
             comic = self.tagAndComic[self.comicActual][1]
-            nombreThumnail = 'coversThumbnails' + os.path.sep + str(comic.rowId) +"."+ comic.getPageExtension()
+            nombreThumnail = self.pahThumnails + str(comic.comicId) +comic.getPageExtension()
+            print("encontramos el archivo:{}".format(nombreThumnail))
             if (os.path.isfile(nombreThumnail)):
+                print("encontramos el archivo")
                 os.remove(nombreThumnail)
                 pagina = comic.getImagePage().resize(self.size, Image.BICUBIC)
                 pagina.save(nombreThumnail)
@@ -211,7 +214,7 @@ class PanelThumbnailComics(Canvas):
             X = int(self.tagAndComic[self.comicActual][2])
             Y = int(self.tagAndComic[self.comicActual][3])
             self.__insertThumnail(X, Y, self.thumbnail[len(self.thumbnail) - 1], comic)
-            print('hay que borrar: ' + 'coversThumbnails' + os.path.sep + str(comic.rowId) +"."+ comic.getPageExtension())
+            print('hay que borrar: ' + 'coversThumbnails' + os.path.sep + str(comic.comicId) + comic.getPageExtension())
 
 
 def scrollupMouse(event):

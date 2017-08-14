@@ -12,6 +12,11 @@ class Setup(Entidades.Init.Base):
 
     '''sirve para paginar la consulta. Manejar tanatos elementos de una puede ser bloqueante para la gui'''
     cantidadComicsPorPagina = Column(Integer,nullable=False,default=18)
+    '''guarda el id del ultimo volumen utilizado'''
+    ultimoVolumeIdUtilizado = Column(String,default='')
+    '''guarda el ultimo numero consultado'''
+    ultimoNumeroConsultado = Column(Integer,default=0)
+
 
     def __repr__(self):
         return "<Setup(directorioBaseImagene='%s')>" %(self.directorioBase)
