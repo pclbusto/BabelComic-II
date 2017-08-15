@@ -15,11 +15,12 @@ from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, session=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        self.pilImagenLookup = Iconos.Iconos.pilImagenLookup
+        iconos = Iconos.Iconos()
+        self.pilImagenLookup = iconos.pilImagenLookup
         self.imagenLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
-        self.pilImageExpansion = Iconos.Iconos.pilImageExpansion
+        self.pilImageExpansion = iconos.pilImageExpansion
         self.imageExpansion = PIL.ImageTk.PhotoImage(self.pilImageExpansion)
-        self.pilImageLogo = Iconos.Iconos.pilImageLogo
+        self.pilImageLogo = iconos.pilImageLogo
         self.imageLogo = PIL.ImageTk.PhotoImage(self.pilImageLogo)
         if session is not None:
             self.session = session

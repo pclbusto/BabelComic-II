@@ -16,19 +16,20 @@ class FrameMaestro(Frame):
         #GENERAMOS BOTONES DE NAVEGACION
         self.frameBotonesNavegacion = Frame(self.panelNavelgacion)
         self.frameBotonesNavegacion.grid(row=0, column=0, sticky=W)
-        self.pilImageFirst = Iconos.Iconos.pilImageFirst
+        iconos= Iconos.Iconos()
+        self.pilImageFirst = iconos.pilImageFirst
         self.imageFirst = PIL.ImageTk.PhotoImage(self.pilImageFirst)
         self.botonFirst = Button(self.frameBotonesNavegacion, image=self.imageFirst)
         self.botonFirst.grid(row=0, column=0)
-        self.pilImagePrev = Iconos.Iconos.pilImagePrev
+        self.pilImagePrev = iconos.pilImagePrev
         self.imagePrev = PIL.ImageTk.PhotoImage(self.pilImagePrev)
         self.botonPrev = Button(self.frameBotonesNavegacion, image=self.imagePrev)
         self.botonPrev.grid(row=0, column=1)
-        self.pilImageNext = Iconos.Iconos.pilImageNext
+        self.pilImageNext = iconos.pilImageNext
         self.imageNext = PIL.ImageTk.PhotoImage(self.pilImageNext)
         self.botonNext = Button(self.frameBotonesNavegacion, image=self.imageNext)
         self.botonNext.grid(row=0, column=2)
-        self.pilImageLast = Iconos.Iconos.pilImageLast
+        self.pilImageLast = iconos.pilImageLast
         self.imageLast = PIL.ImageTk.PhotoImage(self.pilImageLast)
         self.botonLast = Button(self.frameBotonesNavegacion, image=self.imageLast)
         self.botonLast.grid(row=0, column=3)

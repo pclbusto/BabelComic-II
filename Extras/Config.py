@@ -99,6 +99,7 @@ class Config:
         claveObj = Entidades.Setups.SetupVineKey.SetupVinekey(key=clave)
         self.session.add(claveObj)
         self.session.commit()
+        self.__initStatus__(clave)
 
     def addTipo(self, tipo):
 

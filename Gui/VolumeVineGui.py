@@ -15,7 +15,8 @@ class VolumeVineGui(Frame):
         Frame.__init__(self, parent, cnf, **kw)
 
         config = Config()
-        self.pilImagenLookup = Iconos.Iconos.pilImagenLookup
+        iconos = Iconos.Iconos()
+        self.pilImagenLookup = iconos.pilImagenLookup
         self.imageLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
         self.offset=0
         self.frameParametros = Frame(self)
@@ -25,7 +26,7 @@ class VolumeVineGui(Frame):
             self.session = Entidades.Init.Session()
         else:
             self.session = session
-        self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'))
+        self.comicVineSearcher = ComicVineSearcher(config.getClave('volumes'))
         self.comicVineSearcher.setEntidad("volumes")
 
         self.labelId = Label(self.frameParametros, text="Nombre Volumen: ")

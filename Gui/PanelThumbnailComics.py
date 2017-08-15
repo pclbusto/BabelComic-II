@@ -34,7 +34,7 @@ class PanelThumbnailComics(Canvas):
         self.bind('<Shift-Button-1>', self.multipleComicsClicked)
         self.bind('<Control-Button-1>', self.addComicClicked)
 
-        self.paginaDoblada = Iconos.pilImagePaginaDoblada
+        self.paginaDoblada = Iconos().pilImagePaginaDoblada
         self.cantidadColumnas = 6
 
     def __insertThumnail(self, X, Y, thumbnail, comic):
@@ -73,22 +73,22 @@ class PanelThumbnailComics(Canvas):
                 else:
                     cover = Image.open(nombreThumnail)
                     #print(nombreThumnail)
-                #print("Generando thumnails: "+comic.comicVineId)
+                iconos = Iconos()
                 if (comic.comicVineId != ''):
-                    comicvineLogo = Iconos.pilImageCataloged
+                    comicvineLogo = Iconos().pilImageCataloged
                     cover.paste(comicvineLogo, (cover.size[0] - 64, cover.size[1] - 64, cover.size[0], cover.size[1]),
                                 comicvineLogo)
                 calidadIcon = None
                 if (comic.calidad == 0):
-                    calidadIcon = Iconos.pilCalidadSinCalificacion
+                    calidadIcon = iconos.pilCalidadSinCalificacion
                 if (comic.calidad == 1):
-                    calidadIcon = Iconos.pilCalidadMala
+                    calidadIcon = iconos.pilCalidadMala
                 if (comic.calidad == 2):
-                    calidadIcon = Iconos.pilCalidadMedia
+                    calidadIcon = iconos.pilCalidadMedia
                 if (comic.calidad == 3):
-                    calidadIcon = Iconos.pilCalidadBuena
+                    calidadIcon = iconos.pilCalidadBuena
                 if (comic.calidad == 4):
-                    calidadIcon = Iconos.pilCalidadDigital
+                    calidadIcon = iconos.pilCalidadDigital
                 cover.paste(calidadIcon,(0,cover.size[1]-64),calidadIcon)
 
                 tkimage = ImageTk.PhotoImage(cover)

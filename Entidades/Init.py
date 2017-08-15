@@ -9,6 +9,19 @@ engine = create_engine('sqlite:///../BabelComic.db', echo=True, connect_args={'c
 Base = declarative_base()
 Session = sessionmaker(bind = engine)
 
-def recreateTables():
+
+def recreateTables(directorioBase=None):
+
     Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    lista = []
+    for k,value in Base.metadata.tables.items():
+        lista.append(value)
+    Base.metadata.create_all(engine, tables=lista[0:1])
+
+def recreateTables2(directorioBase=None):
+    lista = []
+    for k,value in Base.metadata.tables.items():
+        lista.append(value)
+    Base.metadata.create_all(engine, tables=lista[1:])
+
+

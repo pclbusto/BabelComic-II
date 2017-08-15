@@ -120,7 +120,7 @@ class ComicCatalogerGui(Frame):
         panelVolumenLookup=ttk.Frame(self.seriesLookupFrame)
         panelVolumenLookup.grid(column=1, row=0,sticky=(W,E))
         ttk.Label(self.seriesLookupFrame, text='Volumen:').grid(column=0, row=0, sticky=(W), pady=5)
-        self.pilImagenLookup = Iconos.pilImagenLookup
+        self.pilImagenLookup = Iconos().pilImagenLookup
         self.lookupImage = ImageTk.PhotoImage(self.pilImagenLookup)
         ttk.Button(panelVolumenLookup, image=self.lookupImage, command=self.openSerieLookup).grid(column=2, row=0, sticky=(E), pady=5)
 
