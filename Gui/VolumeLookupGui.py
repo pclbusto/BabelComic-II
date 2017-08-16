@@ -113,7 +113,7 @@ class VolumesLookupGui(Frame):
         ttk.Button(self, text='seleccionar', command=self.seleccionarVolume).grid(column=0, row=2, sticky=(E))
         self.desc = True
 
-        self.pilImageCoverGenerica = Iconos.pilImageCoverGenerica
+        self.pilImageCoverGenerica = Iconos().pilImageCoverGenerica
         self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
 

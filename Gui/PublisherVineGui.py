@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import Tk, ttk, Frame
 import PIL.Image, PIL.ImageTk
-from iconos import Iconos
+from iconos.Iconos import Iconos
 from Entidades.Publishers import Publishers
 from  Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
@@ -13,6 +13,7 @@ class PublisherVineGui(Frame):
     def __init__(self, parent, cnf={}, **kw):
         Frame.__init__(self, parent, cnf, **kw)
         config = Config()
+        self.iconos = Iconos()
         self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'))
         self.comicVineSearcher.setEntidad("publishers")
         self.labelId = Label(self, text="Nombre Editorial: ")
@@ -23,7 +24,7 @@ class PublisherVineGui(Frame):
         self.entradaNombreEditorial.grid(row=0,column=1, sticky=W + E,padx=5,pady=5,columnspan=2 )
         self.botonLookupPublisher=Button(self, command=self.buscar)
         self.botonLookupPublisher.grid(row=0,column=3)
-        self.pilImagenLookup=Iconos.Iconos.pilImagenLookup
+        self.pilImagenLookup=self.iconos.pilImagenLookup
         self.imageLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
         self.botonLookupPublisher.config(image=self.imageLookup)
         self.labelImagen = Label(self, text="logo edtorial")

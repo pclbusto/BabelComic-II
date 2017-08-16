@@ -32,7 +32,9 @@ class PanelThumbnailComics(Canvas):
         self.halfSize = (int(self.size[0] / 2), int(self.size[1] / 2))
         self.bind("<Button-1>", self.comicClicked)
         self.bind('<Shift-Button-1>', self.multipleComicsClicked)
-        self.paginaDoblada = Iconos.pilImagePaginaDoblada
+        self.bind('<Control-Button-1>', self.addComicClicked)
+
+        self.paginaDoblada = Iconos().pilImagePaginaDoblada
         self.cantidadColumnas = 6
 
     def __insertThumnail(self, X, Y, thumbnail, comic):
@@ -71,21 +73,22 @@ class PanelThumbnailComics(Canvas):
                 else:
                     cover = Image.open(nombreThumnail)
                     #print(nombreThumnail)
-                #print("Generando thumnails: "+comic.comicVineId)
+                iconos = Iconos()
                 if (comic.comicVineId != ''):
-                    comicvineLogo = Iconos.pilImageCataloged
+                    comicvineLogo = Iconos().pilImageCataloged
                     cover.paste(comicvineLogo, (cover.size[0] - 64, cover.size[1] - 64, cover.size[0], cover.size[1]),
                                 comicvineLogo)
+                calidadIcon = None
                 if (comic.calidad == 0):
-                    calidadIcon = Iconos.pilCalidadSinCalificacion
+                    calidadIcon = iconos.pilCalidadSinCalificacion
                 if (comic.calidad == 1):
-                    calidadIcon = Iconos.pilCalidadMala
+                    calidadIcon = iconos.pilCalidadMala
                 if (comic.calidad == 2):
-                    calidadIcon = Iconos.pilCalidadMedia
+                    calidadIcon = iconos.pilCalidadMedia
                 if (comic.calidad == 3):
-                    calidadIcon = Iconos.pilCalidadBuena
+                    calidadIcon = iconos.pilCalidadBuena
                 if (comic.calidad == 4):
-                    calidadIcon = Iconos.pilCalidadDigital
+                    calidadIcon = iconos.pilCalidadDigital
                 cover.paste(calidadIcon,(0,cover.size[1]-64),calidadIcon)
 
                 tkimage = ImageTk.PhotoImage(cover)
@@ -147,7 +150,7 @@ class PanelThumbnailComics(Canvas):
         self.threadLoadAndCreateThumbnails = threading.Thread(target=self.loadAndCreateThumbnails)
         self.threadLoadAndCreateThumbnails.start()
 
-    def comicClicked(self, event):
+    def __comicClicked__(self,event, multipleSelection):
         print("clicked at", event.x, event.y)
         x = self.canvasx(event.x)
         y = self.canvasy(event.y)
@@ -159,14 +162,50 @@ class PanelThumbnailComics(Canvas):
             tagComic = self.tagAndComic[indice]
             # for tagComic in self.tagAndComic:
             if tagClicked == tagComic[0]:
-                for i in self.comicsSelected:
-                    print("limpiando: "+str(i))
-                    self.itemconfig(self.tagAndComic[i][4], outline='black')
-                self.comicsSelected.clear()
-                self.comicsSelected.append(indice)
-                self.comicActual = indice
-                self.itemconfig(tagComic[4], outline='blue')
-        print("comic Actual: "+str(self.getComicActual()))
+                if not multipleSelection:
+                    for i in self.comicsSelected:
+                        print("limpiando: " + str(i))
+                        self.itemconfig(self.tagAndComic[i][4], outline='black')
+                    self.comicsSelected.clear()
+                    self.comicsSelected.append(indice)
+                    self.comicActual = indice
+                    self.itemconfig(tagComic[4], outline='blue')
+                else:
+                    if indice in self.comicsSelected:
+                        self.comicsSelected.remove(indice)
+                        self.comicActual = self.comicsSelected[len(self.comicsSelected)-1]
+                        self.itemconfig(tagComic[4], outline='black')
+                    else:
+                        self.comicsSelected.append(indice)
+                        self.comicActual = indice
+                        self.itemconfig(tagComic[4], outline='blue')
+
+        print("comic Actual: " + str(self.getComicActual()))
+
+    def addComicClicked(self, event):
+        self.__comicClicked__(event,True)
+
+    def comicClicked(self, event):
+        self.__comicClicked__(event=event, multipleSelection=False)
+        # print("clicked at", event.x, event.y)
+        # x = self.canvasx(event.x)
+        # y = self.canvasy(event.y)
+        # tagClicked = self.find_closest(x, y)[0]
+        # print(tagClicked)
+        # X = 0
+        # Y = 0
+        # for indice in range(0, len(self.tagAndComic)):
+        #     tagComic = self.tagAndComic[indice]
+        #     # for tagComic in self.tagAndComic:
+        #     if tagClicked == tagComic[0]:
+        #         for i in self.comicsSelected:
+        #             print("limpiando: "+str(i))
+        #             self.itemconfig(self.tagAndComic[i][4], outline='black')
+        #         self.comicsSelected.clear()
+        #         self.comicsSelected.append(indice)
+        #         self.comicActual = indice
+        #         self.itemconfig(tagComic[4], outline='blue')
+        # print("comic Actual: "+str(self.getComicActual()))
 
     def multipleComicsClicked(self, event):
         print("multiple clicked at", event.x, event.y)

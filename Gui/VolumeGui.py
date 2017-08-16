@@ -10,15 +10,17 @@ import Entidades.Init
 from Gui.VolumeLookupGui import VolumesLookupGui
 from Gui.VolumeVineGui import VolumeVineGui
 from Extras.ComicVineSearcher import ComicVineSearcher
+from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, session=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
-        self.pilImagenLookup = Iconos.Iconos.pilImagenLookup
+        iconos = Iconos.Iconos()
+        self.pilImagenLookup = iconos.pilImagenLookup
         self.imagenLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
-        self.pilImageExpansion = Iconos.Iconos.pilImageExpansion
+        self.pilImageExpansion = iconos.pilImageExpansion
         self.imageExpansion = PIL.ImageTk.PhotoImage(self.pilImageExpansion)
-        self.pilImageLogo = Iconos.Iconos.pilImageLogo
+        self.pilImageLogo = iconos.pilImageLogo
         self.imageLogo = PIL.ImageTk.PhotoImage(self.pilImageLogo)
         if session is not None:
             self.session = session
@@ -88,7 +90,9 @@ class VolumeGui(FrameMaestro):
     def updateVolume(self):
         cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4')
         cv.entidad='volume'
-        volumeUpdated = cv.getVineEntity(self.volume.id)
+        volumenAndComics = cv.getVineEntity(self.volume.id)
+
+        volumeUpdated = volumenAndComics[0]
 
         self.volume.cantidadNumeros = volumeUpdated.cantidadNumeros
         self.volume.nombre = volumeUpdated.nombre
@@ -98,7 +102,7 @@ class VolumeGui(FrameMaestro):
         self.volume.publisherId = volumeUpdated.publisherId
         self.setVolume(self.volume)
         self.loadVolume()
-        print('cantidad {}'.format(self.volume.cantidadNumeros))
+        self.numerosPorVolumen = volumenAndComics[1]
         self.guardar()
 
     def openLookupVolume(self):
@@ -203,6 +207,9 @@ class VolumeGui(FrameMaestro):
         super().guardar()
         self.copyFromWindowsToEntity()
         self.session.add(self.volume)
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId==self.volume.id).delete()
+        for numeroComic in self.numerosPorVolumen:
+            self.session.add(numeroComic)
         self.session.commit()
 
     def getPrev(self):

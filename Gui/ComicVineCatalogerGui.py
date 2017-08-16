@@ -79,7 +79,7 @@ class ComicCatalogerGui(Frame):
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-
+        self.comicbook = self.comicbooks[0]
         self.comicbooks[0].openCbFile()
         self.comicbooks[0].goto(0)
         self.size = (160, 248)
@@ -88,7 +88,7 @@ class ComicCatalogerGui(Frame):
                                                           'Comic info')
 
 
-        self.panelSourceComic.grid(sticky=(N, W, S, E))
+        self.panelSourceComic.grid(column=0,row=0, sticky=(N, W, S, E))
         self.listViewComics = ttk.Treeview(self)
 
         self.listViewComics['columns'] = ['Nombre_Archivo']
@@ -98,13 +98,20 @@ class ComicCatalogerGui(Frame):
         self.listViewComics.heading('Nombre_Archivo', text='Nombre Archivo')
         self.listViewComics.column('Nombre_Archivo', width=230)
         self.listViewComics.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=4)
-        ##Panel opciones busqueda
+        self.listViewComics.bind("<<TreeviewSelect>>",self.listViewComicsClicked)
+        for index,comic in enumerate(self.comicbooks):
+            self.listViewComics.insert('', 'end', text=index,
+                                    values=([comic.path]))
+            print(comic.path)
 
+
+        ##Panel opciones busqueda
         self.panelBusqueda = LabelFrame(self)
         self.panelBusqueda.grid(column=1, row=0, sticky=(N, W, S, E))
         #self.entryTitulo = StringVar()
         self.entrySerie = StringVar()
-        self.spinNumero = IntVar()
+        self.spinNumeroDesde = IntVar()
+        self.spinNumeroHasta = IntVar()
         self.spinAnio = IntVar()
 
         self.seriesLookupFrame = ttk.Frame(self.panelBusqueda)
@@ -113,17 +120,22 @@ class ComicCatalogerGui(Frame):
         panelVolumenLookup=ttk.Frame(self.seriesLookupFrame)
         panelVolumenLookup.grid(column=1, row=0,sticky=(W,E))
         ttk.Label(self.seriesLookupFrame, text='Volumen:').grid(column=0, row=0, sticky=(W), pady=5)
-        self.pilImagenLookup = Iconos.pilImagenLookup
+        self.pilImagenLookup = Iconos().pilImagenLookup
         self.lookupImage = ImageTk.PhotoImage(self.pilImagenLookup)
         ttk.Button(panelVolumenLookup, image=self.lookupImage, command=self.openSerieLookup).grid(column=2, row=0, sticky=(E), pady=5)
 
         ttk.Entry(panelVolumenLookup, textvariable=self.entrySerie).grid(column=1, row=0, sticky=(W), pady=5)
-        ttk.Label(self.seriesLookupFrame, text='Número:').grid(column=0, row=1, sticky=(W), pady=5)
-        Spinbox(self.seriesLookupFrame, textvariable=self.spinNumero, from_=0, to=9999).grid(column=1, row=1, sticky=(W),
+        ttk.Label(self.seriesLookupFrame, text='Número Desde/Hasta:').grid(column=0, row=1, sticky=(W), pady=5)
+        Spinbox(self.seriesLookupFrame, textvariable=self.spinNumeroDesde, from_=0, to=9999).grid(column=1, row=1, sticky=(W),
                                                                                          pady=5)
 
+        Spinbox(self.seriesLookupFrame, textvariable=self.spinNumeroHasta, from_=0, to=9999).grid(column=2, row=1,
+                                                                                             sticky=(W),
+                                                                                             pady=5)
+
+
         botonBuscar = ttk.Button(self.seriesLookupFrame, text='Buscar', command=self.buscarSerie)
-        botonBuscar.grid(column=2, row=0, pady=5)
+        botonBuscar.grid(column=3, row=0, pady=5)
 
         ##config grilla comics
         self.grillaComics = ttk.Treeview(self.seriesLookupFrame,
@@ -146,15 +158,29 @@ class ComicCatalogerGui(Frame):
         self.grillaComics.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
         self.grillaComics.column('numero',width=65)
         # boton copiar datos
-        ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=2, row=1)
+        ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=3, row=1)
         print('--------------------------------------')
         '''
         cargamos los datos que se guardaron de la ultima vez
         '''
         setup = self.session.query(Setup).first()
-        self.spinNumero.set(setup.ultimoNumeroConsultado)
+        self.spinNumeroDesde.set(setup.ultimoNumeroConsultado)
+        self.spinNumeroHasta.set(setup.ultimoNumeroConsultado)
         self.entrySerie.set(setup.ultimoVolumeIdUtilizado)
 
+
+    def listViewComicsClicked(self, args):
+        index = (self.listViewComics.item(self.listViewComics.selection(), "text"))
+
+        self.panelSourceComic.destroy()
+        self.panelSourceComic = self.__createPanelComic__(self, self.comicbooks[index],
+                                                          self.comicbooks[index].getImagePage().resize(self.size,
+                                                                                                   resample=Image.BICUBIC),
+                                                          'Comic info')
+
+        self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
+        self.comicbook = self.comicbooks[index]
+        print(self.comicbook)
     def copiarInfo(self):
         cnf = Config(self.session)
         print('clave: ' + cnf.getClave('issue'))
@@ -165,10 +191,10 @@ class ComicCatalogerGui(Frame):
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
         setup = self.session.query(Setup).first()
-        setup.ultimoNumeroConsultado = self.spinNumero.get()
+        setup.ultimoNumeroConsultado = self.spinNumeroHasta.get()
         setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
         self.session.commit()
-        self.parent.destroy()
+
 
     def itemClicked(self, event):
         if (self.grillaComics.selection):
@@ -213,8 +239,8 @@ class ComicCatalogerGui(Frame):
         buscador.setEntidad('issues')
         if (self.entrySerie.get()):
             buscador.addFilter('volume:' + self.entrySerie.get())
-        if (str(self.spinNumero.get()) != '0'):
-            buscador.addFilter('issue_number:' + str(self.spinNumero.get()))
+        if (str(self.spinNumeroDesde.get()) != '0'):
+            buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
 
         buscador.vineSearch()
         for item in self.grillaComics.get_children():
@@ -236,10 +262,15 @@ if __name__ == '__main__':
     root = Tk()
     session = Entidades.Init.Session()
     comics=[]
-    comics.append(session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\DC Week+ (01-11-2017)\\Hal Jordan & the Green Lantern Corps 012 (2017) (2 covers) (digital) (Minutemen-Slayer).cbr') .order_by(ComicBook.path.asc()).first())
+    # comics.append(session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\DC Week+ (01-11-2017)\\Hal Jordan & the Green Lantern Corps 012 (2017) (2 covers) (digital) (Minutemen-Slayer).cbr') .order_by(ComicBook.path.asc()).first())
     comics.append(session.query(ComicBook).filter(
-    ComicBook.path == 'E:\\Comics\\DC\\DC Week+ (07-13-2016)\\Hal Jordan and the Green Lantern Corps - Rebirth 01 (2016) (Webrip) (The Last Kryptonian-DCP).cbr').order_by(
-        ComicBook.path.asc()).first())
+        ComicBook.path == 'C:\\comics\\Aquaman 009 (2016) (Digital) (BlackManta-Empire).cbr').order_by(ComicBook.path.asc()).first())
+
+    #comics.append(session.query(ComicBook).filter(
+    # ComicBook.path == 'E:\\Comics\\DC\\DC Week+ (07-13-2016)\\Hal Jordan and the Green Lantern Corps - Rebirth 01 (2016) (Webrip) (The Last Kryptonian-DCP).cbr').order_by(
+    #     ComicBook.path.asc()).first())
+    comics.append(session.query(ComicBook).filter(
+        ComicBook.path == 'C:\\comics\\Batman 009 (2016) (2 covers) (digital) (Minutemen-Faessla).cbz').order_by(ComicBook.path.asc()).first())
 
     cvs = ComicCatalogerGui(root, comics)
     #cvs.entrySerie.set('4363')

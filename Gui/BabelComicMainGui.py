@@ -32,16 +32,17 @@ class BabelComicMainGui(Frame):
         self.barraHerramientas.rowconfigure(1, weight=1)
         self.setup = Entidades.Init.Session().query(Setup).first()
         self.root = parent
-        pilImagenLookup = Iconos.pilImagenLookup
+
+        pilImagenLookup = Iconos().pilImagenLookup
         self.imagenLookup = ImageTk.PhotoImage(pilImagenLookup)
 
-        self.pilImageFirst = Iconos.pilImageFirst
+        self.pilImageFirst = Iconos().pilImageFirst
         self.imageFirst = ImageTk.PhotoImage(self.pilImageFirst)
-        self.pilImagePrev = Iconos.pilImagePrev
+        self.pilImagePrev = Iconos().pilImagePrev
         self.imagePrev = ImageTk.PhotoImage(self.pilImagePrev)
-        self.pilImageNext = Iconos.pilImageNext
+        self.pilImageNext = Iconos().pilImageNext
         self.imageNext = ImageTk.PhotoImage(self.pilImageNext)
-        self.pilImageLast = Iconos.pilImageLast
+        self.pilImageLast = Iconos().pilImageLast
         self.imageLast = ImageTk.PhotoImage(self.pilImageLast)
 
         self.session = Entidades.Init.Session()
@@ -318,8 +319,11 @@ class BabelComicMainGui(Frame):
             window = Toplevel()
             window.title('Catalogador')
             window.geometry('+0+0')
-            comic = self.panelComics.getComicActual()
-            cvs = ComicCatalogerGui(window, comic, self.session)
+            comics=[]
+            for index in self.panelComics.comicsSelected:
+                comics.append(self.panelComics.getComicAt(index))
+            # comic = self.panelComics.getComicActual()
+            cvs = ComicCatalogerGui(window, comics, self.session)
             cvs.grid()
             window.columnconfigure(0, weight=1)
             window.rowconfigure(0, weight=1)

@@ -10,7 +10,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 import Entidades.Init
-#from Entidades.Volumes.Volume import Volume
+from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 
 
 class ComicVineSearcher():
@@ -201,7 +201,18 @@ class ComicVineSearcher():
                     estaba mal. Por esto se decide contar los issues
                     '''
                     volume.cantidadNumeros = len(volumeVine.find('issues').findall('issue'))
-                return volume
+                    '''se cargan los issues que trae el xml. no toda la info solo los numeros.
+                    esto se usa para poder calcular los offset correctos en la busqueda de issues
+                    '''
+                    print("ACA ESTAMOS")
+                    comicIds = []
+                    for issue in volumeVine.find('issues').findall('issue'):
+                        comicInVolumes = ComicInVolumes()
+                        comicInVolumes.volumenId = volume.id
+                        comicInVolumes.comicNumber = issue.find("issue_number").text
+                        comicIds.append(comicInVolumes)
+
+                return (volume, comicIds)
             else:
                 print('Entidad %1 sin implementar', self.entidad)
 
@@ -227,6 +238,7 @@ class ComicVineSearcher():
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
+        print("*"+self.vinekey+"*")
         print(
             'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                 self.offset) + '&sort=date_added:asc')
