@@ -238,6 +238,7 @@ class ComicVineSearcher():
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
+        print("*"+self.vinekey+"*")
         print(
             'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                 self.offset) + '&sort=date_added:asc')

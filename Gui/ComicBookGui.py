@@ -130,7 +130,7 @@ class ComicBookGui(FrameMaestro):
 
     def abrirCatalogadorComicVine(self):
         window = Toplevel()
-        cvc = ComicCatalogerGui(window,self.comic,session=self.session)
+        cvc = ComicCatalogerGui(window,[self.comic],session=self.session)
         cvc.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)

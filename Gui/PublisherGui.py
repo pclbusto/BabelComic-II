@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import Tk, ttk, Frame
 import PIL.Image, PIL.ImageTk
-from iconos import Iconos
+from iconos.Iconos import Iconos
 from Entidades.Publishers import Publishers
 from Gui.PublisherVineGui import PublisherVineGui
 import Entidades.Init
@@ -16,7 +16,7 @@ class PublisherGui(Frame):
         else:
             self.session = Entidades.Init.Session()
 
-
+        self.iconos = Iconos()
         self.height=358
         self.width = 507
         self.labelId = Label(self, text="ID")
@@ -26,7 +26,7 @@ class PublisherGui(Frame):
         self.entradaId.grid(row=0,column=1, sticky=W + E,padx=5,pady=5, )
         self.botonLookupPublisher=Button(self)
         self.botonLookupPublisher.grid(row=0,column=3)
-        self.pilImagenLookup=Iconos.Iconos.pilImagenLookup
+        self.pilImagenLookup=self.iconos.pilImagenLookup
         self.imageLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
         self.botonLookupPublisher.config(image=self.imageLookup)
         self.labelNombre= Label(self, text="Nombre")
@@ -40,12 +40,12 @@ class PublisherGui(Frame):
         self.imageLogoCanvas = Canvas(self, width=154, height=154)
         self.imageLogoCanvas.grid(row=0, column=4, rowspan=4,sticky=E)
 
-        self.pilImageLogo = Iconos.Iconos.pilImageLogo
+        self.pilImageLogo = self.iconos.pilImageLogo
         self.imageLogo = PIL.ImageTk.PhotoImage(self.pilImageLogo)
         self.imageLogoCanvas.create_image(77, 77, image=self.imageLogo)
         self.labelResumen = Label(self, text="Resumen")
         self.labelResumen.grid(row=5,column=0,sticky=W,padx=5,pady=5)
-        self.pilImageExpansion = Iconos.Iconos.pilImageExpansion
+        self.pilImageExpansion = self.iconos.pilImageExpansion
         self.imageExpansion = PIL.ImageTk.PhotoImage(self.pilImageExpansion)
 
         self.botonExpansionResumen = Button(self,text="->",image=self.imageExpansion)
@@ -57,19 +57,19 @@ class PublisherGui(Frame):
 
         self.frameBotonesNavegacion = Frame(self)
         self.frameBotonesNavegacion.grid(row=7,column=0,sticky=W)
-        self.pilImageFirst=Iconos.Iconos.pilImageFirst
+        self.pilImageFirst=self.iconos.pilImageFirst
         self.imageFirst = PIL.ImageTk.PhotoImage(self.pilImageFirst)
         self.botonFirst = Button(self.frameBotonesNavegacion,image=self.imageFirst, command=self.getFirst)
         self.botonFirst.grid(row=0, column=0)
-        self.pilImagePrev = Iconos.Iconos.pilImagePrev
+        self.pilImagePrev = self.iconos.pilImagePrev
         self.imagePrev = PIL.ImageTk.PhotoImage(self.pilImagePrev)
         self.botonPrev = Button(self.frameBotonesNavegacion,image=self.imagePrev, command=self.getPrev)
         self.botonPrev.grid(row=0, column=1)
-        self.pilImageNext = Iconos.Iconos.pilImageNext
+        self.pilImageNext = self.iconos.pilImageNext
         self.imageNext = PIL.ImageTk.PhotoImage(self.pilImageNext)
         self.botonNext = Button(self.frameBotonesNavegacion,image=self.imageNext, command=self.getNext)
         self.botonNext.grid(row=0, column=2)
-        self.pilImageLast = Iconos.Iconos.pilImageLast
+        self.pilImageLast = self.iconos.pilImageLast
         self.imageLast = PIL.ImageTk.PhotoImage(self.pilImageLast)
         self.botonLast = Button(self.frameBotonesNavegacion,image=self.imageLast, command=self.getLast)
         self.botonLast.grid(row=0, column=3)
@@ -123,6 +123,7 @@ class PublisherGui(Frame):
             self.entradaNombre.insert(0, publisher.name)
             self.entradaUrl.insert(0, publisher.siteDetailUrl)
             self.textoDescripcion.config(text=publisher.deck)
+
 
 
 if __name__ == '__main__':

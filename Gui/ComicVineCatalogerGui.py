@@ -79,7 +79,7 @@ class ComicCatalogerGui(Frame):
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-
+        self.comicbook = self.comicbooks[0]
         self.comicbooks[0].openCbFile()
         self.comicbooks[0].goto(0)
         self.size = (160, 248)
@@ -179,21 +179,22 @@ class ComicCatalogerGui(Frame):
                                                           'Comic info')
 
         self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
-
+        self.comicbook = self.comicbooks[index]
+        print(self.comicbook)
     def copiarInfo(self):
         cnf = Config(self.session)
         print('clave: ' + cnf.getClave('issue'))
         cv = ComicVineSearcher(cnf.getClave('issue'))
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
-        self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbooks[0].path).first()
+        self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
         setup = self.session.query(Setup).first()
-        setup.ultimoNumeroConsultado = self.spinNumero.get()
+        setup.ultimoNumeroConsultado = self.spinNumeroHasta.get()
         setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
         self.session.commit()
-        self.parent.destroy()
+
 
     def itemClicked(self, event):
         if (self.grillaComics.selection):
