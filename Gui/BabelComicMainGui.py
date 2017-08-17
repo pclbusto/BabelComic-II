@@ -75,7 +75,8 @@ class BabelComicMainGui(Frame):
 
         # arbol donde tenenmos las listas de comics.
         self.treeListas = ttk.Treeview(self.panedWindow)
-        self.treeListas.column("#0", minwidth=0, width=350)
+        print(self.setup.anchoArbol)
+        self.treeListas.column("#0", minwidth=0, width=self.setup.anchoArbol)
 
         self.treeListas.grid()
         self.biblioteca = ''
@@ -252,6 +253,11 @@ class BabelComicMainGui(Frame):
         volumenGui.grid(sticky=(N, S, E, W))
 
     def salir(self):
+
+        self.setup.anchoArbol = self.treeListas.column('#0',"width")
+        self.session.add(self.setup)
+        self.session.commit()
+
         self.root.destroy()
 
     def CheckThumbnailsGeneration(self):

@@ -24,7 +24,7 @@ class ReadAcomicParser():
         # self.listaUrlNombreArchivo = listaUrlNombreArchivo
 
     def parserHtml(self):
-        listaCaracteresInvalidos=["/","\\"]
+        listaCaracteresInvalidos=["/","\\",":"]
         #Obtenemos el nombre del comic que vamos a crear
         t = re.findall('<meta name\="keywords" content\=(.*)\"', self.html)
         self.nombreComic = t[0][(t[0].rfind(","))+1:] + ".cbz"
