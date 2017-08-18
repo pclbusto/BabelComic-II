@@ -9,6 +9,7 @@ import Entidades.Init
 from Entidades.Volumes.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 from Gui.PublisherLookupGui import PublisherLookupGui
+from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 
 class VolumeVineGui(Frame):
     def __init__(self, parent, session=None, cnf={}, **kw):
@@ -98,7 +99,18 @@ class VolumeVineGui(Frame):
         tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
 
     def agregarVolumen(self):
-        self.session.add(self.volume)
+        cnf = Config(self.session)
+        cv = ComicVineSearcher(cnf.getClave('volume'))
+        cv.entidad = 'volume'
+        volumenAndIssues = cv.getVineEntity(self.volume.id)
+
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId == self.volume.id).delete()
+        for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
+            numeroComic.offset = int(index / 100)
+            self.session.add(numeroComic)
+
+
+        self.session.add(volumenAndIssues[0])
         self.session.commit()
 
     def openLookupPublisher(self):

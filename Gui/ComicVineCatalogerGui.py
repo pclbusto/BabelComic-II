@@ -14,7 +14,7 @@ import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-
+from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 class ComicCatalogerGui(Frame):
     '''muestra un panel con una info de comic resumida
     |------| serie nº /de
@@ -143,11 +143,11 @@ class ComicCatalogerGui(Frame):
                                                   'api_detail_url', 'thumb_url', 'volumeName', 'volumeId'),
                                          displaycolumns=('titulo', 'numero', 'volumeName'))
 
-        self.grillaComics.heading('titulo', text='Título')
+        self.grillaComics.heading('titulo', text='Título', command=lambda: self.treeview_sort_column(self.grillaComics, 'titulo', False))
         self.grillaComics.heading('fecha', text='Fecha Cover')
         self.grillaComics.heading('descripcion', text='Descripcion')
         self.grillaComics.heading('idExterno', text='Id Vine')
-        self.grillaComics.heading('numero', text='Número')
+        self.grillaComics.heading('numero', text='Número', command=lambda: self.treeview_sort_column(self.grillaComics, 'numero', False))
         self.grillaComics.heading('api_detail_url', text='api_detail_url')
         self.grillaComics.heading('thumb_url', text='thumb_url')
         self.grillaComics.heading('volumeName', text='Serie')
@@ -168,18 +168,33 @@ class ComicCatalogerGui(Frame):
         self.spinNumeroHasta.set(setup.ultimoNumeroConsultado)
         self.entrySerie.set(setup.ultimoVolumeIdUtilizado)
 
+    def int(self,t):
+        return(int(t[0]))
+
+    def treeview_sort_column(self, tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        if col in['numero']:
+            l.sort(reverse=reverse,key=self.int)
+        else:
+            l.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+        # reverse sort next time
+        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
 
     def listViewComicsClicked(self, args):
         index = (self.listViewComics.item(self.listViewComics.selection(), "text"))
 
         self.panelSourceComic.destroy()
+        self.comicbook = self.comicbooks[index]
         self.panelSourceComic = self.__createPanelComic__(self, self.comicbooks[index],
                                                           self.comicbooks[index].getImagePage().resize(self.size,
                                                                                                    resample=Image.BICUBIC),
                                                           'Comic info')
 
         self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
-        self.comicbook = self.comicbooks[index]
         print(self.comicbook)
     def copiarInfo(self):
         cnf = Config(self.session)
@@ -239,13 +254,26 @@ class ComicCatalogerGui(Frame):
         buscador.setEntidad('issues')
         if (self.entrySerie.get()):
             buscador.addFilter('volume:' + self.entrySerie.get())
-        if (str(self.spinNumeroDesde.get()) != '0'):
-            buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
+        '''vamos a cambiar esto y vamos a retornar de a 100 registros. Calculamos el offset que contiene el rango y eso retornamos desde 
+        comicvine despues filtramos para solo mostrar lo que se pidio.
+        '''
 
-        buscador.vineSearch()
+        comicInVolume = self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId == self.entrySerie.get()).filter(ComicInVolumes.comicNumber==self.spinNumeroDesde.get()).first()
+
+        # if (str(self.spinNumeroDesde.get()) != '0'):
+        #     buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
+        #
+
+        buscador.vineSearch(io_offset=comicInVolume.offset)
         for item in self.grillaComics.get_children():
             self.grillaComics.delete(item)
-        for issue in buscador.listaBusquedaVine:
+
+        listaAMostrar = []
+        for comic in buscador.listaBusquedaVine:
+            if int(comic['numero'])>=self.spinNumeroDesde.get() and int(comic['numero'])<=self.spinNumeroHasta.get():
+                listaAMostrar.append(comic)
+
+        for issue in listaAMostrar:
             self.grillaComics.insert('', 0, '', values=(issue['fecha'],
                                                         issue['titulo'],
                                                         issue['descripcion'],

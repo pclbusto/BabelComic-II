@@ -224,7 +224,7 @@ class Config:
             return  statusVineStatus.key
         return ""
     def validarRecurso(self,recurso):
-        return recurso in ["volumes","issues", "publishers","issue"]
+        return recurso in ["volumes","issues", "publishers","issue","volume"]
     def getClave(self, recurso):
         if self.validarRecurso(recurso):
             clave = self.__getClaveMenosUsadaPorRecurso__(recurso)
