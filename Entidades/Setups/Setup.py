@@ -16,7 +16,7 @@ class Setup(Entidades.Init.Base):
     ultimoVolumeIdUtilizado = Column(String,default='')
     '''guarda el ultimo numero consultado'''
     ultimoNumeroConsultado = Column(Integer,default=0)
-
+    anchoArbol = Column(Integer,default=100)
     # print(os.sep)
     # print(os.getcwd()[:os.getcwd().rfind(os.sep)])
 
