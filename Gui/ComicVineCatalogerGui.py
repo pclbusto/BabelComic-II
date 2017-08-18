@@ -14,7 +14,7 @@ import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-
+from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 class ComicCatalogerGui(Frame):
     '''muestra un panel con una info de comic resumida
     |------| serie nº /de
@@ -254,13 +254,26 @@ class ComicCatalogerGui(Frame):
         buscador.setEntidad('issues')
         if (self.entrySerie.get()):
             buscador.addFilter('volume:' + self.entrySerie.get())
-        if (str(self.spinNumeroDesde.get()) != '0'):
-            buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
+        '''vamos a cambiar esto y vamos a retornar de a 100 registros. Calculamos el offset que contiene el rango y eso retornamos desde 
+        comicvine despues filtramos para solo mostrar lo que se pidio.
+        '''
 
-        buscador.vineSearch()
+        comicInVolume = self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId == self.entrySerie.get()).filter(ComicInVolumes.comicNumber==self.spinNumeroDesde.get()).first()
+
+        # if (str(self.spinNumeroDesde.get()) != '0'):
+        #     buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
+        #
+
+        buscador.vineSearch(io_offset=comicInVolume.offset)
         for item in self.grillaComics.get_children():
             self.grillaComics.delete(item)
-        for issue in buscador.listaBusquedaVine:
+
+        listaAMostrar = []
+        for comic in buscador.listaBusquedaVine:
+            if int(comic['numero'])>=self.spinNumeroDesde.get() and int(comic['numero'])<=self.spinNumeroHasta.get():
+                listaAMostrar.append(comic)
+
+        for issue in listaAMostrar:
             self.grillaComics.insert('', 0, '', values=(issue['fecha'],
                                                         issue['titulo'],
                                                         issue['descripcion'],

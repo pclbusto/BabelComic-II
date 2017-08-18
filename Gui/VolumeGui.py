@@ -209,7 +209,8 @@ class VolumeGui(FrameMaestro):
         self.copyFromWindowsToEntity()
         self.session.add(self.volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId==self.volume.id).delete()
-        for numeroComic in self.numerosPorVolumen:
+        for index, numeroComic in enumerate(self.numerosPorVolumen, start=0):
+            numeroComic.offset = int(index/100)
             self.session.add(numeroComic)
         self.session.commit()
 
