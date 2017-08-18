@@ -11,7 +11,7 @@ from Gui.VolumeLookupGui import VolumesLookupGui
 from Gui.VolumeVineGui import VolumeVineGui
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
-
+from Extras.Config import Config
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, session=None, cnf={}, **kw):
         FrameMaestro.__init__(self, parent, cnf, **kw)
@@ -88,7 +88,8 @@ class VolumeGui(FrameMaestro):
             self.getFirst()
 
     def updateVolume(self):
-        cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4')
+        cnf = Config(self.session)
+        cv = ComicVineSearcher(cnf.getClave('volume'))
         cv.entidad='volume'
         volumenAndComics = cv.getVineEntity(self.volume.id)
 
