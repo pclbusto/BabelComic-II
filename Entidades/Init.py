@@ -24,4 +24,6 @@ def recreateTables2(directorioBase=None):
         lista.append(value)
     Base.metadata.create_all(engine, tables=lista[1:])
 
+def recreateTablesAll(directorioBase=None):
+    Base.metadata.create_all(engine)
 

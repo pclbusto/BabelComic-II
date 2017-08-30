@@ -79,6 +79,7 @@ class ComicCatalogerGui(Frame):
             self.session = session
         else:
             self.session = Entidades.Init.Session()
+
         self.comicbook = self.comicbooks[0]
         self.comicbooks[0].openCbFile()
         self.comicbooks[0].goto(0)
@@ -89,19 +90,30 @@ class ComicCatalogerGui(Frame):
 
 
         self.panelSourceComic.grid(column=0,row=0, sticky=(N, W, S, E))
-        self.listViewComics = ttk.Treeview(self)
 
-        self.listViewComics['columns'] = ['Nombre_Archivo']
+        style = ttk.Style()
+        style.configure("BW.TLabel", foreground="black", background="green")
+
+
+        self.panelListView=ttk.Frame(self, style="BW.TLabel")
+        self.panelListView.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=6)
+
+
+        self.listViewComics = ttk.Treeview(self.panelListView)
+
+        self.listViewComics['columns'] = ['numero_asignado','Nombre_Archivo']
         #, 'Total_Paginas', 'Porcentaje_Descargado']
         self.listViewComics.heading('#0', text='Nro')
-        self.listViewComics.column('#0', width=3)
+        self.listViewComics.column('#0',  width=50,stretch=True)
         self.listViewComics.heading('Nombre_Archivo', text='Nombre Archivo')
-        self.listViewComics.column('Nombre_Archivo', width=230)
-        self.listViewComics.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=4)
+        self.listViewComics.heading('numero_asignado', text='Nro Asignado')
+        self.listViewComics.column('numero_asignado', width=100,stretch=True)
+        self.listViewComics.column('Nombre_Archivo', width=100,stretch=True)
+        self.listViewComics.grid(row=0, column=0, sticky=(N, W, S, E))
         self.listViewComics.bind("<<TreeviewSelect>>",self.listViewComicsClicked)
         for index,comic in enumerate(self.comicbooks):
             self.listViewComics.insert('', 'end', text=index,
-                                    values=([comic.path]))
+                                    values=([0,comic.path]))
             print(comic.path)
 
 
@@ -292,13 +304,8 @@ if __name__ == '__main__':
     comics=[]
     # comics.append(session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\DC Week+ (01-11-2017)\\Hal Jordan & the Green Lantern Corps 012 (2017) (2 covers) (digital) (Minutemen-Slayer).cbr') .order_by(ComicBook.path.asc()).first())
     comics.append(session.query(ComicBook).filter(
-        ComicBook.path == 'C:\\comics\\Aquaman 009 (2016) (Digital) (BlackManta-Empire).cbr').order_by(ComicBook.path.asc()).first())
+        ComicBook.path == 'E:\\Comics\\DC\\Detective Comics 001-839+Annuals\Detective Comics (1937-Present)\\001-200\\Detective Comics 090-Batman only (NC)(R)(08-1944).cbz').order_by(ComicBook.path.asc()).first())
 
-    #comics.append(session.query(ComicBook).filter(
-    # ComicBook.path == 'E:\\Comics\\DC\\DC Week+ (07-13-2016)\\Hal Jordan and the Green Lantern Corps - Rebirth 01 (2016) (Webrip) (The Last Kryptonian-DCP).cbr').order_by(
-    #     ComicBook.path.asc()).first())
-    comics.append(session.query(ComicBook).filter(
-        ComicBook.path == 'C:\\comics\\Batman 009 (2016) (2 covers) (digital) (Minutemen-Faessla).cbz').order_by(ComicBook.path.asc()).first())
 
     cvs = ComicCatalogerGui(root, comics)
     #cvs.entrySerie.set('4363')

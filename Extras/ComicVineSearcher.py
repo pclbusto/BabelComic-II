@@ -239,12 +239,22 @@ class ComicVineSearcher():
             return
         self.offset = io_offset
         print("*"+self.vinekey+"*")
-        print(
+
+        print("ENTIDADDASDAS: {}".format(self.entidad))
+        if self.entidad=='issues':
+            response = urllib.request.urlopen(
+                'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
+                    self.offset*100) + '&sort=cover_date:asc')
+            print(
+                'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
+                    self.offset*100) + '&sort=cover_date:asc')
+        else:
+            response = urllib.request.urlopen(
             'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                self.offset) + '&sort=date_added:asc')
-        response = urllib.request.urlopen(
-            'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                self.offset) + '&sort=id:asc')
+                self.offset*100) + '&sort=id:asc')
+            print(
+                'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
+                self.offset*100) + '&sort=id:asc')
 
         #response = urllib.request.urlopen('http://comicvine.gamespot.com/api/publishers/?api_key=64f7e65686c40cc016b8b8e499f46d6657d26752&filter=name:DC%20comics&offset=0&sort=date_added:asc')
 

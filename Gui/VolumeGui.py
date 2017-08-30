@@ -204,11 +204,15 @@ class VolumeGui(FrameMaestro):
         self.volume.AnioInicio = self.entradaAnioInicio.get()
         self.volume.cantidadNumeros = self.entradaCantidadNumeros.get()
 
+    def int(self,t):
+        return(int(t.comicNumber))
+
     def guardar(self):
         super().guardar()
         self.copyFromWindowsToEntity()
         self.session.add(self.volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId==self.volume.id).delete()
+        self.numerosPorVolumen.sort(reverse=False, key=self.int)
         for index, numeroComic in enumerate(self.numerosPorVolumen, start=0):
             numeroComic.offset = int(index/100)
             self.session.add(numeroComic)
