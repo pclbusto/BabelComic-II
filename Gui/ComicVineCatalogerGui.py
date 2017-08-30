@@ -98,6 +98,8 @@ class ComicCatalogerGui(Frame):
         self.panelListView=ttk.Frame(self, style="BW.TLabel")
         self.panelListView.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=6)
 
+    #dsadsadsa
+        #dsdasda
 
         self.listViewComics = ttk.Treeview(self.panelListView)
 
