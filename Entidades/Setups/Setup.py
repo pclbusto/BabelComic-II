@@ -15,10 +15,25 @@ class Setup(Entidades.Init.Base):
     '''guarda el id del ultimo volumen utilizado'''
     ultimoVolumeIdUtilizado = Column(String,default='')
     '''guarda el ultimo numero consultado'''
-    ultimoNumeroConsultado = Column(Integer,default=0)
+    ultimoNumeroConsultadoDesde = Column(Integer,default=0)
+    ultimoNumeroConsultadoHasta = Column(Integer,default=0)
     anchoArbol = Column(Integer,default=100)
+    '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
+    expresionRegularNumero= Column(String,default='',nullable=False)
     # print(os.sep)
     # print(os.getcwd()[:os.getcwd().rfind(os.sep)])
 
     def __repr__(self):
-        return "<Setup(directorioBaseImagene='%s')>" %(self.directorioBase)
+        return "<Setup(setupkey = '%s'\n" \
+               "Cantidad Comics PorPagina = '%s'\n" \
+               "Ultimo VolumeId Utilizado = '%s'\n" \
+               "Ultimo Numero Consultado Desde= '%s'\n" \
+               "Ultimo Numero Consultado Hasta= '%s'\n" \
+               "Expresion Regular Numero= '%s'\n" \
+               "Directorio Base Imagene='%s'\n)>" %(self.setupkey,
+                                                  self.cantidadComicsPorPagina,
+                                                  self.ultimoVolumeIdUtilizado,
+                                                  self.ultimoNumeroConsultadoDesde,
+                                                  self.ultimoNumeroConsultadoHasta,
+                                                  self.expresionRegularNumero,
+                                                  self.directorioBase)

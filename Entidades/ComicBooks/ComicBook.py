@@ -30,13 +30,20 @@ class ComicBook(Entidades.Init.Base):
     ratingExterno = Column(Float,nullable=False,default=0.0)
     comicId = Column(Integer, primary_key=True)
     publisherId = Column(String,nullable=False,default='')
-
+    api_detail_url = Column(String,nullable=False,default='')
+    thumb_url  = Column(String,nullable=False,default='')
     calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
 
 
     def __repr__(self):
-        return "<Comicbooks(Id Volumen='%s'\n, numero='%s'\n, path='%s'\narco id: '%s'\narco numero:'%s'\n, id Comic Vine:'%s')\n>" % (
-        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId)
+        return "<Comicbooks(Id Volumen='%s'\n" \
+               "Título='%s'\n" \
+               "Path='%s'\n" \
+               "arco id: '%s'\n" \
+               "arco numero:'%s'\n" \
+               "id Comic Vine:'%s')\n" \
+               "Numero='%s'>" % (
+        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero)
 
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 

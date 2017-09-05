@@ -1,15 +1,38 @@
 import Entidades.Init
 import Entidades.Volumes.Volume
+from Entidades.ComicBooks.ComicBook import ComicBook
 
 class Catalogador():
 
     session = None
+    '''lista comics que queremos catalogar'''
+    listaComicsACatalogar = []
+    '''lista de comics que se obtiene de la busqueda'''
+    listaComicsBusquedaComicVine = []
+    '''Aca cargamos una 2-upla origen destino. Para procesar y catalogar'''
+    listaComicsParaProcesarCatalogacion = []
+    '''Volumen sobre el cual buscar los numeros'''
+    volumen = None
+    '''Numero desde el cual vamos a filtra la busqueda. la lista "listaComicBusquedaComicVine" no debe tener comics
+    cuyo numero sea mayor o menor que el numero desde y numero hasta'''
+    numeroDesde=0
+    numeroHasta=0
+
 
     def __init__(self, session=None):
         if session is None:
             self.session = Entidades.Init.Session()
         else:
             self.session = session
+
+    def loadComicsFromList(self, lista):
+        for nombreComic in lista:
+            comic = None
+            comic = self.session.query(ComicBook).filter(ComicBook.path == nombreComic).order_by(
+                ComicBook.path.asc()).first()
+            if comic is not None:
+                self.listaComicsACatalogar.append(comic)
+
 
     def copyFromComicToComic(self, fuente, destino):
         print(fuente)
@@ -30,7 +53,5 @@ class Catalogador():
         destino.rating = fuente.rating
         destino.ratingExterno = fuente.ratingExterno
         destino.comicVineId = fuente.comicVineId
-        # self.session.add(self.comicbook)
         self.session.commit()
-        # como lo que traje de vine tiene toda la data directamente actualizo la base de datos
-        # ComicBooks().update(completComicInfo)
+

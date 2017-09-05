@@ -15,6 +15,8 @@ import os
 from  Extras.Config import Config
 import Entidades.Init
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+import re
+
 class ComicCatalogerGui(Frame):
     '''muestra un panel con una info de comic resumida
     |------| serie nº /de
@@ -79,7 +81,7 @@ class ComicCatalogerGui(Frame):
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-
+        self.listaAMostrar =[]
         self.comicbook = self.comicbooks[0]
         self.comicbooks[0].openCbFile()
         self.comicbooks[0].goto(0)
@@ -95,28 +97,31 @@ class ComicCatalogerGui(Frame):
         style.configure("BW.TLabel", foreground="black", background="green")
 
 
-        self.panelListView=ttk.Frame(self, style="BW.TLabel")
+        self.panelListView=ttk.Frame(self)
         self.panelListView.grid(row=1, column=0, sticky=(N, W, S, E),columnspan=6)
-
+        self.panelListView.grid_columnconfigure(0,weight=1)
     #dsadsadsa
         #dsdasda
 
         self.listViewComics = ttk.Treeview(self.panelListView)
 
-        self.listViewComics['columns'] = ['numero_asignado','Nombre_Archivo']
+        self.listViewComics['columns'] = ['Nro','Nombre_Archivo']
+        self.listViewComics['displaycolumns']=['Nombre_Archivo']
         #, 'Total_Paginas', 'Porcentaje_Descargado']
-        self.listViewComics.heading('#0', text='Nro')
-        self.listViewComics.column('#0',  width=50,stretch=True)
+        self.listViewComics.heading('#0', text='Nro Comic')
+        self.listViewComics.column('#0',  width=100,stretch=True)
         self.listViewComics.heading('Nombre_Archivo', text='Nombre Archivo')
-        self.listViewComics.heading('numero_asignado', text='Nro Asignado')
-        self.listViewComics.column('numero_asignado', width=100,stretch=True)
-        self.listViewComics.column('Nombre_Archivo', width=100,stretch=True)
-        self.listViewComics.grid(row=0, column=0, sticky=(N, W, S, E))
+        self.listViewComics.column('Nombre_Archivo', width=1000)
+        self.listViewComics.grid(row=0, column=0, sticky=(N, W, S, E),columnspan=2)
         self.listViewComics.bind("<<TreeviewSelect>>",self.listViewComicsClicked)
+        self.entryPathRe = Entry(self.panelListView)
+        self.entryPathRe.grid(column=0, row=1, sticky=(N, W, S, E), padx=5)
+        self.botonAutoasignar = Button(self.panelListView,text='Auto asignar',command=self.AutoAsignar)
+        self.botonAutoasignar.grid(column=1, row=1, sticky=(N, W, S, E))
+
         for index,comic in enumerate(self.comicbooks):
-            self.listViewComics.insert('', 'end', text=index,
-                                    values=([0,comic.path]))
-            print(comic.path)
+            self.listViewComics.insert('', 'end', text=comic.numero,
+                                    values=([index,comic.path]))
 
 
         ##Panel opciones busqueda
@@ -147,9 +152,10 @@ class ComicCatalogerGui(Frame):
                                                                                              sticky=(W),
                                                                                              pady=5)
 
-
+        self.botonCopiarGrupo = ttk.Button(self.seriesLookupFrame, text='Copiar Grupo', command=self.copiarInfoGrupo)
+        self.botonCopiarGrupo.grid(column=2, row=2, pady=5)
         botonBuscar = ttk.Button(self.seriesLookupFrame, text='Buscar', command=self.buscarSerie)
-        botonBuscar.grid(column=3, row=0, pady=5)
+        botonBuscar.grid(column=0, row=2, pady=5)
 
         ##config grilla comics
         self.grillaComics = ttk.Treeview(self.seriesLookupFrame,
@@ -168,19 +174,49 @@ class ComicCatalogerGui(Frame):
         self.grillaComics.heading('volumeId', text='SserieID')
 
         self.grillaComics.config(show='headings')  # tree, headings
-        self.grillaComics.grid(column=0, row=2, columnspan=10, sticky=(N, E, S, W))
+        self.grillaComics.grid(column=0, row=3, columnspan=10, sticky=(N, E, S, W))
         self.grillaComics.bind('<<TreeviewSelect>>', self.itemClicked)  # the item clicked can be found via tree.focus()
         self.grillaComics.column('numero',width=65)
         # boton copiar datos
-        ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=3, row=1)
+        ttk.Button(self.seriesLookupFrame, text='copiar info', command=self.copiarInfo).grid(column=1, row=2)
         print('--------------------------------------')
         '''
         cargamos los datos que se guardaron de la ultima vez
         '''
-        setup = self.session.query(Setup).first()
-        self.spinNumeroDesde.set(setup.ultimoNumeroConsultado)
-        self.spinNumeroHasta.set(setup.ultimoNumeroConsultado)
-        self.entrySerie.set(setup.ultimoVolumeIdUtilizado)
+        self.setup = self.session.query(Setup).first()
+        self.spinNumeroDesde.set(self.setup.ultimoNumeroConsultadoDesde)
+        self.spinNumeroHasta.set(self.setup.ultimoNumeroConsultadoHasta)
+        self.entrySerie.set(self.setup.ultimoVolumeIdUtilizado)
+        self.entryPathRe.insert(0, self.setup.expresionRegularNumero)
+
+    def AutoAsignar(self):
+        if self.entryPathRe.get() != '':
+            expresion = self.entryPathRe.get()
+            for comic in self.comicbooks:
+                match = re.search(expresion, comic.path)
+                numero = match.group(1)
+                if numero.isdigit():
+                    comic.numero=int(numero)
+
+        comicNumeroMinimo = self.comicbooks[0]
+        comicNumeroMaximo = self.comicbooks[0]
+
+        for comic in self.comicbooks:
+            if comicNumeroMinimo.numero>comic.numero:
+                comicNumeroMinimo=comic
+            if comicNumeroMaximo.numero<comic.numero:
+                comicNumeroMaximo=comic
+        self.spinNumeroDesde.set(comicNumeroMinimo.numero)
+        self.spinNumeroHasta.set(comicNumeroMaximo.numero)
+
+        for item in self.listViewComics.get_children():
+            self.listViewComics.delete(item)
+
+        for index,comic in enumerate(self.comicbooks):
+            self.listViewComics.insert('', 'end', text=comic.numero,
+                                    values=([index,comic.path]))
+        for comic in self.comicbooks:
+            print(comic)
 
     def int(self,t):
         return(int(t[0]))
@@ -199,29 +235,79 @@ class ComicCatalogerGui(Frame):
         tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
 
     def listViewComicsClicked(self, args):
-        index = (self.listViewComics.item(self.listViewComics.selection(), "text"))
+
+        print(self.listViewComics.item(self.listViewComics.selection(), "values")[0])
+        index = int(self.listViewComics.item(self.listViewComics.selection(), "values")[0])
 
         self.panelSourceComic.destroy()
         self.comicbook = self.comicbooks[index]
-        self.panelSourceComic = self.__createPanelComic__(self, self.comicbooks[index],
-                                                          self.comicbooks[index].getImagePage().resize(self.size,
+        self.comicbook.openCbFile()
+        self.comicbook.goto(0)
+
+        self.panelSourceComic = self.__createPanelComic__(self, self.comicbook,
+                                                          self.comicbook.getImagePage().resize(self.size,
                                                                                                    resample=Image.BICUBIC),
                                                           'Comic info')
 
         self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
-        print(self.comicbook)
+
+    def copiarInfoGrupo(self):
+
+        cantidadZeros=0
+        for comic in self.comicbooks:
+            if comic.numero == 0:
+                cantidadZeros+=1
+        if cantidadZeros>1:
+            print("hay mas de un cero en la lista a catalogar. Se anula el proceso")
+            return
+
+        cnf = Config(self.session)
+        print('clave: ' + cnf.getClave('issue'))
+        cv = ComicVineSearcher(cnf.getClave('issue'),session=self.session)
+        cv.setEntidad('issue')
+        catalogador = Catalogador(self.session)
+        for comic in self.comicbooks:
+            print("Vamos a ACTUALIZAR EL COMIC")
+            print(comic)
+            comicInfo=None
+            '''Buscamos en la lista de Vine el numero de comic'''
+            for comicVine in self.listaAMostrar:
+                    if comicVine.numero==comic.numero:
+                        comicInfo = comicVine
+                        break
+            print("Encontramos el comic:")
+            print(comicInfo)
+            '''Si existe lo catalogamos'''
+            if comicInfo is not None:
+                print("LA INFO COMPLETA")
+                print(comicInfo)
+                cv.setEntidad('issue')
+                completComicInfo = cv.getVineEntity(comicInfo.comicVineId)
+                comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
+                catalogador.copyFromComicToComic(completComicInfo,comicbook)
+
+
+        self.setup.ultimoNumeroConsultadoHasta = self.spinNumeroHasta.get()
+        self.setup.ultimoNumeroConsultadoDesde = self.spinNumeroDesde.get()
+        self.setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
+        self.setup.expresionRegularNumero = self.entryPathRe.get()
+        print(self.setup)
+        self.session.commit()
+
     def copiarInfo(self):
         cnf = Config(self.session)
         print('clave: ' + cnf.getClave('issue'))
-        cv = ComicVineSearcher(cnf.getClave('issue'))
+        cv = ComicVineSearcher(cnf.getClave('issue'),session=self.session)
         cv.setEntidad('issue')
         completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
         self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
-        setup = self.session.query(Setup).first()
-        setup.ultimoNumeroConsultado = self.spinNumeroHasta.get()
-        setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
+        self.setup.ultimoNumeroConsultadoHasta = self.spinNumeroHasta.get()
+        self.setup.ultimoNumeroConsultadoDesde = self.spinNumeroDesde.get()
+        self.setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
+        self.setup.expresionRegularNumero = self.entryPathRe.get()
+        print(self.setup)
         self.session.commit()
 
 
@@ -231,8 +317,8 @@ class ComicCatalogerGui(Frame):
             item = self.grillaComics.item(self.grillaComics.selection())
             webImage = item['values'][6]
             nombreImagen = item['values'][6][item['values'][6].rindex('/') + 1:]
-            setup = self.session.query(Setup).first()
-            path = setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
+
+            path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
 
             if not (os.path.isfile(path  + nombreImagen)):
                 print('no existe')
@@ -263,7 +349,7 @@ class ComicCatalogerGui(Frame):
     def buscarSerie(self):
         # recuperarla de la configuracion
         config = Config()
-        buscador = ComicVineSearcher(config.getClave("issues"))
+        buscador = ComicVineSearcher(config.getClave("issues"),session=self.session)
 
         buscador.setEntidad('issues')
         if (self.entrySerie.get()):
@@ -274,40 +360,47 @@ class ComicCatalogerGui(Frame):
 
         comicInVolume = self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId == self.entrySerie.get()).filter(ComicInVolumes.comicNumber==self.spinNumeroDesde.get()).first()
 
-        # if (str(self.spinNumeroDesde.get()) != '0'):
-        #     buscador.addFilter('issue_number:' + str(self.spinNumeroDesde.get()))
-        #
+        print(comicInVolume)
 
         buscador.vineSearch(io_offset=comicInVolume.offset)
         for item in self.grillaComics.get_children():
             self.grillaComics.delete(item)
 
-        listaAMostrar = []
+        self.listaAMostrar.clear()
+        self.listaAMostrar = []
         for comic in buscador.listaBusquedaVine:
-            if int(comic['numero'])>=self.spinNumeroDesde.get() and int(comic['numero'])<=self.spinNumeroHasta.get():
-                listaAMostrar.append(comic)
+            if comic.numero>=self.spinNumeroDesde.get() and comic.numero<=self.spinNumeroHasta.get():
+                self.listaAMostrar.append(comic)
 
-        for issue in listaAMostrar:
-            self.grillaComics.insert('', 0, '', values=(issue['fecha'],
-                                                        issue['titulo'],
-                                                        issue['descripcion'],
-                                                        issue['idExterno'],
-                                                        issue['numero'],
-                                                        issue['api_detail_url'],
-                                                        issue['thumb_url'],
-                                                        issue['volumeName'],
-                                                        issue['volumeId']
+        for issue in self.listaAMostrar:
+            print(issue)
+            self.grillaComics.insert('', 0, '', values=(issue.fechaTapa,
+                                                        issue.titulo,
+                                                        issue.resumen,
+                                                        issue.comicVineId,
+                                                        issue.numero,
+                                                        issue.api_detail_url,
+                                                        issue.thumb_url,
+                                                        issue.volumeNombre,
+                                                        issue.volumeId
                                                         ))
 
 
 if __name__ == '__main__':
     root = Tk()
     session = Entidades.Init.Session()
-    comics=[]
-    # comics.append(session.query(ComicBook).filter(ComicBook.path=='E:\\Comics\\DC\\DC Week+ (01-11-2017)\\Hal Jordan & the Green Lantern Corps 012 (2017) (2 covers) (digital) (Minutemen-Slayer).cbr') .order_by(ComicBook.path.asc()).first())
-    comics.append(session.query(ComicBook).filter(
-        ComicBook.path == 'E:\\Comics\\DC\\Detective Comics 001-839+Annuals\Detective Comics (1937-Present)\\001-200\\Detective Comics 090-Batman only (NC)(R)(08-1944).cbz').order_by(ComicBook.path.asc()).first())
-
+    pathComics=[  "E:\\Comics\\Capcom\\Street Fighter II #00.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #01.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #02.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #03.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #04.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #05.cbr",
+                    "E:\\Comics\\Capcom\\Street Fighter II #06.cbr"]
+    comics= []
+    for pathComic in pathComics:
+        comic = session.query(ComicBook).filter(ComicBook.path ==pathComic).first()
+        print(comic)
+        comics.append(comic)
 
     cvs = ComicCatalogerGui(root, comics)
     #cvs.entrySerie.set('4363')

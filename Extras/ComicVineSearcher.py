@@ -1,8 +1,7 @@
 from datetime import datetime
 from Entidades.Publishers import Publisher
 from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.ArcosArgumentales.ArcoArgumental import  ArcoArgumental
-from Entidades.ArcosArgumentales.ArcosArgumentales import ArcosArgumentales
+from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 
 import Entidades.Volumes.Volume
@@ -13,9 +12,14 @@ import Entidades.Init
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 
 
-class ComicVineSearcher():
-    EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits','volume']
-    def __init__(self, vinekey):
+class ComicVineSearcher:
+    EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits', 'volume']
+
+    def __init__(self, vinekey, session):
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
 
         self.vinekey = vinekey
         self.filter = ''  # el usuario deberia pasar nombreCampo:<valor>,...,nombreCampo:<valor> el nombre del campo depende de la entidad
@@ -44,7 +48,7 @@ class ComicVineSearcher():
         ##105:Subscriber only video is for subscribers only
         self.statusCode = 1
 
-    def localSearch(self, filtro, columnasBuscar=(1), columnasMostrar=(0, 1, 2, 3, 4, 5, 6, 7)):
+    def localSearch(self, filtro, columnasBuscar=1, columnasMostrar=(0, 1, 2, 3, 4, 5, 6, 7)):
         del self.listaBusquedaLocal[:]
         self.columnas = columnasMostrar
         self.listaBusquedaLocal = [item for item in self.listaBusquedaVine if (item[1].find(filtro) != -1)]
@@ -56,7 +60,7 @@ class ComicVineSearcher():
             ##                item[7],'---',item[1],'---', item[3])
 
     def clearFilter(self):
-        self.filter=""
+        self.filter = ""
         self.listaBusquedaVine.clear()
 
     def setEntidad(self, entidad):
@@ -77,15 +81,15 @@ class ComicVineSearcher():
 
     def getVineEntity(self, id):
         # TODO: Este metodo debe incrementar el contador de consulta para la clave. asi no sobrecargamos
-        if (self.entidad == 'issue'):
+        if self.entidad == 'issue':
             print('http://comicvine.gamespot.com/api/issue/4000-' + str(id) + '/?api_key=' + self.vinekey)
             response = urllib.request.urlopen(
                 'http://comicvine.gamespot.com/api/issue/4000-' + str(id) + '/?api_key=' + self.vinekey)
-        elif (self.entidad == 'story_arc_credits'):
+        elif self.entidad == 'story_arc_credits':
             print('http://comicvine.gamespot.com/api/story_arc/4045-' + str(id) + '/?api_key=' + self.vinekey)
             response = urllib.request.urlopen(
                 'http://comicvine.gamespot.com/api/story_arc/4045-' + str(id) + '/?api_key=' + self.vinekey)
-        elif (self.entidad == 'volume'):
+        elif self.entidad == 'volume':
             print('http://comicvine.gamespot.com/api/volume/4050-' + str(id) + '/?api_key=' + self.vinekey)
             response = urllib.request.urlopen(
                 'http://comicvine.gamespot.com/api/volume/4050-' + str(id) + '/?api_key=' + self.vinekey)
@@ -96,12 +100,12 @@ class ComicVineSearcher():
         # si estamos aca entoces la consulta se ralizao porque la entidad estaba OK.
         html = response.read()
         xml = html.decode()
-        #root = ET.parse('e:\\descarga.xml')
+        # root = ET.parse('e:\\descarga.xml')
         print(xml)
         root = ET.fromstring(xml)
         self.statusCode = int(root.find('status_code').text)
         if self.statusCode == 1:
-            if (self.entidad == 'issue'):
+            if self.entidad == 'issue':
                 # dummy comic me interesa el resto de los campos que los sacamos de la consulta a comic vine
                 comic = ComicBook()
                 comic.path = 'path'
@@ -109,10 +113,10 @@ class ComicVineSearcher():
                 if issue.find('name').text is not None:
                     comic.titulo = issue.find('name').text
                 else:
-                    comic.titulo =''
+                    comic.titulo = ''
                 comic.numero = issue.find('issue_number').text
-                print("Fecha: "+issue.find('cover_date').text)
-                comic.fechaTapa = datetime.strptime(issue.find('cover_date').text,"%Y-%m-%d").date().toordinal()
+                print("Fecha: " + issue.find('cover_date').text)
+                comic.fechaTapa = datetime.strptime(issue.find('cover_date').text, "%Y-%m-%d").date().toordinal()
                 comic.serieId = issue.find('volume').find('id').text
                 comic.volumeId = issue.find('volume').find('id').text
                 comic.volumeName = issue.find('volume').find('name').text
@@ -121,22 +125,22 @@ class ComicVineSearcher():
                     comic.resumen = issue.find('description').text
                 else:
                     comic.resumen = ''
-                comic.ratingExterno=0
-                comic.rating=0
-                comic.nota=""
+                comic.ratingExterno = 0
+                comic.rating = 0
+                comic.nota = ""
                 comic.arcoArgumentalId = '0'
                 comic.arcoArgumentalNumero = 0
-                if (issue.find('story_arc_credits') != None):
+                if issue.find('story_arc_credits') != None:
                     # vamos a verificar si existe el arco si no existe lo damos de alta
                     # al dar de alta el arco tenemos que recuperar el numero u orden dentro del arco.
                     print('buscamos arco')
-                    session = Entidades.Init.Session()
+
                     for item in issue.find('story_arc_credits').findall('story_arc'):
                         idArco = int(item.find('id').text)
                         # .find('story_arc_credits').find('story_arc')
                         print('ARCOOOOOOO: ' + str(idArco))
-                        arco = session.query(ArcoArgumental).get(idArco)
-                        if arco:
+                        arco = self.session.query(ArcoArgumental).get(idArco)
+                        if arco is not None:
                             print('el arco existe. obtenemos el numero del comic')
                             numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
                             print('Arco y numero:', arco.id, str(numeroDentroArco))
@@ -144,9 +148,9 @@ class ComicVineSearcher():
                             print('el arco  NO EXISTEexiste. Cargamos el arco y luego obtenemos el numero del comic')
                             self.entidad = 'story_arc_credits'
                             arco = self.getVineEntity(idArco)
-                            session.add(arco)
-                            session.commit()
-                            numeroDentroArco = arco.getIssueOrder(comic.idExterno)
+                            self.session.add(arco)
+                            self.session.commit()
+                            numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
 
                         print(arco.id)
                         print(numeroDentroArco)
@@ -155,7 +159,7 @@ class ComicVineSearcher():
 
                 return comic
 
-            if (self.entidad == 'story_arc_credits'):
+            if self.entidad == 'story_arc_credits':
                 story_arc = root.find('results')
                 arco = ArcoArgumental()
                 arco.id = story_arc.find('id').text
@@ -165,22 +169,21 @@ class ComicVineSearcher():
                 arco.ultimaFechaActualizacion = datetime.today().toordinal()
                 issues = story_arc.find('issues')
                 pos = 1
-                session = Entidades.Init.Session()
-                session.add(arco)
-                session.commit()
-                session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == arco.id).delete()
-                session.commit()
+                self.session.add(arco)
+                self.session.commit()
+                self.session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == arco.id).delete()
+                self.session.commit()
                 for issue in issues:
                     arcoComic = ArcosArgumentalesComics()
                     arcoComic.idArco = arco.id
                     arcoComic.idComic = issue.find('id').text
                     arcoComic.orden = pos
-                    session.add(arcoComic)
+                    self.session.add(arcoComic)
                     pos += 1
-                session.commit()
+                self.session.commit()
                 return arco
 
-            if (self.entidad == 'volume'):
+            if self.entidad == 'volume':
                 volumeVine = root.find('results')
                 volume = Entidades.Volumes.Volume.Volume()
                 volume.id = volumeVine.find('id').text
@@ -212,7 +215,7 @@ class ComicVineSearcher():
                         comicInVolumes.comicNumber = issue.find("issue_number").text
                         comicIds.append(comicInVolumes)
 
-                return (volume, comicIds)
+                return volume, comicIds
             else:
                 print('Entidad %1 sin implementar', self.entidad)
 
@@ -230,46 +233,46 @@ class ComicVineSearcher():
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def vineSearchMore(self):
-        return self.vineSearch(self.offset+self.limit)
+        return self.vineSearch(self.offset + self.limit)
 
     def vineSearch(self, io_offset=0):
         if self.entidad == '':
-            self.statusMessage = ('falta ingresar la entidad')
+            self.statusMessage = 'falta ingresar la entidad'
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
-        print("*"+self.vinekey+"*")
+        print("*" + self.vinekey + "*")
 
         print("ENTIDADDASDAS: {}".format(self.entidad))
-        if self.entidad=='issues':
+        if self.entidad == 'issues':
             response = urllib.request.urlopen(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                    self.offset*100) + '&sort=cover_date:asc')
+                    self.offset * 100) + '&sort=cover_date:asc')
             print(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                    self.offset*100) + '&sort=cover_date:asc')
+                    self.offset * 100) + '&sort=cover_date:asc')
         else:
             response = urllib.request.urlopen(
-            'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                self.offset*100) + '&sort=id:asc')
+                'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
+                    self.offset * 100) + '&sort=id:asc')
             print(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                self.offset*100) + '&sort=id:asc')
+                    self.offset * 100) + '&sort=id:asc')
 
-        #response = urllib.request.urlopen('http://comicvine.gamespot.com/api/publishers/?api_key=64f7e65686c40cc016b8b8e499f46d6657d26752&filter=name:DC%20comics&offset=0&sort=date_added:asc')
+        # response = urllib.request.urlopen('http://comicvine.gamespot.com/api/publishers/?api_key=64f7e65686c40cc016b8b8e499f46d6657d26752&filter=name:DC%20comics&offset=0&sort=date_added:asc')
 
 
 
         html = response.read()
         # print(html.decode())
         xml = html.decode()
-        #xml = xml[:130640]+xml[130642:]
+        # xml = xml[:130640]+xml[130642:]
 
         parser = ET.XMLParser(encoding="utf-8")
-        root = ET.fromstring(xml, parser= parser)
+        root = ET.fromstring(xml, parser=parser)
         self.statusCode = int(root.find('status_code').text)
         if self.statusCode == 1:
-            #esto puede ser el limite de resultados por pag o menos que esto cuando es l ultima pagina
+            # esto puede ser el limite de resultados por pag o menos que esto cuando es l ultima pagina
             number_of_page_results = int(root.find('number_of_page_results').text)
             # cantidad total de registros este valor dividido por limite no da la cantidad de consultas necesarias para
             # recuperar todos los datos de la consulta
@@ -277,27 +280,35 @@ class ComicVineSearcher():
             self.cantidadPaginas = self.cantidadResultados / self.limit
             status_code = root.find('status_code').text
             results = root.find('results')
-            if (self.entidad == 'issues'):
+            if self.entidad == 'issues':
                 for item in results:
-                    fecha = item.find('cover_date').text
-                    titulo = item.find('name').text
-                    descripcion = item.find('description').text
-                    idExterno = item.find('id').text
-                    numero = item.find('issue_number').text
-                    api_detail_url = item.find('api_detail_url').text
-                    thumb_url = item.find('image').find('small_url').text
-                    volumeName = item.find('volume').find('name').text
-                    volumeId = item.find('volume').find('id').text
-                    print(volumeName, volumeId)
+                    comic = ComicBook()
+                    comic.fechaTapa = item.find('cover_date').text
+                    # fecha = item.find('cover_date').text
+                    comic.titulo = item.find('name').text
+                    # titulo = item.find('name').text
+                    comic.resumen = item.find('description').text
+                    # descripcion = item.find('description').text
+                    comic.comicVineId = item.find('id').text
+                    # idExterno = item.find('id').text
+                    comic.numero = int(item.find('issue_number').text)
+                    # numero = item.find('issue_number').text
+                    comic.api_detail_url = item.find('api_detail_url').text
+                    # api_detail_url = item.find('api_detail_url').text
+                    comic.thumb_url = item.find('image').find('small_url').text
+                    # thumb_url = item.find('image').find('small_url').text
+                    comic.volumeNombre = item.find('volume').find('name').text
+                    # volumeName = item.find('volume').find('name').text
+                    comic.volumeId = item.find('volume').find('id').text
+                    # volumeId = item.find('volume').find('id').text
+                    print(comic.volumeNombre, comic.volumeId, comic.numero)
                     self.listaBusquedaVine.append(
-                        {'fecha': fecha, 'titulo': titulo, 'descripcion': descripcion, 'idExterno': idExterno,
-                         'numero': numero, 'api_detail_url': api_detail_url, 'thumb_url': thumb_url,
-                         'volumeName': volumeName, 'volumeId': volumeId})
+                        comic)
 
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumes.Volume.Volume(id = item.find('id').text, nombre = item.find('name').text)
+                    l_serie = Entidades.Volumes.Volume.Volume(id=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
@@ -306,7 +317,7 @@ class ComicVineSearcher():
                     else:
                         l_serie.image_url = ''
 
-                    if item.find('publisher').find('id')!= None:
+                    if item.find('publisher').find('id') != None:
                         l_serie.publisherId = item.find('publisher').find('id').text
                         l_serie.publisher_name = item.find('publisher').find('name').text
                     else:
@@ -331,7 +342,7 @@ class ComicVineSearcher():
                     # print(item.tostring())
                     publisher = Publisher.Publisher()
                     publisher.id_publisher = item.find('id').text
-                    publisher.name  = item.find('name').text
+                    publisher.name = item.find('name').text
                     publisher.descripcion = item.find('description').text
                     publisher.deck = item.find('deck').text
                     if item.find('image').find('super_url') != None:
@@ -364,14 +375,14 @@ if __name__ == '__main__':
     cv.setEntidad('volume')
     volumen = cv.getVineEntity('2839')
     print(volumen)
-    #arco = cv.getVineEntity(55691)
-    #print(arco.comics)
+    # arco = cv.getVineEntity(55691)
+    # print(arco.comics)
 ##    cv.addFilter('')
-    # cv.vineSearch()
-    # print(cv.statusMessage)
-    # cv.print()
-    # for serie in cv.listaBusquedaVine:
-    #     print(serie.nombre)
+# cv.vineSearch()
+# print(cv.statusMessage)
+# cv.print()
+# for serie in cv.listaBusquedaVine:
+#     print(serie.nombre)
 # for offset in range(2300,5900,100):
 ##    for offset in range(0, 5900, 100):
 ##        cv.vineSearch(offset)

@@ -89,7 +89,7 @@ class VolumeGui(FrameMaestro):
 
     def updateVolume(self):
         cnf = Config(self.session)
-        cv = ComicVineSearcher(cnf.getClave('volume'))
+        cv = ComicVineSearcher(cnf.getClave('volume'),session=self.session)
         cv.entidad='volume'
         volumenAndComics = cv.getVineEntity(self.volume.id)
 

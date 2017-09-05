@@ -27,7 +27,7 @@ class VolumeVineGui(Frame):
             self.session = Entidades.Init.Session()
         else:
             self.session = session
-        self.comicVineSearcher = ComicVineSearcher(config.getClave('volumes'))
+        self.comicVineSearcher = ComicVineSearcher(config.getClave('volumes'),session=self.session)
         self.comicVineSearcher.setEntidad("volumes")
 
         self.labelId = Label(self.frameParametros, text="Nombre Volumen: ")

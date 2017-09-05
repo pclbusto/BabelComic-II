@@ -30,7 +30,8 @@ class BabelComicMainGui(Frame):
         self.barraHerramientas.config()
         self.barraHerramientas.columnconfigure(0, weight=1)
         self.barraHerramientas.rowconfigure(1, weight=1)
-        self.setup = Entidades.Init.Session().query(Setup).first()
+        self.session = Entidades.Init.Session()
+        self.setup = self.session.query(Setup).first()
         self.root = parent
 
         pilImagenLookup = Iconos().pilImagenLookup
@@ -45,7 +46,7 @@ class BabelComicMainGui(Frame):
         self.pilImageLast = Iconos().pilImageLast
         self.imageLast = ImageTk.PhotoImage(self.pilImageLast)
 
-        self.session = Entidades.Init.Session()
+
         '''Aca vamos a guardar las consulta para cada nodo del arbol de biblioteca'''
         self.listaConsultas=[]
         self.consultaActual = None
@@ -253,7 +254,7 @@ class BabelComicMainGui(Frame):
         volumenGui.grid(sticky=(N, S, E, W))
 
     def salir(self):
-
+        self.setup = self.session.query(Setup).first()
         self.setup.anchoArbol = self.treeListas.column('#0',"width")
         self.session.add(self.setup)
         self.session.commit()
