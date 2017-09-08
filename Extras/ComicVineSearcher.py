@@ -209,10 +209,12 @@ class ComicVineSearcher:
                     '''
                     print("ACA ESTAMOS")
                     comicIds = []
-                    for issue in volumeVine.find('issues').findall('issue'):
+                    for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = ComicInVolumes()
                         comicInVolumes.volumenId = volume.id
+                        comicInVolumes.comicVineId = issue.find("id").text
                         comicInVolumes.comicNumber = issue.find("issue_number").text
+                        comicInVolumes.comicOrder = index
                         comicIds.append(comicInVolumes)
 
                 return volume, comicIds
@@ -301,7 +303,7 @@ class ComicVineSearcher:
                     # volumeName = item.find('volume').find('name').text
                     comic.volumeId = item.find('volume').find('id').text
                     # volumeId = item.find('volume').find('id').text
-                    print(comic.volumeNombre, comic.volumeId, comic.numero)
+                    print(comic.volumeNombre, comic.volumeId, comic.numero  )
                     self.listaBusquedaVine.append(
                         comic)
 

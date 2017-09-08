@@ -155,7 +155,7 @@ class VolumeGui(FrameMaestro):
             im = self.volume.getImageCover()
             self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
             self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
-
+        self.newRecord=False
     def getFirst(self):
         super().getNext()
         self.offset=0
@@ -180,6 +180,7 @@ class VolumeGui(FrameMaestro):
         self.entradaCantidadNumeros.delete(0, END)
         self.entradaUrlImagen.delete(0,END)
         self.coverVolumen.delete(ALL)
+        self.newRecord=True
 
     def getNext(self):
         super().getNext()
@@ -204,15 +205,16 @@ class VolumeGui(FrameMaestro):
         self.volume.AnioInicio = self.entradaAnioInicio.get()
         self.volume.cantidadNumeros = self.entradaCantidadNumeros.get()
 
-    def int(self,t):
-        return(int(t.comicNumber))
+    def keyOrd(self,t):
+        return(int(t.comicOrder))
 
     def guardar(self):
         super().guardar()
         self.copyFromWindowsToEntity()
-        self.session.add(self.volume)
+        if self.newRecord:
+            self.session.add(self.volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId==self.volume.id).delete()
-        self.numerosPorVolumen.sort(reverse=False, key=self.int)
+        self.numerosPorVolumen.sort(reverse=False, key=self.keyOrd)
         for index, numeroComic in enumerate(self.numerosPorVolumen, start=0):
             numeroComic.offset = int(index/100)
             self.session.add(numeroComic)

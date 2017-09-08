@@ -6,6 +6,7 @@ import PIL.Image, PIL.ImageTk
 class FrameMaestro(Frame):
     def __init__(self, parent, cnf={}, **kw):
         Frame.__init__(self, parent, cnf, **kw)
+        self.newRecord=False
         # CREAMOS DOS ZONAS. LA DEL PANEL Y LA BOTONERA DE ACCIONES Y NAVEGACION
         self.panelPrincipal=Frame(self)
         self.panelPrincipal.grid(row=0,column=0,sticky=E+W+S+N)

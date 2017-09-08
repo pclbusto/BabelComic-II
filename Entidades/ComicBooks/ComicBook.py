@@ -4,7 +4,7 @@ import rarfile
 from PIL import Image, ImageTk
 from sqlalchemy import Column, Integer, String, Float,ForeignKey
 import Entidades.Init
-from sqlalchemy import Sequence
+from rarfile import NotRarFile, BadRarFile
 
 
 class ComicBook(Entidades.Init.Base):
@@ -56,8 +56,13 @@ class ComicBook(Entidades.Init.Base):
             self.cbFile = zipfile.ZipFile(self.path, 'r')
             self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
         elif (self.getTipo().lower()=='cbr'):
-            self.cbFile = rarfile.RarFile(self.path, 'r')
-            self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+            try:
+                self.cbFile = rarfile.RarFile(self.path, 'r')
+                self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+            except BadRarFile:
+                self.cbFile = zipfile.ZipFile(self.path, 'r')
+                self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
+
         self.paginas.sort()
         self.indicePaginaActual = 0
 

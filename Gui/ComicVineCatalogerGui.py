@@ -57,7 +57,7 @@ class ComicCatalogerGui(Frame):
     def openSerieLookup(self):
         window = Toplevel()
         volumeRetorno = Volume()
-        lk =  VolumesLookupGui(window, volumeRetorno)
+        lk =  VolumesLookupGui(window, volumeRetorno, session=self.session)
         lk.grid(sticky=(E, W, S, N))
         window.columnconfigure(0, weight=1)
         window.rowconfigure(0, weight=1)

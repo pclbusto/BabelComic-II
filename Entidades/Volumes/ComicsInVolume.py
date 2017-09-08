@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String,Numeric
 import Entidades.Init
 
 class ComicInVolumes(Entidades.Init.Base):
     __tablename__='ComicsInVolumes'
-    comicNumber = Column(Integer, primary_key=True)
-    volumenId = Column(String, primary_key=True, default=0)
+    comicOrder = Column(Integer,nullable=False,default=0)
+    comicNumber = Column(String, primary_key=True)
+    comicVineId = Column(String, nullable=False, default='')
+    volumenId = Column(String, primary_key=True, default='')
     offset = Column(Integer,nullable=False,default=0)
