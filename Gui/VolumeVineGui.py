@@ -46,7 +46,7 @@ class VolumeVineGui(Frame):
         self.botonLookupPublisher = Button(self.frameParametros, image=self.imageLookup,command=self.openLookupPublisher)
         self.botonLookupPublisher.grid(row=1,column=3)
         self.labelImagen = Label(self, text="cover volumen")
-        self.coverSize = (150,150)
+        self.coverSize = (150,250)
         self.labelImagen.grid(column=4,row=1)
 
         self.volume = None
@@ -100,11 +100,11 @@ class VolumeVineGui(Frame):
 
     def agregarVolumen(self):
         cnf = Config(self.session)
-        cv = ComicVineSearcher(cnf.getClave('volume'))
+        cv = ComicVineSearcher(cnf.getClave('volume'),self.session)
         cv.entidad = 'volume'
         volumenAndIssues = cv.getVineEntity(self.volume.id)
 
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId == self.volume.id).delete()
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId == self.volume.id).delete()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
             self.session.add(numeroComic)
@@ -151,10 +151,10 @@ class VolumeVineGui(Frame):
                     self.volume = volume
                     break
 
-            #self.volume = self.comicVineSearcher.listaBusquedaVine[self.grillaVolumes.index(seleccion[0])]
+
             self.grillaVolumes.index(seleccion[0])
             imagen = self.volume.getImageCover()
-            self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
+            self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize, Image.BICUBIC))
             self.labelImagen['image'] = self.cover
 
     def cargarResultado(self,listavolumes):
@@ -163,7 +163,7 @@ class VolumeVineGui(Frame):
         self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
-                if self.publisher.id_publisher==Volume.publisherId:
+                if self.publisher.id_publisher==volume.publisherId:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)

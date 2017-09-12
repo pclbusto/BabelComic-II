@@ -90,8 +90,6 @@ class Volume(Entidades.Init.Base):
 
         fullPath = setup.directorioBase+os.sep+'images'+os.sep+'coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
         # print("imagen: "+ fullPath)
-
-        size = (320, 496)
         if not (os.path.isfile(fullPath)):
             print('No existe el cover recuperando de : '+self.image_url)
             jpg = urllib.request.urlopen(self.image_url)

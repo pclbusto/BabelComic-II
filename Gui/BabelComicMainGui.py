@@ -317,7 +317,7 @@ class BabelComicMainGui(Frame):
         #if (panelComics.comicActual):
         print("abriendo")
         comic = self.panelComics.getComicActual()
-        visor = ComicVisorGui(root, comic,height = root.winfo_screenheight(),width = root.winfo_screenwidth())
+        visor = ComicVisorGui(root, comic, session=self.session,height = root.winfo_screenheight(),width = root.winfo_screenwidth())
         visor.title = ('Babel Comics Visor')
         visor.wm_state('zoomed')
 

@@ -86,7 +86,7 @@ class PublisherLookupGui(Frame):
         ttk.Button(self, text='seleccionar', command=self.seleccionarPublisher).grid(column=0, row=2, sticky=(E))
         self.desc = True
 
-        self.pilImageCoverGenerica = Iconos.pilImageLogo
+        self.pilImageCoverGenerica = Iconos().pilImageLogo
         self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
     #

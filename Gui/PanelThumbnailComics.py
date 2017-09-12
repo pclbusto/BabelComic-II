@@ -9,6 +9,8 @@ from iconos.Iconos import Iconos
 from rarfile import NotRarFile, BadRarFile
 import os.path
 import threading
+from Entidades.ComicBooks.ComicBookDetail import ComicBookDetails
+
 
 
 class PanelThumbnailComics(Canvas):
@@ -65,6 +67,7 @@ class PanelThumbnailComics(Canvas):
             self.cantidadThumnailsGenerados += 1
             try:
                 comic.openCbFile()
+                print(comic.path)
                 nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
                 cover = None
                 if (not os.path.isfile(nombreThumnail)):
@@ -241,10 +244,15 @@ class PanelThumbnailComics(Canvas):
         if self.comicActual is not None:
             comic = self.tagAndComic[self.comicActual][1]
             nombreThumnail = self.pahThumnails + str(comic.comicId) +comic.getPageExtension()
-            print("encontramos el archivo:{}".format(nombreThumnail))
+            print("Buscamos el archivo:{}".format(nombreThumnail))
             if (os.path.isfile(nombreThumnail)):
                 print("encontramos el archivo")
                 os.remove(nombreThumnail)
+                '''revisamos si tiene cover configurada en la tabla de detalle comic'''
+                cover = self.session.query(ComicBookDetails).filter(ComicBookDetails.comicId == comic.comicId).filter(
+                    ComicBookDetails.tipoPagina == ComicBookDetails.COVER).first()
+                if cover is not None:
+                    comic.goto(cover.indicePagina)
                 pagina = comic.getImagePage().resize(self.size, Image.BICUBIC)
                 pagina.save(nombreThumnail)
                 self.thumbnail.append(ImageTk.PhotoImage(pagina))

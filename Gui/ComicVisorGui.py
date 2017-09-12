@@ -5,12 +5,19 @@ from tkinter import Tk,ttk
 from tkinter import filedialog
 import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.ComicBooks.ComicBookDetail import ComicBookDetails
 
 
 
 class ComicVisorGui(Toplevel):
-    def __init__(self,master,comicBook=None,cnf={},**kw):
+    def __init__(self,master,comicBook=None, session = None,cnf={},**kw):
         Toplevel.__init__(self,master,cnf,**kw)
+
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
+
         if not comicBook:
            self.comicBook =  ComicBook('BabelComics.cbz')
         else:
@@ -168,7 +175,19 @@ class ComicVisorGui(Toplevel):
     ##  g Key open
         elif (event.keycode == 1):
             print(event.keycode)
+        elif (event.keysym == 'c'):
+            self.setCover()
         print(event.keysym)
+
+    def setCover(self):
+        self.session.query(ComicBookDetails).filter(ComicBookDetails.comicId==self.comicBook.comicId).filter(ComicBookDetails.tipoPagina==ComicBookDetails.COVER).delete()
+        self.session.commit()
+        comicBookDetail = ComicBookDetails()
+        comicBookDetail.comicId = self.comicBook.comicId
+        comicBookDetail.indicePagina = self.comicBook.indicePaginaActual
+        comicBookDetail.tipoPagina = ComicBookDetails.COVER
+        self.session.add(comicBookDetail)
+        self.session.commit()
 
     def cargarPagina(self):
         # global canvas,myimg,idImagen,mainframe
@@ -200,8 +219,9 @@ class ComicVisorGui(Toplevel):
 
 if __name__=='__main__':
     root = Tk()
-    #comicBook = E
-    #comic = ComicBooks().get('C:\\Users\\pclbu\\Documents\\Comics\\Green Lantern 047 (2016) (Digital-Empire).cbr')
-    visor = ComicVisorGui(root,comic)
+    path='E:\\Comics\\All Elseworlds\\Batman Elseworlds\\Batman_ Scar of the Bat V1996 #1 (1996).cbz'
+    session = Entidades.Init.Session()
+    comicBook = session.query(ComicBook).filter(ComicBook.path==path).first()
+    visor = ComicVisorGui(root,comicBook,session=session)
     visor.title = ('Babel Comics Visor')
     root.mainloop()

@@ -189,7 +189,7 @@ class ComicVineSearcher:
                 volume.id = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
-
+                volume.AnioInicio =volumeVine.find('start_year').text
                 volume.descripcion = volumeVine.find('description').text
                 volume.cantidadNumeros = volumeVine.find('count_of_issues').text
                 if volumeVine.find('image').find('super_url') is not None:
@@ -211,10 +211,11 @@ class ComicVineSearcher:
                     comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = ComicInVolumes()
-                        comicInVolumes.volumenId = volume.id
+                        comicInVolumes.volumeId = volume.id
                         comicInVolumes.comicVineId = issue.find("id").text
-                        comicInVolumes.comicNumber = issue.find("issue_number").text
-                        comicInVolumes.comicOrder = index
+                        comicInVolumes.numero = issue.find("issue_number").text
+                        comicInVolumes.titulo = issue.find("name").text
+
                         comicIds.append(comicInVolumes)
 
                 return volume, comicIds
@@ -243,9 +244,12 @@ class ComicVineSearcher:
             ##            print('falta ingresar la entidad')
             return
         self.offset = io_offset
-        print("*" + self.vinekey + "*")
 
-        print("ENTIDADDASDAS: {}".format(self.entidad))
+        url = 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
+                    self.offset)
+        print("Clave: {}\noffset:{}\nurl:{}".format(self.vinekey, self.offset,url))
+        response = urllib.request.urlopen(url)
+        '''
         if self.entidad == 'issues':
             response = urllib.request.urlopen(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
@@ -256,14 +260,14 @@ class ComicVineSearcher:
         else:
             response = urllib.request.urlopen(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
-                    self.offset * 100) + '&sort=id:asc')
+                    self.offset ) + '&sort=id:asc')
             print(
                 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                     self.offset * 100) + '&sort=id:asc')
 
         # response = urllib.request.urlopen('http://comicvine.gamespot.com/api/publishers/?api_key=64f7e65686c40cc016b8b8e499f46d6657d26752&filter=name:DC%20comics&offset=0&sort=date_added:asc')
 
-
+        '''
 
         html = response.read()
         # print(html.decode())
@@ -303,7 +307,7 @@ class ComicVineSearcher:
                     # volumeName = item.find('volume').find('name').text
                     comic.volumeId = item.find('volume').find('id').text
                     # volumeId = item.find('volume').find('id').text
-                    print(comic.volumeNombre, comic.volumeId, comic.numero  )
+                    print(comic)
                     self.listaBusquedaVine.append(
                         comic)
 
@@ -315,7 +319,7 @@ class ComicVineSearcher:
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
                     if item.find('image').find('thumb_url') != None:
-                        l_serie.image_url = item.find('image').find('thumb_url').text
+                        l_serie.image_url = item.find('image').find('super_url').text
                     else:
                         l_serie.image_url = ''
 

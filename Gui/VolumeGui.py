@@ -144,6 +144,7 @@ class VolumeGui(FrameMaestro):
             #print("Volumen {}".format(self.volume))
             self.entradaId.insert(0,self.volume.id)
             self.entradaNombre.insert(0,self.volume.nombre)
+            print(self.volume.image_url)
             self.entradaUrlImagen.insert(0, self.volume.image_url)
             if (self.volume.hasPublisher()):
                 print("*******VOLUMEN***********{}".format(self.volume.publisherId))
@@ -213,10 +214,9 @@ class VolumeGui(FrameMaestro):
         self.copyFromWindowsToEntity()
         if self.newRecord:
             self.session.add(self.volume)
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumenId==self.volume.id).delete()
-        self.numerosPorVolumen.sort(reverse=False, key=self.keyOrd)
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId==self.volume.id).delete()
+        #self.numerosPorVolumen.sort(reverse=False, key=self.keyOrd)
         for index, numeroComic in enumerate(self.numerosPorVolumen, start=0):
-            numeroComic.offset = int(index/100)
             self.session.add(numeroComic)
         self.session.commit()
 

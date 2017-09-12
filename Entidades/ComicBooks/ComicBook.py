@@ -5,14 +5,14 @@ from PIL import Image, ImageTk
 from sqlalchemy import Column, Integer, String, Float,ForeignKey
 import Entidades.Init
 from rarfile import NotRarFile, BadRarFile
-
+from zipfile import BadZipFile
 
 class ComicBook(Entidades.Init.Base):
 
     __tablename__='Comicbooks'
     __table_args__ = {'sqlite_autoincrement': True}
 
-    extensionesSoportadas = ['jpg', 'png', 'gif']
+    extensionesSoportadas = ['jpg', 'png', 'gif', 'jpeg']
 
 
     path = Column(String,unique=True)
@@ -20,7 +20,7 @@ class ComicBook(Entidades.Init.Base):
     titulo = Column(String,nullable=False,default='')
     volumeId = Column(String, nullable=False, default='')
     volumeNombre = Column(String,nullable=False,default='')
-    numero = Column(Integer,nullable=False,default=0)
+    numero = Column(String,nullable=False,default='0')
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
     arcoArgumentalId = Column(String,nullable=False,default=0) #id arco
     arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
@@ -33,6 +33,10 @@ class ComicBook(Entidades.Init.Base):
     api_detail_url = Column(String,nullable=False,default='')
     thumb_url  = Column(String,nullable=False,default='')
     calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
+    '''Este campo se crea para ordenar los comics.
+    Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
+    El tema es que por ser string pierdo el orden entonces despues del 1 no viene el 2 si no 10.'''
+    orden = Column(Integer,nullable=False,default=0 )
 
 
     def __repr__(self):
@@ -52,16 +56,38 @@ class ComicBook(Entidades.Init.Base):
 
     def openCbFile(self):
         #print('En openCbFile: '+self.getTipo())
+        self.paginas=[]
         if (self.getTipo().lower()=='cbz'):
-            self.cbFile = zipfile.ZipFile(self.path, 'r')
-            self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
+            try:
+                self.cbFile = zipfile.ZipFile(self.path, 'r')
+                for x in self.cbFile.namelist():
+                    if '.' in x:
+                        if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x)
+            except BadZipFile:
+                self.cbFile = rarfile.RarFile(self.path, 'r')
+                for x in self.cbFile.infolist():
+                    if '.' in x.filename:
+                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x.filename)
+
+                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
         elif (self.getTipo().lower()=='cbr'):
             try:
                 self.cbFile = rarfile.RarFile(self.path, 'r')
-                self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+                for x in self.cbFile.infolist():
+                    if '.' in x.filename:
+                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x.filename)
+
+                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
             except BadRarFile:
                 self.cbFile = zipfile.ZipFile(self.path, 'r')
-                self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
+                for x in self.cbFile.namelist():
+                    if '.' in x:
+                        if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x)
+                #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
 
         self.paginas.sort()
         self.indicePaginaActual = 0
@@ -76,8 +102,10 @@ class ComicBook(Entidades.Init.Base):
         return(self.cbFile.open(self.paginas[self.indicePaginaActual]))
 
     def getPageExtension(self):
-        #print('En Comicbook getPageExtension:'+str(len(self.paginas)))
-        return (self.paginas[self.indicePaginaActual][-4:])
+
+        index = self.paginas[self.indicePaginaActual].rindex(".")-len(self.paginas[self.indicePaginaActual])
+
+        return (self.paginas[self.indicePaginaActual][index:])
 
     def goto(self,index):
         if index < len(self.paginas):
