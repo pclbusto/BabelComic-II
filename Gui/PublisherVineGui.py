@@ -10,11 +10,16 @@ import Entidades.Init
 from Entidades.Publishers.Publisher import Publisher
 
 class PublisherVineGui(Frame):
-    def __init__(self, parent, cnf={}, **kw):
+    def __init__(self, parent, session=None, cnf={}, **kw):
         Frame.__init__(self, parent, cnf, **kw)
         config = Config()
         self.iconos = Iconos()
-        self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'))
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
+
+        self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'),session=self.session )
         self.comicVineSearcher.setEntidad("publishers")
         self.labelId = Label(self, text="Nombre Editorial: ")
         self.labelId.grid(row=0,column=0, sticky=W ,padx=5,pady=5)
@@ -53,9 +58,8 @@ class PublisherVineGui(Frame):
         self.botonLookupPublisher.grid(row=2, column=3, pady=3, sticky=(E))
 
     def agregarEditorial(self):
-        session = Entidades.Init.Session()
-        session.add(self.publisher)
-        session.commit()
+        self.session.add(self.publisher)
+        self.session.commit()
 
     def buscar(self):
         if (self.entradaNombreEditorial.get()!=''):

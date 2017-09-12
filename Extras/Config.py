@@ -96,7 +96,9 @@ class Config:
 
     def addClave(self, clave):
 
-        claveObj = Entidades.Setups.SetupVineKey.SetupVinekey(key=clave)
+        claveObj = Entidades.Setups.SetupVineKey.SetupVinekey()
+        claveObj.key=clave
+        print(claveObj)
         self.session.add(claveObj)
         self.session.commit()
         self.__initStatus__(clave)
@@ -150,6 +152,7 @@ class Config:
 
     def __delAllClaves__(self):
         self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).delete()
+        self.session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).delete()
         self.session.commit()
         self.listaClaves = []
 
@@ -162,6 +165,9 @@ class Config:
     def delClave(self, clave):
         self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(
             Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).delete()
+        self.session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).filter(
+            Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.key == clave).delete()
+
         self.session.commit()
 
     def delTipo(self, tipo):
@@ -182,7 +188,7 @@ class Config:
 
     def setListaClaves(self, listaClaves=[]):
         self.__delAllClaves__()
-        if listaClaves:
+        if listaClaves is not None:
             for clave in listaClaves:
                 self.addClave(clave)
 
@@ -236,15 +242,16 @@ class Config:
 
 if __name__ == "__main__":
     config = Config()
-    config.__delAllTipos__()
-    config.addTipo('cbz')
-    config.addTipo('cbr')
-    config.__delAllClaves__()
-    config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    config.__initStatus__('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
-    config.__initStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4')
-    config.__updateStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4','volumes')
+    config.delClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    # config.__delAllTipos__()
+    # config.addTipo('cbz')
+    # config.addTipo('cbr')
+    # config.__delAllClaves__()
+    # config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
+    # config.__initStatus__('64f7e65686c40cc016b8b8e499f46d6657d26752')
+    # config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    # config.__initStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    # config.__updateStatus__('7e4368b71c5a66d710a62e996a660024f6a868d4','volumes')
 
     # clave = config.getClave("volumes")
     # print(clave)
