@@ -55,3 +55,4 @@ class Catalogador():
         destino.comicVineId = fuente.comicVineId
         self.session.commit()
 
+

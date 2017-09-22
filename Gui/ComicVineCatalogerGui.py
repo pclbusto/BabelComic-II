@@ -16,6 +16,7 @@ from  Extras.Config import Config
 import Entidades.Init
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 import re
+import threading
 
 class ComicCatalogerGui(Frame):
     '''muestra un panel con una info de comic resumida
@@ -118,9 +119,11 @@ class ComicCatalogerGui(Frame):
         self.entryPathRe.grid(column=0, row=1, sticky=(N, W, S, E), padx=5)
         self.botonAutoasignar = Button(self.panelListView,text='Auto asignar',command=self.AutoAsignar)
         self.botonAutoasignar.grid(column=1, row=1, sticky=(N, W, S, E))
+        self.iconoRedOrb = ImageTk.PhotoImage(Iconos().pilRedOrb)
+        self.iconoGreenOrb = ImageTk.PhotoImage(Iconos().pilGreenOrb)
 
         for index,comic in enumerate(self.comicbooks):
-            self.listViewComics.insert('', 'end', text=comic.numero,
+            self.listViewComics.insert('', 'end', image = self.iconoRedOrb, text=comic.numero,
                                     values=([index,comic.path]))
 
 
@@ -152,7 +155,7 @@ class ComicCatalogerGui(Frame):
                                                                                              sticky=(W),
                                                                                              pady=5)
 
-        self.botonCopiarGrupo = ttk.Button(self.seriesLookupFrame, text='Copiar Grupo', command=self.copiarInfoGrupo)
+        self.botonCopiarGrupo = ttk.Button(self.seriesLookupFrame, text='Copiar Grupo', command=self.copiarInfoGrupoBtn)
         self.botonCopiarGrupo.grid(column=3, row=2, pady=5)
         botonBuscar = ttk.Button(self.seriesLookupFrame, text='Traer Todo', command=self.traerTodos)
         botonBuscar.grid(column=0, row=2, pady=5)
@@ -207,7 +210,7 @@ class ComicCatalogerGui(Frame):
 
         '''cargamos los comics de nuevo con los numeros asignados.'''
         for index,comic in enumerate(self.comicbooks):
-            self.listViewComics.insert('', 'end', text=comic.numero,
+            self.listViewComics.insert('', 'end', text=comic.numero, image=self.iconoRedOrb,
                                     values=([index,comic.path]))
         for comic in self.comicbooks:
             print(comic)
@@ -245,6 +248,10 @@ class ComicCatalogerGui(Frame):
 
         self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
 
+    def copiarInfoGrupoBtn(self):
+        t = threading.Thread(target=self.copiarInfoGrupo)
+        t.start()
+
     def copiarInfoGrupo(self):
 
         cantidadZeros=0
@@ -280,6 +287,11 @@ class ComicCatalogerGui(Frame):
                 comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
                 catalogador.copyFromComicToComic(completComicInfo,comicbook)
 
+                for item in self.listViewComics.get_children():
+                    if completComicInfo.numero == self.listViewComics.item(item, 'text'):
+                        print("ACTUALIZANDO GUI")
+                        t = threading.Thread(target=self.updateGui, args=[item])
+                        t.start()
 
         self.setup.ultimoNumeroConsultadoHasta = self.entryNumeroHasta.get()
         self.setup.ultimoNumeroConsultadoDesde = self.entryNumeroDesde.get()
@@ -287,6 +299,9 @@ class ComicCatalogerGui(Frame):
         self.setup.expresionRegularNumero = self.entryPathRe.get()
         print(self.setup)
         self.session.commit()
+    def updateGui(self, item):
+        print("Dentro del thead: {}:".format(item))
+        self.listViewComics.item(item, image=self.iconoGreenOrb)
 
     def copiarInfo(self):
         cnf = Config(self.session)
@@ -385,11 +400,15 @@ if __name__ == '__main__':
     session = Entidades.Init.Session()
     pathComics=["E:\\Comics\\DC\\Action Comics\\Action Comics 420.cbr",
                 "E:\\Comics\\DC\\Action Comics\\Action Comics 422.cbr",
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 423.cbr",
+                "E:\\Comics\\DC\\Action Comics\\Action Comics 423.cbr"
+               ]
+    '''
+     ,
                 "E:\\Comics\\DC\\Action Comics\\Action Comics 442.cbr",
                 "E:\\Comics\\DC\\Action Comics\\Action Comics 447.cbr",
                 "E:\\Comics\\DC\\Action Comics\\Action Comics 470.cbr",
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"]
+                "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
+                '''
     comics= []
     for pathComic in pathComics:
         comic = session.query(ComicBook).filter(ComicBook.path ==pathComic).first()

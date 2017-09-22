@@ -123,12 +123,21 @@ class BabelComicMainGui(Frame):
 
         # creamos menu popup para abrir el catalogador el visor el editor de info y calcular el thumnails de nuevo
         self.popupThumbnails = Menu(self.panelComics, tearoff=0)
+
         self.popupThumbnails.add_command(label="Info comic", command=self.openComicEditor)
         self.popupThumbnails.add_command(label="Leer comic", command=self.openBabelComicVisor)
         self.popupThumbnails.add_command(label="Catalogar comic", command=self.openComicVine)
         self.popupThumbnails.add_separator()
         self.popupThumbnails.add_command(label="Refresh Thumbnail",
                                     command=self.panelComics.recreateThumbnails)
+
+        self.calidad = Menu(self.popupThumbnails,tearoff=0)
+        self.calidad.add_command(label='Mala')
+        self.calidad.add_command(label='Buena')
+        self.calidad.add_command(label='Muy Buena')
+        self.calidad.add_command(label='Digital')
+        self.popupThumbnails.add_cascade(label = 'Calidad', menu=self.calidad)
+
         self.panelComics.bind("<Button-3>", self.popupPanelThumbnails)
 
         parent.bind('<Control-m>', lambda x: self.openComicEditor())
