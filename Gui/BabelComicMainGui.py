@@ -3,6 +3,7 @@ from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Gui.ConfigGui import ConfigGui
 from Gui.ComicVisorGui import ComicVisorGui
 from Gui.VolumeGui import VolumeGui
+from Extras.WindowManager import *
 from Gui.PublisherGui import PublisherGui
 from Gui.ScannerGui import BabelComicScannerGui
 
@@ -256,11 +257,12 @@ class BabelComicMainGui(Frame):
         publisherGui.grid(sticky=(N, S, E, W))
 
     def openVolume(self):
-        window = Toplevel()
-        window.geometry("+0+0")
-        window.wm_title(string="Volumen")
-        volumenGui = VolumeGui(window, width=507, height=358, session=self.session)
-        volumenGui.grid(sticky=(N, S, E, W))
+        openWindow(Titulo="Volumen", session=self.session)
+        # window = Toplevel()
+        # window.geometry("+0+0")
+        # window.wm_title(string="Volumen")
+        # volumenGui = VolumeGui(window, width=507, height=358, session=self.session)
+        # volumenGui.grid(sticky=(N, S, E, W))
 
     def salir(self):
         self.setup = self.session.query(Setup).first()
