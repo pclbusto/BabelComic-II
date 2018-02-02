@@ -93,6 +93,53 @@ class ComicBook(Entidades.Init.Base):
         self.paginas.sort()
         self.indicePaginaActual = 0
 
+    def has_xml(self):
+        self.openCbFile()
+        xmls = [x for x in self.cbFile.namelist() if (x[-3:].lower() in ["xml"])]
+        if str(self.comicId)+'.xml' in xmls:
+            return True
+        else:
+            return False
+
+    def editCbFile(self):
+        #print('En openCbFile: '+self.getTipo())
+        self.paginas=[]
+        if (self.getTipo().lower()=='cbz'):
+            try:
+                self.cbFile = zipfile.ZipFile(self.path, 'a')
+                for x in self.cbFile.namelist():
+                    if '.' in x:
+                        if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x)
+            except BadZipFile:
+                self.cbFile = rarfile.RarFile(self.path, 'a')
+                for x in self.cbFile.infolist():
+                    if '.' in x.filename:
+                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x.filename)
+
+                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+        elif (self.getTipo().lower()=='cbr'):
+            try:
+                self.cbFile = rarfile.RarFile(self.path, 'a')
+                for x in self.cbFile.infolist():
+                    if '.' in x.filename:
+                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x.filename)
+
+                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+            except BadRarFile:
+                self.cbFile = zipfile.ZipFile(self.path, 'a')
+                for x in self.cbFile.namelist():
+                    if '.' in x:
+                        if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
+                            self.paginas.append(x)
+                #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
+
+        self.paginas.sort()
+        self.indicePaginaActual = 0
+
+
     def getImagePage(self):
         return (Image.open(self.getPage()))
 
@@ -136,6 +183,9 @@ class ComicBook(Entidades.Init.Base):
             return(self.path[self.path.rfind(os.sep)+1:])
         else:
             return (self.path[self.path.rfind(os.sep) + 1:-4])
+
+
+
 
 # ##    def __str__(self):
 # ##        return ('<NOMBRE: '+self.nombre+' PATH :'+self.path)

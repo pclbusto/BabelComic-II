@@ -1,7 +1,7 @@
 import Entidades.Init
 import Entidades.Volumes.Volume
 from Entidades.ComicBooks.ComicBook import ComicBook
-
+from Extras.ComicXmlCreator import XmlManager
 class Catalogador():
 
     session = None
@@ -54,5 +54,12 @@ class Catalogador():
         destino.ratingExterno = fuente.ratingExterno
         destino.comicVineId = fuente.comicVineId
         self.session.commit()
+        if not destino.has_xml():
+            cbFile = destino.editCbFile
+            xml_manager = XmlManager(self.session)
+            xml_manager.set_xml_for_comic(destino)
+
+
+
 
 
