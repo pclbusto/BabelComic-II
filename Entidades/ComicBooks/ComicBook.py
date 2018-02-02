@@ -22,13 +22,14 @@ class ComicBook(Entidades.Init.Base):
     volumeNombre = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    arcoArgumentalId = Column(String,nullable=False,default=0) #id arco
+    arcoArgumentalId = Column(String,nullable=False,default='') #id arco
     arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
     rating = Column(Float,nullable=False,default=0.0)
     ratingExterno = Column(Float,nullable=False,default=0.0)
     comicId = Column(Integer, primary_key=True)
+
     publisherId = Column(String,nullable=False,default='')
     api_detail_url = Column(String,nullable=False,default='')
     thumb_url  = Column(String,nullable=False,default='')

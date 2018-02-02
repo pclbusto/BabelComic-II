@@ -1,15 +1,18 @@
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Publishers.Publisher import Publisher
+from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.Volumes.Volume import Volume
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
 import Entidades.Init
+import os
+import zipfile
 
 def crearXml():
     session = Entidades.Init.Session()
     lista = session.query(ComicBook).all()
-    for comic in lista:
+    for comic in lista[:1]:
         comic_root = Element('ComicRoot')
         comic_node = SubElement(comic_root, "Comic")
         SubElement(comic_node, "comicId").text = str(comic.comicId)
@@ -53,8 +56,51 @@ def crearXml():
             SubElement(volume_node, "AnioInicio").text = str(volume.AnioInicio)
             SubElement(volume_node, "cantidadNumeros").text = str(volume.cantidadNumeros)
 
+        if comic.arcoArgumentalId != '':
+            arco_argumental_node = SubElement(comic_root, "ArcoArgumental")
+            arco_argumental = session.query(ArcoArgumental).get(comic.arcoArgumentalId)
+            SubElement(arco_argumental_node, "id").text = arco_argumental.id
+            SubElement(arco_argumental_node, "nombre").text = arco_argumental.nombre
+            SubElement(arco_argumental_node, "deck").text = arco_argumental.deck
+            SubElement(arco_argumental_node, "descripcion").text = arco_argumental.descripcion
+            SubElement(arco_argumental_node, "ultimaFechaActualizacion").text = str(arco_argumental.ultimaFechaActualizacion)
 
+        if comic.publisherId != '':
+            publisher_node = SubElement(comic_root, "Publisher")
+            publisher = session.query(Publisher).get(comic.publisherId)
+            SubElement(publisher_node, "id_publisher").text = publisher.id_publisher
+            SubElement(publisher_node, "name").text = publisher.name
+            SubElement(publisher_node, "deck").text = publisher.deck
+            SubElement(publisher_node, "description").text = publisher.description
+            SubElement(publisher_node, "logoImagePath").text = publisher.logoImagePath
+            SubElement(publisher_node, "localLogoImagePath").text = publisher.localLogoImagePath
+            SubElement(publisher_node, "siteDetailUrl").text = publisher.siteDetailUrl
         tree = ElementTree(comic_root)
         tree.write("{}.xml".format(comic.comicId))
+        insertarXmlDentroComic(comic)
+
+def insertarXmlDentroComic(comic):
+
+    comic.openCbFile()
+    print (comic.path)
+    tempPath = comic.path[:comic.path.find(comic.getNombreArchivo())]+"temp"
+    print(tempPath)
+    print(comic.cbFile.namelist())
+
+    comic.cbFile.extractall(tempPath)
+    comic.cbFile.close()
+    os.rename(str(comic.comicId) + ".xml", tempPath + os.sep + str(comic.comicId) + ".xml")
+    os.rename(comic.path, comic.path + "bkp")
+    foo = zipfile.ZipFile(comic.path, 'w')
+    for a,b,listaArchivos in os.walk(tempPath):
+        for ar in listaArchivos:
+            print(ar)
+            foo.write(os.path.join(a,ar),ar)
+    foo.close()
+    os.rmtree(tempPath)
+    os.remove(comic.path + "bkp")
+
+
+    # shutil._make_zipfile(comic.path, tempPath)    # zip_ref.close()
 
 crearXml()
