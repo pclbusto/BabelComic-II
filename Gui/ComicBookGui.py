@@ -199,8 +199,8 @@ class ComicBookGui(FrameMaestro):
         self.entradaNumero.insert(END, self.comic.numero)
         self.entradaTitulo.delete(0,END)
         self.entradaTitulo.insert(END, self.comic.titulo)
-        self.entradaFecha.delete(0,END)
-        if self.comic.fechaTapa>0:
+        self.entradaFecha.delete(0, END)
+        if self.comic.fechaTapa > 0:
             self.entradaFecha.insert(END, date.fromordinal(self.comic.fechaTapa))
         else:
             self.entradaFecha.insert(END, '')
@@ -211,9 +211,11 @@ class ComicBookGui(FrameMaestro):
 
         if self.comic.tieneArcoAlterno():
             arco = self.session.query(ArcoArgumental).get(self.comic.arcoArgumentalId)
-            self.entradaArco.insert(0, arco.nombre)
-            self.entradaArcoArgumentalNumero.insert(0, self.comic.arcoArgumentalNumero)
-            self.entradaArcoArgumentalDe.insert(0, arco.getIssuesCount())
+            if arco is not None:
+                self.entradaArco.insert(0, arco.nombre)
+                self.entradaArcoArgumentalNumero.insert(0, self.comic.arcoArgumentalNumero)
+                self.entradaArcoArgumentalDe.insert(0, arco.getIssuesCount())
+
 
     def click(self,event):
         help(Toplevel)
