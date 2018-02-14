@@ -297,7 +297,7 @@ class ComicVineSearcher:
                     # descripcion = item.find('description').text
                     comic.comicVineId = item.find('id').text
                     # idExterno = item.find('id').text
-                    comic.numero = float(item.find('issue_number').text)
+                    comic.numero = item.find('issue_number').text
                     # numero = item.find('issue_number').text
                     comic.api_detail_url = item.find('api_detail_url').text
                     # api_detail_url = item.find('api_detail_url').text

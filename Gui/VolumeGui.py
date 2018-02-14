@@ -29,15 +29,15 @@ class VolumeGui(FrameMaestro):
         self.size = (int(320 * 0.5), int(496 * 0.5))
 
         self.panelPrincipal = self.getPanelPrincipal()
-        ttk.Label(self.panelPrincipal, text='ID').grid(column=0,row=0, sticky=W)
+        ttk.Label(self.panelPrincipal, text='ID').grid(column=0, row=0, sticky=W)
         self.panelId = Frame(self.panelPrincipal)
-        self.panelId.grid(column=1,row=0,sticky=(W,E))
+        self.panelId.grid(column=1, row=0, sticky=(W, E))
         self.entradaId = ttk.Entry(self.panelId)
         self.entradaId.grid(column=1, row=0, padx=5, pady=2, sticky=W)
         self.botonLookupVolume = ttk.Button(self.panelId, image=self.imagenLookup, command=self.openLookupVolume)
-        self.botonLookupVolume.grid(column=2, row = 0, padx=5, pady=2, sticky=W)
+        self.botonLookupVolume.grid(column=2, row=0, padx=5, pady=2, sticky=W)
 
-        ttk.Label(self.panelPrincipal, text='Nombre').grid(column=0,row=1, sticky=W)
+        ttk.Label(self.panelPrincipal, text='Nombre').grid(column=0, row=1, sticky=W)
         self.entradaNombre = ttk.Entry(self.panelPrincipal)
         self.entradaNombre.grid(column=1, row=1, padx=5, pady=2, columnspan=2, sticky=W)
 
@@ -47,11 +47,11 @@ class VolumeGui(FrameMaestro):
 
         ttk.Label(self.panelPrincipal, text='Url Cover').grid(column=0, row=3, sticky=W)
         self.entradaUrlImagen = ttk.Entry(self.panelPrincipal, width=90)
-        self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W,columnspan=2)
+        self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W, columnspan=2)
 
         ttk.Label(self.panelPrincipal, text='Editorial').grid(column=0, row=4, sticky=W)
         self.panelEditorial = Frame(self.panelPrincipal)
-        self.panelEditorial.grid(column=1,row=4,sticky=(W,E))
+        self.panelEditorial.grid(column=1, row=4, sticky=(W, E))
 
         self.entradaEditorial = ttk.Entry(self.panelEditorial)
         self.entradaEditorial.grid(column=1, row=4, padx=5, pady=2, sticky=W)
@@ -71,7 +71,7 @@ class VolumeGui(FrameMaestro):
         self.entradaCantidadNumeros.grid(column=1, row=6, padx=5, pady=2, sticky=W)
 
         self.coverVolumen = Canvas(self.panelPrincipal)
-        self.coverVolumen.create_image(180,250, image=self.imageLogo)
+        self.coverVolumen.create_image(180, 250, image=self.imageLogo)
         self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=1)
 
         self.botonCargarWeb.config(command=self.openVolumeComicVine)

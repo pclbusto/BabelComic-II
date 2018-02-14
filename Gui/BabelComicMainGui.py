@@ -2,9 +2,8 @@ from Gui.ComicBookGui import ComicBookGui
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Gui.ConfigGui import ConfigGui
 from Gui.ComicVisorGui import ComicVisorGui
-from Gui.VolumeGui import VolumeGui
 from Extras.WindowManager import *
-from Gui.PublisherGui import PublisherGui
+
 from Gui.ScannerGui import BabelComicScannerGui
 
 from PIL import Image, ImageTk
@@ -144,8 +143,8 @@ class BabelComicMainGui(Frame):
         parent.bind('<Control-m>', lambda x: self.openComicEditor())
         parent.bind('<Control-r>', lambda x: self.openComicVine())
         parent.bind('<Control-b>', lambda x: self.openBabelComicVisor())
-        parent.bind('<Control-l>', lambda x: self.openVolume())
-        parent.bind('<Control-p>', lambda x: self.openPublisher())
+        parent.bind('<Control-l>', lambda x: openWindow('Volumen',self.session))
+        parent.bind('<Control-p>', lambda x: openWindow('Editorial',self.session))
 
 
         parent.bind('<Control-s>', self.openBabelComicConfig)
@@ -257,12 +256,7 @@ class BabelComicMainGui(Frame):
         publisherGui.grid(sticky=(N, S, E, W))
 
     def openVolume(self):
-        openWindow(Titulo="Volumen", session=self.session)
-        # window = Toplevel()
-        # window.geometry("+0+0")
-        # window.wm_title(string="Volumen")
-        # volumenGui = VolumeGui(window, width=507, height=358, session=self.session)
-        # volumenGui.grid(sticky=(N, S, E, W))
+        openVolumen(Titulo="Volumen", session=self.session)
 
     def salir(self):
         self.setup = self.session.query(Setup).first()
@@ -305,13 +299,10 @@ class BabelComicMainGui(Frame):
     def openComicEditor(self):
         if (self.panelComics.comicActual):
             comic = self.session.query(ComicBook).filter(ComicBook.path==self.panelComics.getComicActual().path).first()
-            #comic = comics.get(panelComics.getComicActual().path)
             ventana = Toplevel()
             frameComic = ComicBookGui(ventana, comic, session=self.session)
             frameComic.grid()
-    ##        frameComic.grid(padx=5, pady=5, sticky=(N, W, E, S))
-    ##        frameComic.columnconfigure(0, weight=1)
-    ##        frameComic.rowconfigure(0, weight=1)
+
 
 
     def openBabelComicConfig(self, event):

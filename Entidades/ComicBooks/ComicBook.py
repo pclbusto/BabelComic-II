@@ -41,16 +41,16 @@ class ComicBook(Entidades.Init.Base):
 
 
     def __repr__(self):
-        return "<Comicbooks(Id Volumen='%s'\n" \
-               "Título='%s'\n" \
-               "Path='%s'\n" \
-               "arco id: '%s'\n" \
-               "arco numero:'%s'\n" \
-               "id Comic Vine:'%s'\n" \
-               "Numero='%s'\n" \
-               "id interno='%s'>" % (
-        self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero,self.comicId)
-
+        # return "<Comicbooks(Id Volumen='%s'\n" \
+        #        "Título='%s'\n" \
+        #        "Path='%s'\n" \
+        #        "arco id: '%s'\n" \
+        #        "arco numero:'%s'\n" \
+        #        "id Comic Vine:'%s'\n" \
+        #        "Numero='%s'\n" \
+        #        "id interno='%s'>" % (
+        # self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero,self.comicId)
+        return "id interno='%s'" % (self.comicId)
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
     def tieneArcoAlterno(self):
