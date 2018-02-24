@@ -8,9 +8,24 @@ from kivy.uix.screenmanager import SlideTransition
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.carousel import Carousel
-from kivy.uix.button import Button
+from kivy.uix.button import Button,Label
+from kivy.uix.scrollview import ScrollView
+from kivy.graphics import Color, Rectangle
 
 import os
+
+class MyLabel(ScrollView):
+    def __init__(self, comic=None, **kwargs):
+        super(MyLabel, self).__init__(**kwargs)
+        self.label = Label()
+        self.label.size_hint_y=None
+        self.size_hint=(1,1)
+        self.label.size_hint_x=1
+        self.add_widget(self.label)
+
+        self.label.text_size = (1000,None)
+        self.label.text = 'Esto es una prueba sobre el texto y el label que se tiene que adaptar al largo'*100
+
 
 class Comic(Screen):
 
@@ -24,7 +39,7 @@ class Comic(Screen):
         self.image_cover.pos_hint = {'top': 1, 'left': 1}
 
         self.layout.add_widget(self.image_cover)
-        self.labelDescripcion = TextInput()
+        self.labelDescripcion = MyLabel()
         self.labelDescripcion.size_hint = (.8, 0.5)
         self.labelDescripcion.pos_hint = {'top': 1, 'right': 1}
         self.labelDescripcion.readonly = True
@@ -56,7 +71,7 @@ class Comic(Screen):
 
     def loadComic(self):
         self.loadImageCover(str(self.comic.comicId) + '.jpg')
-        self.labelDescripcion.text = self.comic.resumen
+        self.labelDescripcion.label.text = self.comic.resumen
         self.name=str(self.comic.comicId)
 
 class ComicManager(Carousel):
@@ -190,8 +205,8 @@ class ComicManager(Carousel):
     #             self.switch_to(self.comic_screens[self.indice], direction='right')
 class KComicBookGuiapp(App):
     def build(self):
-        return ComicManager()
-
+        #return ComicManager()
+        return MyLabel()
 
 if __name__ == '__main__':
     session = Entidades.Init.Session()
