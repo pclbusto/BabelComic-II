@@ -10,13 +10,12 @@ import Entidades.ComicBooks.ComicBook
 import Entidades.Volumes.Volume
 import Entidades.ComicBooks.ComicBookDetail
 import Entidades.Volumes.ComicsInVolume
-
+import os
 
 if __name__ == '__main__':
     Init.recreateTables()
     setup = Entidades.Setups.Setup.Setup()
-    setup.directorioBase='C:\\Users\\bustoped\\PycharmProjects\\BabelComic-II'
-
+    setup.directorioBase=os.getcwd()[:-10]
     session = Init.Session()
     session.add(setup)
     session.commit()
