@@ -19,13 +19,14 @@ class Comic(Screen):
         self.layout = FloatLayout()
         self.image_cover = Image(allow_stretch=True)
         #self.loadImageCover('Sin Caratula.jpg')
-        self.image_cover.size_hint = (None, None)
-        self.image_cover.size = (160,248)
+        #self.image_cover.size_hint = (None, None)
+        self.image_cover.size_hint = (0.20, 0.5)
+        #self.image_cover.size = (160,248)
         self.image_cover.pos_hint = {'top': 1, 'left': 1}
 
         self.layout.add_widget(self.image_cover)
         self.labelDescripcion = TextInput()
-        self.labelDescripcion.size_hint = (.7, 0.5)
+        self.labelDescripcion.size_hint = (0.80, 0.5)
         self.labelDescripcion.pos_hint = {'top': 1, 'right': 1}
         self.labelDescripcion.readonly = True
         self.layout.add_widget(self.labelDescripcion)
