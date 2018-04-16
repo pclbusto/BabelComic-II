@@ -50,10 +50,8 @@
   <object class="GtkGrid" id="PublisherGtk">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="margin_left">18</property>
-    <property name="margin_right">18</property>
-    <property name="margin_top">18</property>
-    <property name="margin_bottom">18</property>
+    <property name="halign">center</property>
+    <property name="valign">center</property>
     <property name="row_spacing">12</property>
     <property name="column_spacing">12</property>
     <child>

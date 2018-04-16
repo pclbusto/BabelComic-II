@@ -27,10 +27,99 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-clear</property>
   </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name Id -->
+      <column type="gchar"/>
+      <!-- column-name Nombre -->
+      <column type="gchar"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">0</col>
+        <col id="1">t</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkImage" id="lookup">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-find</property>
+  </object>
+  <object class="GtkWindow">
+    <property name="can_focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkGrid">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="row_spacing">6</property>
+            <property name="column_spacing">6</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Nombre editorial</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="image">lookup</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkImage" id="primero">
     <property name="visible">True</property>
@@ -67,24 +156,6 @@
         <property name="row_spacing">12</property>
         <property name="column_spacing">12</property>
         <child>
-          <object class="GtkAspectFrame">
-            <property name="width_request">250</property>
-            <property name="height_request">250</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label_xalign">0</property>
-            <property name="shadow_type">out</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -92,7 +163,7 @@
             <property name="row_spacing">6</property>
             <property name="column_spacing">6</property>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="entry_id">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -102,7 +173,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="nombre">
+              <object class="GtkEntry" id="entry_nombre">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -112,7 +183,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="entry_url">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -125,6 +196,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Id</property>
               </object>
               <packing>
@@ -136,6 +208,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Nombre</property>
               </object>
               <packing>
@@ -147,6 +220,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Url</property>
               </object>
               <packing>
@@ -160,7 +234,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="halign">start</property>
-                <property name="image">lookup</property>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -171,6 +244,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Resumen</property>
               </object>
               <packing>
@@ -192,6 +266,34 @@
               </packing>
             </child>
             <child>
+              <object class="GtkScrolledWindow">
+                <property name="height_request">92</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkViewport">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="label_resumen">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="wrap">True</property>
+                        <property name="wrap_mode">word-char</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">4</property>
+                <property name="width">3</property>
+                <property name="height">4</property>
+              </packing>
+            </child>
+            <child>
               <placeholder/>
             </child>
             <child>
@@ -204,6 +306,7 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">0</property>
+            <property name="height">2</property>
           </packing>
         </child>
         <child>
@@ -217,7 +320,7 @@
                 <property name="receives_default">True</property>
                 <property name="image">primero</property>
                 <property name="always_show_image">True</property>
-                <signal name="pressed" handler="getFirst" swapped="no"/>
+                <signal name="clicked" handler="getFirst" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -232,6 +335,7 @@
                 <property name="receives_default">True</property>
                 <property name="image">anterior</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="getPrev" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -245,6 +349,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="image">siguiente</property>
+                <signal name="clicked" handler="getNext" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -258,6 +363,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="image">ultimo</property>
+                <signal name="clicked" handler="getLast" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -334,6 +440,21 @@
           <packing>
             <property name="left_attach">2</property>
             <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="publisher_logo_image">
+            <property name="name">publisher_logo_image</property>
+            <property name="width_request">250</property>
+            <property name="height_request">250</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+            <property name="width">2</property>
           </packing>
         </child>
         <child>

@@ -67,5 +67,5 @@ class Publisher(Entidades.Init.Base):
         return (Image.open(fImage))
 
     def __repr__(self):
-        return "<Publisher(id_publisher='%s',name='%s')>" %(self.id_publisher, self.name)
+        return "<Publisher(id_publisher='%s',name='%s')>" %(self.id_publisher, self.localLogoImagePath)
 

@@ -420,6 +420,7 @@ class BabelComicMainGui(Frame):
             self.panelComics.loadComics(self.listaComics[(self.paginaActual * self.setup.cantidadComicsPorPagina):(
             (self.paginaActual + 1) * self.setup.cantidadComicsPorPagina)])
         self.statusThumbnails()
+
     def primero(self):
         self.paginaActual = 0
         self.loadPage()
