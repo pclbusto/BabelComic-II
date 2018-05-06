@@ -165,6 +165,7 @@ class BabelComicMainGui(Frame):
         cantidadColumnas = 4
         # variables globales
         desc = False
+
     def copiarInfoComic(self, event):
         if len(self.panelComics.comicsSelected) == 1:
             self.comicClipboard = self.panelComics.getComicAt( self.panelComics.comicsSelected[0])
