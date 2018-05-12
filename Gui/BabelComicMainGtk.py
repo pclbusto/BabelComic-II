@@ -15,6 +15,7 @@ class IconViewWindow(Gtk.Window):
 
     def __init__(self):
         Gtk.Window.__init__(self)
+        self.maximize()
         self.session = Entidades.Init.Session()
         self.listaComics = self.session.query(ComicBook).all()
 
@@ -40,6 +41,10 @@ class IconViewWindow(Gtk.Window):
         self.add(scrolled)
         iconview.set_spacing(1)
         print (iconview.get_spacing())
+        header = Gtk.HeaderBar()
+        boton = Gtk.Button(label = 'test')
+        header.pack_end(boton)
+        self.set_titlebar(header)
 
     def loadAndCreateThumbnails(self):
         iconview = Gtk.IconView.new()
@@ -108,7 +113,7 @@ class IconViewWindow(Gtk.Window):
             except BadRarFile:
                 print('error en el archivo ' + comic.path)
         #esto hace que no sean tan ancho los thumnails
-        iconview.set_item_width(10)
+        iconview.set_item_width(1)
         return iconview
         # self.config(scrollregion=self.bbox(ALL))
         # self.comicActual = 0
