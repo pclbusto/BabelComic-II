@@ -38,6 +38,7 @@ class BabelComicScannerGui():
     def testScanning(self):
         while (self.manager.scanerDir.isAlive()):
             self.progresBar['value']  = self.manager.porcentajeCompletado
+
 if __name__ == "__main__":
     ##    babel = BabelComicMainGui()
     root = Tk()

@@ -8,6 +8,7 @@ from Entidades.Setups.Setup import Setup
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
+from Gui.ScannerGtk import ScannerGtk
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
 
@@ -33,18 +34,39 @@ class IconViewWindow(Gtk.Window):
         iconview.set_pixbuf_column(0)
         iconview.set_text_column(1)
 
-        # for icon in icons:
-        #     pixbuf = Gtk.IconTheme.get_default().load_icon(icon, 64, 0)
-        #     self.liststore.append([pixbuf, "Label"])
-
         scrolled.add(iconview)
         self.add(scrolled)
         iconview.set_spacing(1)
         print (iconview.get_spacing())
         header = Gtk.HeaderBar()
-        boton = Gtk.Button(label = 'test')
-        header.pack_end(boton)
+        self.boton = Gtk.Button(label = 'test')
+        self.boton.connect("clicked", self.on_click_me_clicked)
+
+        header.pack_end(self.boton)
         self.set_titlebar(header)
+
+        self.popover = Gtk.Popover()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        boton_scan = Gtk.ModelButton()
+        icono = Gtk.Image.new_from_icon_name("gtk-preferences",Gtk.IconSize.DIALOG  )
+        boton_scan.set_image(icono)
+        boton_scan.set_always_show_image(True)
+        #gtk-preferences
+        boton_scan.connect("clicked", self.on_click_scanner)
+        vbox.pack_start(boton_scan, False, True, 10)
+        vbox.pack_start(Gtk.Label("Item 2"), False, True, 10)
+        self.popover.add(vbox)
+        self.popover.set_position(Gtk.PositionType.BOTTOM)
+
+    def on_click_scanner(self, button):
+        pub = ScannerGtk()
+        pub.set_transient_for(self)
+        pub.window.show_all()
+
+    def on_click_me_clicked(self, button):
+        self.popover.set_relative_to(self.boton)
+        self.popover.show_all()
+        self.popover.popup()
 
     def loadAndCreateThumbnails(self):
         iconview = Gtk.IconView.new()
@@ -118,7 +140,9 @@ class IconViewWindow(Gtk.Window):
         # self.config(scrollregion=self.bbox(ALL))
         # self.comicActual = 0
 
-win = IconViewWindow()
-win.connect("destroy", Gtk.main_quit)
-win.show_all()
-Gtk.main()
+
+if __name__ == "__main__":
+    win = IconViewWindow()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()

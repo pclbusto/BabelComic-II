@@ -77,11 +77,8 @@ class PublisherGtk():
         # self.textoDescripcion.config(text='')
         pass
 
-#
-# builder = Gtk.Builder()
 
-# window = builder.get_object("PublisherGui")
-pub = PublisherGtk()
-pub.window.show_all()
-
-Gtk.main()
+if __name__ == "__main__":
+    pub = PublisherGtk()
+    pub.window.show_all()
+    Gtk.main()
