@@ -2,6 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository import Gdk
 import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
@@ -39,10 +40,10 @@ class IconViewWindow(Gtk.Window):
         iconview.set_spacing(1)
         print (iconview.get_spacing())
         header = Gtk.HeaderBar()
-        self.boton = Gtk.Button(label = 'test')
-        self.boton.connect("clicked", self.on_click_me_clicked)
+        self.opciones = Gtk.Button(label = 'Opciones')
+        self.opciones.connect("clicked", self.on_click_me_clicked)
 
-        header.pack_end(self.boton)
+        header.pack_end(self.opciones)
         self.set_titlebar(header)
 
         self.popover = Gtk.Popover()
@@ -60,11 +61,10 @@ class IconViewWindow(Gtk.Window):
 
     def on_click_scanner(self, button):
         pub = ScannerGtk()
-        pub.set_transient_for(self)
-        pub.window.show_all()
+        pub.window.show()
 
     def on_click_me_clicked(self, button):
-        self.popover.set_relative_to(self.boton)
+        self.popover.set_relative_to(self.opciones)
         self.popover.show_all()
         self.popover.popup()
 

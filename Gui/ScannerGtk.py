@@ -14,13 +14,17 @@ class ScannerGtk():
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext, 'getLast': self.getLast}
+        self.handlers = {'borrarComics': self.borrarComics}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Formularios GTK.glade")
+        self.builder.add_from_file("../Formularios GTK-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("ScannerGtk")
-        # self.window.connect("delete-event", self.salir)
+        self.window.set_destroy_with_parent(True)
 
+    def borrarComics(self, widget):
+        session = Entidades.Init.Session()
+        # session.query(ComicBook).delete()
+        session.commit()
 
     def salir(self,arg1,arg2):
         return True

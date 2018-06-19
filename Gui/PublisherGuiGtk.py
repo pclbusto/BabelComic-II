@@ -16,7 +16,7 @@ class PublisherGtk():
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext, 'getLast': self.getLast}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Formularios GTK.glade")
+        self.builder.add_from_file("../Formularios GTK-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
         self.window.connect("destroy", Gtk.main_quit)
