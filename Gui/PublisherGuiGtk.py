@@ -16,7 +16,7 @@ class PublisherGtk():
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext, 'getLast': self.getLast}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Formularios GTK-II.glade")
+        self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
         self.window.connect("destroy", Gtk.main_quit)
@@ -26,7 +26,6 @@ class PublisherGtk():
         self.entry_url =  self.builder.get_object('entry_url')
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         self.label_resumen = self.builder.get_object('label_resumen')
-
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
 

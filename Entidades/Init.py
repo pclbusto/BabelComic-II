@@ -8,7 +8,7 @@ y que no de error despues al usuarlo poque no se creo en el mismo thread.
 '''
 print(os.getcwd())
 
-engine = create_engine('sqlite:///../BabelComic.db', echo=True, connect_args={'check_same_thread':False})
+engine = create_engine('sqlite:///../BabelComic.db', echo=False, connect_args={'check_same_thread':False})
 Base = declarative_base()
 Session = sessionmaker(bind = engine)
 

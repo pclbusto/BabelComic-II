@@ -1,7 +1,8 @@
-import os
+from Extras.Config import Config
+from Extras.Scanner import BabelComicBookScanner
 import Entidades.Init
-from Entidades.Publishers import Publishers
-from Entidades.Setups. Setup import  Setup
+from Entidades.ComicBooks.ComicBook import ComicBook
+import threading
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -14,36 +15,33 @@ class ScannerGtk():
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-        self.handlers = {'borrarComics': self.borrarComics}
+        self.handlers = {'borrarComics': self.borrarComics,'scannearDirectorio':self.scannearDirectorio}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Formularios GTK-II.glade")
-        self.builder.connect_signals(self.handlers)
+        self.builder.add_from_file("../Scanner.glade")
         self.window = self.builder.get_object("ScannerGtk")
+        self.builder.connect_signals(self.handlers)
         self.window.set_destroy_with_parent(True)
+        self.progerss_bar = self.builder.get_object('progress_bar')
+
+    def scannearDirectorio(self,widget):
+        self.config = Config()
+        self.manager = BabelComicBookScanner(self.config.listaDirectorios, self.config.listaTipos)
+        self.manager.iniciarScaneo()
+        t = threading.Thread(target=self.testScanning)
+        t.start()
+
+    def testScanning(self):
+        while (self.manager.scanerDir.isAlive()):
+            print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
+            self.progerss_bar.set_fraction(self.manager.porcentajeCompletado/100.0)
 
     def borrarComics(self, widget):
         session = Entidades.Init.Session()
-        # session.query(ComicBook).delete()
+        session.query(ComicBook).delete()
         session.commit()
 
     def salir(self,arg1,arg2):
         return True
-
-    def getFirst(self, widget):
-        publisher = self.publishers_manager.getFirst()
-        self._copy_to_window(publisher)
-
-    def getPrev(self, widget):
-        publisher = self.publishers_manager.getPrev()
-        self._copy_to_window(publisher)
-
-    def getNext(self, widget):
-        publisher = self.publishers_manager.getNext()
-        self._copy_to_window(publisher)
-
-    def getLast(self, widget):
-        publisher = self.publishers_manager.getLast()
-        self._copy_to_window(publisher)
 
     def _copy_to_window(self,publisher):
         # self.clearWindow()
@@ -78,5 +76,7 @@ class ScannerGtk():
 
 if __name__ == "__main__":
     pub = ScannerGtk()
+    pub.window.connect("destroy", Gtk.main_quit)
+
     pub.window.show_all()
     Gtk.main()
