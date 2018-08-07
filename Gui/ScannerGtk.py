@@ -2,11 +2,16 @@ from Extras.Config import Config
 from Extras.Scanner import BabelComicBookScanner
 import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.Setups.Setup import Setup
 import threading
+import shutil,os
+
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, GObject
+# from gi.repository import Gdk
+GObject.threads_init()
 
 class ScannerGtk():
 
@@ -32,14 +37,18 @@ class ScannerGtk():
 
     def testScanning(self):
         while (self.manager.scanerDir.isAlive()):
-            print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
+            # print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
             self.progerss_bar.set_fraction(self.manager.porcentajeCompletado/100.0)
+        print("Finalizado")
 
     def borrarComics(self, widget):
         session = Entidades.Init.Session()
         session.query(ComicBook).delete()
         session.commit()
-
+        setup = session.query(Setup).get(1)
+        print(setup)
+        shutil.rmtree(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails'))
+        os.mkdir(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails'))
     def salir(self,arg1,arg2):
         return True
 

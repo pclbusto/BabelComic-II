@@ -11,7 +11,7 @@ class BabelComicBookScanner():
         self.listaTipos = listaTipos
         self.porcentajeCompletado = 0.0
         self.scanerDir = threading.Thread(target=self.scanearDirtorios)
-        self.createThumnails = threading.Thread(target=self.crearThumbnails)
+        # self.createThumnails = threading.Thread(target=self.crearThumbnails)
         self.comics = []
         if session is None:
             self.session = Entidades.Init.Session()
@@ -73,7 +73,6 @@ class BabelComicBookScanner():
                 self.listaDirectorios.append(dir)
             self.listaDirectorios.remove(valor)
             self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
-        #session = Entidades.Init.Session()
         for item in self.comics:
             try:
                 comic = self.session.query(ComicBook).filter(ComicBook.path==item.path).first()
