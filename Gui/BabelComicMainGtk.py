@@ -38,7 +38,7 @@ class IconViewWindow(Gtk.Window):
         scrolled.add(iconview)
         self.add(scrolled)
         iconview.set_spacing(1)
-        print (iconview.get_spacing())
+        print ("iconview.get_spacing()")
         header = Gtk.HeaderBar()
         self.opciones = Gtk.Button(label = 'Opciones')
         self.opciones.connect("clicked", self.on_click_me_clicked)
@@ -55,7 +55,8 @@ class IconViewWindow(Gtk.Window):
         #gtk-preferences
         boton_scan.connect("clicked", self.on_click_scanner)
         vbox.pack_start(boton_scan, False, True, 10)
-        vbox.pack_start(Gtk.Label("Item 2"), False, True, 10)
+        # vbox.pack_start(boton_scan, False, True, 10)
+        # vbox.pack_start(Gtk.Label("Item 2"), False, True, 10)
         self.popover.add(vbox)
         self.popover.set_position(Gtk.PositionType.BOTTOM)
 
@@ -73,8 +74,6 @@ class IconViewWindow(Gtk.Window):
         iconview.set_model(self.liststore)
         iconview.set_pixbuf_column(0)
         iconview.set_text_column(1)
-
-
         print("cantidad de comics: ", len(self.listaComics))
         self.cantidadThumnailsAGenerar = len(self.listaComics)
         self.cantidadThumnailsGenerados = 0
@@ -85,12 +84,18 @@ class IconViewWindow(Gtk.Window):
                 # print(comic.path)
                 nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
                 cover = None
+                print(comic.path)
                 if (not os.path.isfile(nombreThumnail)):
                     imagen_height_percent = 150/comic.getImagePage().size[1]
                     self.size = self.size = (int(imagen_height_percent*comic.getImagePage().size[0]), int(150))
 
-                    cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
+                    cover = comic.getImagePage()
+                    # help(cover)
+
+                        # .resize(self.size, Image.LANCZOS)
                     cover.save(nombreThumnail)
+                    print("ACA3")
+
 
                     cover = Pixbuf.new_from_file(nombreThumnail)
                     self.liststore.append([cover, comic.getNombreArchivo()])
@@ -135,7 +140,7 @@ class IconViewWindow(Gtk.Window):
             except BadRarFile:
                 print('error en el archivo ' + comic.path)
         #esto hace que no sean tan ancho los thumnails
-        iconview.set_item_width(1)
+        # iconview.set_item_width(1)
         return iconview
         # self.config(scrollregion=self.bbox(ALL))
         # self.comicActual = 0

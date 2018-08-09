@@ -11,7 +11,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GObject
 # from gi.repository import Gdk
-GObject.threads_init()
+# GObject.threads_init()
 
 class ScannerGtk():
 
@@ -46,9 +46,11 @@ class ScannerGtk():
         session.query(ComicBook).delete()
         session.commit()
         setup = session.query(Setup).get(1)
-        print(setup)
-        shutil.rmtree(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails'))
-        os.mkdir(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails'))
+        for nombre_archivo in os.listdir(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails')):
+            if nombre_archivo != 'sin_caratula.jpg':
+                os.remove(os.path.join(os.path.join(os.path.join(setup.directorioBase,'images'),
+                                                    'coverIssuesThumbnails'),nombre_archivo))
+
     def salir(self,arg1,arg2):
         return True
 
