@@ -9,9 +9,8 @@ import shutil,os
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf, GObject
+from gi.repository import Gtk, GdkPixbuf, GObject,GLib
 # from gi.repository import Gdk
-# GObject.threads_init()
 
 class ScannerGtk():
 
@@ -31,14 +30,18 @@ class ScannerGtk():
     def scannearDirectorio(self,widget):
         self.config = Config()
         self.manager = BabelComicBookScanner(self.config.listaDirectorios, self.config.listaTipos)
+        GObject.threads_init()
         self.manager.iniciarScaneo()
         t = threading.Thread(target=self.testScanning)
         t.start()
 
+    def actualizar_scroll(self):
+        self.progerss_bar.set_fraction(self.manager.porcentajeCompletado / 100.0)
+
     def testScanning(self):
         while (self.manager.scanerDir.isAlive()):
-            # print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
-            self.progerss_bar.set_fraction(self.manager.porcentajeCompletado/100.0)
+            print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
+            GLib.idle_add(self.actualizar_scroll)
         print("Finalizado")
 
     def borrarComics(self, widget):
