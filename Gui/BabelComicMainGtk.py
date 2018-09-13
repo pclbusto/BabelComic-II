@@ -7,10 +7,11 @@ from gi.repository import Gdk
 import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
+from Gui.ScannerGtk import ScannerGtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
-from Gui.ScannerGtk import ScannerGtk
+import time
 import threading
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
@@ -42,9 +43,9 @@ class IconViewWindow(Gtk.Window):
         scrolled.add(iconview)
         self.add(scrolled)
         iconview.set_column_spacing(-1)
-        iconview.set_item_padding(5)
+        iconview.set_item_padding(1)
         iconview.set_item_width(1)
-        iconview.set_spacing(90)
+        iconview.set_spacing(30)
 
         header = Gtk.HeaderBar()
         self.opciones = Gtk.Button(label = 'Opciones')
@@ -67,15 +68,13 @@ class IconViewWindow(Gtk.Window):
         self.popover.add(vbox)
         self.popover.set_position(Gtk.PositionType.BOTTOM)
 
-
+        thread_create = threading.Thread(target=self.crear_thumnails_background)
+        thread_create.daemon = True
+        thread_create.start()
 
     def on_click_scanner(self, button):
-        # pub = ScannerGtk()
-        # pub.window.show()
-        GObject.threads_init()
-        thread = threading.Thread(target=self.crear_thumnails_background)
-        thread.daemon = True
-        thread.start()
+        pub = ScannerGtk()
+        pub.window.show()
 
     def on_click_me_clicked(self, button):
         self.popover.set_relative_to(self.opciones)
@@ -83,19 +82,34 @@ class IconViewWindow(Gtk.Window):
         self.popover.popup()
 
     def crear_thumnails_background(self):
-        for item in self.lista_pendientes[:int(len(self.lista_pendientes)/2)]:
-            GLib.idle_add(self.crear_thumnail_background, item[0], item[1], item[2])
+        for item in self.lista_pendientes:
+            self.crear_thumnail_background(item[0], item[1], item[2])
 
     def crear_thumnail_background(self, comic, nombreThumnail, iter):
-        # print("dsdlksalñdk sa dkñsla kdñsla")
         imagen_height_percent = 150/comic.getImagePage().size[1]
         self.size = self.size = (int(imagen_height_percent*comic.getImagePage().size[0]), int(150))
-
         cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
         cover.save(nombreThumnail)
         cover = Pixbuf.new_from_file(nombreThumnail)
-        self.liststore.remove(iter)
-        self.liststore.append([cover, comic.getNombreArchivo()])
+        self.liststore.set_value(iter, 0, cover)
+
+    # def load_thumnails_in_background(self):
+    #     # proceso que recorre la lista hasta que se terminen de cargar todos los thumnails
+    #     while len(self.lista_pendientes) > 0:
+    #         GLib.idle_add(self.load_thumnail_in_background)
+    #         time.sleep(1)
+    #         print(len(self.lista_pendientes))
+    # def load_thumnail_in_background(self):
+    #     # proceso que recorre la lista de pendientes y carga tod o thumnails que exista en el disco
+    #     for item in self.lista_pendientes:
+    #         if (os.path.isfile(item[1])):
+    #             try:
+    #                 cover = Pixbuf.new_from_file(item[1])
+    #                 # self.liststore.append([cover, item[0].getNombreArchivo()])
+    #                 self.liststore.set_value(item[2], 0, cover)
+    #                 self.lista_pendientes.remove(item)
+    #             except:
+    #                 print("No se pudo leer el archivo")
 
     def loadAndCreateThumbnails(self):
         iconview = Gtk.IconView.new()
@@ -109,26 +123,14 @@ class IconViewWindow(Gtk.Window):
             self.cantidadThumnailsGenerados += 1
             try:
                 comic.openCbFile()
-                # print(comic.path)
                 nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
                 cover = None
                 print(comic.path)
                 print(nombreThumnail)
                 if (not os.path.isfile(nombreThumnail)):
-
-                    # imagen_height_percent = 150/comic.getImagePage().size[1]
-                    # self.size = self.size = (int(imagen_height_percent*comic.getImagePage().size[0]), int(150))
-                    #
-                    # cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
-                    # cover.save(nombreThumnail)
-                    # print("ACA3")
-                    # cover = Pixbuf.new_from_file(nombreThumnail)
-                    #
                     cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
                     iter = self.liststore.append([cover, comic.getNombreArchivo()])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
-                    # GLib.idle_add(self.crear_thumnail_background, comic, nombreThumnail, iter)
-
                 else:
                     print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)

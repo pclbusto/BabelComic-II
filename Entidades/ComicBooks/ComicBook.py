@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, Float,ForeignKey
 import Entidades.Init
 from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
+from io import BytesIO
 
 class ComicBook(Entidades.Init.Base):
 
@@ -107,7 +108,7 @@ class ComicBook(Entidades.Init.Base):
         self.paginas=[]
         if (self.getTipo().lower()=='cbz'):
             try:
-                self.cbFile = zipfile.ZipFile(self.path, 'a')
+                self.cbFile = zipfile.ZipFile(self.path, 'r')
                 for x in self.cbFile.namelist():
                     if '.' in x:
                         if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
@@ -148,7 +149,7 @@ class ComicBook(Entidades.Init.Base):
         return (len(self.paginas))
 
     def getPage(self):
-        return(self.cbFile.open(self.paginas[self.indicePaginaActual]))
+        return(BytesIO(self.cbFile.read(self.paginas[self.indicePaginaActual])))
 
     def getPageExtension(self):
 
