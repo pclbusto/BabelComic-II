@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -135,6 +136,7 @@ class DownloaderWindow(Gtk.Window):
 
     def limpiar_todo(self, boton):
         self.lista_comics.clear()
+        self.lista_item_for_parsing.clear()
 
     def detener(self, boton):
         self.currentParser.stop()
