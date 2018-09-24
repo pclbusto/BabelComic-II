@@ -130,17 +130,19 @@ class VolumeVineGui(Frame):
         self.comicVineSearcher.vineSearchMore()
         self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
+
     def __buscar__(self):
         print("buscando....")
         if (self.entradaNombreVolume.get() != ''):
             print("BUSCANDO....")
             self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
     def buscar(self):
-        self.offset = 0
-        self.comicVineSearcher.clearFilter()
-        self.comicVineSearcher.addFilter("name:" + self.entradaNombreVolume.get())
-        self.comicVineSearcher.vineSearch(self.offset)
-        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+        # self.offset = 0
+        # self.comicVineSearcher.clearFilter()
+        # self.comicVineSearcher.addFilter("name:" + self.entradaNombreVolume.get())
+        # self.comicVineSearcher.vineSearch(self.offset)
+        # self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+        self.cargarResultado('')
 
     def itemClicked(self, event):
         if (self.grillaVolumes.selection()):
@@ -158,23 +160,35 @@ class VolumeVineGui(Frame):
             self.labelImagen['image'] = self.cover
 
     def cargarResultado(self,listavolumes):
-        for item in self.grillaVolumes.get_children():
-            self.grillaVolumes.delete(item)
-        self.listaFiltrada.clear()
-        for volume in listavolumes:
-            if self.publisher is not None:
-                if self.publisher.id_publisher==volume.publisherId:
-                    self.listaFiltrada.append(volume)
-            else:
-                self.listaFiltrada.append(volume)
-        for volume in self.listaFiltrada:
-            self.grillaVolumes.insert('', 'end', '', text='', values=(volume.nombre,
-                                                                      volume.cantidadNumeros,
-                                                                      volume.descripcion,
-                                                                      volume.id,
-                                                                      volume.image_url,
-                                                                      volume.publisher_name,
-                                                                      volume.AnioInicio)
+        # for item in self.grillaVolumes.get_children():
+        #     self.grillaVolumes.delete(item)
+        # self.listaFiltrada.clear()
+        # for volume in listavolumes:
+        #     if self.publisher is not None:
+        #         if self.publisher.id_publisher==volume.publisherId:
+        #             self.listaFiltrada.append(volume)
+        #     else:
+        #         self.listaFiltrada.append(volume)
+        for i in range(1,10):
+            volume= Volume()
+            volume.id=str(i)
+            volume.nombre = str(i)
+            volume.cantidadNumeros = str(i)
+            volume.descripcion = str(i)
+            volume.image_url = str(i)
+            volume.publisher_name = str(i)
+            volume.AnioInicio = i
+
+            self.listaFiltrada.append(volume)
+        for idx, volume in enumerate(self.listaFiltrada):
+            print(volume)
+            self.grillaVolumes.insert('', 'end', '', text='', values=(str(idx)+'volume.nombre',
+                                                                      str(idx)+'volume.cantidadNumeros',
+                                                                      str(idx)+'volume.descripcion',
+                                                                      str(idx)+'volume.id',
+                                                                      str(idx)+'volume.image_url',
+                                                                      # str(idx)+'volume.publisher_name',
+                                                                      str(idx))
                                       )
         self.statusBar.config(text = "Cantidad Resultados: %d - Cantidad Resultados sin filtro: %d- Cantidad Total de Resultados en ComicVine: %d"%(len(self.listaFiltrada),
                                                                                                                                                     len(self.comicVineSearcher.listaBusquedaVine),

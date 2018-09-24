@@ -36,7 +36,20 @@ class Volume(Entidades.Init.Base):
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
     def __repr__(self):
-        return "<Volume(id_volume={},name={}, cantidad nros={})>".format(self.id, self.nombre, self.cantidadNumeros)
+        return "<Volume(name={},  cantidad nros={}, descripcion={}, id_volume={}," \
+               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre, self.cantidadNumeros,self.descripcion,
+                                                                          self.id, self.image_url, self.publisher_name,
+                                                                          self.AnioInicio)
+
+    # volume.nombre,
+
+    #                                                           volume.cantidadNumeros,
+    #                                                           volume.descripcion,
+    #                                                           volume.id,
+    #                                                           volume.image_url,
+    #                                                           volume.publisher_name,
+    #                                                           volume.AnioInicio
+
     def hasLocalCover(self):
         if self.image_url:
             file_name = self.image_url.split('/')[-1]
