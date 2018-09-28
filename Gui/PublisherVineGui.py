@@ -80,8 +80,8 @@ class PublisherVineGui(Frame):
     def cargarResultado(self,listaPublishers):
         for item in self.grillaPublishers.get_children():
             self.grillaPublishers.delete(item)
-        for publisher in listaPublishers:
-            self.grillaPublishers.insert('', 'end', '', text='', values=(publisher.id_publisher,
+        for idx,publisher in enumerate(listaPublishers):
+            self.grillaPublishers.insert('', 'end', str(idx), text='', values=(publisher.id_publisher,
                                                                      publisher.name
                                                                         ))
 

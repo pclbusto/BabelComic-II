@@ -24,10 +24,10 @@ class VolumeGuiGtk():
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-        # self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-        #                  'getLast': self.getLast}
+        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,'getLast': self.getLast}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
+        self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("VolumeGtk")
         self.window.connect("destroy", Gtk.main_quit)
         #
@@ -155,26 +155,29 @@ class VolumeGuiGtk():
             self.editorial = None
 
     def loadVolume(self):
-        self.clear()
+        # self.clear()
         if self.volume is not None:
             #print("Volumen {}".format(self.volume))
-            self.entradaId.insert(0,self.volume.id)
-            self.entradaNombre.insert(0,self.volume.nombre)
-            print(self.volume.image_url)
-            self.entradaUrlImagen.insert(0, self.volume.image_url)
-            if (self.volume.hasPublisher()):
-                print("*******VOLUMEN***********{}".format(self.volume.publisherId))
-                print("Nombre {}".format(self.editorial.name))
-                self.entradaEditorial.insert(0, self.editorial.name)
-            self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
-            self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
+            self.entradaId.set_text(self.volume.id)
+            self.entradaNombre.set_text_(self.volume.nombre)
 
-            im = self.volume.getImageCover()
-            self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
-            self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
-        self.newRecord=False
-    def getFirst(self):
-        super().getNext()
+            # print(self.volume.image_url)
+            # self.entradaUrlImagen.insert(0, self.volume.image_url)
+            # if (self.volume.hasPublisher()):
+            #     print("*******VOLUMEN***********{}".format(self.volume.publisherId))
+            #     print("Nombre {}".format(self.editorial.name))
+            #     self.entradaEditorial.insert(0, self.editorial.name)
+            # self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
+            # self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
+            #
+            # im = self.volume.getImageCover()
+            # self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
+            # self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
+        # self.newRecord=False
+
+    def getFirst(self,widget):
+        print("get first")
+        # super().getNext()
         self.offset=0
         volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:
