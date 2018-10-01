@@ -10,19 +10,37 @@ from gi.repository import Gtk, GdkPixbuf
 
 class Publisher_vine_search_gtk():
     def __init__(self,  session=None):
+        config = Config()
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
 
-        self.handlers = {'search_changed': self.search_changed, 'click_boton_buscar_mas': self.click_boton_buscar_mas,
-                         'click_boton_aceptar': self.click_boton_aceptar}
+        self.comicVineSearcher = ComicVineSearcher(config.getClave('publishers'), session=self.session)
+        self.comicVineSearcher.setEntidad("publishers")
+
+        self.handlers = {'click_boton_buscar_mas': self.click_boton_buscar_mas,'selection':self.selection,
+                         'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar':self.click_boton_buscar}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher_vine_search_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volume_vine_search_Gtk")
+        self.search_entry = self.builder.get_object('search_entry')
+        self.listmodel_publishers = Gtk.ListStore(str, str)
+        self.gtk_tree_view_publisher =  self.builder.get_object('gtk_tree_view_publisher')
 
+    def selection(self,selection):
+        (model, iter) = selection.get_selected()
+        if iter:
+            self.publisher = self.comicVineSearcher.listaBusquedaVine[int(model[iter][0])]
+            print(self.publisher)
 
+    def click_boton_buscar(self,widget):
+        if self.search_entry.get_text()!='':
+            self.comicVineSearcher.clearFilter()
+            self.comicVineSearcher.addFilter("name:"+self.search_entry.get_text())
+            self.comicVineSearcher.vineSearch(0)
+            self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
     def agregarEditorial(self):
         self.session.add(self.publisher)
@@ -44,7 +62,7 @@ class Publisher_vine_search_gtk():
             self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
     def click_boton_aceptar(self,widget):
-        if (self.entradaNombreEditorial.get()!=''):
+        if self.publisher:
             self.comicVineSearcher.clearFilter()
             self.comicVineSearcher.addFilter("name:"+self.entradaNombreEditorial.get())
             self.comicVineSearcher.vineSearch(0)
@@ -61,17 +79,10 @@ class Publisher_vine_search_gtk():
             self.labelImagen['image'] = self.cover
 
     def cargarResultado(self,listaPublishers):
-        for item in self.grillaPublishers.get_children():
-            self.grillaPublishers.delete(item)
-        for idx,publisher in enumerate(listaPublishers):
-            self.grillaPublishers.insert('', 'end', str(idx), text='', values=(publisher.id_publisher,
-                                                                     publisher.name
-                                                                        ))
-
-
-
-
-
+        self.listmodel_publishers.clear()
+        for index,publisher in  enumerate(listaPublishers):
+            self.listmodel_publishers.append([str(index), publisher.name])
+        self.gtk_tree_view_publisher.set_model(self.listmodel_publishers)
 
 
 if __name__ == '__main__':
