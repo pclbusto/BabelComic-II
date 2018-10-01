@@ -14,6 +14,7 @@ class PublisherGtk():
             self.session = session
         else:
             self.session = Entidades.Init.Session()
+
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext, 'getLast': self.getLast}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")

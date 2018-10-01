@@ -182,8 +182,8 @@ class PublisherLookupGui(Frame):
             self.grillaPublisher.delete(item)
         session = Entidades.Init.Session()
         self.publishers = session.query(Publisher)
-        for publisher in self.publishers:
-            self.grillaPublisher.insert('', 'end', '', text='', values=(publisher.id_publisher,
+        for index, publisher in enumerate(self.publishers):
+            self.grillaPublisher.insert('', 'end', index, text='', values=(publisher.id_publisher,
                                                                         publisher.name))
 
 
