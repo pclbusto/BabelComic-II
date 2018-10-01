@@ -2,6 +2,7 @@ import os
 import Entidades.Init
 from Entidades.Publishers import Publishers
 from Entidades.Setups. Setup import  Setup
+from Gui import Publisher_lookup_gtk
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -15,7 +16,8 @@ class PublisherGtk():
         else:
             self.session = Entidades.Init.Session()
 
-        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext, 'getLast': self.getLast}
+        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
+                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
@@ -29,7 +31,14 @@ class PublisherGtk():
         self.label_resumen = self.builder.get_object('label_resumen')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
+    def id_changed(self,widget):
+        publisher = self.publishers_manager.get(self.entry_id.get_text())
+        self._copy_to_window(publisher)
 
+    def open_lookup(self, widget):
+        print('dasds')
+        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session,self.entry_id)
+        lookup.window.show()
 
     def getFirst(self, widget):
         publisher = self.publishers_manager.getFirst()
@@ -54,15 +63,14 @@ class PublisherGtk():
             self.entry_id.set_text(publisher.id_publisher)
             self.entry_nombre.set_text( publisher.name)
             self.entry_url.set_text(publisher.siteDetailUrl)
-            # if publisher.localLogoImagePath
-
+            publisher.localLogoImagePath = publisher.getImageCoverPath()
             if publisher.localLogoImagePath:
                 if publisher.localLogoImagePath[-3].lower()=='gif':
                     gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
                     self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
                 else:
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                        filename=self.path_publisher_logo+publisher.localLogoImagePath,
+                        filename=publisher.getImageCoverPath(),
                         width=250,
                         height=250,
                         preserve_aspect_ratio=True)

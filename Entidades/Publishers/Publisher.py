@@ -44,6 +44,16 @@ class Publisher(Entidades.Init.Base):
                 return True
         else:
             return False
+    def getImageCoverPath(self):
+        nombreImagen = self.logoImagePath[self.logoImagePath.rindex('/') + 1:]
+        session = Entidades.Init.Session()
+        setup = session.query(Setup).first()
+
+        fullPath = setup.directorioBase + os.sep + 'images' + os.sep + 'logo publisher' + os.sep + self.logoImagePath[
+                                                                                                   self.logoImagePath.rindex(
+                                                                                                       '/') + 1:]
+        return(fullPath)
+
     def getImageCover(self):
         if not self.hasImageCover():
             return (Iconos.pilImageLogo)
