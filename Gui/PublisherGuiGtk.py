@@ -17,7 +17,8 @@ class PublisherGtk():
             self.session = Entidades.Init.Session()
 
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed}
+                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
+                         'click_cargar_desde_web':self.click_cargar_desde_web}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
@@ -31,6 +32,8 @@ class PublisherGtk():
         self.label_resumen = self.builder.get_object('label_resumen')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
+    def click_cargar_desde_web(self, widget):
+        print('opening window')
     def id_changed(self,widget):
         publisher = self.publishers_manager.get(self.entry_id.get_text())
         self._copy_to_window(publisher)

@@ -1,4 +1,5 @@
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
@@ -43,7 +44,7 @@ class IconViewWindow(Gtk.Window):
         scrolled.add(iconview)
         self.add(scrolled)
         iconview.set_column_spacing(-1)
-        iconview.set_item_padding(1)
+        iconview.set_item_padding(10)
         iconview.set_item_width(1)
         iconview.set_spacing(30)
 
