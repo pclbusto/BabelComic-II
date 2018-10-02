@@ -35,10 +35,10 @@
       </row>
     </data>
   </object>
-  <object class="GtkWindow" id="Volume_vine_search_Gtk">
+  <object class="GtkWindow" id="Publisher_vine_search_Gtk">
     <property name="name">volumen_vine_seach_gtk</property>
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Volumen</property>
+    <property name="title" translatable="yes">Editorial</property>
     <property name="window_position">center</property>
     <property name="default_width">440</property>
     <property name="default_height">250</property>
@@ -86,7 +86,7 @@
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="model">liststore1</property>
-                        <property name="search_column">1</property>
+                        <property name="search_column">0</property>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection">
                             <signal name="changed" handler="selection" swapped="no"/>
@@ -142,9 +142,9 @@
             <property name="justify">right</property>
           </object>
           <packing>
-            <property name="left_attach">0</property>
+            <property name="left_attach">1</property>
             <property name="top_attach">3</property>
-            <property name="width">5</property>
+            <property name="width">4</property>
           </packing>
         </child>
         <child>
@@ -171,9 +171,21 @@
           </packing>
         </child>
         <child>
+          <object class="GtkEntry" id="entry_nombre">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">50</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+            <property name="width">3</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkImage" id="publisher_logo_image">
-            <property name="width_request">200</property>
-            <property name="height_request">200</property>
+            <property name="width_request">250</property>
+            <property name="height_request">250</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="stock">gtk-missing-image</property>
@@ -237,17 +249,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSearchEntry" id="search_entry">
+          <object class="GtkSpinner" id="spinner">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="primary_icon_name">edit-find-symbolic</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">False</property>
+            <property name="can_focus">False</property>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-            <property name="width">3</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">3</property>
           </packing>
         </child>
       </object>
