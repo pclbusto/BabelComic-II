@@ -26,6 +26,16 @@ class Publisher_vine_search_gtk():
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volume_vine_search_Gtk")
         self.search_entry = self.builder.get_object('search_entry')
+        self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename="/home/pedro/PycharmProjects/BabelComic-II/images/logo publisher/5825355-3357700787-c1a90.jpg",
+            width=250,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.publisher_logo_image.set_from_pixbuf(pixbuf)
+
+
+
         self.listmodel_publishers = Gtk.ListStore(str, str)
         self.gtk_tree_view_publisher =  self.builder.get_object('gtk_tree_view_publisher')
 
@@ -33,7 +43,25 @@ class Publisher_vine_search_gtk():
         (model, iter) = selection.get_selected()
         if iter:
             self.publisher = self.comicVineSearcher.listaBusquedaVine[int(model[iter][0])]
-            print(self.publisher)
+            self.publisher.getImageCover()
+            self.publisher.localLogoImagePath = self.publisher.getImageCoverPath()
+            if self.publisher.localLogoImagePath[-3].lower() == 'gif':
+                gif = GdkPixbuf.PixbufAnimation.new_from_file(self.publisher.localLogoImagePath).get_static_image()
+                self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
+            else:
+                print(self.publisher.getImageCoverPath())
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    filename=self.publisher.getImageCoverPath(),
+                    width=250,
+                    height=250,
+                    preserve_aspect_ratio=True)
+                self.publisher_logo_image.set_from_pixbuf(pixbuf)
+
+
+            # imagen = self.publisher.getImageCover()
+            # self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
+            # self.labelImagen['image'] = self.cover
+
 
     def click_boton_buscar(self,widget):
         if self.search_entry.get_text()!='':
