@@ -24,16 +24,6 @@
       <!-- column-name Editorial -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">21321</col>
-        <col id="1" translatable="yes">dc</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">213</col>
-        <col id="1" translatable="yes">Marvel</col>
-      </row>
-    </data>
   </object>
   <object class="GtkWindow" id="Publisher_vine_search_Gtk">
     <property name="name">volumen_vine_seach_gtk</property>

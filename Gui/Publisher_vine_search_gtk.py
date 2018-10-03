@@ -98,12 +98,12 @@ class Publisher_vine_search_gtk():
         #     self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
     def click_boton_aceptar(self,widget):
-        self._stop()
-        # if self.publisher:
-        #     self.comicVineSearcher.clearFilter()
-        #     self.comicVineSearcher.addFilter("name:"+self.entradaNombreEditorial.get())
-        #     self.comicVineSearcher.vineSearch(0)
-        #     self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+
+        if self.publisher:
+            self.session.add(self.publisher)
+            self.session.commit()
+        self.window.close()
+
 
 
     def itemClicked(self, event):

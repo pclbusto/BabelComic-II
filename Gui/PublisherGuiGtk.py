@@ -3,6 +3,7 @@ import Entidades.Init
 from Entidades.Publishers import Publishers
 from Entidades.Setups. Setup import  Setup
 from Gui import Publisher_lookup_gtk
+from Gui.Publisher_vine_search_gtk import Publisher_vine_search_gtk
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -23,7 +24,6 @@ class PublisherGtk():
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
-        self.window.connect("destroy", Gtk.main_quit)
         self.publishers_manager = Publishers.Publishers()
         self.entry_id  = self.builder.get_object('entry_id')
         self.entry_nombre =  self.builder.get_object('entry_nombre')
@@ -33,7 +33,9 @@ class PublisherGtk():
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
     def click_cargar_desde_web(self, widget):
-        print('opening window')
+        publisher_vine_search = Publisher_vine_search_gtk(self.session)
+        publisher_vine_search.window.show()
+
     def id_changed(self,widget):
         publisher = self.publishers_manager.get(self.entry_id.get_text())
         self._copy_to_window(publisher)
@@ -92,4 +94,5 @@ class PublisherGtk():
 if __name__ == "__main__":
     pub = PublisherGtk()
     pub.window.show_all()
+    pub.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

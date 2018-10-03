@@ -1,4 +1,4 @@
-self.import gi
+import gi
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -7,53 +7,68 @@ from gi.repository import GLib, GObject
 from gi.repository import Gdk
 import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.Publishers.Publisher import Publisher
 from Entidades.Setups.Setup import Setup
 from Gui.ScannerGtk import ScannerGtk
+from Gui.PublisherGuiGtk import PublisherGtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
-import time
+
 import threading
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
 
-class IconViewWindow(Gtk.Window):
+class BabelComics_main_gtk():
 
     def __init__(self):
-        Gtk.Window.__init__(self)
-        self.maximize()
+
         self.session = Entidades.Init.Session()
         self.listaComics = self.session.query(ComicBook).all()
+        self.listaEditoriales = self.session.query(Publisher).all()
 
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
 
-        scrolled = Gtk.ScrolledWindow()
-        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.handlers = {'click_editorial': self.click_editorial}
+        # , 'selection': self.selection,
+        #                  'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar': self.click_boton_buscar}
 
-        self.set_default_size(200, 200)
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file("../BabelComic_main_gtk.glade")
+        self.builder.connect_signals(self.handlers)
+        self.window = self.builder.get_object("BabelComics_main_gtk")
+        self.entry_nombre = self.builder.get_object('entry_nombre')
+        self.iconview = self.builder.get_object('iconview')
+        # self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
+        # self.listmodel_publishers = Gtk.ListStore(str, str)
+        self.gtk_tree_view_publisher = self.builder.get_object('gtk_tree_view_publisher')
+
+        self.list_navegacion = self.builder.get_object('list_navegacion')
+        self.list_navegacion.clear()
+
+        for editorial in self.listaEditoriales:
+            self.list_navegacion.append([editorial.name])
+            print(editorial.id_publisher)
+
 
         self.liststore = Gtk.ListStore(Pixbuf, str)
         self.lista_pendientes = []
 
-        iconview = self.loadAndCreateThumbnails()
-        iconview.set_model(self.liststore)
-        iconview.set_pixbuf_column(0)
-        iconview.set_text_column(1)
 
-        scrolled.add(iconview)
-        self.add(scrolled)
-        iconview.set_column_spacing(-1)
-        iconview.set_item_padding(10)
-        iconview.set_item_width(1)
-        iconview.set_spacing(30)
+        self.loadAndCreateThumbnails()
+
+        self.iconview.set_column_spacing(-1)
+        self.iconview.set_item_padding(10)
+        self.iconview.set_item_width(1)
+        self.iconview.set_spacing(30)
 
         header = Gtk.HeaderBar()
         self.opciones = Gtk.Button(label = 'Opciones')
         self.opciones.connect("clicked", self.on_click_me_clicked)
 
         header.pack_end(self.opciones)
-        self.set_titlebar(header)
+        # self.set_titlebar(header)
 
         self.popover = Gtk.Popover()
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -72,6 +87,11 @@ class IconViewWindow(Gtk.Window):
         thread_create = threading.Thread(target=self.crear_thumnails_background)
         thread_create.daemon = True
         thread_create.start()
+
+    def click_editorial(self, widget):
+        print("hola")
+        editorial = PublisherGtk(self.session)
+        editorial.window.show()
 
     def on_click_scanner(self, button):
         pub = ScannerGtk()
@@ -113,11 +133,11 @@ class IconViewWindow(Gtk.Window):
     #                 print("No se pudo leer el archivo")
 
     def loadAndCreateThumbnails(self):
-        iconview = Gtk.IconView.new()
-        iconview.set_model(self.liststore)
-        iconview.set_pixbuf_column(0)
-        iconview.set_text_column(1)
-        print("cantidad de comics: ", len(self.listaComics))
+        # iconview = Gtk.IconView.new()
+        self.iconview.set_model(self.liststore)
+        self.iconview.set_pixbuf_column(0)
+        self.iconview.set_text_column(1)
+        # print("cantidad de comics: ", len(self.listaComics))
         self.cantidadThumnailsAGenerar = len(self.listaComics)
         self.cantidadThumnailsGenerados = 0
         for comic in self.listaComics:
@@ -126,14 +146,14 @@ class IconViewWindow(Gtk.Window):
                 comic.openCbFile()
                 nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
                 cover = None
-                print(comic.path)
-                print(nombreThumnail)
+                # print(comic.path)
+                # print(nombreThumnail)
                 if (not os.path.isfile(nombreThumnail)):
                     cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
                     iter = self.liststore.append([cover, comic.getNombreArchivo()])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
-                    print(nombreThumnail)
+                    # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
                     self.liststore.append([cover, comic.getNombreArchivo()])
 
@@ -174,13 +194,13 @@ class IconViewWindow(Gtk.Window):
                 print('error en el archivo ' + comic.path)
         #esto hace que no sean tan ancho los thumnails
         # iconview.set_item_width(1)
-        return iconview
         # self.config(scrollregion=self.bbox(ALL))
         # self.comicActual = 0
 
 
 if __name__ == "__main__":
-    win = IconViewWindow()
-    win.connect("destroy", Gtk.main_quit)
-    win.show_all()
+    bc = BabelComics_main_gtk()
+    bc.window.connect("destroy", Gtk.main_quit)
+    bc.window.show()
+    bc.window.maximize()
     Gtk.main()
