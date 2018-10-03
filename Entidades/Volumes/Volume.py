@@ -92,6 +92,13 @@ class Volume(Entidades.Init.Base):
         else:
             return False
 
+    def getImagePath(self):
+        session = Entidades.Init.Session()
+        setup = session.query(Setup).first()
+
+        return setup.directorioBase + os.sep + 'images' + os.sep + 'coversvolumes' + os.sep + self.image_url[
+                                                                                       self.image_url.rindex('/') + 1:]
+
     def getImageCover(self):
 
         if not self.hasImageCover():

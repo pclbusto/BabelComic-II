@@ -29,79 +29,25 @@ class VolumeGuiGtk():
         self.builder.add_from_file("../Volumen.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("VolumeGtk")
+        self.entry_id = self.builder.get_object("entry_id")
+        self.entry_nombre = self.builder.get_object("entry_nombre")
+        self.entry_url = self.builder.get_object("entry_url")
+        self.entry_url_cover = self.builder.get_object("entry_url_cover")
+        self.entry_id_editorial = self.builder.get_object("entry_id_editorial")
+        self.label_nombre_editorial = self.builder.get_object("label_nombre_editorial")
+        self.entry_anio_inicio = self.builder.get_object("entry_anio_inicio")
+        self.entry_cantidad_numeros = self.builder.get_object("entry_cantidad_numeros")
+        self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
         self.window.connect("destroy", Gtk.main_quit)
-        #
-        # iconos = Iconos.Iconos()
-        # self.pilImagenLookup = iconos.pilImagenLookup
-        # self.imagenLookup = PIL.ImageTk.PhotoImage(self.pilImagenLookup)
-        # self.pilImageExpansion = iconos.pilImageExpansion
-        # self.imageExpansion = PIL.ImageTk.PhotoImage(self.pilImageExpansion)
-        # self.pilImageLogo = iconos.pilImageLogo
-        # self.imageLogo = PIL.ImageTk.PhotoImage(self.pilImageLogo)
-        # if session is not None:
-        #     self.session = session
-        # else:
-        #     self.session = Entidades.Init.Session()
-        # self.size = (int(320 * 0.5), int(496 * 0.5))
-        #
-        # self.panelPrincipal = self.getPanelPrincipal()
-        # ttk.Label(self.panelPrincipal, text='ID').grid(column=0, row=0, sticky=W)
-        # self.panelId = Frame(self.panelPrincipal)
-        # self.panelId.grid(column=1, row=0, sticky=(W, E))
-        # self.entradaId = ttk.Entry(self.panelId)
-        # self.entradaId.grid(column=1, row=0, padx=5, pady=2, sticky=W)
-        # self.botonLookupVolume = ttk.Button(self.panelId, image=self.imagenLookup, command=self.openLookupVolume)
-        # self.botonLookupVolume.grid(column=2, row=0, padx=5, pady=2, sticky=W)
-        #
-        # ttk.Label(self.panelPrincipal, text='Nombre').grid(column=0, row=1, sticky=W)
-        # self.entradaNombre = ttk.Entry(self.panelPrincipal)
-        # self.entradaNombre.grid(column=1, row=1, padx=5, pady=2, columnspan=2, sticky=W)
-        #
-        # ttk.Label(self.panelPrincipal, text='Url').grid(column=0, row=2, sticky=W)
-        # self.entradaUrl = ttk.Entry(self.panelPrincipal, width=50)
-        # self.entradaUrl .grid(column=1, row=2, padx=5, pady=2, sticky=W)
-        #
-        # ttk.Label(self.panelPrincipal, text='Url Cover').grid(column=0, row=3, sticky=W)
-        # self.entradaUrlImagen = ttk.Entry(self.panelPrincipal, width=90)
-        # self.entradaUrlImagen.grid(column=1, row=3, padx=5, pady=2, sticky=W, columnspan=2)
-        #
-        # ttk.Label(self.panelPrincipal, text='Editorial').grid(column=0, row=4, sticky=W)
-        # self.panelEditorial = Frame(self.panelPrincipal)
-        # self.panelEditorial.grid(column=1, row=4, sticky=(W, E))
-        #
-        # self.entradaEditorial = ttk.Entry(self.panelEditorial)
-        # self.entradaEditorial.grid(column=1, row=4, padx=5, pady=2, sticky=W)
-        # self.botonLookupEditorial = ttk.Button(self.panelEditorial, image=self.imagenLookup)
-        # self.botonLookupEditorial.grid(column=2, row=4, padx=5, pady=2)
-        #
-        # ttk.Label(self.panelPrincipal, text='Año Inicio').grid(column=0, row=5, sticky=W)
-        # self.entradaAnioInicio = ttk.Entry(self.panelPrincipal, width=8)
-        # self.entradaAnioInicio.grid(column=1, row=5, padx=5, pady=2, sticky=W)
-        #
-        # ttk.Label(self.panelPrincipal, text='Resumen').grid(column=0, row=7, sticky=W)
-        # self.botonExpansionResumen = ttk.Button(self.panelPrincipal, image=self.imageExpansion)
-        # self.botonExpansionResumen.grid(column=1, row=7, sticky=W)
-        #
-        # ttk.Label(self.panelPrincipal, text='Cantidad Números').grid(column=0, row=6, sticky=W)
-        # self.entradaCantidadNumeros = ttk.Entry(self.panelPrincipal, width=10)
-        # self.entradaCantidadNumeros.grid(column=1, row=6, padx=5, pady=2, sticky=W)
-        #
-        # self.coverVolumen = Canvas(self.panelPrincipal)
-        # self.coverVolumen.create_image(180, 250, image=self.imageLogo)
-        # self.coverVolumen.grid(column=3, row=0, rowspan=9, columnspan=1)
-        #
-        # self.botonCargarWeb.config(command=self.openVolumeComicVine)
-        # self.offset = 0
-        # self.cantidadRegistros = self.session.query(Volume).count()
-        # self.botonActualizarVolumen = Button(self.frameBotonesAcciones, text='Actualizar desde web',command=self.updateVolume)
-        # self.botonActualizarVolumen.grid(row=0, column=4, sticky=E)
-        #
-        #
-        # if volume is not None:
-        #     self.setVolume(volume)
-        #     self.loadVolume()
-        # else:
-        #     self.getFirst()
+
+        self.offset = 0
+        self.cantidadRegistros = self.session.query(Volume).count()
+
+        if volume is not None:
+            self.setVolume(volume)
+            self.loadVolume()
+        else:
+            self.getFirst("")
 
     def updateVolume(self):
         cnf = Config(self.session)
@@ -158,8 +104,23 @@ class VolumeGuiGtk():
         # self.clear()
         if self.volume is not None:
             #print("Volumen {}".format(self.volume))
-            self.entradaId.set_text(self.volume.id)
-            self.entradaNombre.set_text_(self.volume.nombre)
+            self.entry_id.set_text(self.volume.id)
+            self.entry_nombre.set_text(self.volume.nombre)
+            self.entry_url.set_text("http://comicvine/"+self.volume.id)
+            self.entry_url_cover.set_text(self.volume.image_url)
+            self.entry_id_editorial.set_text(self.volume.publisherId)
+            self.label_nombre_editorial.set_text(self.volume.publisher_name)
+            self.entry_anio_inicio.set_text(str(self.volume.AnioInicio))
+            self.entry_cantidad_numeros.set_text(str(self.volume.cantidadNumeros))
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=self.volume.getImagePath(),
+                width=250,
+                height=250,
+                preserve_aspect_ratio=True)
+            print("dasdas")
+            print(self.volumen_logo_image)
+            self.volumen_logo_image.set_from_pixbuf(pixbuf)
+
 
             # print(self.volume.image_url)
             # self.entradaUrlImagen.insert(0, self.volume.image_url)
@@ -202,8 +163,7 @@ class VolumeGuiGtk():
         self.coverVolumen.delete(ALL)
         self.newRecord=True
 
-    def getNext(self):
-        super().getNext()
+    def getNext(self,widget):
         if self.offset < self.cantidadRegistros-1:
             self.offset += 1
         if self.volume is not None:
@@ -239,8 +199,7 @@ class VolumeGuiGtk():
             self.session.add(numeroComic)
         self.session.commit()
 
-    def getPrev(self):
-        super().getPrev()
+    def getPrev(self,widget):
         if self.offset >0:
             self.offset -= 1
         if self.volume is not None:
@@ -250,8 +209,7 @@ class VolumeGuiGtk():
                 self.loadVolume()
         else:
             self.getLast()
-    def getLast(self):
-        super().getNext()
+    def getLast(self,widget):
         self.offset = self.cantidadRegistros -1
         volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:

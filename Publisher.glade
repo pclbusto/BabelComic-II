@@ -281,6 +281,7 @@
                 <property name="receives_default">True</property>
                 <property name="image">Guardar</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="boton_guardar" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
