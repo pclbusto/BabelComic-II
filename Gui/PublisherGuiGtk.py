@@ -19,7 +19,7 @@ class PublisherGtk():
 
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
-                         'click_cargar_desde_web':self.click_cargar_desde_web}
+                         'click_cargar_desde_web':self.click_cargar_desde_web,'boton_guardar':self.boton_guardar}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
@@ -31,6 +31,9 @@ class PublisherGtk():
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         self.label_resumen = self.builder.get_object('label_resumen')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
+
+    def boton_guardar(self,widget):
+        pass
 
     def click_cargar_desde_web(self, widget):
         publisher_vine_search = Publisher_vine_search_gtk(self.session)

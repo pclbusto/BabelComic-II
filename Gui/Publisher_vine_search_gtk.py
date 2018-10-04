@@ -123,8 +123,8 @@ class Publisher_vine_search_gtk():
 
 
 if __name__ == '__main__':
-    pub = Publisher_vine_search_gtk()
-    pub.window.connect("destroy", Gtk.main_quit)
-    pub.window.show_all()
+    volumen_vine_search = Publisher_vine_search_gtk()
+    volumen_vine_search.window.connect("destroy", Gtk.main_quit)
+    volumen_vine_search.window.show()
     Gtk.main()
 

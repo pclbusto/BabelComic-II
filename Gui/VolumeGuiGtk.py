@@ -38,7 +38,7 @@ class VolumeGuiGtk():
         self.entry_anio_inicio = self.builder.get_object("entry_anio_inicio")
         self.entry_cantidad_numeros = self.builder.get_object("entry_cantidad_numeros")
         self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
-        self.window.connect("destroy", Gtk.main_quit)
+
 
         self.offset = 0
         self.cantidadRegistros = self.session.query(Volume).count()
@@ -222,5 +222,6 @@ if __name__ == '__main__':
     if __name__ == "__main__":
         pub = VolumeGuiGtk()
         pub.window.show_all()
+        pub.window.connect("destroy", Gtk.main_quit)
         Gtk.main()
 

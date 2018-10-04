@@ -93,6 +93,9 @@ class Volume(Entidades.Init.Base):
             return False
 
     def getImagePath(self):
+        if not self.hasImageCover():
+            self.getImageCover()
+
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()
 

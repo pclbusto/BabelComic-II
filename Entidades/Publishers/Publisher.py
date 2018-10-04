@@ -46,6 +46,8 @@ class Publisher(Entidades.Init.Base):
             return False
 
     def getImageCoverPath(self):
+        if not self.hasImageCover():
+            self.getImageCover()
         nombreImagen = self.logoImagePath[self.logoImagePath.rindex('/') + 1:]
         session = Entidades.Init.Session()
         setup = session.query(Setup).first()
