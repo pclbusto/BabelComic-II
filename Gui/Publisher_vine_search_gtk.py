@@ -71,7 +71,8 @@ class Publisher_vine_search_gtk():
         self.spinner.stop()
 
     def click_boton_buscar(self,widget):
-        self._start()
+
+        GLib.idle_add(self._start())
         GLib.idle_add(self._buscar)
 
 
@@ -103,17 +104,6 @@ class Publisher_vine_search_gtk():
             self.session.add(self.publisher)
             self.session.commit()
         self.window.close()
-
-
-
-    def itemClicked(self, event):
-        if (self.grillaPublishers.selection()):
-            seleccion = self.grillaPublishers.selection()
-            self.publisher = self.comicVineSearcher.listaBusquedaVine[self.grillaPublishers.index(seleccion[0])]
-            self.grillaPublishers.index(seleccion[0])
-            imagen = self.publisher.getImageCover()
-            self.cover = ImageTk.PhotoImage(imagen.resize(self.coverSize))
-            self.labelImagen['image'] = self.cover
 
     def cargarResultado(self,listaPublishers):
         self.listmodel_publishers.clear()

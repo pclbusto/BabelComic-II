@@ -1,15 +1,15 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-
 from  Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
-from PIL import Image, ImageTk
+from gi.repository import GLib
 import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
 from Entidades.Publishers.Publisher import Publisher
 from Gui.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+import threading
 
 class Volumen_vine_search_Gtk():
     def __init__(self, session=None):
@@ -65,16 +65,31 @@ class Volumen_vine_search_Gtk():
         lookup = Publisher_lookup_gtk(self.session, self.entry_id_editorial)
         lookup.window.show()
 
-    def click_buscar_mas_serie(self, widget):
-        pass
 
-    def click_buscar_serie(self, widget):
+    def _buscarMas(self):
+        self.comicVineSearcher.vineSearchMore()
+        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+
+    def click_buscar_mas_serie(self, widget):
+        self.spinner.start()
+        self.hilo1 = threading.Thread(target=self._buscarMas)
+        self.hilo1.start()
+
+
+    def _buscar(self):
         self.offset = 0
         self.comicVineSearcher.clearFilter()
         self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
         self.comicVineSearcher.vineSearch(self.offset)
-        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+        GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
+        # self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
+
+    def click_buscar_serie(self, widget):
+        self.spinner.start()
+        self.hilo1 = threading.Thread(target=self._buscar)
+        self.hilo1.start()
+        # GLib.idle_add(self._buscar)
 
     def click_aceptar(self, widget):
         cnf = Config(self.session)
@@ -95,65 +110,29 @@ class Volumen_vine_search_Gtk():
             return(int(t[0]))
         return 0
 
-    def treeview_sort_column(self, tv, col, reverse):
-        l = [(tv.set(k, col), k) for k in tv.get_children('')]
-        if col in['count_of_issues','start_year']:
-            l.sort(reverse=reverse,key=self.int)
-        else:
-            l.sort(reverse=reverse)
 
-        # rearrange items in sorted positions
-        for index, (val, k) in enumerate(l):
-            tv.move(k, '', index)
-        # reverse sort next time
-        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
-
-    def openLookupPublisher(self):
-        window = Toplevel()
-        self.publisher = Publisher()
-        lk = PublisherLookupGui(window, self.publisher)
-        lk.grid(sticky=(E, W, S, N))
-        window.columnconfigure(0, weight=1)
-        window.rowconfigure(0, weight=1)
-        window.geometry("+0+0")
-        window.wm_title(string="Editoriales")
-        self.wait_window(window)
-        self.publisher = lk.getPublisher()
-        self.entradaNombreEditorial.insert(0,self.publisher.name)
-
-    def buscarMas(self):
-        self.comicVineSearcher.vineSearchMore()
-        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
-
-
-    def __buscar__(self):
-        print("buscando....")
-        if (self.entradaNombreVolume.get() != ''):
-            print("BUSCANDO....")
-            self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
-    def buscar(self):
-        self.offset = 0
-        self.comicVineSearcher.clearFilter()
-        self.comicVineSearcher.addFilter("name:" + self.entradaNombreVolume.get())
-        self.comicVineSearcher.vineSearch(self.offset)
-        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
-        # self.cargarResultado('')
+    def _seleccion(self):
+        self.volumen.localLogoImagePath = self.volumen.getImageCover()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=self.volumen.getImagePath(),
+            width=250,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.spinner.stop()
+        GLib.idle_add(self.volumen_logo_image.set_from_pixbuf, pixbuf)
+        # self.volumen_logo_image.set_from_pixbuf(pixbuf)
 
     def seleccion(self, selection):
+        self.spinner.start()
         (model, iter) = selection.get_selected()
         if iter:
             self.volumen = self.comicVineSearcher.listaBusquedaVine[int(model[iter][0])]
-            self.spinner.start()
-            self.volumen.localLogoImagePath = self.volumen.getImageCover()
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=self.volumen.getImagePath(),
-                width=250,
-                height=250,
-                preserve_aspect_ratio=True)
-            self.volumen_logo_image.set_from_pixbuf(pixbuf)
+            self.hilo1 = threading.Thread(target=self._seleccion)
+            self.hilo1.start()
 
     def cargarResultado(self,listavolumes):
         self.listmodel_volumenes.clear()
+        self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
                 if self.publisher.id_publisher==volume.publisherId:
@@ -161,22 +140,26 @@ class Volumen_vine_search_Gtk():
             else:
                 self.listaFiltrada.append(volume)
         for idx, volume in enumerate(self.listaFiltrada):
-            anio = 0
+            nombre = 'ERROR-SIN NOMBRE'
             cantidad_numeros = 0
-
-            if str.isdigit(volume.AnioInicio):
-                anio = int(volume.AnioInicio)
+            anio = 0
+            if volume.nombre:
+                nombre = volume.nombre
+            if volume.AnioInicio:
+                if str.isdigit(volume.AnioInicio):
+                    anio = int(volume.AnioInicio)
 
             if str.isdigit(volume.cantidadNumeros):
                 cantidad_numeros=int(volume.cantidadNumeros)
 
-            self.listmodel_volumenes.append([str(idx),volume.nombre, cantidad_numeros,
+            self.listmodel_volumenes.append([str(idx),nombre, cantidad_numeros,
                                             volume.publisher_name, anio])
 
         self.label_status.set_text("Cantidad Resultados: {} - Cantidad Resultados sin filtro: {}- Cantidad Total de Res"
                                    "ultados en ComicVine: {}".format(len(self.listaFiltrada),
                                                                      len(self.comicVineSearcher.listaBusquedaVine),
                                                                      self.comicVineSearcher.cantidadResultados))
+        self.spinner.stop()
 
 if __name__ == "__main__":
     volumen = Volumen_vine_search_Gtk()

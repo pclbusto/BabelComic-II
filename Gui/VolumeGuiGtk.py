@@ -13,18 +13,20 @@ from Entidades.Publishers.Publisher import Publisher
 import Entidades.Init
 from Gui.VolumeLookupGui import VolumesLookupGui
 from Gui.VolumeVineGui import VolumeVineGui
+from Gui.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 from Extras.Config import Config
 
 class VolumeGuiGtk():
 
-    def __init__(self, volume=None, session=None):
+    def __init__(self, session=None):
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,'getLast': self.getLast}
+        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
+                         'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
         self.builder.connect_signals(self.handlers)
@@ -43,11 +45,11 @@ class VolumeGuiGtk():
         self.offset = 0
         self.cantidadRegistros = self.session.query(Volume).count()
 
-        if volume is not None:
-            self.setVolume(volume)
-            self.loadVolume()
-        else:
-            self.getFirst("")
+        self.getFirst("")
+
+    def boton_cargar_desde_web_click(self,widget):
+        volumen_vine_search = Volumen_vine_search_Gtk(self.session)
+        volumen_vine_search.window.show()
 
     def updateVolume(self):
         cnf = Config(self.session)

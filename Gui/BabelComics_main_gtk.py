@@ -11,6 +11,7 @@ from Entidades.Publishers.Publisher import Publisher
 from Entidades.Setups.Setup import Setup
 from Gui.ScannerGtk import ScannerGtk
 from Gui.PublisherGuiGtk import PublisherGtk
+from Gui.VolumeGuiGtk import VolumeGuiGtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
@@ -30,7 +31,7 @@ class BabelComics_main_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
 
-        self.handlers = {'click_editorial': self.click_editorial}
+        self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie}
         # , 'selection': self.selection,
         #                  'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar': self.click_boton_buscar}
 
@@ -87,6 +88,10 @@ class BabelComics_main_gtk():
         thread_create = threading.Thread(target=self.crear_thumnails_background)
         thread_create.daemon = True
         thread_create.start()
+
+    def click_boton_serie(self, widget):
+        serie = VolumeGuiGtk(self.session)
+        serie.window.show()
 
     def click_editorial(self, widget):
         print("hola")

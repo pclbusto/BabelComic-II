@@ -434,11 +434,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="boton_cargar_desde_web">
                 <property name="label" translatable="yes">Cargar desde Web</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="boton_cargar_desde_web_click" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
