@@ -31,7 +31,10 @@ class BabelComics_main_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
 
-        self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie}
+        self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
+                         'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
+                         'click_refresh':self.click_refresh}
+
         # , 'selection': self.selection,
         #                  'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar': self.click_boton_buscar}
 
@@ -39,11 +42,12 @@ class BabelComics_main_gtk():
         self.builder.add_from_file("../BabelComic_main_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
-        self.entry_nombre = self.builder.get_object('entry_nombre')
+        self.boton_serie= self.builder.get_object('boton_serie')
         self.iconview = self.builder.get_object('iconview')
         # self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         # self.listmodel_publishers = Gtk.ListStore(str, str)
         self.gtk_tree_view_publisher = self.builder.get_object('gtk_tree_view_publisher')
+        self.menu_comic = self.builder.get_object("menu_comic")
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
@@ -88,6 +92,24 @@ class BabelComics_main_gtk():
         thread_create = threading.Thread(target=self.crear_thumnails_background)
         thread_create.daemon = True
         thread_create.start()
+
+    def click_refresh(self,widget):
+        print("click refresh")
+        self.menu_comic.set_relative_to(self.boton_serie)
+        self.menu_comic.show_all()
+        self.menu_comic.popup()
+
+    def click_derecho(self, widget, event):
+        # click derecho
+        if event.button == 3:
+            print('mostrando menu')
+            self.menu_comic.set_pointing_to(Gdk.Rectangle(100,100,400,400))
+            self.menu_comic.popup()
+
+
+
+    def item_seleccionado(self,selected):
+        print("dskldjskldjskladjla")
 
     def click_boton_serie(self, widget):
         serie = VolumeGuiGtk(self.session)

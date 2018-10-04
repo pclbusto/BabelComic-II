@@ -49,6 +49,8 @@ class Volumen_vine_search_Gtk():
         self.volume = None
         self.publisher = None
 
+
+
     def _copy_to_window(self,publisher):
         if publisher:
             self.entry_id_editorial.set_text(publisher.id_publisher)

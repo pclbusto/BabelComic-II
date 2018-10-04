@@ -33,6 +33,7 @@ class Publisher_vine_search_gtk():
         self.gtk_tree_view_publisher =  self.builder.get_object('gtk_tree_view_publisher')
 
 
+
     def selection(self,selection):
         (model, iter) = selection.get_selected()
         if iter:
