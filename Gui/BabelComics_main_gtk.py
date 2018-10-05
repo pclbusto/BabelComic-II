@@ -33,7 +33,7 @@ class BabelComics_main_gtk():
 
         self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
                          'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
-                         'click_refresh':self.click_refresh}
+                         'click_refresh':self.click_refresh,'click_catalogar':self.click_catalogar}
 
         # , 'selection': self.selection,
         #                  'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar': self.click_boton_buscar}
@@ -45,7 +45,7 @@ class BabelComics_main_gtk():
         self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
         # self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
-        # self.listmodel_publishers = Gtk.ListStore(str, str)
+        self.tree_left = self.builder.get_object("tree_left")
         self.gtk_tree_view_publisher = self.builder.get_object('gtk_tree_view_publisher')
         self.menu_comic = self.builder.get_object("menu_comic")
 
@@ -93,6 +93,9 @@ class BabelComics_main_gtk():
         thread_create.daemon = True
         thread_create.start()
 
+
+    def click_catalogar(self,widget):
+
     def click_refresh(self,widget):
         print("click refresh")
         self.menu_comic.set_relative_to(widget)
@@ -102,17 +105,21 @@ class BabelComics_main_gtk():
     def click_derecho(self, widget, event):
         # click derecho
         if event.button == 3:
+            print(self.tree_left.get_allocation().width)
             # print('mostrando menu')
             # help(event)
             # self.menu_comic.set_relative_to(None)
             rect = Gdk.Rectangle()
-            rect.height=10
-            rect.width= 10
-            rect.x= event.x
-            rect.y= event.y
+            rect.height=100
+            rect.width= 100
+            rect.x= event.x_root-self.tree_left.get_allocation().width
+            rect.y= event.y_root-130
+            # print(self.iconview.get_item_at_pos(event.x_root, event.y_root))
+            # print(self.iconview.get_item_at_pos(event.x, event.y)[1])
+            # print(event.x_root,event.y_root)
             self.menu_comic.set_pointing_to(rect)
             self.menu_comic.set_position(3)
-            self.menu_comic.show_all()
+            # self.menu_comic.show_all()
             self.menu_comic.popup()
 
 

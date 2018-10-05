@@ -131,7 +131,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTreeView">
+              <object class="GtkTreeView" id="tree_left">
                 <property name="width_request">150</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -206,7 +206,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkButton">
-            <property name="label" translatable="yes">button</property>
+            <property name="label" translatable="yes">Editar</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -219,10 +219,11 @@
         </child>
         <child>
           <object class="GtkButton">
-            <property name="label" translatable="yes">button</property>
+            <property name="label" translatable="yes">Catalogar</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="click_catalogar" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -232,7 +233,7 @@
         </child>
         <child>
           <object class="GtkButton">
-            <property name="label" translatable="yes">button</property>
+            <property name="label" translatable="yes">Actualizar Cover</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
