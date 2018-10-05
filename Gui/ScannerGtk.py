@@ -30,7 +30,7 @@ class ScannerGtk():
     def scannearDirectorio(self,widget):
         self.config = Config()
         self.manager = BabelComicBookScanner(self.config.listaDirectorios, self.config.listaTipos)
-        GObject.threads_init()
+
         self.manager.iniciarScaneo()
         t = threading.Thread(target=self.testScanning)
         t.start()

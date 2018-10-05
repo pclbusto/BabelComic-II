@@ -45,6 +45,7 @@ class BabelComicBookScanner():
         cantidad = 0
         listaDirectotiosLocal = [x for x in self.listaDirectorios]
         while (len(listaDirectotiosLocal) > 0):
+            print("escaneando")
             valor = listaDirectotiosLocal[0]
             p = Path(listaDirectotiosLocal[0])
             lst = [x for x in p.iterdir() if (x.is_file() and x.name[-3:] in self.listaTipos)]

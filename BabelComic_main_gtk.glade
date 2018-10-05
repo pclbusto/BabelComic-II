@@ -110,7 +110,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="boton_refresh">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -197,7 +197,8 @@
   </object>
   <object class="GtkPopoverMenu" id="menu_comic">
     <property name="can_focus">False</property>
-    <property name="relative_to">iconview</property>
+    <property name="modal">False</property>
+    <property name="constrain_to">none</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -245,6 +246,7 @@
       </object>
       <packing>
         <property name="submenu">main</property>
+        <property name="position">1</property>
       </packing>
     </child>
   </object>

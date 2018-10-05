@@ -73,7 +73,7 @@ class Publisher_vine_search_gtk():
 
     def click_boton_buscar(self,widget):
 
-        GLib.idle_add(self._start())
+        GLib.idle_add(self._start)
         GLib.idle_add(self._buscar)
 
 

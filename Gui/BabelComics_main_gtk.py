@@ -42,7 +42,7 @@ class BabelComics_main_gtk():
         self.builder.add_from_file("../BabelComic_main_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
-        self.boton_serie= self.builder.get_object('boton_serie')
+        self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
         # self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         # self.listmodel_publishers = Gtk.ListStore(str, str)
@@ -95,15 +95,24 @@ class BabelComics_main_gtk():
 
     def click_refresh(self,widget):
         print("click refresh")
-        self.menu_comic.set_relative_to(self.boton_serie)
+        self.menu_comic.set_relative_to(widget)
         self.menu_comic.show_all()
         self.menu_comic.popup()
 
     def click_derecho(self, widget, event):
         # click derecho
         if event.button == 3:
-            print('mostrando menu')
-            self.menu_comic.set_pointing_to(Gdk.Rectangle(100,100,400,400))
+            # print('mostrando menu')
+            # help(event)
+            # self.menu_comic.set_relative_to(None)
+            rect = Gdk.Rectangle()
+            rect.height=10
+            rect.width= 10
+            rect.x= event.x
+            rect.y= event.y
+            self.menu_comic.set_pointing_to(rect)
+            self.menu_comic.set_position(3)
+            self.menu_comic.show_all()
             self.menu_comic.popup()
 
 
