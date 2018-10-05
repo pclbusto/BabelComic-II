@@ -153,7 +153,6 @@ class ComicBook(Entidades.Init.Base):
         return(BytesIO(self.cbFile.read(self.paginas[self.indicePaginaActual])))
 
     def getPageExtension(self):
-
         index = self.paginas[self.indicePaginaActual].rindex(".")-len(self.paginas[self.indicePaginaActual])
 
         return (self.paginas[self.indicePaginaActual][index:])

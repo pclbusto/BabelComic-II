@@ -95,7 +95,7 @@ class BabelComics_main_gtk():
 
 
     def click_catalogar(self,widget):
-
+        pass
     def click_refresh(self,widget):
         print("click refresh")
         self.menu_comic.set_relative_to(widget)
