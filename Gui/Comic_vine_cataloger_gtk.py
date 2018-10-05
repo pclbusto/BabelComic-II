@@ -39,6 +39,11 @@ class Comic_vine_cataloger_gtk():
         self.image_cover_comic_local = self.builder.get_object("image_cover_comic_local")
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
+        self.listore_comics_para_catalogar = self.builder.get_object("listore_comics_para_catalogar")
+
+        self.listore_comics_para_catalogar.clear()
+        for index,comic in enumerate(comicbooks):
+            self.listore_comics_para_catalogar.append([comic.comicId,comic.path,index])
 
         self._load_comic(comicbooks[0])
 
