@@ -2,12 +2,17 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkImage" id="image_boton_aceptar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-ok</property>
+  </object>
   <object class="GtkImage" id="image_lookup_editorial">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-find</property>
   </object>
-  <object class="GtkWindow" id="Volume_vine_search_Gtk">
+  <object class="GtkWindow" id="Volumen_lookup_gtk">
     <property name="name">volumen_vine_seach_gtk</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Volumen lookup</property>
@@ -27,31 +32,6 @@
         <property name="row_spacing">12</property>
         <property name="column_spacing">12</property>
         <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">end</property>
-            <property name="label" translatable="yes">status</property>
-            <property name="justify">right</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">3</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -64,7 +44,7 @@
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="hexpand">False</property>
-                <property name="label" translatable="yes">Nombre</property>
+                <property name="label" translatable="yes">Volumen</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -84,13 +64,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSearchEntry">
+              <object class="GtkSearchEntry" id="search_entry_volumen">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="primary_icon_name">edit-find-symbolic</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
+                <signal name="search-changed" handler="search_volumen" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -99,12 +80,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSearchEntry">
+              <object class="GtkSearchEntry" id="search_entry_editorial">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="primary_icon_name">edit-find-symbolic</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
+                <signal name="search-changed" handler="search_editorial" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -127,10 +109,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="label_nombre_editorial">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">label</property>
+                <property name="label" translatable="yes">Nombre editorial</property>
               </object>
               <packing>
                 <property name="left_attach">4</property>
@@ -163,38 +145,75 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <child>
-                  <object class="GtkTreeView">
+                  <object class="GtkTreeView" id="gtk_tree_view_volumen">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="model">liststore1</property>
                     <property name="search_column">0</property>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                      <object class="GtkTreeSelection">
+                        <signal name="changed" handler="seleccion_volumen" swapped="no"/>
+                      </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="Id">
                         <property name="min_width">100</property>
                         <property name="title" translatable="yes">Id</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="Nombre">
                         <property name="min_width">200</property>
                         <property name="title" translatable="yes">Nombre</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">1</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="Numero">
                         <property name="min_width">100</property>
                         <property name="title" translatable="yes">Número</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">2</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">2</attribute>
+                          </attributes>
+                        </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="Editorial">
                         <property name="min_width">150</property>
                         <property name="title" translatable="yes">Editorial</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">3</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">3</attribute>
+                          </attributes>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -203,6 +222,16 @@
                         <property name="min_width">80</property>
                         <property name="max_width">80</property>
                         <property name="title" translatable="yes">Año</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">4</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">4</attribute>
+                          </attributes>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -216,7 +245,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage">
+          <object class="GtkImage" id="imagen_cover_volumen">
             <property name="width_request">150</property>
             <property name="height_request">250</property>
             <property name="visible">True</property>
@@ -230,10 +259,27 @@
             <property name="top_attach">1</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Aceptar</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="halign">end</property>
+            <property name="image">image_boton_aceptar</property>
+            <property name="always_show_image">True</property>
+            <signal name="clicked" handler="click_boton_aceptar" swapped="no"/>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">2</property>
+            <property name="width">2</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
-  <object class="GtkListStore" id="liststore1">
+  <object class="GtkListStore" id="listmodel_volumens">
     <columns>
       <!-- column-name Id -->
       <column type="gchararray"/>
@@ -245,6 +291,8 @@
       <column type="gchararray"/>
       <!-- column-name Año -->
       <column type="gint"/>
+      <!-- column-name index -->
+      <column type="gint"/>
     </columns>
     <data>
       <row>
@@ -253,6 +301,7 @@
         <col id="2">254</col>
         <col id="3" translatable="yes">dc</col>
         <col id="4">1979</col>
+        <col id="5">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">213</col>
@@ -260,6 +309,7 @@
         <col id="2">39</col>
         <col id="3" translatable="yes">dc</col>
         <col id="4">1972</col>
+        <col id="5">0</col>
       </row>
     </data>
   </object>

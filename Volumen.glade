@@ -84,6 +84,7 @@
               <object class="GtkEntry" id="entry_id">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <signal name="changed" handler="change_id_volumen" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -156,6 +157,7 @@
                 <property name="halign">start</property>
                 <property name="image">image1</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="click_lookup_volume" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>

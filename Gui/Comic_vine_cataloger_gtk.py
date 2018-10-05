@@ -10,7 +10,6 @@ from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Setups.Setup import Setup
 
 from Extras.ComicCataloger import Catalogador
-from PIL import Image, ImageTk
 import urllib.request
 import os
 from  Extras.Config import Config
@@ -29,7 +28,7 @@ class Comic_vine_cataloger_gtk():
 
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
-        self.handlers = {}
+        self.handlers = {'click_boton_lookup_serie':self.click_boton_lookup_serie}
 
 
         self.builder = Gtk.Builder()
@@ -43,9 +42,13 @@ class Comic_vine_cataloger_gtk():
 
         self.listore_comics_para_catalogar.clear()
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append([comic.comicId,comic.path,index])
+            self.listore_comics_para_catalogar.append([comic.comicId, comic.path, index, False])
 
         self._load_comic(comicbooks[0])
+
+    def click_boton_lookup_serie(self,widget):
+        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.entry_id)
+        lookup.window.show()
 
     def _load_comic(self, comic):
 

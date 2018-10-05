@@ -11,7 +11,7 @@ from gi.repository import Gtk, GdkPixbuf
 from Entidades.Volumes.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 import Entidades.Init
-from Gui.VolumeLookupGui import VolumesLookupGui
+from Gui.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui.VolumeVineGui import VolumeVineGui
 from Gui.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
@@ -26,7 +26,9 @@ class VolumeGuiGtk():
         else:
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click}
+                         'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click,
+                         'click_lookup_volume':self.click_lookup_volume,'change_id_volumen':self.change_id_volumen}
+
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
         self.builder.connect_signals(self.handlers)
@@ -70,40 +72,19 @@ class VolumeGuiGtk():
         self.numerosPorVolumen = volumenAndComics[1]
         self.guardar()
 
-    def openLookupVolume(self):
-        window = Toplevel()
-        volumeRetorno = Volume()
-        lk = VolumesLookupGui(window, volumeRetorno)
-        lk.grid(sticky=(E, W, S, N))
-        window.columnconfigure(0, weight=1)
-        window.rowconfigure(0, weight=1)
-        window.geometry("+0+0")
-        window.wm_title(string="Series")
-        lk.buscarVolume()
-        lk.treeview_sort_column(lk.grillaVolumes, 'name', False)
-        self.wait_window(window)
-        serieRetorno = lk.getSerie()
-        self.volume = serieRetorno
+    def click_lookup_volume(self,widget):
+        print('dasds')
+        lookup = Volume_lookup_gtk(self.session, self.entry_id)
+        lookup.window.show()
+
+    def change_id_volumen(self,widget):
+        self.editorial = None
+        if (self.entry_id.get_text() != ''):
+            self.volume = self.session.query(Volume).get(self.entry_id.get_text())
         self.loadVolume()
 
-    def openVolumeComicVine(self):
-        window = Toplevel()
-        window.geometry("+0+0")
-        window.wm_title(string="Editorial desde Comic Vine")
-        volumenVineGui = VolumeVineGui(window, width=507, height=358)
-        volumenVineGui.grid(sticky=(N, S, E, W))
-
-    def setVolume(self, volume):
-        self.volume = volume
-        if (self.volume.publisherId != 0):
-            print('recuperando editorioa')
-            self.editorial = self.session.query(Publisher).get(self.volume.publisherId)
-            print(self.editorial)
-        else:
-            self.editorial = None
-
     def loadVolume(self):
-        # self.clear()
+        self.clear()
         if self.volume is not None:
             #print("Volumen {}".format(self.volume))
             self.entry_id.set_text(self.volume.id)
@@ -119,24 +100,9 @@ class VolumeGuiGtk():
                 width=250,
                 height=250,
                 preserve_aspect_ratio=True)
-            print("dasdas")
+
             print(self.volumen_logo_image)
             self.volumen_logo_image.set_from_pixbuf(pixbuf)
-
-
-            # print(self.volume.image_url)
-            # self.entradaUrlImagen.insert(0, self.volume.image_url)
-            # if (self.volume.hasPublisher()):
-            #     print("*******VOLUMEN***********{}".format(self.volume.publisherId))
-            #     print("Nombre {}".format(self.editorial.name))
-            #     self.entradaEditorial.insert(0, self.editorial.name)
-            # self.entradaAnioInicio.insert(0,self.volume.AnioInicio)
-            # self.entradaCantidadNumeros.insert(0,self.volume.cantidadNumeros)
-            #
-            # im = self.volume.getImageCover()
-            # self.fImage = ImageTk.PhotoImage(im.resize(self.size, Image.BICUBIC))
-            # self.coverVolumen.create_image((0, 0), image=self.fImage, anchor=NW)  # recordar que esto decide desde donde se muestra la imagen
-        # self.newRecord=False
 
     def getFirst(self,widget):
         print("get first")
@@ -145,7 +111,7 @@ class VolumeGuiGtk():
         volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:
             print(volume)
-            self.setVolume(volume)
+            self.volume = volume
             self.loadVolume()
 
     def borrar(self):
@@ -155,15 +121,13 @@ class VolumeGuiGtk():
         self.clear()
 
     def clear(self):
-        self.entradaId.delete(0, END)
-        self.entradaNombre.delete(0, END)
-        self.entradaUrl.delete(0, END)
-        self.entradaEditorial.delete(0, END)
-        self.entradaAnioInicio.delete(0, END)
-        self.entradaCantidadNumeros.delete(0, END)
-        self.entradaUrlImagen.delete(0,END)
-        self.coverVolumen.delete(ALL)
-        self.newRecord=True
+        self.entry_nombre.set_text('')
+        self.entry_url.set_text('')
+        self.entry_url_cover.set_text('')
+        self.entry_id_editorial.set_text('')
+        self.label_nombre_editorial.set_text('')
+        self.entry_anio_inicio.set_text('')
+        self.entry_cantidad_numeros.set_text('')
 
     def getNext(self,widget):
         if self.offset < self.cantidadRegistros-1:
@@ -171,7 +135,7 @@ class VolumeGuiGtk():
         if self.volume is not None:
             volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
             if volume is not None:
-                self.setVolume(volume)
+                self.volume = volume
                 self.loadVolume()
         else:
             self.getLast()
@@ -207,7 +171,7 @@ class VolumeGuiGtk():
         if self.volume is not None:
             volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
             if volume is not None:
-                self.setVolume(volume)
+                self.volume = volume
                 self.loadVolume()
         else:
             self.getLast()
@@ -216,7 +180,7 @@ class VolumeGuiGtk():
         volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
         if volume is not None:
             print(volume)
-            self.setVolume(volume)
+            self.volume = volume
             self.loadVolume()
 
 if __name__ == '__main__':

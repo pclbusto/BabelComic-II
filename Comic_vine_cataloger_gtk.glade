@@ -36,17 +36,21 @@
       <column type="gchararray"/>
       <!-- column-name index -->
       <column type="gint"/>
+      <!-- column-name procesado -->
+      <column type="gboolean"/>
     </columns>
     <data>
       <row>
         <col id="0">5</col>
         <col id="1" translatable="yes">Invincible Issue #05.cbz</col>
         <col id="2">0</col>
+        <col id="3">False</col>
       </row>
       <row>
         <col id="0">15</col>
         <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
         <col id="2">1</col>
+        <col id="3">False</col>
       </row>
     </data>
   </object>
@@ -297,6 +301,7 @@
                         <property name="receives_default">True</property>
                         <property name="halign">start</property>
                         <property name="image">image_lookup_volumen</property>
+                        <signal name="clicked" handler="click_boton_lookup_serie" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -712,12 +717,20 @@
                       <object class="GtkTreeSelection"/>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="numero1">
-                        <property name="title" translatable="yes">Número</property>
+                      <object class="GtkTreeViewColumn">
+                        <property name="title" translatable="yes">Procesado</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
                         <child>
-                          <object class="GtkCellRendererText"/>
+                          <object class="GtkCellRendererToggle"/>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn">
+                        <property name="title" translatable="yes">Número</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="seleccionado"/>
                           <attributes>
                             <attribute name="text">0</attribute>
                           </attributes>

@@ -1,20 +1,8 @@
 from Entidades.Publishers.Publisher import Publisher
-from PIL import Image, ImageTk
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-
-
-class PublisherLookupData():
-    ATRIBUTO_ID = 'id'
-    ATRIBUTO_NOMBRE = 'nombre'
-    ATRIBUTO_DESCRIPCION = 'descripcion'
-    ATRIBUTO_ANIO = 'AnioInicio'
-
-    def __init__(self):
-        self.atributoBusqueda = PublisherLookupData.ATRIBUTO_NOMBRE
-
 
 class Publisher_lookup_gtk():
     def __init__(self, session=None, campo_retorno=None):
