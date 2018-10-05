@@ -27,6 +27,8 @@ class Comic_vine_cataloger_gtk():
         else:
             self.session = Entidades.Init.Session()
 
+        self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
+                            "coverIssuesThumbnails" + os.path.sep
         self.handlers = {}
 
 
@@ -34,8 +36,24 @@ class Comic_vine_cataloger_gtk():
         self.builder.add_from_file("../Comic_vine_cataloger_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Comic_vine_cataloger_gtk")
+        self.image_cover_comic_local = self.builder.get_object("image_cover_comic_local")
+        self.entry_serie_local = self.builder.get_object("entry_serie_local")
+        self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
 
+        self._load_comic(comicbooks[0])
 
+    def _load_comic(self, comic):
+
+        self.entry_serie_local.set_text(comic.volumeNombre)
+        self.entry_nombre_archivo_local.set_text(comic.getNombreArchivo())
+        comic.openCbFile()
+        nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=nombreThumnail,
+            width=150,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.image_cover_comic_local.set_from_pixbuf(pixbuf)
 
     def AutoAsignar(self):
         if self.entryPathRe.get() != '':
