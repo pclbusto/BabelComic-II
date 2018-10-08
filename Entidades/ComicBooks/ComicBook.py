@@ -143,7 +143,7 @@ class ComicBook(Entidades.Init.Base):
 
 
     def getImagePage(self):
-        print(self.getNombreArchivo())
+        print('getImagePage'+self.getNombreArchivo())
         return (Image.open(self.getPage()))
 
     def getCantidadPaginas(self):

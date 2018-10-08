@@ -87,6 +87,7 @@ class BabelComicBookScanner():
             self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
             print(cantidadProcesada)
 
+
     def iniciarScaneo(self):
         self.scanerDir.start()
         # self.scanearDirtorios()

@@ -14,7 +14,7 @@ from gi.repository import Gtk, GdkPixbuf, GObject,GLib
 
 class ScannerGtk():
 
-    def __init__(self,  session=None,):
+    def __init__(self,  session=None, funcion_callback=None):
         if session is not None:
             self.session = session
         else:
@@ -26,6 +26,8 @@ class ScannerGtk():
         self.builder.connect_signals(self.handlers)
         self.window.set_destroy_with_parent(True)
         self.progerss_bar = self.builder.get_object('progress_bar')
+        # if funcion_callback is not None:
+        #     self.funcion_callback = funcion_callback
 
     def scannearDirectorio(self,widget):
         self.config = Config()
@@ -44,6 +46,11 @@ class ScannerGtk():
             GLib.idle_add(self.actualizar_scroll)
         print("Finalizado")
 
+        if hasattr(self,'funcion_callback'):
+            self.funcion_callback()
+
+        # self.window.close()
+
     def borrarComics(self, widget):
         session = Entidades.Init.Session()
         session.query(ComicBook).delete()
@@ -54,38 +61,8 @@ class ScannerGtk():
                 os.remove(os.path.join(os.path.join(os.path.join(setup.directorioBase,'images'),
                                                     'coverIssuesThumbnails'),nombre_archivo))
 
-    def salir(self,arg1,arg2):
-        return True
-
-    def _copy_to_window(self,publisher):
-        # self.clearWindow()
-        if publisher is not None:
-            print("cargan valores")
-            self.entry_id.set_text(publisher.id_publisher)
-            self.entry_nombre.set_text( publisher.name)
-            self.entry_url.set_text(publisher.siteDetailUrl)
-            # if publisher.localLogoImagePath
-
-            if publisher.localLogoImagePath:
-                if publisher.localLogoImagePath[-3].lower()=='gif':
-                    gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
-                    self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
-                else:
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                        filename=self.path_publisher_logo+publisher.localLogoImagePath,
-                        width=250,
-                        height=250,
-                        preserve_aspect_ratio=True)
-                    self.publisher_logo_image.set_from_pixbuf(pixbuf)
-
-            self.label_resumen.set_text(publisher.deck)
-
-    def clearWindow(self):
-        # self.entradaId.delete(0, END)
-        # self.entradaNombre.delete(0, END)
-        # self.entradaUrl.delete(0, END)
-        # self.textoDescripcion.config(text='')
-        pass
+        if hasattr(self,'funcion_callback'):
+            self.funcion_callback()
 
 
 if __name__ == "__main__":
