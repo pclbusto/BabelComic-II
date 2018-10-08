@@ -182,6 +182,7 @@
                 <property name="margin">6</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
+                <property name="selection_mode">multiple</property>
                 <signal name="button-press-event" handler="click_derecho" swapped="no"/>
                 <signal name="selection-changed" handler="item_seleccionado" swapped="no"/>
               </object>

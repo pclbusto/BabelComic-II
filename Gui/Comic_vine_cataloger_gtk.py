@@ -5,7 +5,7 @@ from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Volumes.Volume import Volume
 from datetime import date
 from iconos.Iconos import Iconos
-from Gui.VolumeLookupGui import VolumesLookupGui
+from Gui.Volumen_lookup_gtk import Volume_lookup_gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Setups.Setup import Setup
 
@@ -28,7 +28,10 @@ class Comic_vine_cataloger_gtk():
 
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
-        self.handlers = {'click_boton_lookup_serie':self.click_boton_lookup_serie}
+        self.handlers = {'click_boton_lookup_serie':self.click_boton_lookup_serie,
+                         'click_boton_calcular_numeracion':self.click_boton_calcular_numeracion,
+                         'tree_view_archivos_para_catalogar_selection_change':self.tree_view_archivos_para_catalogar_selection_change,
+                         'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar}
 
 
         self.builder = Gtk.Builder()
@@ -39,15 +42,52 @@ class Comic_vine_cataloger_gtk():
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
         self.listore_comics_para_catalogar = self.builder.get_object("listore_comics_para_catalogar")
-
+        self.entry_expresion_regular_numeracion = self.builder.get_object("entry_expresion_regular_numeracion")
+        self.entry_id_volumen_catalogar = self.builder.get_object("entry_id_volumen_catalogar")
+        self.entry_descripcion_volumen_catalogar = self.builder.get_object("entry_descripcion_volumen_catalogar")
         self.listore_comics_para_catalogar.clear()
+        self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append([comic.comicId, comic.path, index, False])
+            self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, False])
 
         self._load_comic(comicbooks[0])
+        self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
+
+
+    def tree_view_archivos_para_catalogar_selection_change(self,selection):
+        (model, iter) = selection.get_selected()
+        if iter:
+            # comicbook = self.session.query(ComicBook).filter(
+            #     Publisher.id_publisher == model[iter][0]).first()
+            self._load_comic(self.comicbooks[model[iter][2]])
+            # print(self.c model[iter][2])
+
+    def click_boton_calcular_numeracion (self,widget):
+        print('numerando')
+        if self.entry_expresion_regular_numeracion.get_text() != '':
+            expresion = self.entry_expresion_regular_numeracion.get_text()
+            for comic in self.listore_comics_para_catalogar:
+                match = re.search(expresion, comic[1])
+                if match is not None:
+                    if match.group(1).isdigit():
+                        comic[0] = int(match.group(1))
+                    else:
+                        comic[1]=match.group(1)
+        # self.listore_comics_para_catalogar.clear()
+        # for index, comic in enumerate(self.comicbooks):
+        #     self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, False])
+        self._load_comic(self.comicbooks[0])
+
+    def change_entry_id_volumen_catalogar(self,widget):
+        self.editorial = None
+        if (self.entry_id_volumen_catalogar.get_text() != ''):
+            self.volume = None
+            self.volume = self.session.query(Volume).get(self.entry_id_volumen_catalogar.get_text())
+            if self.volume is not None:
+                self.entry_descripcion_volumen_catalogar.set_text(self.volume.nombre)
 
     def click_boton_lookup_serie(self,widget):
-        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.entry_id)
+        lookup = Volume_lookup_gtk(self.session, self.entry_id_volumen_catalogar)
         lookup.window.show()
 
     def _load_comic(self, comic):
@@ -85,22 +125,6 @@ class Comic_vine_cataloger_gtk():
                                     values=([index,comic.path]))
         for comic in self.comicbooks:
             print(comic)
-
-    def int(self,t):
-        return(int(t[0]))
-
-    def treeview_sort_column(self, tv, col, reverse):
-        l = [(tv.set(k, col), k) for k in tv.get_children('')]
-        if col in['numero']:
-            l.sort(reverse=reverse,key=self.int)
-        else:
-            l.sort(reverse=reverse)
-
-        # rearrange items in sorted positions
-        for index, (val, k) in enumerate(l):
-            tv.move(k, '', index)
-        # reverse sort next time
-        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
 
     def listViewComicsClicked(self, args):
 
@@ -170,6 +194,7 @@ class Comic_vine_cataloger_gtk():
         self.setup.expresionRegularNumero = self.entryPathRe.get()
         print(self.setup)
         self.session.commit()
+
     def updateGui(self, item):
         print("Dentro del thead: {}:".format(item))
         self.listViewComics.item(item, image=self.iconoGreenOrb)
@@ -269,20 +294,19 @@ class Comic_vine_cataloger_gtk():
 if __name__ == '__main__':
 
     session = Entidades.Init.Session()
-    pathComics=["/home/pedro/Imágenes/comics/Witchblade (2017) Issue #1.cbz"]
-    '''
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 442.cbr",
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 447.cbr",
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 470.cbr",
-                "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
-     '''
-    comics= []
-    for pathComic in pathComics:
-        comic = session.query(ComicBook).filter(ComicBook.path ==pathComic).first()
-        print(comic)
-        comics.append(comic)
+    # pathComics=["/home/pedro/Imágenes/comics/Witchblade (2017) Issue #1.cbz"]
+    # '''
+    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 442.cbr",
+    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 447.cbr",
+    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 470.cbr",
+    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
+    #  '''
+    # comics= []
+    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%batman%')).all()
+    # for comic in comics_query:
+    #     comics.append(comic)
 
-    cvs = Comic_vine_cataloger_gtk( comics)
+    cvs = Comic_vine_cataloger_gtk(comics_query)
     cvs.window.show_all()
     cvs.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

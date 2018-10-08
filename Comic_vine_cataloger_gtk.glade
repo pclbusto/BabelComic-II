@@ -285,9 +285,10 @@
                     <property name="row_spacing">6</property>
                     <property name="column_spacing">6</property>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_id_volumen_catalogar">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <signal name="changed" handler="change_entry_id_volumen_catalogar" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -329,7 +330,7 @@
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
+                        <property name="top_attach">2</property>
                       </packing>
                     </child>
                     <child>
@@ -367,7 +368,7 @@
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">1</property>
+                        <property name="top_attach">2</property>
                       </packing>
                     </child>
                     <child>
@@ -431,7 +432,30 @@
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">2</property>
+                        <property name="top_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Descrpción</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="entry_descripcion_volumen_catalogar">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="editable">False</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">1</property>
+                        <property name="width">2</property>
                       </packing>
                     </child>
                     <child>
@@ -714,7 +738,9 @@
                     <property name="model">listore_comics_para_catalogar</property>
                     <property name="search_column">0</property>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                      <object class="GtkTreeSelection" id="tree_view_archivos_para_catalogar">
+                        <signal name="changed" handler="tree_view_archivos_para_catalogar_selection_change" swapped="no"/>
+                      </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn">
@@ -760,15 +786,42 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="valign">end</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkEntry" id="entry_expresion_regular_numeracion">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="boton_calcular_numeracion">
+                    <property name="label" translatable="yes">Calcular numeración</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">end</property>
+                    <signal name="clicked" handler="click_boton_calcular_numeracion" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>

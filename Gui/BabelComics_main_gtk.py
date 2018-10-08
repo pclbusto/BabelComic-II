@@ -12,6 +12,7 @@ from Entidades.Setups.Setup import Setup
 from Gui.ScannerGtk import ScannerGtk
 from Gui.PublisherGuiGtk import PublisherGtk
 from Gui.VolumeGuiGtk import VolumeGuiGtk
+from Gui.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
@@ -57,7 +58,7 @@ class BabelComics_main_gtk():
             print(editorial.id_publisher)
 
 
-        self.liststore = Gtk.ListStore(Pixbuf, str)
+        self.liststore = Gtk.ListStore(Pixbuf, str,int)
         self.lista_pendientes = []
 
 
@@ -95,7 +96,15 @@ class BabelComics_main_gtk():
 
 
     def click_catalogar(self,widget):
-        pass
+        comics = []
+        for path in self.iconview.get_selected_items():
+            indice  = path
+            comics.append(self.listaComics[indice[0]])
+            # print(self.listaComics[indice[0]])
+        cvs = Comic_vine_cataloger_gtk(comics)
+        cvs.window.show()
+        self.menu_comic.popdown()
+
     def click_refresh(self,widget):
         print("click refresh")
         self.menu_comic.set_relative_to(widget)
@@ -125,7 +134,10 @@ class BabelComics_main_gtk():
 
 
     def item_seleccionado(self,selected):
-        print("dskldjskldjskladjla")
+        for path in self.iconview.get_selected_items():
+            indice  = path
+            print(self.listaComics[indice[0]])
+
 
     def click_boton_serie(self, widget):
         serie = VolumeGuiGtk(self.session)
@@ -183,7 +195,7 @@ class BabelComics_main_gtk():
         # print("cantidad de comics: ", len(self.listaComics))
         self.cantidadThumnailsAGenerar = len(self.listaComics)
         self.cantidadThumnailsGenerados = 0
-        for comic in self.listaComics:
+        for index, comic in enumerate(self.listaComics):
             self.cantidadThumnailsGenerados += 1
             try:
                 comic.openCbFile()
@@ -193,12 +205,12 @@ class BabelComics_main_gtk():
                 # print(nombreThumnail)
                 if (not os.path.isfile(nombreThumnail)):
                     cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
-                    iter = self.liststore.append([cover, comic.getNombreArchivo()])
+                    iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
                     # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
-                    self.liststore.append([cover, comic.getNombreArchivo()])
+                    self.liststore.append([cover, comic.getNombreArchivo(), index])
 
                     #print(nombreThumnail)
             #     iconos = Iconos()
