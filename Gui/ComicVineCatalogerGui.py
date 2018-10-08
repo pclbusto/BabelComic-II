@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import *
 from tkinter import Tk, ttk
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Volumes.Volume import Volume

@@ -16,7 +16,8 @@ class Volume_lookup_gtk():
 
         self.handlers = {'search_volumen': self.search_volumen, 'search_editorial': self.search_editorial,
                          'click_lookup_editorial': self.click_lookup_editorial,
-                         'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar':self.click_boton_aceptar}
+                         'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar':self.click_boton_aceptar,
+                         'gtk_tree_view_volumen_double_click':self.gtk_tree_view_volumen_double_click}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
@@ -35,6 +36,10 @@ class Volume_lookup_gtk():
         self.campo_retorno = campo_retorno
         self.publisher=None
         self.volume = None
+
+    def gtk_tree_view_volumen_double_click(self,widget, event):
+        if event.get_click_count()[1]==2:
+            self.click_boton_aceptar(widget)
 
     def search_volumen(self, widget):
         if self.search_entry_volumen.get_text()=='' and not self.publisher:

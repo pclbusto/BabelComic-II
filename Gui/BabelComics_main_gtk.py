@@ -33,7 +33,7 @@ class BabelComics_main_gtk():
 
         self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
                          'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
-                         'click_refresh':self.click_refresh,'click_catalogar':self.click_catalogar,
+                         'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_edit':self.click_boton_edit}
 
@@ -107,7 +107,7 @@ class BabelComics_main_gtk():
         cvs.window.show()
         self.menu_comic.popdown()
 
-    def click_refresh(self,widget):
+    def click_boton_refresh(self,widget):
 
         self.loadAndCreateThumbnails()
 
@@ -129,7 +129,6 @@ class BabelComics_main_gtk():
             rect.height=100
             rect.width= 100
             rect.x= event.x_root-self.tree_left.get_allocation().width
-            rect.y= event.y_root-700
             # print(self.iconview.get_item_at_pos(event.x_root, event.y_root))
             # print(self.iconview.get_item_at_pos(event.x, event.y)[1])
             # print(event.x_root,event.y_root)

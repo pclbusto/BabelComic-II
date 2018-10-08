@@ -25,13 +25,16 @@ class Comic_vine_cataloger_gtk():
             self.session = session
         else:
             self.session = Entidades.Init.Session()
-
+        self.setup = self.session.query(Setup).first()
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
         self.handlers = {'click_boton_lookup_serie':self.click_boton_lookup_serie,
                          'click_boton_calcular_numeracion':self.click_boton_calcular_numeracion,
                          'tree_view_archivos_para_catalogar_selection_change':self.tree_view_archivos_para_catalogar_selection_change,
-                         'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar}
+                         'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar,
+                         'click_boton_traer_todo':self.click_boton_traer_todo,
+                         'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change}
+
 
 
         self.builder = Gtk.Builder()
@@ -42,9 +45,20 @@ class Comic_vine_cataloger_gtk():
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
         self.listore_comics_para_catalogar = self.builder.get_object("listore_comics_para_catalogar")
+        self.liststore_comics_in_volumen = self.builder.get_object("liststore_comics_in_volumen")
         self.entry_expresion_regular_numeracion = self.builder.get_object("entry_expresion_regular_numeracion")
         self.entry_id_volumen_catalogar = self.builder.get_object("entry_id_volumen_catalogar")
         self.entry_descripcion_volumen_catalogar = self.builder.get_object("entry_descripcion_volumen_catalogar")
+        self.entry_desde = self.builder.get_object("entry_desde")
+        self.entry_hasta = self.builder.get_object("entry_hasta")
+        self.entry_serie_vine = self.builder.get_object("entry_serie_vine")
+        self.entry_titulo_vine = self.builder.get_object("entry_titulo_vine")
+        self.entry_numero_vine = self.builder.get_object("entry_numero_vine")
+        self.entry_fecha_vine = self.builder.get_object("entry_fecha_vine")
+        self.image_cover_comic_vine = self.builder.get_object("image_cover_comic_vine")
+
+
+
         self.listore_comics_para_catalogar.clear()
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
@@ -63,7 +77,9 @@ class Comic_vine_cataloger_gtk():
             # print(self.c model[iter][2])
 
     def click_boton_calcular_numeracion (self,widget):
-        print('numerando')
+        print("dsadsa")
+        desde = 0
+        hasta = 0
         if self.entry_expresion_regular_numeracion.get_text() != '':
             expresion = self.entry_expresion_regular_numeracion.get_text()
             for comic in self.listore_comics_para_catalogar:
@@ -71,11 +87,17 @@ class Comic_vine_cataloger_gtk():
                 if match is not None:
                     if match.group(1).isdigit():
                         comic[0] = int(match.group(1))
-                    else:
-                        comic[1]=match.group(1)
-        # self.listore_comics_para_catalogar.clear()
-        # for index, comic in enumerate(self.comicbooks):
-        #     self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, False])
+                        if hasta == 0:
+                            hasta = comic[0]
+                        if desde == 0:
+                            desde = comic[0]
+                        if comic[0]>hasta :
+                            hasta = comic[0]
+                        if comic[0]<desde:
+                            desde = comic[0]
+        self.entry_desde.set_text(str(desde))
+        self.entry_hasta.set_text(str(hasta))
+
         self._load_comic(self.comicbooks[0])
 
     def change_entry_id_volumen_catalogar(self,widget):
@@ -102,6 +124,21 @@ class Comic_vine_cataloger_gtk():
             height=250,
             preserve_aspect_ratio=True)
         self.image_cover_comic_local.set_from_pixbuf(pixbuf)
+
+    def _load_comic_vine(self, comic):
+
+        self.entry_serie_vine.set_text(comic.volumeNombre)
+        self.entry_fecha_vine.set_text(comic.fechaTapa)
+        self.entry_titulo_vine.set_text(comic.titulo)
+        self.entry_numero_vine.set_text(comic.numero)
+        comic.openCbFile()
+        nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=nombreThumnail,
+            width=150,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
 
     def AutoAsignar(self):
         if self.entryPathRe.get() != '':
@@ -216,16 +253,19 @@ class Comic_vine_cataloger_gtk():
         self.session.commit()
 
 
-    def itemClicked(self, event):
-        if (self.grillaComics.selection):
+    def treeview_issues_in_volumen_selection_change(self, selection):
+        (model, iter) = selection.get_selected()
+        if iter:
+            comic_in_volumen = self.comicInVolumeList[model[iter][3]]
 
-            item = self.grillaComics.item(self.grillaComics.selection())
+            # print(comicInVolumeList(model[iter][3]))
+            # self._load_comic_vine(self.comicInVolumeList[model[iter][4]])
 
             cnf = Config(self.session)
             cv = ComicVineSearcher(cnf.getClave('issues'), session=self.session)
             cv.setEntidad('issues')
-            print(item['values'][2])
-            cv.addFilter("id:"+str(item['values'][2]))
+            # print(item['values'][2])
+            cv.addFilter("id:" + str(comic_in_volumen.comicVineId))
             cv.vineSearch()
             webImage = cv.listaBusquedaVine[0].thumb_url
             nombreImagen = webImage[webImage.rindex('/') + 1:]
@@ -234,43 +274,38 @@ class Comic_vine_cataloger_gtk():
 
             path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
 
-            if not (os.path.isfile(path  + nombreImagen)):
+            if not (os.path.isfile(path + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
                 # path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
-                fImage = open(path  + nombreImagen, 'wb')
+                fImage = open(path + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()
-            fImage = open(path  + nombreImagen, 'rb')
-            im = Image.open(fImage)
 
-        # print(item['values'][8],item['values'][4])
+            # fImage = open(path + nombreImagen, 'rb')
+            # im = Image.open(fImage)
+
+            # print(item['values'][8],item['values'][4])
         self.comicBookVine = ComicBook()
-        self.comicBookVine.path = 'Path'
-        self.comicBookVine.titulo = str(item['values'][1])
-        self.comicBookVine.volumeId = self.entrySerie.get()
-        self.comicBookVine.numero = item['values'][0]
-        #self.comicBookVine.fechaTapa = item['values'][0]
-        #self.comicBookVine.resumen = item['values'][2]
-        self.comicBookVine.idExterno = item['values'][2]
+        self.comicBookVine.path = path
+        self.comicBookVine.titulo = comic_in_volumen.titulo
+        self.comicBookVine.volumeNombre = self.entry_serie_local.get_text()
+        self.comicBookVine.numero = comic_in_volumen.numero
+        self.comicBookVine.idExterno = comic_in_volumen.comicVineId
+        self._load_comic_vine(self.comicBookVine)
 
-        self.panelVineComic = self.__createPanelComic__(self, self.comicBookVine, im.resize(self.size),
-                                                        'Vine Info')
-        self.panelVineComic.grid(column=2, row=0, sticky=(N, S, E, W))
 
-    def traerTodos(self):
 
-        comicInVolumeList = self.session.query(ComicInVolumes).filter(
-            ComicInVolumes.volumeId == self.entrySerie.get()).order_by(ComicInVolumes.numero).all()
-        self.listaAMostrar.clear()
-        self.listaAMostrar = []
-        for item in self.grillaComics.get_children():
-            self.grillaComics.delete(item)
-        for comic in comicInVolumeList:
-            self.listaAMostrar.append(comic)
-            self.grillaComics.insert('', 0, '', values=(comic.numero, comic.titulo, comic.comicVineId))
+
+    def click_boton_traer_todo(self,widget):
+
+        self.comicInVolumeList = self.session.query(ComicInVolumes).filter(
+            ComicInVolumes.volumeId == self.volume.id).order_by(ComicInVolumes.numero).all()
+        self.liststore_comics_in_volumen.clear()
+        for index, comic in enumerate(self.comicInVolumeList):
+            self.liststore_comics_in_volumen.append([int(comic.numero), comic.titulo, int(comic.comicVineId), index])
 
     def buscarSerie(self):
         listaNumeros = [comic.numero for comic in self.comicbooks]
@@ -302,7 +337,7 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%batman%')).all()
+    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%gord%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 

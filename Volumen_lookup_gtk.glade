@@ -151,6 +151,7 @@
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="search_column">0</property>
+                    <signal name="button-press-event" handler="gtk_tree_view_volumen_double_click" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection">
                         <signal name="changed" handler="seleccion_volumen" swapped="no"/>

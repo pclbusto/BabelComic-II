@@ -54,13 +54,15 @@
       </row>
     </data>
   </object>
-  <object class="GtkListStore" id="liststore1">
+  <object class="GtkListStore" id="liststore_comics_in_volumen">
     <columns>
       <!-- column-name Número -->
       <column type="guint"/>
       <!-- column-name Título -->
       <column type="gchararray"/>
-      <!-- column-name gint1 -->
+      <!-- column-name Id Comicvine -->
+      <column type="gint"/>
+      <!-- column-name index -->
       <column type="gint"/>
     </columns>
     <data>
@@ -68,6 +70,7 @@
         <col id="0">0</col>
         <col id="1" translatable="yes">dsadsad</col>
         <col id="2">0</col>
+        <col id="3">0</col>
       </row>
     </data>
   </object>
@@ -340,7 +343,7 @@
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_desde">
                             <property name="width_request">3</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -353,7 +356,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_hasta">
                             <property name="width_request">3</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -383,6 +386,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">imagen_traer_todo</property>
+                            <signal name="clicked" handler="click_boton_traer_todo" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -484,10 +488,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">liststore1</property>
+                        <property name="model">liststore_comics_in_volumen</property>
                         <property name="search_column">0</property>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection">
+                            <signal name="changed" handler="treeview_issues_in_volumen_selection_change" swapped="no"/>
+                          </object>
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="numero">
@@ -606,19 +612,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Nombre archivo</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_serie_vine">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -630,7 +624,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_titulo_vine">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -642,7 +636,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_numero_vine">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="halign">start</property>
@@ -655,7 +649,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_fecha_vine">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="halign">start</property>
@@ -668,16 +662,10 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="editable">False</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">5</property>
-                        <property name="width">2</property>
-                      </packing>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
@@ -693,7 +681,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkImage">
+                  <object class="GtkImage" id="image_cover_comic_vine">
                     <property name="width_request">150</property>
                     <property name="height_request">250</property>
                     <property name="visible">True</property>
@@ -749,6 +737,9 @@
                         <property name="sort_indicator">True</property>
                         <child>
                           <object class="GtkCellRendererToggle"/>
+                          <attributes>
+                            <attribute name="activatable">3</attribute>
+                          </attributes>
                         </child>
                       </object>
                     </child>
