@@ -10,7 +10,7 @@ from Entidades.Publishers.Publisher import Publisher
 from Gui.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 import threading
-
+import time
 class Volumen_vine_search_Gtk():
     def __init__(self, session=None):
 
@@ -49,8 +49,6 @@ class Volumen_vine_search_Gtk():
         self.volume = None
         self.publisher = None
 
-
-
     def _copy_to_window(self,publisher):
         if publisher:
             self.entry_id_editorial.set_text(publisher.id_publisher)
@@ -70,13 +68,25 @@ class Volumen_vine_search_Gtk():
 
     def _buscarMas(self):
         self.comicVineSearcher.vineSearchMore()
-        self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+        GLib.idle_add(self.cargarResultado,self.comicVineSearcher.listaBusquedaVine)
 
     def click_buscar_mas_serie(self, widget):
         self.spinner.start()
-        self.hilo1 = threading.Thread(target=self._buscarMas)
-        self.hilo1.start()
+        for i in range(self.comicVineSearcher.cantidadPaginas):
+            print("buscando mas")
+            self.hilo1 = threading.Thread(target=self._buscarMas)
+            self.hilo1.start()
+            time.sleep(1)
 
+        # self.hilo1 = threading.Thread(target=self._buscarMas)
+        # self.hilo1.start()
+        # time.sleep(1)
+        # self.hilo1 = threading.Thread(target=self._buscarMas)
+        # self.hilo1.start()
+        # time.sleep(1)
+        # self.hilo1 = threading.Thread(target=self._buscarMas)
+        # self.hilo1.start()
+        # time.sleep(1)
 
     def _buscar(self):
         self.offset = 0
@@ -146,6 +156,7 @@ class Volumen_vine_search_Gtk():
             cantidad_numeros = 0
             anio = 0
             publisher_name=""
+            # listmodel_volumenes = Gtk.ListStore(str, str, int, str, int)
             if volume.nombre is not None:
                 nombre = volume.nombre
             if volume.AnioInicio is not None:
@@ -157,7 +168,7 @@ class Volumen_vine_search_Gtk():
 
             if volume.publisher_name is not None:
                 publisher_name = volume.publisher_name
-
+            # print("cargand el volumen {}".format(str(idx) + " " +nombre))
             self.listmodel_volumenes.append([str(idx),nombre, cantidad_numeros,
                                              publisher_name, anio])
 

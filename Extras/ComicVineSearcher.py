@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 
 import Entidades.Init
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
-
+import math
 
 class ComicVineSearcher:
     EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits', 'volume']
@@ -235,6 +235,7 @@ class ComicVineSearcher:
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
+
     def vineSearchMore(self):
         return self.vineSearch(self.offset + self.limit)
 
@@ -283,7 +284,7 @@ class ComicVineSearcher:
             # cantidad total de registros este valor dividido por limite no da la cantidad de consultas necesarias para
             # recuperar todos los datos de la consulta
             self.cantidadResultados = int(root.find('number_of_total_results').text)
-            self.cantidadPaginas = self.cantidadResultados / self.limit
+            self.cantidadPaginas = math.ceil(self.cantidadResultados / self.limit)
             status_code = root.find('status_code').text
             results = root.find('results')
             if self.entidad == 'issues':
@@ -292,7 +293,9 @@ class ComicVineSearcher:
                     comic.fechaTapa = item.find('cover_date').text
                     # fecha = item.find('cover_date').text
                     comic.titulo = item.find('name').text
-                    # titulo = item.find('name').text
+                    if comic.titulo is None:
+                        comic.titulo = ''
+                        # titulo = item.find('name').text
                     comic.resumen = item.find('description').text
                     # descripcion = item.find('description').text
                     comic.comicVineId = item.find('id').text
