@@ -416,7 +416,8 @@ if __name__ == '__main__':
         print(comic)
         comics.append(comic)
 
-    cvs = ComicCatalogerGui(root, comics)
+    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%batm%')).all()
+    cvs = ComicCatalogerGui(root, comics_query)
     #cvs.entrySerie.set('4363')
     #cvs.spinNumero.set(80)
     cvs.grid(sticky=(N, W, S, E))

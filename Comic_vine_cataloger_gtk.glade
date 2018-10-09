@@ -60,7 +60,7 @@
       <column type="guint"/>
       <!-- column-name Título -->
       <column type="gchararray"/>
-      <!-- column-name Id Comicvine -->
+      <!-- column-name Id -->
       <column type="gint"/>
       <!-- column-name index -->
       <column type="gint"/>
@@ -400,6 +400,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">image_traer_coincidentes</property>
+                            <signal name="clicked" handler="click_boton_traer_solo_para_catalogar" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -660,12 +661,6 @@
                         <property name="left_attach">1</property>
                         <property name="top_attach">4</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>

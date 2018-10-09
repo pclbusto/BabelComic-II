@@ -59,10 +59,6 @@ class Publisher_vine_search_gtk():
         print("iniciando")
         self.spinner.start()
 
-    def _stop(self):
-        print("parando")
-        self.spinner.stop()
-
     def _buscar(self):
         if self.entry_nombre.get_text()!='':
             self.comicVineSearcher.clearFilter()

@@ -78,16 +78,6 @@ class Volumen_vine_search_Gtk():
             self.hilo1.start()
             time.sleep(1)
 
-        # self.hilo1 = threading.Thread(target=self._buscarMas)
-        # self.hilo1.start()
-        # time.sleep(1)
-        # self.hilo1 = threading.Thread(target=self._buscarMas)
-        # self.hilo1.start()
-        # time.sleep(1)
-        # self.hilo1 = threading.Thread(target=self._buscarMas)
-        # self.hilo1.start()
-        # time.sleep(1)
-
     def _buscar(self):
         self.offset = 0
         self.comicVineSearcher.clearFilter()
