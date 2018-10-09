@@ -112,10 +112,18 @@ class BabelComics_main_gtk():
         self.loadAndCreateThumbnails()
 
     def click_boton_edit(self, widget):
-        print("click refresh")
-        self.menu_comic.set_relative_to(widget)
-        self.menu_comic.show_all()
-        self.menu_comic.popup()
+        # print("click refresh")
+        # self.menu_comic.set_relative_to(widget)
+        # self.menu_comic.show_all()
+        # self.menu_comic.popup()
+        comics = []
+        for path in self.iconview.get_selected_items():
+            indice = path
+            comics.append(self.listaComics[indice[0]])
+            # print(self.listaComics[indice[0]])
+        cvs = Comic_vine_cataloger_gtk(comics)
+        cvs.window.show()
+        self.menu_comic.popdown()
 
 
     def click_derecho(self, widget, event):

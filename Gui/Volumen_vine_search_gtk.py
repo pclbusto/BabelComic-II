@@ -83,6 +83,7 @@ class Volumen_vine_search_Gtk():
         self.comicVineSearcher.clearFilter()
         self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
         self.comicVineSearcher.vineSearch(self.offset)
+        self.listaFiltrada.clear()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
         # self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
 
@@ -134,7 +135,7 @@ class Volumen_vine_search_Gtk():
 
     def cargarResultado(self,listavolumes):
         self.listmodel_volumenes.clear()
-        self.listaFiltrada.clear()
+        # self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
                 if self.publisher.id_publisher==volume.publisherId:

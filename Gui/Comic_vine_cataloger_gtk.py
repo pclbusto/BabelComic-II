@@ -132,7 +132,8 @@ class Comic_vine_cataloger_gtk():
         self.entry_titulo_vine.set_text(comic.titulo)
         self.entry_numero_vine.set_text(comic.numero)
         comic.openCbFile()
-        nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
+        nombreThumnail = comic.path
+        print("PATH COVER {}".format(nombreThumnail))
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=nombreThumnail,
             width=150,
@@ -257,10 +258,6 @@ class Comic_vine_cataloger_gtk():
         (model, iter) = selection.get_selected()
         if iter:
             comic_in_volumen = self.comicInVolumeList[model[iter][3]]
-
-            # print(comicInVolumeList(model[iter][3]))
-            # self._load_comic_vine(self.comicInVolumeList[model[iter][4]])
-
             cnf = Config(self.session)
             cv = ComicVineSearcher(cnf.getClave('issues'), session=self.session)
             cv.setEntidad('issues')
@@ -283,20 +280,9 @@ class Comic_vine_cataloger_gtk():
                 fImage = open(path + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()
-
-            # fImage = open(path + nombreImagen, 'rb')
-            # im = Image.open(fImage)
-
-            # print(item['values'][8],item['values'][4])
-        self.comicBookVine = ComicBook()
-        self.comicBookVine.path = path
-        self.comicBookVine.titulo = comic_in_volumen.titulo
-        self.comicBookVine.volumeNombre = self.entry_serie_local.get_text()
-        self.comicBookVine.numero = comic_in_volumen.numero
-        self.comicBookVine.idExterno = comic_in_volumen.comicVineId
-        self._load_comic_vine(self.comicBookVine)
-
-
+            self.comicBookVine = cv.listaBusquedaVine[0]
+            self.comicBookVine.path = path + nombreImagen
+            self._load_comic_vine(self.comicBookVine)
 
 
     def click_boton_traer_todo(self,widget):
@@ -337,7 +323,7 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%gord%')).all()
+    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%batm%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 
