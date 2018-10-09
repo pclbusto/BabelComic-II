@@ -108,11 +108,6 @@ class Volumen_vine_search_Gtk():
         self.session.add(volumenAndIssues[0])
         self.session.commit()
 
-    def int(self,t):
-        if t[0].isdigit():
-            return(int(t[0]))
-        return 0
-
 
     def _seleccion(self):
         self.volumen.localLogoImagePath = self.volumen.getImageCover()
@@ -135,28 +130,36 @@ class Volumen_vine_search_Gtk():
 
     def cargarResultado(self,listavolumes):
         self.listmodel_volumenes.clear()
-        # self.listaFiltrada.clear()
+        self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
                 if self.publisher.id_publisher==volume.publisherId:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
+        print("Cantidad Resultados: {} - Cantidad Resultados sin filtro: {}- Cantidad Total de Res"
+                                   "ultados en ComicVine: {}".format(len(self.listaFiltrada),
+                                                                     len(self.comicVineSearcher.listaBusquedaVine),
+                                                                     self.comicVineSearcher.cantidadResultados))
         for idx, volume in enumerate(self.listaFiltrada):
-            nombre = 'ERROR-SIN NOMBRE'
+            nombre = ''
             cantidad_numeros = 0
             anio = 0
-            if volume.nombre:
+            publisher_name=""
+            if volume.nombre is not None:
                 nombre = volume.nombre
-            if volume.AnioInicio:
+            if volume.AnioInicio is not None:
                 if str.isdigit(volume.AnioInicio):
                     anio = int(volume.AnioInicio)
 
             if str.isdigit(volume.cantidadNumeros):
                 cantidad_numeros=int(volume.cantidadNumeros)
 
+            if volume.publisher_name is not None:
+                publisher_name = volume.publisher_name
+
             self.listmodel_volumenes.append([str(idx),nombre, cantidad_numeros,
-                                            volume.publisher_name, anio])
+                                             publisher_name, anio])
 
         self.label_status.set_text("Cantidad Resultados: {} - Cantidad Resultados sin filtro: {}- Cantidad Total de Res"
                                    "ultados en ComicVine: {}".format(len(self.listaFiltrada),
