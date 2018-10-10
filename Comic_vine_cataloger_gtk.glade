@@ -414,6 +414,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">image_copiar_uno</property>
+                            <signal name="clicked" handler="boton_catalogar_simple" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

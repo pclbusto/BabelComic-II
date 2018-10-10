@@ -3,7 +3,9 @@ import Entidades.Init
 
 class ComicInVolumes(Entidades.Init.Base):
     __tablename__='ComicsInVolumes'
-    numero = Column(Numeric, primary_key=True)
+    # no lo pasamos a numerico porque algunos numeros tiene 11.3B
+
+    numero = Column(String, primary_key=True)
     comicVineId = Column(String, nullable=False, default='')
     volumeId = Column(String, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')

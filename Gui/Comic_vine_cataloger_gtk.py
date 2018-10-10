@@ -34,7 +34,8 @@ class Comic_vine_cataloger_gtk():
                          'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar,
                          'click_boton_traer_todo':self.click_boton_traer_todo,
                          'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
-                         'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar}
+                         'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
+                         'boton_catalogar_simple':self.boton_catalogar_simple}
 
 
 
@@ -236,7 +237,7 @@ class Comic_vine_cataloger_gtk():
         print("Dentro del thead: {}:".format(item))
         self.listViewComics.item(item, image=self.iconoGreenOrb)
 
-    def copiarInfo(self, wifget):
+    def boton_catalogar_simple(self, widget):
         cnf = Config(self.session)
         print('clave: ' + cnf.getClave('issue'))
         cv = ComicVineSearcher(cnf.getClave('issue'),session=self.session)
@@ -293,12 +294,16 @@ class Comic_vine_cataloger_gtk():
             self.liststore_comics_in_volumen.append([int(comic.numero), comic.titulo, int(comic.comicVineId), index])
 
     def click_boton_traer_solo_para_catalogar(self, widget):
-        desde = int(self.entry_desde.get_text())
-        hasta = int(self.entry_hasta.get_text())
-        print ("desde {} y hasta {}".format(desde,hasta))
+        lista_numeros = []
+        for comic in self.listore_comics_para_catalogar:
+            lista_numeros.append(str(comic[0]))
+        print(lista_numeros)
         self.comicInVolumeList = self.session.query(ComicInVolumes).filter(
-            ComicInVolumes.volumeId == self.volume.id).filter(int(ComicInVolumes.numero)<=hasta).filter(
-            int(ComicInVolumes.numero)>=desde).order_by(ComicInVolumes.numero).all()
+            ComicInVolumes.volumeId == self.volume.id).all()
+        self.comicInVolumeList = [comic for comic in self.comicInVolumeList if comic.numero in lista_numeros ]
+        print(self.comicInVolumeList)
+
+        # .filter(ComicInVolumes.numero in lista_numeros).order_by(ComicInVolumes.numero).all()
 
         print(self.comicInVolumeList)
         # listaNumeroComics = [comic for comic in self.comicInVolumeList if comic.numero>=desde and comic.numero<=hasta]
