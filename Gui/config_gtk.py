@@ -17,7 +17,7 @@ class Config_gtk():
 
         self.babelComicConfig = Extras.Config.Config(self.session)
 
-        self.handlers = {"click_guardar":self.click_guardar, 'click_borrar_directorio':self.click_borrar_directorio,
+        self.handlers = {"click_guardar":self.click_guardar, 'click_boton_borrar_directorio_comic':self.click_boton_borrar_directorio_comic,
                          'click_boton_agregar_directorio_comic':self.click_boton_agregar_directorio_comic}
 
         self.builder = Gtk.Builder()
@@ -56,21 +56,16 @@ class Config_gtk():
             self.entry_spinner_cantidad_por_pagina.set_value(self.babelComicConfig.setup.cantidadComicsPorPagina)
 
     def click_boton_agregar_directorio_comic(self, widget):
-        salida = Gtk.FileChooserDialog(title='Selección de Directorios de Comics', parent= self.window,  action=Gtk.FileChooserAction.SELECT_FOLDER,
-                                        buttons = [Gtk.ResponseType.CANCEL, Gtk.ResponseType.OK])
-         # , buttons=[Gtk.STOCK_CANCEL, Gtk.STOCK_OPEN])
-        # salida = Gtk.FileChooserDialog('Selección de Directorios de Comics', self.window,  Gtk.FileChooserAction.SELECT_FOLDER,
-        #                                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-
-        response = salida.run()
+        dialogo = Gtk.FileChooserDialog(title='Selección de Directorios de Comics', parent= self.window,  action=Gtk.FileChooserAction.SELECT_FOLDER)
+        dialogo.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        response = dialogo.run()
         if response == Gtk.ResponseType.OK:
             # print("Open clicked")
             # print("File selected: " + salida.get_filename())
-            self.liststore_directorios_comics.append([salida.get_filename()])
+            self.liststore_directorios_comics.append([dialogo.get_filename()])
         elif response == Gtk.ResponseType.CANCEL:
             pass
-
-        salida.destroy()
+        dialogo.destroy()
 
     def openBaseDirectoryChooser(self):
         salida = filedialog.askdirectory(title='Selección de Directorios de Imagenes')
@@ -78,10 +73,11 @@ class Config_gtk():
             self.entradaDirectorioBase.delete(0,END)
             self.entradaDirectorioBase.insert(0, salida)
 
-    def click_borrar_directorio(self, widget):
-        self.treeview_directorios_comics
-        if (self.listaDirectorios.curselection()):
-            self.listaDirectorios.delete(self.listaDirectorios.curselection())
+    def click_boton_borrar_directorio_comic(self, widget):
+        seleccion = self.treeview_directorios_comics.get_selection()
+        print(seleccion)
+        # if (self.listaDirectorios.curselection()):
+        #     self.listaDirectorios.delete(self.listaDirectorios.curselection())
 
     def click_guardar(self, widget):
         directorios = [item[0] for item in self.liststore_direcotorios_comics]
