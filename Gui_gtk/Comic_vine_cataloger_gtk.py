@@ -5,7 +5,7 @@ from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Volumes.Volume import Volume
 from datetime import date
 from iconos.Iconos import Iconos
-from Gui.Volumen_lookup_gtk import Volume_lookup_gtk
+from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Setups.Setup import Setup
 

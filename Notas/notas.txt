@@ -10,3 +10,6 @@ agregar tabla detalle comic. encargada de clasificar las paginas de un comic com
 revisar proceso de scaneo para que no de error cuando existe. y ademas agrear para cada pagina una entrada en la tabla entrada de pagina con el tipo pagina. y el orden que da el nombre
 del archivo.
 
+claves
+'64f7e65686c40cc016b8b8e499f46d6657d26752'
+'7e4368b71c5a66d710a62e996a660024f6a868d4'

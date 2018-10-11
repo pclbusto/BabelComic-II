@@ -9,11 +9,11 @@ import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Publishers.Publisher import Publisher
 from Entidades.Setups.Setup import Setup
-from Gui.ScannerGtk import ScannerGtk
-from Gui.PublisherGuiGtk import PublisherGtk
-from Gui.VolumeGuiGtk import VolumeGuiGtk
-from Gui.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
-from Gui.config_gtk import Config_gtk
+from Gui_gtk.ScannerGtk import ScannerGtk
+from Gui_gtk.PublisherGuiGtk import PublisherGtk
+from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
+from Gui_gtk.config_gtk import Config_gtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile

@@ -1,13 +1,13 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-from  Extras.ComicVineSearcher import ComicVineSearcher
+from Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 from gi.repository import GLib
 import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
 from Entidades.Publishers.Publisher import Publisher
-from Gui.Publisher_lookup_gtk import Publisher_lookup_gtk
+from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 import threading
 import time
@@ -41,25 +41,31 @@ class Volumen_vine_search_Gtk():
         self.entry_serie_nombre = self.builder.get_object("entry_serie_nombre")
         self.label_descripcion_editorial = self.builder.get_object("label_descripcion_editorial")
         self.entry_id_editorial = self.builder.get_object("entry_id_editorial")
-        # self.gtk_tree_view_volumens = self.builder.get_object("gtk_tree_view_volumens")
+        self.gtk_tree_view_volumens = self.builder.get_object("gtk_tree_view_volumens")
         self.listmodel_volumenes = self.builder.get_object('listmodel_volumenes')
+        self.listmodel_volumenes.clear()
+
         self.label_status = self.builder.get_object("label_status")
         self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
         self.spinner = self.builder.get_object("spinner")
         self.volume = None
         self.publisher = None
+        self.cargarResultado(self.listmodel_volumenes)
+        self.entry_id_editorial.set_text('2707')
+        self.entry_serie_nombre.set_text('iron man')
 
-    def _copy_to_window(self,publisher):
-        if publisher:
-            self.entry_id_editorial.set_text(publisher.id_publisher)
-            self.label_descripcion_editorial.set_text(publisher.name)
+    def _copy_to_window(self):
+        if self.publisher:
+            self.entry_id_editorial.set_text(self.publisher.id_publisher)
+            self.label_descripcion_editorial.set_text(self.publisher.name)
         else:
             self.label_descripcion_editorial.set_text('')
 
     def entry_id_editorial_change(self,widget):
-        publisher = None
-        publisher = self.publishers_manager.get(self.entry_id_editorial.get_text())
-        self._copy_to_window(publisher)
+        self.publisher = None
+        self.publisher = self.publishers_manager.get(self.entry_id_editorial.get_text())
+        self._copy_to_window()
+        print("Publisher recueperado")
 
     def click_lookup_editorial(self, widget):
         lookup = Publisher_lookup_gtk(self.session, self.entry_id_editorial)
@@ -69,10 +75,11 @@ class Volumen_vine_search_Gtk():
     def _buscarMas(self):
         self.comicVineSearcher.vineSearchMore()
         GLib.idle_add(self.cargarResultado,self.comicVineSearcher.listaBusquedaVine)
+        # print(self.comicVineSearcher.listaBusquedaVine)
 
     def click_buscar_mas_serie(self, widget):
         self.spinner.start()
-        for i in range(self.comicVineSearcher.cantidadPaginas):
+        for i in range(self.comicVineSearcher.cantidadPaginas-4):
             print("buscando mas")
             self.hilo1 = threading.Thread(target=self._buscarMas)
             self.hilo1.start()
@@ -82,7 +89,10 @@ class Volumen_vine_search_Gtk():
         self.offset = 0
         self.comicVineSearcher.clearFilter()
         self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
-        self.comicVineSearcher.vineSearch(self.offset)
+        if self.comicVineSearcher.vine_Search_all()!=0:
+            self.label_status.set_text("la cantidad de registros es mayor a 1400.")
+            self.comicVineSearcher.clearFilter()
+            self.comicVineSearcher.listaBusquedaVine.clear()
         self.listaFiltrada.clear()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
         # self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
@@ -124,7 +134,7 @@ class Volumen_vine_search_Gtk():
         self.spinner.start()
         (model, iter) = selection.get_selected()
         if iter:
-            self.volumen = self.comicVineSearcher.listaBusquedaVine[int(model[iter][0])]
+            self.volumen = self.listaFiltrada[int(model[iter][0])]
             self.hilo1 = threading.Thread(target=self._seleccion)
             self.hilo1.start()
 
@@ -133,20 +143,17 @@ class Volumen_vine_search_Gtk():
         self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
+                print("Editorial de filtor: {} Editorial Comics: {}".format(self.publisher.id_publisher,volume.publisherId))
                 if self.publisher.id_publisher==volume.publisherId:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
-        print("Cantidad Resultados: {} - Cantidad Resultados sin filtro: {}- Cantidad Total de Res"
-                                   "ultados en ComicVine: {}".format(len(self.listaFiltrada),
-                                                                     len(self.comicVineSearcher.listaBusquedaVine),
-                                                                     self.comicVineSearcher.cantidadResultados))
+
         for idx, volume in enumerate(self.listaFiltrada):
             nombre = ''
             cantidad_numeros = 0
             anio = 0
             publisher_name=""
-            # listmodel_volumenes = Gtk.ListStore(str, str, int, str, int)
             if volume.nombre is not None:
                 nombre = volume.nombre
             if volume.AnioInicio is not None:
@@ -158,7 +165,7 @@ class Volumen_vine_search_Gtk():
 
             if volume.publisher_name is not None:
                 publisher_name = volume.publisher_name
-            # print("cargand el volumen {}".format(str(idx) + " " +nombre))
+            print("cargand el volumen {}".format(str(idx) + " " +nombre))
             self.listmodel_volumenes.append([str(idx),nombre, cantidad_numeros,
                                              publisher_name, anio])
 

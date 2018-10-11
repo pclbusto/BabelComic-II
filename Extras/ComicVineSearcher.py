@@ -11,6 +11,8 @@ import xml.etree.ElementTree as ET
 import Entidades.Init
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 import math
+import threading
+import time
 
 class ComicVineSearcher:
     EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits', 'volume']
@@ -239,7 +241,24 @@ class ComicVineSearcher:
     def vineSearchMore(self):
         return self.vineSearch(self.offset + self.limit)
 
+    def vine_Search_all(self):
+        # este llamado no da info de cuantas paginas tiene la consulta en total
+        self.vineSearch()
+        if self.cantidadPaginas>14:
+            return 1
+        self.hilos=[]
+        for i in range(1, self.cantidadPaginas):
+            self.hilos.append(threading.Thread(target=self.vineSearch, args=[i*self.limit]))
+        for hilo in self.hilos:
+            hilo.start()
+        while len(self.hilos)>0:
+            print("quedan {} hilos".format(len(self.hilos)))
+            time.sleep(2)
+        print("recuperacion de informacion finalizada")
+        return 0
+
     def vineSearch(self, io_offset=0):
+
         if self.entidad == '':
             self.statusMessage = 'falta ingresar la entidad'
             ##            print('falta ingresar la entidad')
@@ -376,14 +395,19 @@ class ComicVineSearcher:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
             # print('Recuperados: '+str(loffset)+' de '+number_of_total_results)
-
+        if io_offset>0:
+            self.hilos.pop()
 
 if __name__ == '__main__':
-    cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4', None)
     ##    cv = comicVineSearcher('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    cv.setEntidad('volume')
-    volumen = cv.getVineEntity('2839')
-    print(volumen)
+    cv.setEntidad('volumes')
+    cv.addFilter("name:" + 'batman')
+    cv.vine_Search_all()
+    # volumen = cv.getVineEntity('2839')
+    for comic in cv.listaBusquedaVine:
+        print(comic)
+
     # arco = cv.getVineEntity(55691)
     # print(arco.comics)
 ##    cv.addFilter('')

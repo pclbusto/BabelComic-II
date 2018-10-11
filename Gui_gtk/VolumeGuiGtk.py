@@ -11,9 +11,9 @@ from gi.repository import Gtk, GdkPixbuf
 from Entidades.Volumes.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 import Entidades.Init
-from Gui.Volumen_lookup_gtk import Volume_lookup_gtk
-from Gui.VolumeVineGui import VolumeVineGui
-from Gui.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
+from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
+
+from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 from Extras.Config import Config

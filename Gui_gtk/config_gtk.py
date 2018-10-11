@@ -50,7 +50,7 @@ class Config_gtk():
             for extension in self.babelComicConfig.listaTipos:
                 lista_extenesiones += extension+","
 
-            if lista_extenesiones[-1] ==',':
+            if len(lista_extenesiones)>0 and lista_extenesiones[-1] ==',':
                 lista_extenesiones=  lista_extenesiones[:-1]
                 self.entry_lista_extensiones_soportadas.set_text(lista_extenesiones)
 

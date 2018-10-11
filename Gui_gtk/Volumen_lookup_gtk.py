@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 from Entidades.Volumes.Volume import Volume
-from Gui.Publisher_lookup_gtk import Publisher_lookup_gtk
+from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 
 
 class Volume_lookup_gtk():

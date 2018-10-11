@@ -44,6 +44,7 @@ class BabelComicBookScanner():
     def countfilesToProces(self):
         cantidad = 0
         listaDirectotiosLocal = [x for x in self.listaDirectorios]
+        print(self.listaTipos)
         while (len(listaDirectotiosLocal) > 0):
             print("escaneando")
             valor = listaDirectotiosLocal[0]
