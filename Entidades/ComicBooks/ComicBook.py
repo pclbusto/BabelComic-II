@@ -108,7 +108,7 @@ class ComicBook(Entidades.Init.Base):
         self.paginas=[]
         if (self.getTipo().lower()=='cbz'):
             try:
-                self.cbFile = zipfile.ZipFile(self.path, 'r')
+                self.cbFile = zipfile.ZipFile(self.path, 'a')
                 for x in self.cbFile.namelist():
                     if '.' in x:
                         if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
