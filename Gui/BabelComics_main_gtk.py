@@ -13,6 +13,7 @@ from Gui.ScannerGtk import ScannerGtk
 from Gui.PublisherGuiGtk import PublisherGtk
 from Gui.VolumeGuiGtk import VolumeGuiGtk
 from Gui.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
+from Gui.config_gtk import Config_gtk
 import os.path
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
@@ -35,7 +36,8 @@ class BabelComics_main_gtk():
                          'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
-                         'click_boton_edit':self.click_boton_edit}
+                         'click_boton_edit':self.click_boton_edit,
+                         'click_boton_config':self.click_boton_config}
 
 
         # , 'selection': self.selection,
@@ -90,6 +92,9 @@ class BabelComics_main_gtk():
         # self.popover.set_position(Gtk.PositionType.BOTTOM)
 
 
+    def click_boton_config(self,widget):
+        config = Config_gtk()
+        config.window.show()
 
     def click_boton_open_scanear(self,widget):
         scanner = ScannerGtk(funcion_callback=self.loadAndCreateThumbnails)

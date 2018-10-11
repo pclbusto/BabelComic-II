@@ -55,7 +55,7 @@ class Catalogador():
         destino.comicVineId = fuente.comicVineId
         self.session.commit()
         if not destino.has_xml():
-            cbFile = destino.editCbFile
+            cbFile = destino.editCbFile()
             xml_manager = XmlManager(self.session)
             xml_manager.set_xml_for_comic(destino)
 

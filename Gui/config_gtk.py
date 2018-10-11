@@ -17,8 +17,10 @@ class Config_gtk():
 
         self.babelComicConfig = Extras.Config.Config(self.session)
 
-        self.handlers = {"click_guardar":self.click_guardar, 'click_boton_borrar_directorio_comic':self.click_boton_borrar_directorio_comic,
-                         'click_boton_agregar_directorio_comic':self.click_boton_agregar_directorio_comic}
+        self.handlers = {"click_guardar":self.click_guardar,
+                         'click_boton_borrar_directorio_comic':self.click_boton_borrar_directorio_comic,
+                         'click_boton_agregar_directorio_comic':self.click_boton_agregar_directorio_comic,
+                         'click_boton_directorio_base':self.click_boton_directorio_base}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Config_gtk.glade")
@@ -67,20 +69,29 @@ class Config_gtk():
             pass
         dialogo.destroy()
 
-    def openBaseDirectoryChooser(self):
-        salida = filedialog.askdirectory(title='Selección de Directorios de Imagenes')
-        if salida:
-            self.entradaDirectorioBase.delete(0,END)
-            self.entradaDirectorioBase.insert(0, salida)
+    def click_boton_directorio_base(self,widget):
+        dialogo = Gtk.FileChooserDialog(title='Selección de Directorios Base de BabelComic', parent=self.window,
+                                        action=Gtk.FileChooserAction.SELECT_FOLDER)
+        dialogo.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        response = dialogo.run()
+        if response == Gtk.ResponseType.OK:
+            # print("Open clicked")
+            # print("File selected: " + salida.get_filename())
+            self.entry_directorio_base.set_text(dialogo.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            pass
+        dialogo.destroy()
 
     def click_boton_borrar_directorio_comic(self, widget):
-        seleccion = self.treeview_directorios_comics.get_selection()
-        print(seleccion)
+        (model, iter) = self.treeview_directorios_comics.get_selection().get_selected()
+        if iter:
+            model.remove(iter)
+
         # if (self.listaDirectorios.curselection()):
         #     self.listaDirectorios.delete(self.listaDirectorios.curselection())
 
     def click_guardar(self, widget):
-        directorios = [item[0] for item in self.liststore_direcotorios_comics]
+        directorios = [item[0] for item in self.liststore_directorios_comics]
         clave = self.entry_clave_servico_comicvine.get_text()
         self.babelComicConfig.setListaDirectorios(directorios)
         self.babelComicConfig.setListaTipos(self.entry_lista_extensiones_soportadas.get_text().split(','))

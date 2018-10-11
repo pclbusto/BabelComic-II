@@ -124,6 +124,7 @@ class Comic_vine_cataloger_gtk():
             height=250,
             preserve_aspect_ratio=True)
         self.image_cover_comic_local.set_from_pixbuf(pixbuf)
+        self.comicbook = comic
 
     def _load_comic_vine(self, comic):
 
@@ -163,23 +164,6 @@ class Comic_vine_cataloger_gtk():
                                     values=([index,comic.path]))
         for comic in self.comicbooks:
             print(comic)
-
-    def listViewComicsClicked(self, args):
-
-        print(self.listViewComics.item(self.listViewComics.selection(), "values")[0])
-        index = int(self.listViewComics.item(self.listViewComics.selection(), "values")[0])
-
-        self.panelSourceComic.destroy()
-        self.comicbook = self.comicbooks[index]
-        self.comicbook.openCbFile()
-        self.comicbook.goto(0)
-
-        self.panelSourceComic = self.__createPanelComic__(self, self.comicbook,
-                                                          self.comicbook.getImagePage().resize(self.size,
-                                                                                                   resample=Image.BICUBIC),
-                                                          'Comic info')
-
-        self.panelSourceComic.grid(column=0, row=0, sticky=(N, W, S, E))
 
     def copiarInfoGrupoBtn(self):
         t = threading.Thread(target=self.copiarInfoGrupo)
@@ -242,7 +226,7 @@ class Comic_vine_cataloger_gtk():
         print('clave: ' + cnf.getClave('issue'))
         cv = ComicVineSearcher(cnf.getClave('issue'),session=self.session)
         cv.setEntidad('issue')
-        completComicInfo = cv.getVineEntity(self.comicBookVine.idExterno)
+        completComicInfo = cv.getVineEntity(self.comicBookVine.comicVineId)
         self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)

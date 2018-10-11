@@ -122,7 +122,7 @@
                     <property name="receives_default">True</property>
                     <property name="image">image2</property>
                     <property name="always_show_image">True</property>
-                    <signal name="clicked" handler="click_borrar_directorio" swapped="no"/>
+                    <signal name="clicked" handler="click_boton_borrar_directorio_comic" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -252,6 +252,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="image">image3</property>
+                <signal name="clicked" handler="click_boton_directorio_base" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
