@@ -42,7 +42,7 @@
     <data>
       <row>
         <col id="0">5</col>
-        <col id="1" translatable="yes">Invincible Issue #05.cbz</col>
+        <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
         <col id="2">0</col>
         <col id="3">False</col>
       </row>
@@ -50,7 +50,7 @@
         <col id="0">15</col>
         <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
         <col id="2">1</col>
-        <col id="3">False</col>
+        <col id="3">True</col>
       </row>
     </data>
   </object>
@@ -716,7 +716,7 @@
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkTreeView">
+                  <object class="GtkTreeView" id="treeview_comics_para_catalogar">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="model">listore_comics_para_catalogar</property>
@@ -729,12 +729,10 @@
                     <child>
                       <object class="GtkTreeViewColumn">
                         <property name="title" translatable="yes">Procesado</property>
-                        <property name="reorderable">True</property>
-                        <property name="sort_indicator">True</property>
                         <child>
                           <object class="GtkCellRendererToggle"/>
                           <attributes>
-                            <attribute name="activatable">3</attribute>
+                            <attribute name="active">3</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -742,6 +740,7 @@
                     <child>
                       <object class="GtkTreeViewColumn">
                         <property name="title" translatable="yes">Número</property>
+                        <property name="sort_column_id">0</property>
                         <child>
                           <object class="GtkCellRendererText" id="seleccionado"/>
                           <attributes>
@@ -755,6 +754,7 @@
                         <property name="title" translatable="yes">Archivo</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">1</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>

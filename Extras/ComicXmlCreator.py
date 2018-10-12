@@ -62,7 +62,8 @@ class XmlManager:
             SubElement(volume_node, "AnioInicio").text = str(volume.AnioInicio)
             SubElement(volume_node, "cantidadNumeros").text = str(volume.cantidadNumeros)
 
-        if comic.arcoArgumentalId != '':
+        if comic.arcoArgumentalId != '0':
+            print("ARCO ARGUMENTAL : {}".format(comic.arcoArgumentalId))
             arco_argumental_node = SubElement(comic_root, "ArcoArgumental")
             arco_argumental = self.session.query(ArcoArgumental).get(comic.arcoArgumentalId)
             SubElement(arco_argumental_node, "id").text = arco_argumental.id

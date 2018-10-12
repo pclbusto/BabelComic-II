@@ -35,7 +35,8 @@ class Comic_vine_cataloger_gtk():
                          'click_boton_traer_todo':self.click_boton_traer_todo,
                          'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
                          'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
-                         'boton_catalogar_simple':self.boton_catalogar_simple}
+                         'boton_catalogar_simple':self.boton_catalogar_simple,
+                         'boton_catalogar_grupo':self.boton_catalogar_grupo}
 
 
 
@@ -46,6 +47,7 @@ class Comic_vine_cataloger_gtk():
         self.image_cover_comic_local = self.builder.get_object("image_cover_comic_local")
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
+        self.treeview_comics_para_catalogar = self.builder.get_object("treeview_comics_para_catalogar")
         self.listore_comics_para_catalogar = self.builder.get_object("listore_comics_para_catalogar")
         self.liststore_comics_in_volumen = self.builder.get_object("liststore_comics_in_volumen")
         self.entry_expresion_regular_numeracion = self.builder.get_object("entry_expresion_regular_numeracion")
@@ -63,7 +65,7 @@ class Comic_vine_cataloger_gtk():
         self.listore_comics_para_catalogar.clear()
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, False])
+            self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, 0])
 
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
@@ -169,7 +171,7 @@ class Comic_vine_cataloger_gtk():
         t = threading.Thread(target=self.copiarInfoGrupo)
         t.start()
 
-    def copiarInfoGrupo(self):
+    def boton_catalogar_grupo(self):
 
         cantidadZeros=0
         for comic in self.comicbooks:
@@ -210,12 +212,7 @@ class Comic_vine_cataloger_gtk():
                         t = threading.Thread(target=self.updateGui, args=[item])
                         t.start()
 
-        self.setup.ultimoNumeroConsultadoHasta = self.entryNumeroHasta.get()
-        self.setup.ultimoNumeroConsultadoDesde = self.entryNumeroDesde.get()
-        self.setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
-        self.setup.expresionRegularNumero = self.entryPathRe.get()
-        print(self.setup)
-        self.session.commit()
+        self.save_estado_catalogo()
 
     def updateGui(self, item):
         print("Dentro del thead: {}:".format(item))
@@ -230,13 +227,17 @@ class Comic_vine_cataloger_gtk():
         self.comicbook = self.session.query(ComicBook).filter(ComicBook.path==self.comicbook.path).first()
         catalogador = Catalogador(self.session)
         catalogador.copyFromComicToComic(completComicInfo,self.comicbook)
-        self.setup.ultimoNumeroConsultadoHasta = self.entryNumeroHasta.get()
-        self.setup.ultimoNumeroConsultadoDesde = self.entryNumeroDesde.get()
-        self.setup.ultimoVolumeIdUtilizado = self.entrySerie.get()
-        self.setup.expresionRegularNumero = self.entryPathRe.get()
+        self.save_estado_catalogo()
+        (modelo, iter) = self.treeview_comics_para_catalogar.get_selection().get_selected()
+        modelo[iter][3]=True
+
+    def save_estado_catalogo(self):
+        self.setup.ultimoNumeroConsultadoHasta = self.entry_desde.get_text()
+        self.setup.ultimoNumeroConsultadoDesde = self.entry_hasta.get_text()
+        self.setup.ultimoVolumeIdUtilizado = self.entry_id_volumen_catalogar.get_text()
+        self.setup.expresionRegularNumero = self.entry_expresion_regular_numeracion.get_text()
         print(self.setup)
         self.session.commit()
-
 
     def treeview_issues_in_volumen_selection_change(self, selection):
         (model, iter) = selection.get_selected()
@@ -315,12 +316,12 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%batman (2016) Is%')).all()
+    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%Green Lantern, 1967%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 
     cvs = Comic_vine_cataloger_gtk(comics_query)
     cvs.window.show_all()
     cvs.window.connect("destroy", Gtk.main_quit)
-    cvs.entry_id_volumen_catalogar.set_text('91273')
+    cvs.entry_id_volumen_catalogar.set_text('2839')
     Gtk.main()

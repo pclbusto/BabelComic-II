@@ -65,6 +65,8 @@ class Volumen_vine_search_Gtk():
         self.publisher = None
         self.publisher = self.publishers_manager.get(self.entry_id_editorial.get_text())
         self._copy_to_window()
+        if self.publisher is not None or self.entry_id_editorial.get_text()=='':
+            self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
         print("Publisher recueperado")
 
     def click_lookup_editorial(self, widget):
