@@ -171,7 +171,7 @@ class Comic_vine_cataloger_gtk():
         t = threading.Thread(target=self.copiarInfoGrupo)
         t.start()
 
-    def boton_catalogar_grupo(self):
+    def boton_catalogar_grupo(self,widget):
 
         cantidadZeros=0
         for comic in self.comicbooks:
@@ -187,11 +187,10 @@ class Comic_vine_cataloger_gtk():
         cv.setEntidad('issue')
         catalogador = Catalogador(self.session)
         for comic in self.comicbooks:
-            print("Vamos a ACTUALIZAR EL COMIC")
-            print(comic)
+            print("Vamos a ACTUALIZAR EL COMIC:{}".format(comic.path))
             comicInfo=None
             '''Buscamos en la lista de Vine el numero de comic'''
-            for comicVine in self.listaAMostrar:
+            for comicVine in self.comicInVolumeList:
                     if comicVine.numero==comic.numero:
                         comicInfo = comicVine
                         break
