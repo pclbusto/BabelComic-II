@@ -22,7 +22,6 @@ class XmlManager:
         comic_root = Element('ComicRoot')
         comic_node = SubElement(comic_root, "Comic")
         SubElement(comic_node, "comicId").text = str(comic.comicId)
-        SubElement(comic_node, "path").text = comic.path
         SubElement(comic_node, "comicVineId").text = comic.comicVineId
         SubElement(comic_node, "titulo").text = comic.titulo
         SubElement(comic_node, "volumeId").text = comic.volumeId
@@ -39,16 +38,7 @@ class XmlManager:
         SubElement(comic_node, "api_detail_url").text = comic.api_detail_url
         SubElement(comic_node, "thumb_url").text = comic.thumb_url
         SubElement(comic_node, "calidad").text = comic.calidad
-        if comic.publisherId != '':
-            publisher_node = SubElement(comic_root, "Publisher")
-            publisher = self.session.query(Publisher).get(comic.publisherId)
-            SubElement(publisher_node, "id_publisher").text = publisher.id_publisher
-            SubElement(publisher_node, "name").text = publisher.name
-            SubElement(publisher_node, "deck").text = publisher.deck
-            SubElement(publisher_node, "description").text = publisher.description
-            SubElement(publisher_node, "logoImagePath").text = publisher.logoImagePath
-            SubElement(publisher_node, "localLogoImagePath").text = publisher.localLogoImagePath
-            SubElement(publisher_node, "siteDetailUrl").text = publisher.siteDetailUrl
+
         if comic.volumeId != '':
             volume_node = SubElement(comic_root, "Volumen")
             volume = self.session.query(Volume).get(comic.volumeId)
@@ -73,6 +63,7 @@ class XmlManager:
             SubElement(arco_argumental_node, "ultimaFechaActualizacion").text = str(
                 arco_argumental.ultimaFechaActualizacion)
 
+
         if comic.publisherId != '':
             publisher_node = SubElement(comic_root, "Publisher")
             publisher = self.session.query(Publisher).get(comic.publisherId)
@@ -81,7 +72,6 @@ class XmlManager:
             SubElement(publisher_node, "deck").text = publisher.deck
             SubElement(publisher_node, "description").text = publisher.description
             SubElement(publisher_node, "logoImagePath").text = publisher.logoImagePath
-            SubElement(publisher_node, "localLogoImagePath").text = publisher.localLogoImagePath
             SubElement(publisher_node, "siteDetailUrl").text = publisher.siteDetailUrl
         return comic_root
 

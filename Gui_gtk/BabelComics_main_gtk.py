@@ -39,9 +39,7 @@ class BabelComics_main_gtk():
                          'click_boton_edit':self.click_boton_edit,
                          'click_boton_config':self.click_boton_config}
 
-
-        # , 'selection': self.selection,
-        #                  'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar': self.click_boton_buscar}
+        self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../BabelComic_main_gtk.glade")
@@ -234,11 +232,14 @@ class BabelComics_main_gtk():
                 cover = None
                 if (not os.path.isfile(nombreThumnail)):
                     cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                    help(cover)
                     iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
                     # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
+                    if comic.comicVineId!='':
+                        self.cataloged_pix.composite(cover, 0, 0, 64, 64, 0, 0, 1, 1, 3, 255)
                     self.liststore.append([cover, comic.getNombreArchivo(), index])
 
             except NotRarFile:

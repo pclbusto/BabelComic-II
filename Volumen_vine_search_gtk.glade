@@ -119,6 +119,7 @@
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="col_serie">
+                            <property name="sizing">autosize</property>
                             <property name="min_width">150</property>
                             <property name="title" translatable="yes">Serie</property>
                             <property name="reorderable">True</property>

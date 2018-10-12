@@ -56,23 +56,15 @@
   </object>
   <object class="GtkListStore" id="liststore_comics_in_volumen">
     <columns>
-      <!-- column-name Número -->
-      <column type="guint"/>
-      <!-- column-name Título -->
+      <!-- column-name Numero -->
+      <column type="gchararray"/>
+      <!-- column-name Titulo -->
       <column type="gchararray"/>
       <!-- column-name Id -->
       <column type="gint"/>
       <!-- column-name index -->
       <column type="gint"/>
     </columns>
-    <data>
-      <row>
-        <col id="0">0</col>
-        <col id="1" translatable="yes">dsadsad</col>
-        <col id="2">0</col>
-        <col id="3">0</col>
-      </row>
-    </data>
   </object>
   <object class="GtkWindow" id="Comic_vine_cataloger_gtk">
     <property name="can_focus">False</property>

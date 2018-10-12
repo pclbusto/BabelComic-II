@@ -51,8 +51,8 @@ class Volumen_vine_search_Gtk():
         self.volume = None
         self.publisher = None
         self.cargarResultado(self.listmodel_volumenes)
-        self.entry_id_editorial.set_text('2707')
-        self.entry_serie_nombre.set_text('iron man')
+        # self.entry_id_editorial.set_text('2707')
+        # self.entry_serie_nombre.set_text('iron man')
 
     def _copy_to_window(self):
         if self.publisher:
@@ -91,17 +91,14 @@ class Volumen_vine_search_Gtk():
         self.offset = 0
         self.comicVineSearcher.clearFilter()
         self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
-        if self.comicVineSearcher.vine_Search_all()!=0:
-            self.label_status.set_text("la cantidad de registros es mayor a 1400.")
-            self.comicVineSearcher.clearFilter()
-            self.comicVineSearcher.listaBusquedaVine.clear()
-        self.listaFiltrada.clear()
+        self.comicVineSearcher.vine_Search_all()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
-        # self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+
 
 
     def click_buscar_serie(self, widget):
         self.spinner.start()
+        self.listmodel_volumenes.clear()
         self.hilo1 = threading.Thread(target=self._buscar)
         self.hilo1.start()
         # GLib.idle_add(self._buscar)
@@ -141,6 +138,9 @@ class Volumen_vine_search_Gtk():
             self.hilo1.start()
 
     def cargarResultado(self,listavolumes):
+
+
+
         self.listmodel_volumenes.clear()
         self.listaFiltrada.clear()
         for volume in listavolumes:
@@ -150,6 +150,11 @@ class Volumen_vine_search_Gtk():
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
+
+        if len(self.listaFiltrada) > 1400:
+            self.label_status.set_text("La cantidad de registros es mayor a 1400. Trate de filtrar la consulta.")
+            return
+
 
         for idx, volume in enumerate(self.listaFiltrada):
             nombre = ''

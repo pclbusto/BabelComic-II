@@ -244,7 +244,7 @@ class ComicVineSearcher:
     def vine_Search_all(self):
         # este llamado no da info de cuantas paginas tiene la consulta en total
         self.vineSearch()
-        if self.cantidadPaginas>14:
+        if self.cantidadPaginas>150:
             return 1
         self.hilos=[]
         for i in range(1, self.cantidadPaginas):
@@ -261,8 +261,15 @@ class ComicVineSearcher:
 
         if self.entidad == '':
             self.statusMessage = 'falta ingresar la entidad'
-            ##            print('falta ingresar la entidad')
+            print("Status: {}".format(self.statusMessage))
             return
+        if self.filter == '' or len(self.filter)<3:
+            print("FILTRO: {}".format(self.filter))
+            self.statusMessage = 'falta ingresar un filtro o su longitud debe ser mayor o igual a 3 caracteres'
+            print("Status: {}".format(self.statusMessage))
+            return
+
+
         self.offset = io_offset
 
         url = 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
@@ -310,25 +317,16 @@ class ComicVineSearcher:
                 for item in results:
                     comic = ComicBook()
                     comic.fechaTapa = item.find('cover_date').text
-                    # fecha = item.find('cover_date').text
                     comic.titulo = item.find('name').text
                     if comic.titulo is None:
                         comic.titulo = ''
-                        # titulo = item.find('name').text
                     comic.resumen = item.find('description').text
-                    # descripcion = item.find('description').text
                     comic.comicVineId = item.find('id').text
-                    # idExterno = item.find('id').text
                     comic.numero = item.find('issue_number').text
-                    # numero = item.find('issue_number').text
                     comic.api_detail_url = item.find('api_detail_url').text
-                    # api_detail_url = item.find('api_detail_url').text
                     comic.thumb_url = item.find('image').find('small_url').text
-                    # thumb_url = item.find('image').find('small_url').text
                     comic.volumeNombre = item.find('volume').find('name').text
-                    # volumeName = item.find('volume').find('name').text
                     comic.volumeId = item.find('volume').find('id').text
-                    # volumeId = item.find('volume').find('id').text
                     print(comic)
                     self.listaBusquedaVine.append(
                         comic)
@@ -353,21 +351,8 @@ class ComicVineSearcher:
                     l_serie.AnioInicio = item.find('start_year').text
                     self.listaBusquedaVine.append(l_serie)
 
-                    # self.listaBusquedaVine.append({'count_of_issues': count_of_issues,
-                    #                                'description': description,
-                    #                                'Id': Id,
-                    #                                'image': image,
-                    #                                'name': name,
-                    #                                'publisher': publisher,
-                    #                                'start_year': start_year})
-
             elif self.entidad == 'publishers':
-                # print("publisher")
-
-
                 for item in results:
-                    # help(item)
-                    # print(item.tostring())
                     publisher = Publisher.Publisher()
                     publisher.id_publisher = item.find('id').text
                     publisher.name = item.find('name').text
@@ -394,10 +379,9 @@ class ComicVineSearcher:
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
-            # print('Recuperados: '+str(loffset)+' de '+number_of_total_results)
         if io_offset>0:
             self.hilos.pop()
-
+        self.statusMessage='Ok'
 if __name__ == '__main__':
     cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4', None)
     ##    cv = comicVineSearcher('64f7e65686c40cc016b8b8e499f46d6657d26752')
