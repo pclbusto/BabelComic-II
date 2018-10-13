@@ -4,6 +4,7 @@ from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentale
 #----
 
 class ArcoArgumental(Entidades.Init.Base):
+    # todo implementar gui para ver y administar
     __tablename__ = 'ArcosArgumentales'
     id = Column(String,primary_key=True)
     nombre = Column(String,nullable=False,default='')

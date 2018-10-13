@@ -19,7 +19,8 @@ from Entidades.Volumes.ComicsInVolume import ComicInVolumes
 from Extras.Config import Config
 
 class VolumeGuiGtk():
-
+    # todo implementar los botones de limpiar, guardar y borrar
+    # todo clase que administre el comportamiento completo de alta, baja mdoficacion navegacion y borrado
     def __init__(self, session=None):
         if session is not None:
             self.session = session

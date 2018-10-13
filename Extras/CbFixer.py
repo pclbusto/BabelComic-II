@@ -4,6 +4,7 @@ import os
 import shutil
 
 class CbFixer():
+    # todo convertir de cbr a cbz
     def __init__(self, listaArchivos):
         for nombreArchivo in listaArchivos:
             extension = nombreArchivo[-3:]

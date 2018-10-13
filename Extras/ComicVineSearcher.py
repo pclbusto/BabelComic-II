@@ -15,6 +15,9 @@ import threading
 import time
 
 class ComicVineSearcher:
+    # todo hacer mas robusta la busqueda y tratar de tener toda la logica de la ventana en esta clase para poder
+    # se mas senccillo el cambio de gui
+
     EntidadesPermitidas = ['issues', 'volumes', 'publishers', 'issue', 'story_arc_credits', 'volume']
 
     def __init__(self, vinekey, session):

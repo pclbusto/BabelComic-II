@@ -5,6 +5,7 @@ from Extras.ComicXmlCreator import XmlManager
 class Catalogador():
     # todo hacer que la catalogacion sea mediante hilos. De esta forma las consultas se pueden hacer X veces mas rápidas
     # la idea es similar a la consulta en volumenes que hacemos tantasa consultas como paginas.
+
     session = None
     '''lista comics que queremos catalogar'''
     listaComicsACatalogar = []

@@ -23,7 +23,9 @@ import threading
 icons = ["edit-cut", "edit-paste", "edit-copy"]
 
 class BabelComics_main_gtk():
-
+    # todo el panel izquiero que tiene el arbol. hay que implementarlo completo. No tiene ni eventos.
+    # todo que tengan iconos las ventanas.
+    # todo implementar ventana de datos comics
     def __init__(self):
 
         self.session = Entidades.Init.Session()

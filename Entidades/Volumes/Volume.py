@@ -11,6 +11,7 @@ from  iconos.Iconos import Iconos
 import Entidades.ComicBooks.ComicBook
 
 class Volume(Entidades.Init.Base):
+    # todo comics que si tenemos y comics que faltan. poder tener ese dato para mostrar
     __tablename__='Volumes'
     id = Column(String, primary_key=True)  # idExterno-por cuestiones de como lo tabaja comicVine vamos a hacerlo clave.
     nombre = Column(String,nullable=False,default='')

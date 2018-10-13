@@ -8,6 +8,8 @@ import Entidades.Init
 
 
 class Config_gtk():
+    # todo arreglar boton de acpetar o grilla de directorios de comics
+
     def __init__(self, session=None):
 
         if session is None:
