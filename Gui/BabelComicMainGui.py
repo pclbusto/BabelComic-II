@@ -210,7 +210,7 @@ class BabelComicMainGui(Frame):
     def crearArbolVolume(self, publisherID, editorialNode, indiceConsultaPadre):
         '''
         Aca tenemos que armar los nodos para la editoral. Estos nodos son los volumenes que pertenecen a esta
-        editorial. Ahora cada nodo tiene una consulta que es filtrar todo comic que tenga cumpla la conslta del
+        editorial. Ahora cada nodo tiene una consulta que es filtrar tod0 comic que tenga cumpla la conslta del
         padre mas que sea de este volumen
         :param publisherID: identifica la editorial
         :param editorialNode: identifica el nodo que representa la editorial

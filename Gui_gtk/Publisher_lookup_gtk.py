@@ -5,6 +5,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
 class Publisher_lookup_gtk():
+    # todo implementar seleccion por doble click
+    
     def __init__(self, session=None, campo_retorno=None):
         if session is not None:
             self.session = session

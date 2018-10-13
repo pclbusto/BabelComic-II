@@ -190,7 +190,7 @@ class ComicCatalogerGui(Frame):
         self.entryPathRe.insert(0, self.setup.expresionRegularNumero)
 
     def AutoAsignar(self):
-        '''Toma los comics en la lista y trata mediante el RE calcular los numeros para cada comic. Ademas de esto de todo los numeros que tiene el volumen solo
+        '''Toma los comics en la lista y trata mediante el RE calcular los numeros para cada comic. Ademas de esto de tod0 los numeros que tiene el volumen solo
         trae aquellos que esten dentro de la lista de nuemeros que se pudieron recuperar'''
 
 

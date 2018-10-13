@@ -3,7 +3,8 @@ import Entidades.Volumes.Volume
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Extras.ComicXmlCreator import XmlManager
 class Catalogador():
-
+    # todo hacer que la catalogacion sea mediante hilos. De esta forma las consultas se pueden hacer X veces mas rápidas
+    # la idea es similar a la consulta en volumenes que hacemos tantasa consultas como paginas.
     session = None
     '''lista comics que queremos catalogar'''
     listaComicsACatalogar = []
@@ -35,7 +36,7 @@ class Catalogador():
 
 
     def copyFromComicToComic(self, fuente, destino):
-        print(fuente)
+        # print(fuente)
         if fuente.arcoArgumentalId is not None:
             destino.arcoArgumentalId = fuente.arcoArgumentalId
             destino.arcoArgumentalNumero = fuente.arcoArgumentalNumero
