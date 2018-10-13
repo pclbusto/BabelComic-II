@@ -27,6 +27,7 @@ class BabelComics_main_gtk():
     def __init__(self):
 
         self.session = Entidades.Init.Session()
+
         self.listaEditoriales = self.session.query(Publisher).all()
 
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
@@ -37,7 +38,9 @@ class BabelComics_main_gtk():
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_edit':self.click_boton_edit,
-                         'click_boton_config':self.click_boton_config}
+                         'click_boton_config':self.click_boton_config,
+                         'click_boton_buscar':self.click_boton_buscar,
+                         'search_change':self.search_change}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
@@ -47,10 +50,11 @@ class BabelComics_main_gtk():
         self.window = self.builder.get_object("BabelComics_main_gtk")
         self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
-        # self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
+        self.search_entry_filtro_comics = self.builder.get_object('search_entry_filtro_comics')
         self.tree_left = self.builder.get_object("tree_left")
         self.gtk_tree_view_publisher = self.builder.get_object('gtk_tree_view_publisher')
         self.menu_comic = self.builder.get_object("menu_comic")
+        self.search_bar = self.builder.get_object("search_bar")
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
@@ -61,34 +65,22 @@ class BabelComics_main_gtk():
 
         self.liststore = Gtk.ListStore(Pixbuf, str, int)
         self.lista_pendientes = []
+        self.filtro=''
         self.loadAndCreateThumbnails()
 
         self.iconview.set_column_spacing(-1)
         self.iconview.set_item_padding(10)
         self.iconview.set_item_width(1)
         self.iconview.set_spacing(30)
-        #
-        # header = Gtk.HeaderBar()
-        # self.opciones = Gtk.Button(label = 'Opciones')
-        # self.opciones.connect("clicked", self.on_click_me_clicked)
-        #
-        # header.pack_end(self.opciones)
-        # # self.set_titlebar(header)
-        #
-        # self.popover = Gtk.Popover()
-        # vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        # boton_scan = Gtk.ModelButton()
-        # icono = Gtk.Image.new_from_icon_name("gtk-preferences",Gtk.IconSize.DIALOG  )
-        # boton_scan.set_image(icono)
-        # boton_scan.set_always_show_image(True)
-        # #gtk-preferences
-        # boton_scan.connect("clicked", self.on_click_scanner)
-        # vbox.pack_start(boton_scan, False, True, 10)
-        # # vbox.pack_start(boton_scan, False, True, 10)
-        # # vbox.pack_start(Gtk.Label("Item 2"), False, True, 10)
-        # self.popover.add(vbox)
-        # self.popover.set_position(Gtk.PositionType.BOTTOM)
 
+    def click_boton_buscar(self, event):
+        self.search_bar.set_search_mode(not self.search_bar.get_search_mode())
+        if self.search_bar.get_search_mode():
+            self.search_entry_filtro_comics.grab_focus()
+
+    def search_change(self,widget):
+        self.filtro = self.search_entry_filtro_comics.get_text()
+        self.loadAndCreateThumbnails()
 
     def click_boton_config(self,widget):
         config = Config_gtk()
@@ -103,30 +95,22 @@ class BabelComics_main_gtk():
     def click_catalogar(self,widget):
         comics = []
         for path in self.iconview.get_selected_items():
-            indice  = path
+            indice = path
             comics.append(self.listaComics[indice[0]])
-            # print(self.listaComics[indice[0]])
-        cvs = Comic_vine_cataloger_gtk(comics)
+        cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
         cvs.window.show()
-        self.menu_comic.popdown()
 
     def click_boton_refresh(self,widget):
 
         self.loadAndCreateThumbnails()
 
     def click_boton_edit(self, widget):
-        # print("click refresh")
-        # self.menu_comic.set_relative_to(widget)
-        # self.menu_comic.show_all()
-        # self.menu_comic.popup()
         comics = []
         for path in self.iconview.get_selected_items():
             indice = path
             comics.append(self.listaComics[indice[0]])
-            # print(self.listaComics[indice[0]])
-        cvs = Comic_vine_cataloger_gtk(comics)
+        cvs = Comic_vine_cataloger_gtk(comicbooks=comics,session=self.session)
         cvs.window.show()
-        self.menu_comic.popdown()
 
 
     def click_derecho(self, widget, event):
@@ -216,7 +200,10 @@ class BabelComics_main_gtk():
     def loadAndCreateThumbnails(self):
         self.liststore.clear()
         self.lista_pendientes.clear()
-        self.listaComics = self.session.query(ComicBook).order_by(ComicBook.path).all()
+        if self.filtro!='':
+            self.listaComics = self.session.query(ComicBook).filter(ComicBook.path.like("%{}%".format(self.filtro))).order_by(ComicBook.path).all()
+        else:
+            self.listaComics = self.session.query(ComicBook).order_by(ComicBook.path).all()
         self.iconview.set_model(self.liststore)
         self.iconview.set_pixbuf_column(0)
         self.iconview.set_text_column(1)
@@ -239,7 +226,13 @@ class BabelComics_main_gtk():
                     # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
                     if comic.comicVineId!='':
-                        self.cataloged_pix.composite(cover, 0, 0, 64, 64, 0, 0, 1, 1, 3, 255)
+                        self.cataloged_pix.composite(cover,
+                                                     cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
+                                                     self.cataloged_pix.props.width,self.cataloged_pix.props.height,
+                                                     cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
+                                                     1, 1,
+                                                     3, 200)
+
                     self.liststore.append([cover, comic.getNombreArchivo(), index])
 
             except NotRarFile:

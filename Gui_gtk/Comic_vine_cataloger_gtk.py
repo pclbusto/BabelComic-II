@@ -21,11 +21,13 @@ import threading
 
 
 class Comic_vine_cataloger_gtk():
-    def __init__(self,  comicbooks, session=None,):
+    def __init__(self,  comicbooks=None, session=None):
         if session is not None:
             self.session = session
+            print("usnado session existente")
         else:
             self.session = Entidades.Init.Session()
+            print("SESSION NEW")
         self.setup = self.session.query(Setup).first()
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep

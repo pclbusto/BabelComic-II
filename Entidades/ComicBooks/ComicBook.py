@@ -51,7 +51,7 @@ class ComicBook(Entidades.Init.Base):
         #        "Numero='%s'\n" \
         #        "id interno='%s'>" % (
         # self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero,self.comicId)
-        return "id interno='%s'" % (self.comicId)
+        return "id interno={}-comic vine id={}".format(self.comicId, self.comicVineId)
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
     def tieneArcoAlterno(self):
