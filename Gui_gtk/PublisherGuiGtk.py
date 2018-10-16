@@ -34,7 +34,7 @@ class PublisherGtk():
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
     def boton_guardar(self,widget):
-        pass
+        self.publishers_manager.save()
 
     def click_cargar_desde_web(self, widget):
         publisher_vine_search = Publisher_vine_search_gtk(self.session)
@@ -96,6 +96,7 @@ class PublisherGtk():
 
 
 if __name__ == "__main__":
+
     pub = PublisherGtk()
     pub.window.show_all()
     pub.window.connect("destroy", Gtk.main_quit)

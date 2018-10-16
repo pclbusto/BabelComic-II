@@ -4,121 +4,103 @@ from Entidades import Init
 
 import Extras.Config as BC
 import Extras.ComicVineSearcher as CV
-import xml.etree.ElementTree as ET
 import shutil
 import os
-import sqlite3
-import codecs
 
 
 class Publishers:
-    def __init__(self):
+
+    def __init__(self, session = None):
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
 
         self.status = 1
         self.listaComicVineSearch = []
         self.currentKeyName='id'
         self.currentKeyValue=''
+        self.publisher=Publisher()
+        self.filtro = None
+        self.order = None
 
-    def add(self,publisher):
-        c=self.conexion.cursor()
-        c.execute('''INSERT INTO publishers (id, name, deck, description, logoImagePath)
-Values(?,?,?,?,?)''', (publisher.id,publisher.name,publisher.deck,publisher.description,publisher.logoImagePath))
-        self.conexion.commit()
-
+    def save(self):
+        if self.publisher is not None:
+            print(self.publisher)
+            self.session.add(self.publisher)
+            self.session.commit()
+            self.publisher = Publisher()
         '''copiamos el logo desde el dir temp al de logos. el temp tiene mas logos
         de lo que he guardados'''
-        file_name = publisher.logoImagePath.split('/')[-1]
-        file_name_no_ext = (file_name[:-4])
-        if os.path.exists(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg"):
-            shutil.copyfile(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg",
-                            BC.BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg")
-
-    def rm(self,Id):
-        cursor=self.conexion.cursor()
-        cursor.execute('''DELETE From publishers where id=?''', (Id,))
-        self.conexion.commit()
+        # if self.publisher.localLogoImagePath is None:
+        #     return
+        # file_name = self.publisher.logoImagePath.split('/')[-1]
+        # file_name_no_ext = (file_name[:-4])
+        # if os.path.exists(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg"):
+        #     shutil.copyfile(BC.BabelComicBookManagerConfig().getPublisherTempLogoPath() + file_name_no_ext + ".jpg",
+        #                     BC.BabelComicBookManagerConfig().getPublisherLogoPath() + file_name_no_ext + ".jpg")
+    #
+    def rm(self):
+        if self.publisher is not None:
+            self.session.delete(self.publisher)
+        self.session.commit()
 
     def rmAll(self):
-        cursor=self.conexion.cursor()
-        cursor.execute('''DELETE From publishers''')
-        self.conexion.commit()
-
-    def __loadRowToObject__(self,row):
-        Publisher(row['id'], row['name'])
-        publisher = Publisher(row['id'], row['name'])
-        publisher.descripcion = row['description']
-        publisher.deck = row['deck']
-        publisher.logoImagePath = row['logoImagePath']
-        publisher.siteDetailUrl = row['siteDetailUrl']
-        publisher.localLogoImagePath =row['localLogoImagePath']
-        return publisher
+        self.session.query(Publisher).delete()
+        self.session.commit()
 
     def get(self,Id):
-        publisher  = Init.Session().query(Publisher).get(Id)
-        return publisher
-
-
-    def update(self,publisher):
-        cursor=self.conexion.cursor()
-        cursor.execute('''Update publishers set
-name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publisher.description,publisher.deck, publisher.logoImagePath,publisher.id))
-        self.conexion.commit()
-    def getSize(self):
-        cursor=self.conexion.cursor()
-        cursor.execute('''SELECT count * From publishers''')
-        return(cursor.fetchone()[0])
-    def loadFromFiles(self):
-        cursor = self.conexion.cursor()
-        entidad = 'publishers'#para hacer match con el nombre del archivo
-        lista =[x for x in range(0,76000,100)]
-        for off in lista:
-            nombreArchivo ='consultaComicVine'+entidad+'-'+str(off)+'.xml'
-            print ('procesando archvo: '+nombreArchivo)
-##            fr = open(nombreArchivo, 'r')
-            fr = codecs.open(nombreArchivo,'r',encoding='utf-8', errors='ignore')
-            xml = fr.read()
-            fr.close()
-            root = ET.fromstring(xml)
-            results = root.find('results')
-            for item in results:
-                publisher = Publisher(item.find('id').text, item.find('name').text)
-                publisher.descripcion = item.find('description').text
-                publisher.deck = item.find('deck').text
-                if item.find('image').find('super_url')!=None:
-                    publisher.logoImagePath = item.find('image').find('super_url').text
-                else:
-                    publisher.logoImagePath = ''
-                self.add(publisher)
-            print('procesados: '+str(off)+' de '+str(10000))
-            self.conexion.commit()
-    def getList(self,valores,filtro=None,orden=None):
-        c=self.conexion.cursor()
-        if not orden: orden=''
-        if filtro:
-            c.execute('''SELECT id, name, deck, description, logoImagePath From publishers where '''+filtro+' '+orden, valores)
+        if len(self.session.dirty):
+            return "cambios pendientes."
         else:
-            c.execute('''SELECT id, name, deck, description, logoImagePath From publishers'''+' '+orden)
-        rows=c.fetchall()
-        lista=[]
-        for row in rows:
-            publisher = self.__loadRowToObject__(row)
-            lista.append(publisher)
-        print(len(lista))
-        return lista
+            self.publisher = self.session(Publisher).query(Publisher).get(Id)
+        return self.publisher
+
+    def tiene_cambio(self):
+        if len(self.session.dirty()) > 0:
+            return True
+        else:
+            return False
+
+    def new_record(self):
+        if len(self.session.dirty())>0:
+            return "hay cambios pendientes. No se puede crear un nuevo registro."
+        self.publisher=Publisher()
+
+    def getSize(self):
+        return(self.session.query(Publisher).count())
+
+    def set_order(self,campo):
+        self.order = campo
+        param = str(campo)
+        self.campo_str = getattr(self.publisher, param[param.index(".")+1:])
+
+    def set_filtro(self,filtro):
+        self.filtro = filtro
+
+    def getList(self):
+        consulta = self.session.query(Publisher)
+        if self.filtro is not None:
+            consulta=consulta.filter(self.filtro)
+        if self.order is not None:
+            consulta=consulta.order_by(self.order)
+        return consulta.all()
 
     def getNext(self):
         publisher = None
-        if self.currentKeyValue == '':
-            publisher = self.getLast()
+        if self.publisher is None:
+            self.publisher = self.getLast()
         else:
-            last=Init.Session().query(Publisher).get(self.currentKeyValue)
-            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher > self.currentKeyValue).order_by(Publisher.id_publisher.asc()).first()
-            print(publisher)
-            if publisher == None:
-                publisher = last
-            else:
-                self.currentKeyValue = publisher.id_publisher
-        return publisher
+            # last=Init.Session().query(Publisher).get(self.currentKeyValue)
+            self.publisher = self.session.query(Publisher).filter(self.order>getattr(self.publisher,self.campo_str)).order_by(self.order).first()
+
+            # .filter(self.order)> getattr(self.publisher,str(self.order))) .order_by(Publisher.id_publisher.asc()).first()
+            # print(publisher)
+            # if publisher == None:
+            #     self.publisher = last
+            # else:
+            #     self.currentKeyValue = publisher.id_publisher
+        return self.publisher
 
     def getPrev(self):
         publisher = None
@@ -135,44 +117,26 @@ name=?,description=?,deck=?,logoImagePath=? where id=?''', (publisher.name,publi
         return publisher
 
     def getFirst(self):
-        publisher = Init.Session().query(Publisher).order_by(Publisher.id_publisher.asc()).first()
+        publisher = self.session.query(Publisher).order_by(self.order).first()
         if publisher is not None:
-            self.currentKeyValue = publisher.id_publisher
-            print('cargamos valores'+publisher.__repr__())
-        return publisher
+            self.publisher = publisher
+        return self.publisher
 
     def getLast(self):
-        publisher = Init.Session().query(Publisher).order_by(Publisher.id_publisher.desc()).first()
-        if publisher!=None:
-            self.currentKeyValue = publisher.id_publisher
-        return publisher
-
-    def close(self):
-        self.conexion.close()
-
-    def searchInComicVine(self, filtro):
-        path = "publishers\\temp\\"
-        config = BC.BabelComicBookManagerConfig()
-        clave = config.getClave('publishers')
-        comic_searcher = CV.ComicVineSearcher(clave)
-        comic_searcher.setEntidad('publishers')
-        comic_searcher.addFilter("name:"+filtro.replace(" ","%20"))
-        comic_searcher.vineSearch(0)
-        self.listaComicVineSearch = comic_searcher.listaBusquedaVine
-        if not os.path.exists(path):
-            os.makedirs(path)
-        print('porcentaje completado: ' + str((100 * (len(self.listaComicVineSearch) / comic_searcher.cantidadResultados))))
+        publisher = self.session.query(Publisher).order_by(self.order.desc()).first()
+        if publisher is not None:
+            self.publisher = publisher
+        return self.publisher
 
 
-if __name__ == "__main__":
-    publishers = Publishers()
-    publishers.searchInComicVine("Marvel")
-    publishers.rmAll()
-    publisher = Publisher('0','Sin Editoriaasa')
-    publishers.add(publisher)
+# if __name__ == "__main__":
+#     cadena = str(Publisher.name)
+#     print(cadena)
+
+    # publishers.searchInComicVine("Marvel")
+    # publishers.rmAll()
+    # publisher = Publisher()
 
 
-    for publisher in publishers.listaComicVineSearch:
-        print(publisher.name,publisher.id, publisher.siteDetailUrl)
-    publishers.rmAll()
-    publishers.close()
+    # for publisher in publishers.listaComicVineSearch:
+    #     print(publisher.name,publisher.id, publisher.siteDetailUrl)

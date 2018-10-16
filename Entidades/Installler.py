@@ -1,3 +1,5 @@
+import os
+
 from Entidades import Init
 
 import Entidades.Setups.Setup
@@ -10,7 +12,6 @@ import Entidades.ComicBooks.ComicBook
 import Entidades.Volumes.Volume
 import Entidades.ComicBooks.ComicBookDetail
 import Entidades.Volumes.ComicsInVolume
-import os
 
 if __name__ == '__main__':
     Init.recreateTables()

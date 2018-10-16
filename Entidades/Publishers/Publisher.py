@@ -4,12 +4,14 @@ import os
 import urllib.request
 from  iconos.Iconos import Iconos
 from Entidades.Setups.Setup import Setup
-import Extras.Config
-from PIL import Image, ImageTk
+from PIL import Image
+from sqlalchemy import Sequence
 
 class Publisher(Entidades.Init.Base):
     __tablename__='Publishers'
-    id_publisher = Column(String, primary_key=True)
+
+    id_publisher = Column(Integer, Sequence('publisher_id_seq'), primary_key=True)
+    id_externo = Column(String, nullable=False,default='')
     name = Column(String, nullable=False,default='')
     deck = Column(String, nullable=False,default='')
     description = Column(String, nullable=False,default='')

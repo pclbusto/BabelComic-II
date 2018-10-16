@@ -20,6 +20,7 @@ class Setup(Entidades.Init.Base):
     anchoArbol = Column(Integer,default=100)
     '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
     expresionRegularNumero= Column(String,default='',nullable=False)
+    publisher_id = Column(Integer, default=-1)
     # print(os.sep)
     # print(os.getcwd()[:os.getcwd().rfind(os.sep)])
 
