@@ -357,7 +357,8 @@ class ComicVineSearcher:
             elif self.entidad == 'publishers':
                 for item in results:
                     publisher = Publisher.Publisher()
-                    publisher.id_publisher = item.find('id').text
+                    publisher.id_externo = item.find('id').text
+                    # publisher.id_publisher se auto calcula esto ahora
                     publisher.name = item.find('name').text
                     publisher.descripcion = item.find('description').text
                     publisher.deck = item.find('deck').text

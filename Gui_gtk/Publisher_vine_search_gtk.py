@@ -101,7 +101,7 @@ class Publisher_vine_search_gtk():
         if self.publisher:
             self.session.add(self.publisher)
             self.session.commit()
-        self.window.close()
+        # self.window.close()
 
     def cargarResultado(self,listaPublishers):
         self.listmodel_publishers.clear()

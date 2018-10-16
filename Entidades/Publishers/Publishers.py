@@ -23,6 +23,7 @@ class Publishers:
         self.publisher=Publisher()
         self.filtro = None
         self.order = None
+        self.direccion = 0
 
     def save(self):
         if self.publisher is not None:
@@ -70,60 +71,61 @@ class Publishers:
     def getSize(self):
         return(self.session.query(Publisher).count())
 
-    def set_order(self,campo):
+    def set_order(self,campo, direccion):
         self.order = campo
         param = str(campo)
-        self.campo_str = getattr(self.publisher, param[param.index(".")+1:])
+        self.campo_str = param[param.index(".")+1:]
+        self.direccion=direccion
 
     def set_filtro(self,filtro):
         self.filtro = filtro
 
     def getList(self):
-        consulta = self.session.query(Publisher)
-        if self.filtro is not None:
-            consulta=consulta.filter(self.filtro)
-        if self.order is not None:
-            consulta=consulta.order_by(self.order)
+        consulta = self._get_consulta()
         return consulta.all()
 
+    def _get_consulta(self):
+        consulta = self.session.query(Publisher)
+        if self.filtro is not None:
+            consulta = consulta.filter(self.filtro)
+        if self.order is not None:
+            if self.direccion==0:
+                consulta = consulta.order_by(self.order)
+            else:
+                consulta = consulta.order_by(self.order.desc())
+        return consulta
+
     def getNext(self):
-        publisher = None
         if self.publisher is None:
             self.publisher = self.getLast()
         else:
-            # last=Init.Session().query(Publisher).get(self.currentKeyValue)
-            self.publisher = self.session.query(Publisher).filter(self.order>getattr(self.publisher,self.campo_str)).order_by(self.order).first()
-
-            # .filter(self.order)> getattr(self.publisher,str(self.order))) .order_by(Publisher.id_publisher.asc()).first()
-            # print(publisher)
-            # if publisher == None:
-            #     self.publisher = last
-            # else:
-            #     self.currentKeyValue = publisher.id_publisher
+            consulta = self._get_consulta()
+            publisher = consulta.filter(
+                self.order>getattr(self.publisher,self.campo_str)).first()
+            if publisher is not None:
+                self.publisher=publisher
         return self.publisher
 
     def getPrev(self):
-        publisher = None
-        if self.currentKeyValue == '':
-            publisher = self.getFirst()
+        if self.publisher is None:
+            self.publisher = self.getLast()
         else:
-            first = Init.Session().query(Publisher).get(self.currentKeyValue)
-            publisher = Init.Session().query(Publisher).filter(Publisher.id_publisher < self.currentKeyValue).order_by(Publisher.id_publisher.desc()).first()
-            print(publisher)
-            if publisher == None:
-                publisher = first
-            else:
-                self.currentKeyValue = publisher.id_publisher
-        return publisher
+            publisher = self.session.query(Publisher).filter(
+                self.order < getattr(self.publisher, self.campo_str)).order_by(self.order).first()
+            if publisher is not None:
+                self.publisher = publisher
+        return self.publisher
 
     def getFirst(self):
-        publisher = self.session.query(Publisher).order_by(self.order).first()
+        publisher = onsulta = self._get_consulta().first()
         if publisher is not None:
             self.publisher = publisher
         return self.publisher
 
     def getLast(self):
-        publisher = self.session.query(Publisher).order_by(self.order.desc()).first()
+        self.set_order(self.order, 1)
+        publisher = self._get_consulta().first()
+        self.set_order(self.order, 0)
         if publisher is not None:
             self.publisher = publisher
         return self.publisher

@@ -1,6 +1,7 @@
 import os
 import Entidades.Init
-from Entidades.Publishers import Publishers
+from Entidades.Entity_manager import Entity_manager
+from Entidades.Publishers.Publisher import Publisher
 from Entidades.Setups. Setup import  Setup
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
@@ -11,7 +12,7 @@ from gi.repository import Gtk, GdkPixbuf
 
 class PublisherGtk():
     # todo implementar los botones de limpiar, guardar y borrar
-    # todo clase que administre el comportamiento completo de alta, baja mdoficacion navegacion y borrado
+
     def __init__(self,  session=None,):
         if session is not None:
             self.session = session
@@ -21,13 +22,18 @@ class PublisherGtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
                          'click_cargar_desde_web':self.click_cargar_desde_web,'boton_guardar':self.boton_guardar}
+
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
-        self.publishers_manager = Publishers.Publishers()
+        self.publishers_manager = Entity_manager(session=self.session, clase=Publisher, clave=Publisher.id_publisher)
+        self.publishers_manager.set_order(Publisher.id_publisher,0)
+
+
         self.entry_id  = self.builder.get_object('entry_id')
         self.entry_nombre =  self.builder.get_object('entry_nombre')
+        self.entry_id_externo = self.builder.get_object('entry_id_externo')
         self.entry_url =  self.builder.get_object('entry_url')
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         self.label_resumen = self.builder.get_object('label_resumen')
@@ -40,9 +46,11 @@ class PublisherGtk():
         publisher_vine_search = Publisher_vine_search_gtk(self.session)
         publisher_vine_search.window.show()
 
-    def id_changed(self,widget):
-        publisher = self.publishers_manager.get(self.entry_id.get_text())
-        self._copy_to_window(publisher)
+    def id_changed(self,widget, test):
+        if self.entry_id.get_text()!='':
+            publisher = self.publishers_manager.get(self.entry_id.get_text())
+            print(publisher)
+            self._copy_to_window(publisher)
 
     def open_lookup(self, widget):
         print('dasds')
@@ -68,9 +76,9 @@ class PublisherGtk():
     def _copy_to_window(self,publisher):
         # self.clearWindow()
         if publisher is not None:
-            print("cargan valores")
-            self.entry_id.set_text(publisher.id_publisher)
-            self.entry_nombre.set_text( publisher.name)
+            self.entry_id.set_text(str(publisher.id_publisher))
+            self.entry_nombre.set_text(publisher.name)
+            self.entry_id_externo.set_text(publisher.id_externo)
             self.entry_url.set_text(publisher.siteDetailUrl)
             publisher.localLogoImagePath = publisher.getImageCoverPath()
             if publisher.localLogoImagePath:
