@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import *
 from tkinter import Tk, ttk
 from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from datetime import date
 from iconos.Iconos import Iconos
 from Gui.VolumeLookupGui import VolumesLookupGui
@@ -15,7 +15,7 @@ import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import re
 import threading
 

@@ -8,7 +8,7 @@ import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
 from Entidades.Publishers.Publisher import Publisher
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import threading
 import time
 class Volumen_vine_search_Gtk():

@@ -3,7 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
 from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 
 
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
@@ -15,7 +15,7 @@ import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import re
 import threading
 

@@ -18,7 +18,7 @@ import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
 from Entidades.Publishers.Publisher import Publisher
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 import Extras.ComicCataloger
 from sqlalchemy import or_
 

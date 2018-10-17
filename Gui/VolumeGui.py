@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import Tk, ttk, Frame
 import PIL.Image, PIL.ImageTk
 from iconos import Iconos
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 from PIL import Image, ImageTk
 from Gui.FrameMaestro import FrameMaestro
@@ -10,7 +10,7 @@ import Entidades.Init
 from Gui.VolumeLookupGui import VolumesLookupGui
 from Gui.VolumeVineGui import VolumeVineGui
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 from Extras.Config import Config
 class VolumeGui(FrameMaestro):
     def __init__(self, parent, volume=None, session=None, cnf={}, **kw):

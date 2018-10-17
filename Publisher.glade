@@ -32,14 +32,6 @@
       <!-- column-name Columna -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Id</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Editorial</col>
-      </row>
-    </data>
   </object>
   <object class="GtkImage" id="lookup">
     <property name="visible">True</property>
@@ -242,6 +234,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="valign">end</property>
+            <property name="spacing">6</property>
             <property name="baseline_position">bottom</property>
             <child>
               <object class="GtkButton" id="boton_primero">
@@ -302,7 +295,20 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBox">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">6</property>
+                <property name="label" translatable="yes">Ordenado por:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_orden">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="model">liststore_combobox</property>
@@ -317,7 +323,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">5</property>
               </packing>
             </child>
           </object>
@@ -332,6 +338,7 @@
             <property name="can_focus">False</property>
             <property name="halign">end</property>
             <property name="valign">end</property>
+            <property name="spacing">6</property>
             <property name="baseline_position">bottom</property>
             <child>
               <object class="GtkButton">

@@ -6,10 +6,10 @@ from  Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 from PIL import Image, ImageTk
 import Entidades.Init
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 from Gui.PublisherLookupGui import PublisherLookupGui
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 
 class VolumeVineGui(Frame):
     def __init__(self, parent, session=None, cnf={}, **kw):

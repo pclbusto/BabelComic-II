@@ -1,7 +1,7 @@
 import codecs
 import xml.etree.ElementTree as ET
 import sqlite3
-from Entidades.Volumes import Volume
+from Entidades.Volumens import Volume
 from Extras import  Config
 #importamos ComicVineSearcher para poder hacer la rutina que cargue datos desde comicvine
 from Extras import ComicVineSearcher

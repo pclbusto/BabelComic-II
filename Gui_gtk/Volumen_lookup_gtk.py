@@ -3,7 +3,7 @@ import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 
 

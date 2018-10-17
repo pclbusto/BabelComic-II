@@ -1,5 +1,5 @@
 from Entidades.Entity_manager import Entity_manager
-from Entidades.Publishers.Publisher import Publisher
+from Entidades.Volumens.Volumens import Volumens,Volume
 
 
 def retrieve_name(var):
@@ -8,27 +8,28 @@ def retrieve_name(var):
 
 if __name__ == "__main__":
 
-    publishers_manager = Entity_manager(clase=Publisher)
-    # publishers_manager.publisher.name='Nombred dsdsa dsa '
-    # param = str( Publisher.Publisher.name)
-    # valor = getattr(publishers_manager.publisher, param[param.index(".")+1:])
-    # print(valor)
-    # print(getattr(publishers_manager, retrieve_name(publishers_manager.publisher)))
-    # publishers_manager.order = Publisher.Publisher.name
-    # for i in range(10):
-    #     publishers_manager.publisher.name = str(10 - i)
-    #     publishers_manager.save()
+    volumens_manager = Entity_manager(clase=Volume)
 
-    publishers_manager.set_order(Publisher.name,0)
-    # publishers_manager.set_filtro(Publisher.Publisher.name.like("M%"))
-    for pub in publishers_manager.getList():
-        print(pub.name)
+    # volumens_manager.publisher.name='Nombred dsdsa dsa '
+    # param = str( Publisher.Publisher.name)
+    # valor = getattr(volumens_manager.publisher, param[param.index(".")+1:])
+    # print(valor)
+    # print(getattr(volumens_manager, retrieve_name(volumens_manager.publisher)))
+    # volumens_manager.order = Publisher.Publisher.name
+    # for i in range(10):
+    #     volumens_manager.entidad.nombre = str(10 - i)
+    #     volumens_manager.save()
+
+    volumens_manager.set_order(Volume.id_volumen)
+    # volumens_manager.set_filtro(Publisher.Publisher.name.like("M%"))
+    for pub in volumens_manager.getList():
+         print(pub.nombre)
 
     print("OBTENEMOS PRIMERO Y ULTIMO")
-    print(publishers_manager.getFirst().name)
-    print(publishers_manager.getNext().name)
-    print(publishers_manager.getLast().name)
-    publishers_manager.set_filtro(Publisher.name.like("M%"))
-    print(publishers_manager.getFirst().name)
-    print(publishers_manager.getLast().name)
+    print(volumens_manager.getFirst().nombre)
+    print(volumens_manager.getNext().nombre)
+    print(volumens_manager.getLast().nombre)
+    # volumens_manager.set_filtro(Volume.nombre.like("M%"))
+    # print(volumens_manager.getFirst().nombre)
+    # print(volumens_manager.getLast().nombre)
 

@@ -41,17 +41,13 @@
     <columns>
       <!-- column-name columna -->
       <column type="gchararray"/>
-      <!-- column-name index -->
-      <column type="gint"/>
     </columns>
     <data>
       <row>
         <col id="0" translatable="yes">Id</col>
-        <col id="1">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Editorial</col>
-        <col id="1">1</col>
       </row>
     </data>
   </object>
@@ -84,6 +80,8 @@
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
+            <property name="row_spacing">6</property>
+            <property name="column_spacing">6</property>
             <child>
               <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
@@ -190,18 +188,12 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="spacing">6</property>
             <child>
-              <object class="GtkComboBox">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="model">liststore_combobox</property>
-                <signal name="changed" handler="combobox_change" swapped="no"/>
-                <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
-                </child>
+                <property name="label" translatable="yes">Ordenar por: </property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -225,6 +217,25 @@
                 <property name="fill">True</property>
                 <property name="pack_type">end</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_orden">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="model">liststore_combobox</property>
+                <signal name="changed" handler="combobox_change" swapped="no"/>
+                <child>
+                  <object class="GtkCellRendererText"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

@@ -1,21 +1,20 @@
-import os
 import Entidades.Init
 from Entidades.Publishers import Publishers
 from Entidades.Setups. Setup import  Setup
-
+from Entidades.Volumens.Volumens import Volumens
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
 
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from Entidades.Publishers.Publisher import Publisher
 import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 from Extras.Config import Config
 
 class VolumeGuiGtk():
@@ -43,12 +42,19 @@ class VolumeGuiGtk():
         self.entry_anio_inicio = self.builder.get_object("entry_anio_inicio")
         self.entry_cantidad_numeros = self.builder.get_object("entry_cantidad_numeros")
         self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
-
-
+        self.liststore_combobox = self.builder.get_object("liststore_combobox")
+        self.volumens_manager = Volumens(session=self.session)
+        self.combobox_orden = self.builder.get_object("combobox_orden")
         self.offset = 0
-        self.cantidadRegistros = self.session.query(Volume).count()
+        self.cantidadRegistros = self.volumens_manager.get_count()
 
+        # inicializamos el modelo con rotulos del manager
+        self.liststore_combobox.clear()
+        for clave in self.volumens_manager.lista_opciones.keys():
+            self.liststore_combobox.append([clave])
+        self.combobox_orden.set_active(0)
         self.getFirst("")
+
 
     def boton_cargar_desde_web_click(self,widget):
         volumen_vine_search = Volumen_vine_search_Gtk(self.session)
@@ -84,36 +90,32 @@ class VolumeGuiGtk():
             self.volume = self.session.query(Volume).get(self.entry_id.get_text())
         self.loadVolume()
 
-    def loadVolume(self):
+    def loadVolume(self, volumen):
         self.clear()
-        if self.volume is not None:
+        if self.volumens_manager.entidad is not None:
             #print("Volumen {}".format(self.volume))
-            self.entry_id.set_text(self.volume.id)
-            self.entry_nombre.set_text(self.volume.nombre)
-            self.entry_url.set_text("http://comicvine/"+self.volume.id)
-            self.entry_url_cover.set_text(self.volume.image_url)
-            self.entry_id_editorial.set_text(self.volume.publisherId)
-            self.label_nombre_editorial.set_text(self.volume.publisher_name)
-            self.entry_anio_inicio.set_text(str(self.volume.AnioInicio))
-            self.entry_cantidad_numeros.set_text(str(self.volume.cantidadNumeros))
+            self.entry_id.set_text(str(volumen.id_volumen))
+            self.entry_nombre.set_text(volumen.nombre)
+            self.entry_url.set_text(volumen.get_url())
+            self.entry_url_cover.set_text(volumen.image_url)
+            self.entry_id_editorial.set_text(volumen.publisherId)
+            self.label_nombre_editorial.set_text(volumen.publisher_name)
+            self.entry_anio_inicio.set_text(str(volumen.AnioInicio))
+            self.entry_cantidad_numeros.set_text(str(volumen.cantidadNumeros))
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=self.volume.getImagePath(),
+                filename=volumen.getImagePath(),
                 width=250,
                 height=250,
                 preserve_aspect_ratio=True)
 
-            print(self.volumen_logo_image)
+            # print(self.volumen_logo_image)
             self.volumen_logo_image.set_from_pixbuf(pixbuf)
 
     def getFirst(self,widget):
-        print("get first")
-        # super().getNext()
-        self.offset=0
-        volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
+        volume = self.volumens_manager.getFirst()
+        print(volume)
         if volume is not None:
-            print(volume)
-            self.volume = volume
-            self.loadVolume()
+            self.loadVolume(volume)
 
     def borrar(self):
         super().borrar()

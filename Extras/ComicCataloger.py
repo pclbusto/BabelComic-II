@@ -1,5 +1,5 @@
 import Entidades.Init
-import Entidades.Volumes.Volume
+import Entidades.Volumens.Volume
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Extras.ComicXmlCreator import XmlManager
 class Catalogador():
@@ -43,7 +43,7 @@ class Catalogador():
             destino.arcoArgumentalNumero = fuente.arcoArgumentalNumero
         if fuente.volumeId is not None:
             print(fuente.volumeId)
-            volume = self.session.query(Entidades.Volumes.Volume.Volume).get(fuente.volumeId)
+            volume = self.session.query(Entidades.Volumens.Volume.Volume).get(fuente.volumeId)
             destino.publisherId = volume.publisherId
 
         destino.fechaTapa = fuente.fechaTapa

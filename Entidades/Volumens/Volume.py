@@ -9,11 +9,13 @@ import Entidades.Init
 from Entidades.Setups.Setup import Setup
 from  iconos.Iconos import Iconos
 import Entidades.ComicBooks.ComicBook
+from sqlalchemy import Sequence
 
 class Volume(Entidades.Init.Base):
     # todo comics que si tenemos y comics que faltan. poder tener ese dato para mostrar
-    __tablename__='Volumes'
-    id = Column(String, primary_key=True)  # idExterno-por cuestiones de como lo tabaja comicVine vamos a hacerlo clave.
+    __tablename__='Volumens'
+    id_volumen = Column(Integer, Sequence('volumen_id_seq'), primary_key=True)
+    id_externo = Column(String, nullable=False, default='')
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
@@ -36,10 +38,13 @@ class Volume(Entidades.Init.Base):
         '''
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
+    def get_url(self):
+        return("http://comicvine/"+self.id_externo)
+
     def __repr__(self):
         return "<Volume(name={},  cantidad nros={}, descripcion={}, id_volume={}," \
                "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre, self.cantidadNumeros,self.descripcion,
-                                                                          self.id, self.image_url, self.publisher_name,
+                                                                          self.id_volumen, self.image_url, self.publisher_name,
                                                                           self.AnioInicio)
 
     # volume.nombre,

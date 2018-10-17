@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import Tk, ttk
 from tkinter import filedialog
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 from PIL import Image, ImageTk
 from iconos.Iconos import Iconos
 import Entidades.Init

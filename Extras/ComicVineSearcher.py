@@ -4,12 +4,12 @@ from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 
-import Entidades.Volumes.Volume
+import Entidades.Volumens.Volume
 import urllib.request
 import xml.etree.ElementTree as ET
 
 import Entidades.Init
-from Entidades.Volumes.ComicsInVolume import ComicInVolumes
+from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import math
 import threading
 import time
@@ -190,7 +190,7 @@ class ComicVineSearcher:
 
             if self.entidad == 'volume':
                 volumeVine = root.find('results')
-                volume = Entidades.Volumes.Volume.Volume()
+                volume = Entidades.Volumens.Volume.Volume()
                 volume.id = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
@@ -337,7 +337,7 @@ class ComicVineSearcher:
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumes.Volume.Volume(id=item.find('id').text, nombre=item.find('name').text)
+                    l_serie = Entidades.Volumens.Volume.Volume(id=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text

@@ -4,7 +4,7 @@ from Gui.FrameMaestro import FrameMaestro
 from PIL import Image, ImageTk
 from datetime import date
 from Entidades.ComicBooks import ComicBook
-from Entidades.Volumes.Volume import Volume
+from Entidades.Volumens.Volume import Volume
 import Entidades.Init
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental

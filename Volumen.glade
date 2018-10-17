@@ -27,6 +27,20 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-clear</property>
   </object>
+  <object class="GtkListStore" id="liststore_combobox">
+    <columns>
+      <!-- column-name columna -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Id</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Volumen</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkImage" id="lookup">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -84,7 +98,7 @@
               <object class="GtkEntry" id="entry_id">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <signal name="changed" handler="change_id_volumen" swapped="no"/>
+                <signal name="focus-out-event" handler="change_id_volume" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -486,10 +500,32 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Ordernar por:</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">2</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkComboBox" id="combobox_orden">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="model">liststore_combobox</property>
+            <child>
+              <object class="GtkCellRendererText"/>
+              <attributes>
+                <attribute name="text">0</attribute>
+              </attributes>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">2</property>
+          </packing>
         </child>
         <child>
           <placeholder/>

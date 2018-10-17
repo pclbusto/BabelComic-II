@@ -53,8 +53,8 @@ class Entity_manager:
             return "hay cambios pendientes. No se puede crear un nuevo registro."
         self.entidad=self.clase()
 
-    def getSize(self):
-        return(self.session.query(self.clase()).count())
+    def get_count(self):
+        return(self._get_consulta().count())
 
     def set_order(self,campo, direccion=0):
         self.order = campo
@@ -71,6 +71,7 @@ class Entity_manager:
 
     def _get_consulta(self):
         consulta = self.session.query(self.clase)
+        # print(consulta)
         if self.filtro is not None:
             consulta = consulta.filter(self.filtro)
         if self.order is not None:
@@ -78,7 +79,7 @@ class Entity_manager:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
-        print(consulta)
+        # print(consulta)
         return consulta
 
     def getNext(self):
@@ -86,6 +87,7 @@ class Entity_manager:
             self.entidad = self.getLast()
         else:
             consulta = self._get_consulta()
+            # print(self.campo_str)
             entidad = consulta.filter(
                 self.order>getattr(self.entidad,self.campo_str)).first()
             if entidad is not None:
@@ -96,7 +98,7 @@ class Entity_manager:
         if self.entidad is None:
             self.entidad = self.getLast()
         else:
-            entidad = self.session.query(self.clase()).filter(
+            entidad = self.session.query(self.clase).filter(
                 self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
             if entidad is not None:
                 self.entidad = entidad
@@ -105,6 +107,7 @@ class Entity_manager:
     def getFirst(self):
         entidad = self._get_consulta().first()
         if entidad is not None:
+            print("ENTIDADSDKASDKSLD KSA")
             self.entidad = entidad
         return self.entidad
 

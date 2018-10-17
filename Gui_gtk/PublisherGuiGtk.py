@@ -1,6 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entity_manager import Entity_manager
+from Entidades.Publishers.Publishers import Publishers
 from Entidades.Publishers.Publisher import Publisher
 from Entidades.Setups. Setup import  Setup
 from Gui_gtk import Publisher_lookup_gtk
@@ -28,9 +28,8 @@ class PublisherGtk():
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
-        self.publishers_manager = Entity_manager(session=self.session, clase=Publisher)
-        self.publishers_manager.set_order(Publisher.id_publisher,0)
-        self.lista_opciones = {'Id': Publisher.id_publisher, 'Editorial': Publisher.name}
+        self.liststore_combobox = self.builder.get_object("liststore_combobox")
+        self.publishers_manager = Publishers(session=self.session)
 
         self.entry_id  = self.builder.get_object('entry_id')
         self.entry_nombre =  self.builder.get_object('entry_nombre')
@@ -38,11 +37,18 @@ class PublisherGtk():
         self.entry_url =  self.builder.get_object('entry_url')
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         self.label_resumen = self.builder.get_object('label_resumen')
+        self.combobox_orden = self.builder.get_object('combobox_orden')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
+
+        # inicializamos el modelo con rotulos del manager
+        self.liststore_combobox.clear()
+        for clave in self.publishers_manager.lista_opciones.keys():
+            self.liststore_combobox.append([clave])
+        self.combobox_orden.set_active(0)
 
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
-            self.publishers_manager.set_order(self.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
+            self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
     def boton_guardar(self,widget):
         self.publishers_manager.save()
