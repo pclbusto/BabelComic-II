@@ -1,4 +1,5 @@
 from Entidades.Publishers.Publisher import Publisher
+from Entidades.Entity_manager import Entity_manager
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
@@ -13,27 +14,31 @@ class Publisher_lookup_gtk():
         else:
             self.session = Entidades.Init.Session()
         self.handlers = {'clicked_aceptar': self.clicked_aceptar, 'buscar':self.buscarPublisher,
-                         'seleccion':self.seleccion_publisher}
+                         'seleccion':self.seleccion_publisher, 'combobox_change':self.combobox_change}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Editorial_lookup.glade")
+        self.builder.add_from_file("../Publisher_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
 
-        self.window = self.builder.get_object("Editorial_lookup_gtk")
+        self.window = self.builder.get_object("Publisher_lookup_gtk")
         self.gtk_tree_view_editorial =  self.builder.get_object('gtk_tree_view_editorial')
-        # self.gtk_tree_view_editorial.get_selection().connect("changed", self.buscarPublisher)
-        # self.window.connect("destroy", Gtk.main_quit)
-        self.listmodel_publishers = Gtk.ListStore(str, str)
-        self.publishers = self.session.query(Publisher)
+        self.listmodel_publishers = Gtk.ListStore(int, str)
+        self.publishers_manager = Entity_manager(session=self.session, clase=Publisher)
+        self.publishers_manager.set_order(Publisher.id_publisher)
+        self.lista_opciones = {'Id':Publisher.id_publisher, 'Editorial':Publisher.name}
         self.search_entry = self.builder.get_object('search_entry')
         self._load_data()
         if campo_retorno is None:
             print("error campo retorno requerido")
         self.campo_retorno = campo_retorno
 
+    def combobox_change(self,widget):
+        if widget.get_active_iter() is not None:
+            self.publishers_manager.set_order(self.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
+            self._load_data()
 
     def _load_data(self):
         self.listmodel_publishers.clear()
-        for publisher in self.publishers:
+        for publisher in self.publishers_manager.getList():
             self.listmodel_publishers.append([publisher.id_publisher, publisher.name])
         self.gtk_tree_view_editorial.set_model(self.listmodel_publishers)
 

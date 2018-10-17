@@ -21,15 +21,16 @@ class PublisherGtk():
 
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
-                         'click_cargar_desde_web':self.click_cargar_desde_web,'boton_guardar':self.boton_guardar}
+                         'click_cargar_desde_web':self.click_cargar_desde_web,'boton_guardar':self.boton_guardar,
+                         'combobox_change':self.combobox_change}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
-        self.publishers_manager = Entity_manager(session=self.session, clase=Publisher, clave=Publisher.id_publisher)
+        self.publishers_manager = Entity_manager(session=self.session, clase=Publisher)
         self.publishers_manager.set_order(Publisher.id_publisher,0)
-
+        self.lista_opciones = {'Id': Publisher.id_publisher, 'Editorial': Publisher.name}
 
         self.entry_id  = self.builder.get_object('entry_id')
         self.entry_nombre =  self.builder.get_object('entry_nombre')
@@ -38,6 +39,10 @@ class PublisherGtk():
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
         self.label_resumen = self.builder.get_object('label_resumen')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
+
+    def combobox_change(self,widget):
+        if widget.get_active_iter() is not None:
+            self.publishers_manager.set_order(self.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
     def boton_guardar(self,widget):
         self.publishers_manager.save()

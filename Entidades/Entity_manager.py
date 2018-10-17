@@ -5,7 +5,7 @@ from Entidades import Init
 
 class Entity_manager:
 
-    def __init__(self, session = None, clase=None, clave=None):
+    def __init__(self, session = None, clase=None):
         if session is not None:
             self.session = session
         else:
@@ -35,7 +35,7 @@ class Entity_manager:
         self.session.commit()
 
     def get(self,Id):
-        if len(self.session.dirty)>0:
+        if self.session.is_modified(self.entidad)>0:
             return "cambios pendientes."
         else:
             print(Id)
@@ -56,7 +56,7 @@ class Entity_manager:
     def getSize(self):
         return(self.session.query(self.clase()).count())
 
-    def set_order(self,campo, direccion):
+    def set_order(self,campo, direccion=0):
         self.order = campo
         param = str(campo)
         self.campo_str = param[param.index(".")+1:]
@@ -78,6 +78,7 @@ class Entity_manager:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
+        print(consulta)
         return consulta
 
     def getNext(self):

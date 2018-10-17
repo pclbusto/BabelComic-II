@@ -220,8 +220,8 @@ class BabelComics_main_gtk():
                 print(nombreThumnail)
                 cover = None
                 if (not os.path.isfile(nombreThumnail)):
-                    cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jBpg")
-                    help(cover)
+                    cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                    # help(cover)
                     iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:

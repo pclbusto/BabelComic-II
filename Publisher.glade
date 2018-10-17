@@ -27,6 +27,20 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-clear</property>
   </object>
+  <object class="GtkListStore" id="liststore_combobox">
+    <columns>
+      <!-- column-name Columna -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Id</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Editorial</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkImage" id="lookup">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -285,6 +299,25 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="model">liststore_combobox</property>
+                <signal name="changed" handler="combobox_change" swapped="no"/>
+                <child>
+                  <object class="GtkCellRendererText"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
