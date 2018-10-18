@@ -5,6 +5,13 @@ from Entidades import Init
 
 class Entity_manager:
 
+    CTE_OK = 0
+    CTE_CAMBIOS_PENDIENTES = 1
+    CTE_ENTIDAD_NULA = 2
+    ORDER_ASC=0
+    ORDER_DESC=1
+
+
     def __init__(self, session = None, clase=None):
         if session is not None:
             self.session = session
@@ -18,40 +25,52 @@ class Entity_manager:
         self.order = None
         self.direccion = 0
 
+        self.status = Entity_manager.CTE_OK
+        self.lista_estados_mansajes={0:"OK",
+                                     1:"Hay cambios pendientes",
+                                     2:"Entidad Nula."}
+
+    def get_mensaje(self, clave):
+        return self.lista_estados_mansajes[clave]
+
     def save(self):
         if self.entidad is not None:
-            print(self.entidad)
             self.session.add(self.entidad)
             self.session.commit()
             self.entidad = self.clase()
+            self.status = Entity_manager.CTE_OK
 
     def rm(self):
         if self.entidad is not None:
             self.session.delete(self.entidad)
-        self.session.commit()
+            self.session.commit()
+            self.status = Entity_manager.CTE_OK
+        else:
+            self.status = Entity_manager.CTE_ENTIDAD_NULA
+
 
     def rmAll(self):
         self.session.query(self.clase).delete()
         self.session.commit()
+        self.new_record()
 
     def get(self,Id):
-        if self.session.is_modified(self.entidad)>0:
-            return "cambios pendientes."
-        else:
-            print(Id)
+        if not self.hay_cambios_pendientes():
             self.entidad = self.session.query(self.clase).get(Id)
+        else:
+            self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
-    def tiene_cambio(self):
-        if len(self.session.dirty()) > 0:
+    def hay_cambios_pendientes(self):
+        if self.session.is_modified(self.entidad):
             return True
         else:
             return False
 
     def new_record(self):
-        if len(self.session.dirty())>0:
-            return "hay cambios pendientes. No se puede crear un nuevo registro."
-        self.entidad=self.clase()
+        if not self.hay_cambios_pendientes():
+            self.entidad=self.clase()
+
 
     def get_count(self):
         return(self._get_consulta().count())
@@ -71,7 +90,6 @@ class Entity_manager:
 
     def _get_consulta(self):
         consulta = self.session.query(self.clase)
-        # print(consulta)
         if self.filtro is not None:
             consulta = consulta.filter(self.filtro)
         if self.order is not None:
@@ -79,44 +97,50 @@ class Entity_manager:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
-        # print(consulta)
         return consulta
 
     def getNext(self):
-        if self.entidad is None:
-            self.entidad = self.getLast()
+        if not self.hay_cambios_pendientes():
+            if self.entidad is None:
+                self.entidad = self.getLast()
+            else:
+                consulta = self._get_consulta()
+                # print(self.campo_str)
+                entidad = consulta.filter(
+                    self.order>getattr(self.entidad,self.campo_str)).first()
+                if entidad is not None:
+                    self.entidad=entidad
         else:
-            consulta = self._get_consulta()
-            # print(self.campo_str)
-            entidad = consulta.filter(
-                self.order>getattr(self.entidad,self.campo_str)).first()
-            if entidad is not None:
-                self.entidad=entidad
+            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
     def getPrev(self):
-        if self.entidad is None:
-            self.entidad = self.getLast()
+        if not self.hay_cambios_pendientes():
+            if self.entidad is None:
+                self.entidad = self.getFirst()
+            else:
+                entidad = self.session.query(self.clase).filter(
+                    self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
+                if entidad is not None:
+                    self.entidad = entidad
         else:
-            entidad = self.session.query(self.clase).filter(
-                self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
-            if entidad is not None:
-                self.entidad = entidad
+            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
     def getFirst(self):
-        entidad = self._get_consulta().first()
-        if entidad is not None:
-            print("ENTIDADSDKASDKSLD KSA")
-            self.entidad = entidad
+        if not self.hay_cambios_pendientes():
+            self.entidad = self._get_consulta().first()
+        else:
+            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
     def getLast(self):
-        self.set_order(self.order, 1)
-        entidad = self._get_consulta().first()
-        self.set_order(self.order, 0)
-        if entidad is not None:
-            self.entidad = entidad
+        if not self.hay_cambios_pendientes():
+            self.set_order(self.order, 1)
+            self.entidad = self._get_consulta().first()
+            self.set_order(self.order, 0)
+        else:
+            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
 

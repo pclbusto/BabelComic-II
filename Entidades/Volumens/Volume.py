@@ -14,7 +14,7 @@ from sqlalchemy import Sequence
 class Volume(Entidades.Init.Base):
     # todo comics que si tenemos y comics que faltan. poder tener ese dato para mostrar
     __tablename__='Volumens'
-    id_volumen = Column(Integer, Sequence('volumen_id_seq'), primary_key=True)
+    id_volume = Column(Integer, Sequence('volumen_id_seq'), primary_key=True)
     id_externo = Column(String, nullable=False, default='')
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')

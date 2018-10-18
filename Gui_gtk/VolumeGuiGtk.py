@@ -27,12 +27,12 @@ class VolumeGuiGtk():
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click,
-                         'click_lookup_volume':self.click_lookup_volume,'change_id_volumen':self.change_id_volumen}
+                         'click_lookup_volume':self.click_lookup_volume,'change_id_volume':self.change_id_volume}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
         self.builder.connect_signals(self.handlers)
-        self.window = self.builder.get_object("VolumeGtk")
+        self.window = self.builder.get_object("Volume_gtk")
         self.entry_id = self.builder.get_object("entry_id")
         self.entry_nombre = self.builder.get_object("entry_nombre")
         self.entry_url = self.builder.get_object("entry_url")
@@ -84,11 +84,11 @@ class VolumeGuiGtk():
         lookup = Volume_lookup_gtk(self.session, self.entry_id)
         lookup.window.show()
 
-    def change_id_volumen(self,widget):
+    def change_id_volume(self,widget,event):
         self.editorial = None
         if (self.entry_id.get_text() != ''):
-            self.volume = self.session.query(Volume).get(self.entry_id.get_text())
-        self.loadVolume()
+            volume = self.volumens_manager.get(self.entry_id.get_text())
+            self.loadVolume(volume)
 
     def loadVolume(self, volumen):
         self.clear()

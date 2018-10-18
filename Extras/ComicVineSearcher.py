@@ -337,7 +337,7 @@ class ComicVineSearcher:
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumens.Volume.Volume(id=item.find('id').text, nombre=item.find('name').text)
+                    l_serie = Entidades.Volumens.Volume.Volume(id_volume=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
