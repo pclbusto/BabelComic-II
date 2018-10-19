@@ -27,7 +27,8 @@ class VolumeGuiGtk():
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click,
-                         'click_lookup_volume':self.click_lookup_volume,'change_id_volume':self.change_id_volume}
+                         'click_lookup_volume':self.click_lookup_volume,'change_id_volume':self.change_id_volume,
+                         'click_limpiar': self.click_limpiar}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
@@ -80,8 +81,7 @@ class VolumeGuiGtk():
         self.guardar()
 
     def click_lookup_volume(self,widget):
-        print('dasds')
-        lookup = Volume_lookup_gtk(self.session, self.entry_id)
+        lookup = Volume_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
     def change_id_volume(self,widget,event):
@@ -90,11 +90,17 @@ class VolumeGuiGtk():
             volume = self.volumens_manager.get(self.entry_id.get_text())
             self.loadVolume(volume)
 
+    def return_lookup(self,id_volume):
+        if id_volume!='':
+            self.entry_id.set_text(str(id_volume))
+            volume = self.volumens_manager.get(self.entry_id.get_text())
+            self.loadVolume(volume)
+
     def loadVolume(self, volumen):
         self.clear()
         if self.volumens_manager.entidad is not None:
             #print("Volumen {}".format(self.volume))
-            self.entry_id.set_text(str(volumen.id_volumen))
+            self.entry_id.set_text(str(volumen.id_volume))
             self.entry_nombre.set_text(volumen.nombre)
             self.entry_url.set_text(volumen.get_url())
             self.entry_url_cover.set_text(volumen.image_url)
@@ -133,15 +139,8 @@ class VolumeGuiGtk():
         self.entry_cantidad_numeros.set_text('')
 
     def getNext(self,widget):
-        if self.offset < self.cantidadRegistros-1:
-            self.offset += 1
-        if self.volume is not None:
-            volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
-            if volume is not None:
-                self.volume = volume
-                self.loadVolume()
-        else:
-            self.getLast()
+        volume = self.volumens_manager.getNext()
+        self.loadVolume(volume)
 
     def copyFromWindowsToEntity(self):
         self.volume.id = self.entradaId.get()
@@ -169,22 +168,28 @@ class VolumeGuiGtk():
         self.session.commit()
 
     def getPrev(self,widget):
-        if self.offset >0:
-            self.offset -= 1
-        if self.volume is not None:
-            volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
-            if volume is not None:
-                self.volume = volume
-                self.loadVolume()
-        else:
-            self.getLast()
+        volume = self.volumens_manager.getPrev()
+        self.loadVolume(volume)
+
     def getLast(self,widget):
-        self.offset = self.cantidadRegistros -1
         volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
-        if volume is not None:
-            print(volume)
-            self.volume = volume
-            self.loadVolume()
+        self.loadVolume(volume)
+
+    def click_limpiar(self, widget):
+        self.entry_url.set_text("")
+        self.entry_id_editorial.set_text("")
+        self.entry_id.set_text("")
+        self.entry_cantidad_numeros.set_text("")
+        self.entry_nombre.set_text("")
+        self.entry_anio_inicio.set_text("")
+        self.entry_url_cover.set_text("")
+        self.label_nombre_editorial.set_text("")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename='../images/coverIssuesThumbnails/sin_caratula.jpg',
+            width=250,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.volumen_logo_image.set_from_pixbuf(pixbuf)
 
 if __name__ == '__main__':
 

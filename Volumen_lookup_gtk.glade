@@ -12,6 +12,46 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-find</property>
   </object>
+  <object class="GtkListStore" id="listmodel_volumens">
+    <columns>
+      <!-- column-name Nombre -->
+      <column type="gchararray"/>
+      <!-- column-name Números -->
+      <column type="gint"/>
+      <!-- column-name Editorial -->
+      <column type="gchararray"/>
+      <!-- column-name Año -->
+      <column type="gint"/>
+      <!-- column-name index -->
+      <column type="gint"/>
+      <!-- column-name Id -->
+      <column type="gint"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Green Lantern</col>
+        <col id="1">254</col>
+        <col id="2" translatable="yes">dc</col>
+        <col id="3">1979</col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Green Lantern</col>
+        <col id="1">39</col>
+        <col id="2" translatable="yes">dc</col>
+        <col id="3">1972</col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="liststore_combobox">
+    <columns>
+      <!-- column-name columna -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="Volumen_lookup_gtk">
     <property name="name">volumen_vine_seach_gtk</property>
     <property name="can_focus">False</property>
@@ -150,6 +190,7 @@
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
+                    <property name="model">listmodel_volumens</property>
                     <property name="search_column">0</property>
                     <signal name="button-press-event" handler="gtk_tree_view_volumen_double_click" swapped="no"/>
                     <child internal-child="selection">
@@ -164,7 +205,7 @@
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
-                            <attribute name="text">0</attribute>
+                            <attribute name="text">5</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -180,7 +221,7 @@
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
-                            <attribute name="text">1</attribute>
+                            <attribute name="text">0</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -196,7 +237,7 @@
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
-                            <attribute name="text">2</attribute>
+                            <attribute name="text">1</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -212,7 +253,7 @@
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
-                            <attribute name="text">3</attribute>
+                            <attribute name="text">2</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -230,7 +271,7 @@
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
-                            <attribute name="text">4</attribute>
+                            <attribute name="text">3</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -272,46 +313,53 @@
             <signal name="clicked" handler="click_boton_aceptar" swapped="no"/>
           </object>
           <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Ordenar por:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_orden">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="model">liststore_combobox</property>
+                <signal name="changed" handler="combobox_change" swapped="no"/>
+                <child>
+                  <object class="GtkCellRendererText"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">2</property>
-            <property name="width">2</property>
           </packing>
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="listmodel_volumens">
-    <columns>
-      <!-- column-name Id -->
-      <column type="gchararray"/>
-      <!-- column-name Nombre -->
-      <column type="gchararray"/>
-      <!-- column-name Números -->
-      <column type="gint"/>
-      <!-- column-name Editorial -->
-      <column type="gchararray"/>
-      <!-- column-name Año -->
-      <column type="gint"/>
-      <!-- column-name index -->
-      <column type="gint"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">21321</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">254</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1979</col>
-        <col id="5">0</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">213</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">39</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1972</col>
-        <col id="5">0</col>
-      </row>
-    </data>
   </object>
 </interface>

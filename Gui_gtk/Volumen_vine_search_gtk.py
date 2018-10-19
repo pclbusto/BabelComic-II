@@ -109,7 +109,7 @@ class Volumen_vine_search_Gtk():
         cv.entidad = 'volume'
         volumenAndIssues = cv.getVineEntity(self.volumen.id_volume)
 
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId == self.volumen.id).delete()
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId == self.volumen.id_volume).delete()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
             self.session.add(numeroComic)

@@ -56,12 +56,10 @@ class Publisher_lookup_gtk():
     def seleccion_publisher(self, selection):
         (model, iter) = selection.get_selected()
         if iter:
-            self.publisher = self.session.query(Publisher).filter(
-                Publisher.id_publisher==model[iter][0]).first()
+            self.publisher = self.publishers_manager.get(model[iter][0])
 
     def clicked_aceptar(self,widget):
-        print('cerramdp')
-        self.campo_retorno.set_text(self.publisher.id_publisher)
+        self.campo_retorno(self.publisher.id_publisher)
         self.window.close()
 
     def buscarPublisher(self, widget):

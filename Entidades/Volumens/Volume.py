@@ -44,7 +44,7 @@ class Volume(Entidades.Init.Base):
     def __repr__(self):
         return "<Volume(name={},  cantidad nros={}, descripcion={}, id_volume={}," \
                "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre, self.cantidadNumeros,self.descripcion,
-                                                                          self.id_volumen, self.image_url, self.publisher_name,
+                                                                          self.id_volume, self.image_url, self.publisher_name,
                                                                           self.AnioInicio)
 
     # volume.nombre,

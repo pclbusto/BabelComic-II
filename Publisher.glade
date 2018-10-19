@@ -376,6 +376,7 @@
                 <property name="receives_default">True</property>
                 <property name="image">limpiar</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="click_limpiar" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

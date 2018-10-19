@@ -16,12 +16,12 @@ class Volumens(Entity_manager):
             self.session = Init.Session()
 
         self.set_order(Volume.nombre,0)
-        self.lista_opciones = {'Id': Volume.id_volumen, 'Volumen': Volume.nombre}
+        self.lista_opciones = {'Id': Volume.id_volume, 'Volumen': Volume.nombre}
 
         self.status = 1
         self.entidad=Volume()
         self.filtro = None
-        self.order = None
+        self.set_order(Volume.id_volume)
         self.direccion = 0
 
 

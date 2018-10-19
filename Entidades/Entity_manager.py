@@ -105,13 +105,13 @@ class Entity_manager:
                 self.entidad = self.getLast()
             else:
                 consulta = self._get_consulta()
-                # print(self.campo_str)
                 entidad = consulta.filter(
                     self.order>getattr(self.entidad,self.campo_str)).first()
                 if entidad is not None:
                     self.entidad=entidad
         else:
             self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
+        print(self.entidad)
         return self.entidad
 
     def getPrev(self):

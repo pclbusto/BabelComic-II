@@ -22,7 +22,7 @@ class PublisherGtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
                          'click_cargar_desde_web':self.click_cargar_desde_web,'boton_guardar':self.boton_guardar,
-                         'combobox_change':self.combobox_change}
+                         'combobox_change':self.combobox_change,'click_limpiar':self.click_limpiar}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher.glade")
@@ -60,12 +60,16 @@ class PublisherGtk():
     def id_changed(self,widget, test):
         if self.entry_id.get_text()!='':
             publisher = self.publishers_manager.get(self.entry_id.get_text())
-            print(publisher)
+            self._copy_to_window(publisher)
+
+    def return_lookup(self, id_publisher):
+        if id_publisher  !='':
+            self.entry_id.set_text(str(id_publisher))
+            publisher = self.publishers_manager.get(self.entry_id.get_text())
             self._copy_to_window(publisher)
 
     def open_lookup(self, widget):
-        print('dasds')
-        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session,self.entry_id)
+        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
     def getFirst(self, widget):
@@ -106,12 +110,12 @@ class PublisherGtk():
 
             self.label_resumen.set_text(publisher.deck)
 
-    def clearWindow(self):
-        # self.entradaId.delete(0, END)
+    def click_limpiar(self, widget):
+        print("dsldsa")
+        self.entry_url.clear()
         # self.entradaNombre.delete(0, END)
         # self.entradaUrl.delete(0, END)
         # self.textoDescripcion.config(text='')
-        pass
 
 
 if __name__ == "__main__":

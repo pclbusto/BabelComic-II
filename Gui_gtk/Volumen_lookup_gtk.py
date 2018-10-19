@@ -1,4 +1,5 @@
 from Entidades.Publishers.Publisher import Publisher
+from Entidades.Volumens.Volumens import Volumens
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
@@ -17,7 +18,8 @@ class Volume_lookup_gtk():
         self.handlers = {'search_volumen': self.search_volumen, 'search_editorial': self.search_editorial,
                          'click_lookup_editorial': self.click_lookup_editorial,
                          'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar':self.click_boton_aceptar,
-                         'gtk_tree_view_volumen_double_click':self.gtk_tree_view_volumen_double_click}
+                         'gtk_tree_view_volumen_double_click':self.gtk_tree_view_volumen_double_click,
+                         'combobox_change':self.combobox_change}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
@@ -30,12 +32,20 @@ class Volume_lookup_gtk():
         self.volumens = self.session.query(Volume).all()
         self.search_entry_volumen = self.builder.get_object('search_entry_volumen')
         self.search_entry_editorial = self.builder.get_object('search_entry_editorial')
+        self.volumens_manager = Volumens(session=self.session)
+        self.combobox_orden = self.builder.get_object("combobox_orden")
+        self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self._load_data()
         if campo_retorno is None:
             print("error campo retorno requerido")
         self.campo_retorno = campo_retorno
         self.publisher=None
         self.volume = None
+
+    def combobox_change(self,widget):
+        if widget.get_active_iter() is not None:
+            self.volumens_manager.set_order(self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
+            self._load_data()
 
     def gtk_tree_view_volumen_double_click(self,widget, event):
         if event.get_click_count()[1]==2:
@@ -70,7 +80,7 @@ class Volume_lookup_gtk():
         self.listmodel_volumens.clear()
         for index,volume in enumerate(self.volumens):
             self.listmodel_volumens.append(
-                [volume.id, volume.nombre, volume.cantidadNumeros, volume.publisher_name, volume.AnioInicio, index])
+                [volume.nombre, volume.cantidadNumeros, volume.publisher_name, volume.AnioInicio, index, volume.id_volume])
             # self.listmodel_volumens.append(
             #     [volume.id, volume.nombre, volume.cantidadNumeros, volume.publisher_name, volume.AnioInicio])
         self.gtk_tree_view_volumen.set_model(self.listmodel_volumens)
@@ -82,7 +92,7 @@ class Volume_lookup_gtk():
     def seleccion_volumen(self, selection):
         (model, iter) = selection.get_selected()
         if iter:
-            self.volume = self.volumens[model[iter][5]]
+            self.volume = self.volumens[model[iter][4]]
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=self.volume.getImagePath(),
                 width=250,
@@ -91,7 +101,7 @@ class Volume_lookup_gtk():
             self.imagen_cover_volumen.set_from_pixbuf(pixbuf)
 
     def click_boton_aceptar(self,widget):
-        self.campo_retorno.set_text(self.volume.id)
+        self.campo_retorno(self.volume.id_volume)
         self.window.close()
 
 
