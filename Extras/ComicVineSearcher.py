@@ -337,7 +337,7 @@ class ComicVineSearcher:
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumens.Volume.Volume(id_volume=item.find('id').text, nombre=item.find('name').text)
+                    l_serie = Entidades.Volumens.Volume.Volume(id_externo=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
@@ -347,10 +347,10 @@ class ComicVineSearcher:
                         l_serie.image_url = ''
 
                     if item.find('publisher').find('id') != None:
-                        l_serie.publisherId = item.find('publisher').find('id').text
+                        l_serie.id_publisher_externo = item.find('publisher').find('id').text
                         l_serie.publisher_name = item.find('publisher').find('name').text
                     else:
-                        l_serie.publisherId = "-1"
+                        l_serie.id_publisher_externo = "-1"
                     l_serie.AnioInicio = item.find('start_year').text
                     self.listaBusquedaVine.append(l_serie)
 

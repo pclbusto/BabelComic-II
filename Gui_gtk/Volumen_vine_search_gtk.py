@@ -6,7 +6,6 @@ from Extras.Config import Config
 from gi.repository import GLib
 import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
-from Entidades.Publishers.Publisher import Publisher
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import threading
@@ -56,7 +55,7 @@ class Volumen_vine_search_Gtk():
 
     def _copy_to_window(self):
         if self.publisher:
-            self.entry_id_editorial.set_text(self.publisher.id_publisher)
+            self.entry_id_editorial.set_text(str(self.publisher.id_publisher))
             self.label_descripcion_editorial.set_text(self.publisher.name)
         else:
             self.label_descripcion_editorial.set_text('')
@@ -70,9 +69,17 @@ class Volumen_vine_search_Gtk():
         print("Publisher recueperado")
 
     def click_lookup_editorial(self, widget):
-        lookup = Publisher_lookup_gtk(self.session, self.entry_id_editorial)
+        lookup = Publisher_lookup_gtk(self.session, self.return_lookup_editorial)
         lookup.window.show()
 
+    def return_lookup_editorial(self, id_publisher):
+        if id_publisher is not None:
+            self.publisher = None
+            self.publisher = self.publishers_manager.get(id_publisher)
+            self._copy_to_window()
+            if self.publisher is not None or self.entry_id_editorial.get_text() == '':
+                self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
+        print("Publisher recueperado")
 
     def _buscarMas(self):
         self.comicVineSearcher.vineSearchMore()
@@ -101,7 +108,6 @@ class Volumen_vine_search_Gtk():
         self.listmodel_volumenes.clear()
         self.hilo1 = threading.Thread(target=self._buscar)
         self.hilo1.start()
-        # GLib.idle_add(self._buscar)
 
     def click_aceptar(self, widget):
         cnf = Config(self.session)
@@ -138,15 +144,12 @@ class Volumen_vine_search_Gtk():
             self.hilo1.start()
 
     def cargarResultado(self,listavolumes):
-
-
-
         self.listmodel_volumenes.clear()
         self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
-                print("Editorial de filtor: {} Editorial Comics: {}".format(self.publisher.id_publisher,volume.publisherId))
-                if self.publisher.id_publisher==volume.publisherId:
+                print("Editorial de fitro: {} Editorial Comics: {}".format(self.publisher.id_externo,volume.id_publisher_externo))
+                if self.publisher.id_externo==volume.id_publisher_externo:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)

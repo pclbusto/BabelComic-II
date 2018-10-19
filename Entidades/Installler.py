@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 
 from Entidades import Init
 
@@ -21,4 +22,6 @@ if __name__ == '__main__':
     session.add(setup)
     session.commit()
     Init.recreateTablesAll()
+
+    copyfile("../sin_caratula.jpg","../images/coverIssuesThumbnails/sin_caratula.jpg")
 
