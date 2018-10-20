@@ -7,8 +7,8 @@ from Entidades import Init
 
 class Publishers(Entity_manager):
 
-    def __init__(self, session = None):
-        Entity_manager.__init__(self, session=session, clase=Publisher)
+    def __init__(self, session = None, clase=Publisher):
+        Entity_manager.__init__(self, session=session, clase=clase)
 
         if session is not None:
             self.session = session
@@ -19,10 +19,6 @@ class Publishers(Entity_manager):
         self.lista_opciones = {'Id': Publisher.id_publisher, 'Editorial': Publisher.name}
 
         self.status = 1
-        self.listaComicVineSearch = []
-        self.currentKeyName='id'
-        self.currentKeyValue=''
-        self.publisher=Publisher()
         self.filtro = None
         self.order = None
         self.direccion = 0

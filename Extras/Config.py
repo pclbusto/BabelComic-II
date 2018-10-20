@@ -215,6 +215,7 @@ class Config:
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'logo publisher')
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'searchCache')
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coverIssuesThumbnails')
+        shutil.copyfile("../sin_caratula.jpg", "../images/coverIssuesThumbnails/sin_caratula.jpg")
 
     def addSetup(self, setup):
         setupObj = setup

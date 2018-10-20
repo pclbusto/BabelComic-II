@@ -6,7 +6,7 @@ class ComicInVolumes(Entidades.Init.Base):
     # no lo pasamos a numerico porque algunos numeros tiene 11.3B
 
     numero = Column(String, primary_key=True)
-    id_volume_externo = Column(String, nullable=False, default='')
+    id_comicbook_externo = Column(String, nullable=False, default='')
     id_volume = Column(Integer, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')
 

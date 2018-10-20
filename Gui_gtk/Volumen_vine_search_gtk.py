@@ -67,6 +67,7 @@ class Volumen_vine_search_Gtk():
         if self.publisher is not None or self.entry_id_editorial.get_text()=='':
             self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
         print("Publisher recueperado")
+        print(self.publisher)
 
     def click_lookup_editorial(self, widget):
         lookup = Publisher_lookup_gtk(self.session, self.return_lookup_editorial)
@@ -113,9 +114,9 @@ class Volumen_vine_search_Gtk():
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(self.volumen.id_volume)
+        volumenAndIssues = cv.getVineEntity(self.volumen.id_volume_externo)
 
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId == self.volumen.id_volume).delete()
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume == self.volumen.id_volume).delete()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
             self.session.add(numeroComic)
@@ -148,8 +149,8 @@ class Volumen_vine_search_Gtk():
         self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
-                print("Editorial de fitro: {} Editorial Comics: {}".format(self.publisher.id_externo,volume.id_publisher_externo))
-                if self.publisher.id_externo==volume.id_publisher_externo:
+                print("Editorial de fitro: {} Editorial Comics: {}".format(self.publisher.id_publisher_externo,volume.id_publisher_externo))
+                if self.publisher.id_publisher_externo==volume.id_publisher_externo:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)

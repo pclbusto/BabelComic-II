@@ -191,7 +191,7 @@ class ComicVineSearcher:
             if self.entidad == 'volume':
                 volumeVine = root.find('results')
                 volume = Entidades.Volumens.Volume.Volume()
-                volume.id = volumeVine.find('id').text
+                volume.id_volume_externo = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
                 volume.AnioInicio =volumeVine.find('start_year').text
@@ -216,8 +216,8 @@ class ComicVineSearcher:
                     comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = ComicInVolumes()
-                        comicInVolumes.volumeId = volume.id
-                        comicInVolumes.comicVineId = issue.find("id").text
+                        comicInVolumes.id_volume = volume.id_volume
+                        comicInVolumes.id_comicbook_externo = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
 
@@ -337,7 +337,7 @@ class ComicVineSearcher:
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumens.Volume.Volume(id_externo=item.find('id').text, nombre=item.find('name').text)
+                    l_serie = Entidades.Volumens.Volume.Volume(id_volume_externo=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text
@@ -357,7 +357,7 @@ class ComicVineSearcher:
             elif self.entidad == 'publishers':
                 for item in results:
                     publisher = Publisher.Publisher()
-                    publisher.id_externo = item.find('id').text
+                    publisher.id_publisher_externo = item.find('id').text
                     # publisher.id_publisher se auto calcula esto ahora
                     publisher.name = item.find('name').text
                     publisher.descripcion = item.find('description').text

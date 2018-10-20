@@ -11,7 +11,7 @@ class Publisher(Entidades.Init.Base):
     __tablename__='Publishers'
 
     id_publisher = Column(Integer, Sequence('publisher_id_seq'), primary_key=True)
-    id_externo = Column(String, nullable=False,default='')
+    id_publisher_externo = Column(String, nullable=False,default='')
     name = Column(String, nullable=False,default='')
     deck = Column(String, nullable=False,default='')
     description = Column(String, nullable=False,default='')
@@ -82,5 +82,5 @@ class Publisher(Entidades.Init.Base):
         return (Image.open(fImage))
 
     def __repr__(self):
-        return "<Publisher(id_publisher='%s',name='%s')>" %(self.id_publisher, self.localLogoImagePath)
+        return "<Publisher(id_publisher='{}',name='{}', id_publisher_externo='{}'".format(self.id_publisher, self.localLogoImagePath, self.id_publisher_externo)
 

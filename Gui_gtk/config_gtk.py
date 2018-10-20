@@ -89,9 +89,6 @@ class Config_gtk():
         if iter:
             model.remove(iter)
 
-        # if (self.listaDirectorios.curselection()):
-        #     self.listaDirectorios.delete(self.listaDirectorios.curselection())
-
     def click_guardar(self, widget):
         directorios = [item[0] for item in self.liststore_directorios_comics]
         clave = self.entry_clave_servico_comicvine.get_text()

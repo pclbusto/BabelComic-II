@@ -4,13 +4,10 @@ import Entidades.Init
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.Setups.Setup import Setup
 import threading
-import shutil,os
-
-
+import os
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GObject,GLib
-# from gi.repository import Gdk
 
 class ScannerGtk():
 
@@ -26,8 +23,6 @@ class ScannerGtk():
         self.builder.connect_signals(self.handlers)
         self.window.set_destroy_with_parent(True)
         self.progerss_bar = self.builder.get_object('progress_bar')
-        # if funcion_callback is not None:
-        #     self.funcion_callback = funcion_callback
 
     def scannearDirectorio(self,widget):
         self.config = Config()

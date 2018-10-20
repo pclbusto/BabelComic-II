@@ -1,12 +1,13 @@
 from sqlalchemy import Column, Integer, String, and_
 import Entidades.Init
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
-#----
+from sqlalchemy import Sequence
 
 class ArcoArgumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
     __tablename__ = 'ArcosArgumentales'
-    id = Column(String,primary_key=True)
+    id_arco_argumental = Column(Integer, Sequence('arco_id_seq'), primary_key=True)
+    id_arco_argumental_externo = Column(String,primary_key=True)
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')

@@ -23,5 +23,5 @@ if __name__ == '__main__':
     session.commit()
     Init.recreateTablesAll()
 
-    copyfile("../sin_caratula.jpg","../images/coverIssuesThumbnails/sin_caratula.jpg")
+
 

@@ -216,7 +216,7 @@ class BabelComics_main_gtk():
             self.cantidadThumnailsGenerados += 1
             try:
                 comic.openCbFile()
-                nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
+                nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
                 print(nombreThumnail)
                 cover = None
                 if (not os.path.isfile(nombreThumnail)):
@@ -227,7 +227,7 @@ class BabelComics_main_gtk():
                 else:
                     # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
-                    if comic.comicVineId!='':
+                    if comic.id_comicbook_externo!='':
                         self.cataloged_pix.composite(cover,
                                                      cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
                                                      self.cataloged_pix.props.width,self.cataloged_pix.props.height,

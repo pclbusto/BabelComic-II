@@ -7,6 +7,7 @@ import Entidades.Init
 from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
 from io import BytesIO
+from sqlalchemy import Sequence
 
 class ComicBook(Entidades.Init.Base):
 
@@ -17,21 +18,21 @@ class ComicBook(Entidades.Init.Base):
 
 
     path = Column(String,unique=True)
-    comicVineId = Column(String,nullable=False,default='')
+    id_comicbook = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
+    id_comicbook_externo = Column(String,nullable=False,default='')
     titulo = Column(String,nullable=False,default='')
-    volumeId = Column(String, nullable=False, default='')
-    volumeNombre = Column(String,nullable=False,default='')
+    id_volume = Column(String, nullable=False, default='')
+    nombre_volumen = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    arcoArgumentalId = Column(String,nullable=False,default='') #id arco
+    id_arco_argumental = Column(String,nullable=False,default='') #id arco
     arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
     rating = Column(Float,nullable=False,default=0.0)
     ratingExterno = Column(Float,nullable=False,default=0.0)
-    comicId = Column(Integer, primary_key=True)
 
-    publisherId = Column(String,nullable=False,default='')
+    id_publisher = Column(String,nullable=False,default='')
     api_detail_url = Column(String,nullable=False,default='')
     thumb_url  = Column(String,nullable=False,default='')
     calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
@@ -51,7 +52,7 @@ class ComicBook(Entidades.Init.Base):
         #        "Numero='%s'\n" \
         #        "id interno='%s'>" % (
         # self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero,self.comicId)
-        return "id interno={}-comic vine id={}".format(self.comicId, self.comicVineId)
+        return "id interno={}-comic vine id={}".format(self.id_comicbook, self.id_comicbook_externo)
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
 
     def tieneArcoAlterno(self):
