@@ -39,12 +39,12 @@ class Catalogador():
     def copyFromComicToComic(self, fuente, destino):
         # print(fuente)
         if fuente.arcoArgumentalId is not None:
-            destino.arcoArgumentalId = fuente.arcoArgumentalId
+            destino.id_arco_argumental = fuente.id_arco_argumental
             destino.arcoArgumentalNumero = fuente.arcoArgumentalNumero
-        if fuente.volumeId is not None:
-            print(fuente.volumeId)
-            volume = self.session.query(Entidades.Volumens.Volume.Volume).get(fuente.volumeId)
-            destino.publisherId = volume.publisherId
+        if fuente.id_volume is not None:
+            print(fuente.id_volume)
+            volume = self.session.query(Entidades.Volumens.Volume.Volume).get(fuente.id_volume)
+            destino.id_publisher = volume.id_publisher
 
         destino.fechaTapa = fuente.fechaTapa
         destino.titulo = fuente.titulo
@@ -54,7 +54,8 @@ class Catalogador():
         destino.nota = fuente.nota
         destino.rating = fuente.rating
         destino.ratingExterno = fuente.ratingExterno
-        destino.comicVineId = fuente.comicVineId
+        print("DATO NULL")
+        destino.id_comicbook_externo = fuente.id_comicbook_externo
         self.session.commit()
         if not destino.has_xml():
             cbFile = destino.editCbFile()

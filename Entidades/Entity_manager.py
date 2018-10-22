@@ -12,7 +12,7 @@ class Entity_manager:
     ORDER_DESC=1
 
 
-    def __init__(self, session = None, clase=None):
+    def __init__(self, session = None, clase=None, id_externo=None):
         if session is not None:
             self.session = session
         else:
@@ -20,10 +20,12 @@ class Entity_manager:
 
         self.clase = clase
         self.entidad = self.clase()
+        self.id_externo = id_externo
 
         self.filtro = None
         self.order = None
         self.direccion = 0
+        self.offset=0
 
         self.status = Entity_manager.CTE_OK
         self.lista_estados_mansajes={0:"OK",
@@ -88,6 +90,9 @@ class Entity_manager:
         consulta = self._get_consulta()
         return consulta.all()
 
+    def get_by_id_externo(self, id_externo):
+        return self.session.query(self.clase).filter(self.id_externo==id_externo).first()
+
     def _get_consulta(self):
         consulta = self.session.query(self.clase)
         if self.filtro is not None:
@@ -104,9 +109,11 @@ class Entity_manager:
             if self.entidad is None:
                 self.entidad = self.getLast()
             else:
+                self.offset += 1
                 consulta = self._get_consulta()
-                entidad = consulta.filter(
-                    self.order>getattr(self.entidad,self.campo_str)).first()
+                # entidad = consulta.filter(
+                #     self.order>getattr(self.entidad,self.campo_str)).first()
+                entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad=entidad
         else:
@@ -119,8 +126,12 @@ class Entity_manager:
             if self.entidad is None:
                 self.entidad = self.getFirst()
             else:
-                entidad = self.session.query(self.clase).filter(
-                    self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
+                self.offset -= 1
+                # entidad = self.session.query(self.clase).filter(
+                #     self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
+                consulta = self._get_consulta()
+                print(consulta)
+                entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad = entidad
         else:
@@ -129,6 +140,7 @@ class Entity_manager:
 
     def getFirst(self):
         if not self.hay_cambios_pendientes():
+            self.offset = 0
             self.entidad = self._get_consulta().first()
         else:
             self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
@@ -139,6 +151,7 @@ class Entity_manager:
             self.set_order(self.order, 1)
             self.entidad = self._get_consulta().first()
             self.set_order(self.order, 0)
+            self.offset = self._get_consulta().count()-1
         else:
             self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad

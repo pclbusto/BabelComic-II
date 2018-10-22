@@ -45,7 +45,7 @@ class Volumen_vine_search_Gtk():
         self.listmodel_volumenes.clear()
 
         self.label_status = self.builder.get_object("label_status")
-        self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
+        self.volume_logo_image = self.builder.get_object("volumen_logo_image")
         self.spinner = self.builder.get_object("spinner")
         self.volume = None
         self.publisher = None
@@ -114,33 +114,38 @@ class Volumen_vine_search_Gtk():
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(self.volumen.id_volume_externo)
-
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume == self.volumen.id_volume).delete()
+        volumenAndIssues = cv.getVineEntity(self.volume .id_volume_externo)
+        volume = volumenAndIssues[0]
+        print(volume)
+        # guardamos el volumen primero para obtener el id de volumen
+        self.session.add(volume)
+        self.session.commit()
+        # print(volumenAndIssues[0])
+        # self.session.refresh(self.volume)
+        self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume_externo == volume.id_volume_externo).delete()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
+            numeroComic.id_volume = volume.id_volume
             self.session.add(numeroComic)
-
-        self.session.add(volumenAndIssues[0])
         self.session.commit()
 
 
     def _seleccion(self):
-        self.volumen.localLogoImagePath = self.volumen.getImageCover()
+        self.volume.localLogoImagePath = self.volume.getImageCover()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=self.volumen.getImagePath(),
+            filename=self.volume.getImagePath(),
             width=250,
             height=250,
             preserve_aspect_ratio=True)
         self.spinner.stop()
-        GLib.idle_add(self.volumen_logo_image.set_from_pixbuf, pixbuf)
-        # self.volumen_logo_image.set_from_pixbuf(pixbuf)
+        GLib.idle_add(self.volume_logo_image.set_from_pixbuf, pixbuf)
+        # self.volume_logo_image.set_from_pixbuf(pixbuf)
 
     def seleccion(self, selection):
         self.spinner.start()
         (model, iter) = selection.get_selected()
         if iter:
-            self.volumen = self.listaFiltrada[int(model[iter][0])]
+            self.volume = self.listaFiltrada[int(model[iter][0])]
             self.hilo1 = threading.Thread(target=self._seleccion)
             self.hilo1.start()
 

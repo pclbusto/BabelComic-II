@@ -3,6 +3,7 @@ from Entidades.Publishers import Publisher
 from Entidades.ComicBooks.ComicBook import ComicBook
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
+from Entidades.Volumens.Volumens import Volumens
 
 import Entidades.Volumens.Volume
 import urllib.request
@@ -120,12 +121,14 @@ class ComicVineSearcher:
                 else:
                     comic.titulo = ''
                 comic.numero = issue.find('issue_number').text
-                print("Fecha: " + issue.find('cover_date').text)
                 comic.fechaTapa = datetime.strptime(issue.find('cover_date').text, "%Y-%m-%d").date().toordinal()
                 comic.serieId = issue.find('volume').find('id').text
-                comic.volumeId = issue.find('volume').find('id').text
-                comic.volumeName = issue.find('volume').find('name').text
-                comic.comicVineId = int(issue.find('id').text)
+                id_volumen_externo = issue.find('volume').find('id').text
+                volume_manager = Volumens(self.session)
+                volume = volume_manager.get_by_id_externo(id_volumen_externo)
+                comic.id_volume = volume.id_volume
+                comic.nombre_volumen = issue.find('volume').find('name').text
+                comic.id_comicbook_externo = int(issue.find('id').text)
                 if issue.find('description').text is not None:
                     comic.resumen = issue.find('description').text
                 else:
@@ -141,10 +144,11 @@ class ComicVineSearcher:
                     print('buscamos arco')
 
                     for item in issue.find('story_arc_credits').findall('story_arc'):
-                        idArco = int(item.find('id').text)
+                        id_arco_externo = int(item.find('id').text)
                         # .find('story_arc_credits').find('story_arc')
-                        print('ARCOOOOOOO: ' + str(idArco))
-                        arco = self.session.query(ArcoArgumental).get(idArco)
+                        print('Id arco encontrado: ' + str(id_arco_externo))
+                        arcos_manager = A
+                        arco = self.session.query(ArcoArgumental).filter(ArcoArgumental.id_arco_argumental_externo==idArco)
                         if arco is not None:
                             print('el arco existe. obtenemos el numero del comic')
                             numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
@@ -189,6 +193,9 @@ class ComicVineSearcher:
                 return arco
 
             if self.entidad == 'volume':
+                # todo al cargar un volumen verifgicar si existe el id externo de no existir cargo uno nuevo de existir
+                # actualizar los datos.
+
                 volumeVine = root.find('results')
                 volume = Entidades.Volumens.Volume.Volume()
                 volume.id_volume_externo = volumeVine.find('id').text
@@ -201,7 +208,7 @@ class ComicVineSearcher:
                     volume.image_url = volumeVine.find('image').find('super_url').text
                 if volumeVine.find('publisher').find('id') is not None:
                     print("Recuperando Editorial")
-                    volume.publisherId = volumeVine.find('publisher').find('id').text
+                    volume.id_publisher_externo = volumeVine.find('publisher').find('id').text
                     volume.publisher_name = volumeVine.find('publisher').find('name').text
                 if volumeVine.find('issues'):
                     '''
@@ -216,7 +223,7 @@ class ComicVineSearcher:
                     comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = ComicInVolumes()
-                        comicInVolumes.id_volume = volume.id_volume
+                        comicInVolumes.id_volume_externo = volume.id_volume_externo
                         comicInVolumes.id_comicbook_externo = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text

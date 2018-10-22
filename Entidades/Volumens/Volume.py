@@ -40,12 +40,12 @@ class Volume(Entidades.Init.Base):
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
     def get_url(self):
-        return("http://comicvine/"+self.id_externo)
+        return("http://comicvine/"+self.id_volume_externo)
 
     def __repr__(self):
-        return "<Volume(name={},  cantidad nros={}, descripcion={}, id_volume={}," \
-               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre, self.cantidadNumeros,self.descripcion,
-                                                                          self.id_volume, self.image_url, self.publisher_name,
+        return "<Volume(name={}, id_volume={}, id_volume_externo={}, cantidad nros={}, descripcion={}," \
+               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre,self.id_volume,self.id_volume_externo, self.cantidadNumeros,self.descripcion,
+                                                                           self.image_url, self.publisher_name,
                                                                           self.AnioInicio)
 
     # volume.nombre,

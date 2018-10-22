@@ -516,6 +516,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="model">liststore_combobox</property>
+            <signal name="changed" handler="combobox_change" swapped="no"/>
             <child>
               <object class="GtkCellRendererText"/>
               <attributes>

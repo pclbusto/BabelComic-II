@@ -8,7 +8,7 @@ from Entidades import Init
 class Volumens(Entity_manager):
 
     def __init__(self, session = None):
-        Entity_manager.__init__(self, session=session, clase=Volume)
+        Entity_manager.__init__(self, session=session, clase=Volume, id_externo=Volume.id_volume_externo)
 
         if session is not None:
             self.session = session
@@ -23,5 +23,6 @@ class Volumens(Entity_manager):
         self.filtro = None
         self.set_order(Volume.id_volume)
         self.direccion = 0
+
 
 

@@ -1,28 +1,28 @@
-import sqlite3
+from Entidades.Entity_manager import Entity_manager
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
-import Entidades.Init
+from Entidades import Init
 
-class ArcosArgumentales():
-    def __init__(self):
-        self.conexion = sqlite3.connect('BabelComic.db')
-        self.conexion.row_factory = sqlite3.Row
-    def get(self,Id):
-        print('recuperando arcooooooooooooooooo: '+str(Id))
-        arcoArgumental = Entidades.Init.Session().query(ArcoArgumental).get(Id)
-        return arcoArgumental
+class ArcosArgumentales(Entity_manager):
+    def __init__(self, session = None):
+        Entity_manager.__init__(self, session=session, clase=ArcoArgumental, id_externo=ArcoArgumental.id_arco_argumental_externo)
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
 
-    def add(self, arco):
-        cursor = self.conexion.cursor()
-        cursor.execute('''INSERT INTO ArcosArgumentales (id, nombre, descripcion, ultimaFechaActualizacion) values (?,?,?,?)''',(arco.id,arco.nombre,arco.descripcion,datetime.date.today().toordinal(),))
-        if len(arco.comics)>0:
-            #hay que guardar que comics contiene y el orden
-            for (idComic,numeroDentroArco) in arco.comics:
-                cursor.execute('''INSERT INTO ArcosArgumentalesComics (idArco, idComic, orden) values (?,?,?)''',(arco.id,idComic,numeroDentroArco,))
-        self.conexion.commit()
+        self.set_order(ArcoArgumental.nombre, 0)
+        self.lista_opciones = {'Id': ArcoArgumental.id_arco_argumental, 'Volumen': ArcoArgumental.nombre}
+
+        self.status = 1
+        self.entidad = ArcoArgumental()
+        self.filtro = None
+        self.set_order(ArcoArgumental.id_arco_argumental)
+        self.direccion = 0
 
     def rm(self, Id):
-        cursor = self.conexion.cursor()
+        Entity_manager.rm()
+        Entity_manager.session.query(ArcosArgumentalesComics.
         cursor.execute('''DELETE FROM ArcosArgumentales WHERE id=?''',(Id,))
         cursor.execute('''DELETE FROM ArcosArgumentalesComics WHERE idArco = ?''',(Id,))
         self.conexion.commit()

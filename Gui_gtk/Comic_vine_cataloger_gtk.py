@@ -73,6 +73,9 @@ class Comic_vine_cataloger_gtk():
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
 
+    def return_lookup(self,id_volume):
+        if id_volume!='':
+            self.entry_id_volumen_catalogar.set_text(str(id_volume))
 
     def tree_view_archivos_para_catalogar_selection_change(self,selection):
         (model, iter) = selection.get_selected()
@@ -115,15 +118,15 @@ class Comic_vine_cataloger_gtk():
                 self.entry_descripcion_volumen_catalogar.set_text(self.volume.nombre)
 
     def click_boton_lookup_serie(self,widget):
-        lookup = Volume_lookup_gtk(self.session, self.entry_id_volumen_catalogar)
+        lookup = Volume_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
     def _load_comic(self, comic):
 
-        self.entry_serie_local.set_text(comic.volumeNombre)
+        self.entry_serie_local.set_text(comic.nombre_volumen)
         self.entry_nombre_archivo_local.set_text(comic.getNombreArchivo())
         comic.openCbFile()
-        nombreThumnail = self.pahThumnails + str(comic.comicId) + comic.getPageExtension()
+        nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=nombreThumnail,
             width=150,
@@ -203,7 +206,7 @@ class Comic_vine_cataloger_gtk():
                 print("LA INFO COMPLETA")
                 print(comicInfo)
                 cv.setEntidad('issue')
-                completComicInfo = cv.getVineEntity(comicInfo.comicVineId)
+                completComicInfo = cv.getVineEntity(comicInfo.id_comicbook_externo)
                 comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
                 catalogador.copyFromComicToComic(completComicInfo,comicbook)
                 GLib.idle_add(self.check_fila_treeview_comics_para_catalogar, index)
@@ -279,7 +282,7 @@ class Comic_vine_cataloger_gtk():
             lista_numeros.append(str(comic[0]))
         print(lista_numeros)
         self.comicInVolumeList = self.session.query(ComicInVolumes).filter(
-            ComicInVolumes.volumeId == self.volume.id).all()
+            ComicInVolumes.id_volume == self.volume.id_volume).all()
         self.comicInVolumeList = [comic for comic in self.comicInVolumeList if comic.numero in lista_numeros ]
         print(self.comicInVolumeList)
 
@@ -297,7 +300,7 @@ class Comic_vine_cataloger_gtk():
         self.liststore_comics_in_volumen.clear()
 
         for index, comic in enumerate(self.comicInVolumeList):
-            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.comicVineId), index])
+            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_externo), index])
 
 
 if __name__ == '__main__':

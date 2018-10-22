@@ -28,7 +28,7 @@ class VolumeGuiGtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click,
                          'click_lookup_volume':self.click_lookup_volume,'change_id_volume':self.change_id_volume,
-                         'click_limpiar': self.click_limpiar}
+                         'click_limpiar': self.click_limpiar,'combobox_change':self.combobox_change}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
@@ -56,6 +56,11 @@ class VolumeGuiGtk():
         self.combobox_orden.set_active(0)
         self.getFirst("")
 
+    def combobox_change(self, widget):
+        print("dsaodkosdksao")
+        if widget.get_active_iter() is not None:
+            self.volumens_manager.set_order(
+                self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
     def boton_cargar_desde_web_click(self,widget):
         volumen_vine_search = Volumen_vine_search_Gtk(self.session)
@@ -104,7 +109,7 @@ class VolumeGuiGtk():
             self.entry_nombre.set_text(volumen.nombre)
             self.entry_url.set_text(volumen.get_url())
             self.entry_url_cover.set_text(volumen.image_url)
-            self.entry_id_editorial.set_text(volumen.publisherId)
+            self.entry_id_editorial.set_text(volumen.id_publisher)
             self.label_nombre_editorial.set_text(volumen.publisher_name)
             self.entry_anio_inicio.set_text(str(volumen.AnioInicio))
             self.entry_cantidad_numeros.set_text(str(volumen.cantidadNumeros))
@@ -140,6 +145,8 @@ class VolumeGuiGtk():
 
     def getNext(self,widget):
         volume = self.volumens_manager.getNext()
+        print('volume')
+        print(volume)
         self.loadVolume(volume)
 
     def copyFromWindowsToEntity(self):
@@ -172,7 +179,7 @@ class VolumeGuiGtk():
         self.loadVolume(volume)
 
     def getLast(self,widget):
-        volume = self.session.query(Volume).order_by(Volume.nombre.asc()).offset(self.offset).first()
+        volume = self.volumens_manager.getLast()
         self.loadVolume(volume)
 
     def click_limpiar(self, widget):
