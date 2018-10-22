@@ -26,6 +26,7 @@ class Publisher(Entidades.Init.Base):
 
         '''
         if "/" in self.logoImagePath:
+
             nombreImagen = self.logoImagePath[self.logoImagePath.rindex('/') + 1:]
             session = Entidades.Init.Session()
             setup = session.query(Setup).first()

@@ -1,6 +1,7 @@
 
-
+import os
 from Entidades import Init
+from Entidades.Setups import Setup
 
 
 class Entity_manager:
@@ -26,7 +27,8 @@ class Entity_manager:
         self.order = None
         self.direccion = 0
         self.offset=0
-
+        directorioBase  = self.session.query(Setup.Setup).first().directorioBase
+        self.pahThumnails = directorioBase + os.sep + 'images' + os.sep + 'logo publisher'+ os.path.sep
         self.status = Entity_manager.CTE_OK
         self.lista_estados_mansajes={0:"OK",
                                      1:"Hay cambios pendientes",

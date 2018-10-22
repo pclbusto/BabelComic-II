@@ -1,17 +1,15 @@
 import os
-from shutil import copyfile
-
 from Entidades import Init
 
-# import Entidades.Setups.Setup
-# import Entidades.Setups.SetupTipoArchivo
-# import Entidades.Setups.SetupDirctorio
-# import Entidades.Setups.SetupVineKey
-# import Entidades.Setups.SetupVinekeysStatus
-# import Entidades.Publishers.Publisher
-# import Entidades.ComicBooks.ComicBook
+import Entidades.Setups.Setup
+import Entidades.Setups.SetupTipoArchivo
+import Entidades.Setups.SetupDirctorio
+import Entidades.Setups.SetupVineKey
+import Entidades.Setups.SetupVinekeysStatus
+import Entidades.Publishers.Publisher
+import Entidades.ComicBooks.ComicBook
 import Entidades.Volumens.Volume
-# import Entidades.ComicBooks.ComicBookDetail
+import Entidades.ComicBooks.ComicBookDetail
 import Entidades.Volumens.ComicsInVolume
 
 if __name__ == '__main__':

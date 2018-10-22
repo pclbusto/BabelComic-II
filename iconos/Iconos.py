@@ -8,7 +8,6 @@ class Iconos():
         setup = Entidades.Init.Session().query(Setup.Setup).first()
         path = setup.directorioBase+os.sep+"iconos"+os.sep
         self.pilImagenLookup = PIL.Image.open(path+"Magnifying-Glass-icon.png")
-        self.pilImageLogo = PIL.Image.open(path+"Logo-Editorial.png")
         self.pilImageExpansion = PIL.Image.open(path+"expansion.png")
         self.pilImageFirst = PIL.Image.open(path+"first.png")
         self.pilImagePrev = PIL.Image.open(path+"prev.png")

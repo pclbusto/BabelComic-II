@@ -95,8 +95,9 @@ class PublisherGtk():
             self.entry_nombre.set_text(publisher.name)
             self.entry_id_externo.set_text(publisher.id_publisher_externo)
             self.entry_url.set_text(publisher.siteDetailUrl)
-            publisher.localLogoImagePath = publisher.getImageCoverPath()
-            if publisher.localLogoImagePath:
+
+            if publisher.hasImageCover():
+                publisher.localLogoImagePath = publisher.getImageCoverPath()
                 if publisher.localLogoImagePath[-3].lower()=='gif':
                     gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
                     self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
@@ -107,7 +108,13 @@ class PublisherGtk():
                         height=250,
                         preserve_aspect_ratio=True)
                     self.publisher_logo_image.set_from_pixbuf(pixbuf)
-
+            else:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    filename=self.publishers_manager.pahThumnails + "sin_caratula_publisher.jpg",
+                    width=250,
+                    height=250,
+                    preserve_aspect_ratio=True)
+                self.publisher_logo_image.set_from_pixbuf(pixbuf)
             self.label_resumen.set_text(publisher.deck)
 
     def click_limpiar(self, widget):
