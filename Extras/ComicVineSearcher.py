@@ -265,7 +265,7 @@ class ComicVineSearcher:
             comicbook_info = comcis_org_searcher.search_serie(comic_in_volume.site_detail_url)
             comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
             comicbook_info.id_volume
-            self.session.add(comicbook_info)
+            self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
 
 
@@ -286,12 +286,12 @@ class ComicVineSearcher:
 
         while self.cantidad_hilos>0:
             time.sleep(2)
-            print(self.cantidad_hilos)
-        self.session.commit()
+
 
 
     def cargar_comicbook_info(self, lista_comics_in_volumen):
         self.porcentaje_procesado=0
+        self.lista_comicbooks_info=[]
         threading.Thread(target=self.hilo_cargar_comicbook_info, args=[lista_comics_in_volumen]).start()
 
 
@@ -385,10 +385,8 @@ class ComicVineSearcher:
                     comic.thumb_url = item.find('image').find('small_url').text
                     comic.volumeNombre = item.find('volume').find('name').text
                     comic.volumeId = item.find('volume').find('id').text
-                    print(comic)
                     self.listaBusquedaVine.append(
                         comic)
-
 
             elif self.entidad == 'volumes':
                 for item in results:
