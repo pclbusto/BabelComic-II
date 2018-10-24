@@ -1,6 +1,8 @@
 from datetime import datetime
 from Entidades.Publishers import Publisher
 from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
+from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import comic_vine_info_issue_searcher
 from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 from Entidades.Volumens.Volumens import Volumens
@@ -14,6 +16,7 @@ from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import math
 import threading
 import time
+import random
 
 class ComicVineSearcher:
     # todo hacer mas robusta la busqueda y tratar de tener toda la logica de la ventana en esta clase para poder
@@ -227,8 +230,12 @@ class ComicVineSearcher:
                         comicInVolumes.id_comicbook_externo = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
-
+                        comicInVolumes.site_detail_url= issue.find("site_detail_url").text
                         comicIds.append(comicInVolumes)
+
+                #     cargamos la info de los comics los arcos que hagan falta este proceso es largo pero
+                # solo debería tardar la primera vez
+                    self.cargar_comicbook_info(comicIds)
 
                 return volume, comicIds
             else:
@@ -246,6 +253,47 @@ class ComicVineSearcher:
             self.statusMessage = 'Filter Error'
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
+
+    def hilo_procesar_comic_in_volume(self,comic_in_volume):
+        # print(comic_in_volume.site_detail_url)
+        existe = self.session.query(Comicbooks_Info).filter(
+            Comicbooks_Info.id_comicbooks_Info_externo == comic_in_volume.id_comicbook_externo).first()
+
+        # si no existe el comicbook info
+        if existe is None:
+            comcis_org_searcher = comic_vine_info_issue_searcher()
+            comicbook_info = comcis_org_searcher.search_serie(comic_in_volume.site_detail_url)
+            comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
+            comicbook_info.id_volume
+            self.session.add(comicbook_info)
+        self.cantidad_hilos-=1
+
+
+    def hilo_cargar_comicbook_info(self, lista_comics_in_volumen):
+        index = 0
+        self.cantidad_hilos=0
+        cantidad_elementos = len(lista_comics_in_volumen)
+        # print("Cantidad Elementos: {}".format(cantidad_elementos ))
+        while index < cantidad_elementos :
+            if self.cantidad_hilos<20:
+                # print(lista_comics_in_volumen[index])
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, args=[lista_comics_in_volumen[index]]).start()
+                index+=1
+                self.cantidad_hilos += 1
+                self.porcentaje_procesado = int(100 * index / cantidad_elementos)
+            else:
+                time.sleep(2)
+
+        while self.cantidad_hilos>0:
+            time.sleep(2)
+            print(self.cantidad_hilos)
+        self.session.commit()
+
+
+    def cargar_comicbook_info(self, lista_comics_in_volumen):
+        self.porcentaje_procesado=0
+        threading.Thread(target=self.hilo_cargar_comicbook_info, args=[lista_comics_in_volumen]).start()
+
 
 
     def vineSearchMore(self):

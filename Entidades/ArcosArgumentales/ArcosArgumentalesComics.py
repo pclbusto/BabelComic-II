@@ -7,7 +7,7 @@ esto implicaría
 '''
 class ArcosArgumentalesComics(Entidades.Init.Base):
     __tablename__='ArcosArgumentalesComics'
-    id_arco_argumental = Column(String,primary_key=True)
+    id_arco_argumental = Column(String,primary_key=True, )
     id_comicbook_externo = Column(String,primary_key=True)
 
     orden = Column(Integer)

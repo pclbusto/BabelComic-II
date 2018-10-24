@@ -1,5 +1,7 @@
 import re
 from urllib.request import urlopen
+from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
+from datetime import date
 
 class comic_vine_info_issue_searcher():
 
@@ -19,40 +21,65 @@ class comic_vine_info_issue_searcher():
     def search_serie(self, url):
         html = urlopen(url).read().decode('utf-8')
         # print(html)
-        numero_issue = '0'
-        nombre_issue =''
-        descripcion_issue = ''
-        fecha_tapa_issue =''
-        id_story_arc = []
-        id_volumen_issue=''
+        comicbook_info = Comicbooks_Info()
+        # numero_issue = '0'
+        # nombre_issue =''
+        # descripcion_issue = ''
+        # fecha_tapa_issue =''
+        # id_story_arc = []
+        # id_volumen_issue=''
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            numero_issue = match.group(1)
+            comicbook_info.numero = match.group(1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            nombre_issue = match.group(1)
+            comicbook_info.titulo = match.group(1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_description, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            descripcion_issue = match.group(1)
+            comicbook_info.resumen = match.group(1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_cover_date, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             fecha_tapa_issue = match.group(1)
+            mes=0
+            if fecha_tapa_issue.find("January")!=-1:
+                mes = 1
+            if fecha_tapa_issue.find("February")!=-1:
+                mes = 2
+            if fecha_tapa_issue.find("March")!=-1:
+                mes = 3
+            if fecha_tapa_issue.find("April")!=-1:
+                mes = 4
+            if fecha_tapa_issue.find("May")!=-1:
+                mes = 5
+            if fecha_tapa_issue.find("June")!=-1:
+                mes = 6
+            if fecha_tapa_issue.find("July")!=-1:
+                mes = 7
+            if fecha_tapa_issue.find("August")!=-1:
+                mes = 8
+            if fecha_tapa_issue.find("September")!=-1:
+                mes = 9
+            if fecha_tapa_issue.find("October")!=-1:
+                mes = 10
+            if fecha_tapa_issue.find("November")!=-1:
+                mes = 11
+            if fecha_tapa_issue.find("December")!=-1:
+                mes = 12
+            anio = int(fecha_tapa_issue[-4:])
+            comicbook_info.fechaTapa = date(anio, mes,1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_story_arc, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            id_story_arc.append(match.group(1))
+            comicbook_info.id_arco_argumental=match.group(1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_id_volume, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             id_volumen_issue=match.group(1)
 
-
-
-            # cadena = "Numero {numero} Nombre Editorial {Nombre_Editorial} Id Serie {Id_Serie} " \
-            #          "Nombre Serie {Nombre_Serie}".format(Id_Editorial=match.group(1),Nombre_Editorial= match.group(2),
-            #                                              Id_Serie=match.group(3), Nombre_Serie=match.group(4))
-        print(numero_issue, nombre_issue, fecha_tapa_issue,id_story_arc, id_volumen_issue, descripcion_issue )
+        return comicbook_info
 
 if __name__ == "__main__":
     comcis_org_searcher = comic_vine_info_issue_searcher()
     comcis_org_searcher.search_serie('https://comicvine.gamespot.com/green-lantern-39-agent-orange-part-1/4000-155207/')
+    # cadena = 'June 2018'
+    # print(cadena[:-4])
     # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/batman-708-judgment-on-gotham-part-one-one-good-ma/4000-265991/')
     # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/batman-713-in-storybook-endings/4000-286879/')

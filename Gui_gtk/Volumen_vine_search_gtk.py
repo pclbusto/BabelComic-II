@@ -114,7 +114,7 @@ class Volumen_vine_search_Gtk():
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(self.volume .id_volume_externo)
+        volumenAndIssues = cv.getVineEntity(self.volume.id_volume_externo)
         volume = volumenAndIssues[0]
         print(volume)
         # guardamos el volumen primero para obtener el id de volumen

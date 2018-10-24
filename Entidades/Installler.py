@@ -11,6 +11,7 @@ import Entidades.ComicBooks.ComicBook
 import Entidades.Volumens.Volume
 import Entidades.ComicBooks.ComicBookDetail
 import Entidades.Volumens.ComicsInVolume
+import Entidades.ComicBooks.ComicBookInfo
 
 if __name__ == '__main__':
     Init.recreateTables()

@@ -10,8 +10,9 @@ from sqlalchemy import Sequence
 class Publisher(Entidades.Init.Base):
     __tablename__='Publishers'
 
+
     id_publisher = Column(Integer, Sequence('publisher_id_seq'), primary_key=True)
-    id_publisher_externo = Column(String, nullable=False,default='')
+    id_publisher_externo = Column(String, nullable=False, default='')
     name = Column(String, nullable=False,default='')
     deck = Column(String, nullable=False,default='')
     description = Column(String, nullable=False,default='')

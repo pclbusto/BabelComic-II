@@ -1,18 +1,16 @@
-from sqlalchemy import Column, Integer, String, Float,ForeignKey
+from sqlalchemy import Column, Integer, String, Float
 import Entidades.Init
 from sqlalchemy import Sequence
 
-class ComicBook(Entidades.Init.Base):
 
-    __tablename__='ComicbooksInfo'
-    __table_args__ = {'sqlite_autoincrement': True}
+'''Esta clase representa la metadata del comic. 
+'''
+class Comicbooks_Info(Entidades.Init.Base):
 
-    extensionesSoportadas = ['jpg', 'png', 'gif', 'jpeg']
+    __tablename__='Comicbooks_Info'
 
-
-    path = Column(String,unique=True)
-    id_comicbook = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
-    id_comicbook_externo = Column(String,nullable=False,default='')
+    id_comicbooks_Info = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
+    id_comicbooks_Info_externo = Column(String,nullable=False,default='')
     titulo = Column(String,nullable=False,default='')
     id_volume = Column(String, nullable=False, default='')
     nombre_volumen = Column(String,nullable=False,default='')
@@ -28,7 +26,6 @@ class ComicBook(Entidades.Init.Base):
     id_publisher = Column(String,nullable=False,default='')
     api_detail_url = Column(String,nullable=False,default='')
     thumb_url  = Column(String,nullable=False,default='')
-    calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
     '''Este campo se crea para ordenar los comics.
     Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
     El tema es que por ser string pierdo el orden entonces despues del 1 no viene el 2 si no 10.'''
@@ -45,155 +42,5 @@ class ComicBook(Entidades.Init.Base):
         #        "Numero='%s'\n" \
         #        "id interno='%s'>" % (
         # self.volumeId,  self.titulo, self.path, self.arcoArgumentalId, self.arcoArgumentalNumero,self.comicVineId,self.numero,self.comicId)
-        return "id interno={}-comic vine id={}".format(self.id_comicbook, self.id_comicbook_externo)
+        return "titulo={}-comic vine id={}".format(self.titulo, self.id_comicbooks_Info_externo)
     # ##        rarfile.UNRAR_TOOL = 'C:\\Program Files\\WinRAR'
-
-    def tieneArcoAlterno(self):
-        return self.arcoArgumentalId != '0'
-
-    def openCbFile(self):
-        #print('En openCbFile: '+self.getTipo())
-        self.paginas=[]
-        if (self.getTipo().lower()=='cbz'):
-            try:
-                self.cbFile = zipfile.ZipFile(self.path, 'r')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-            except BadZipFile:
-                self.cbFile = rarfile.RarFile(self.path, 'r')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
-
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-        elif (self.getTipo().lower()=='cbr'):
-            try:
-                self.cbFile = rarfile.RarFile(self.path, 'r')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
-
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-            except BadRarFile:
-                self.cbFile = zipfile.ZipFile(self.path, 'r')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-                #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
-
-        self.paginas.sort()
-        self.indicePaginaActual = 0
-
-    def has_xml(self):
-        self.openCbFile()
-        xmls = [x for x in self.cbFile.namelist() if (x[-3:].lower() in ["xml"])]
-        if str(self.comicId)+'.xml' in xmls:
-            return True
-        else:
-            return False
-
-    def editCbFile(self):
-        #print('En openCbFile: '+self.getTipo())
-        self.paginas=[]
-        if (self.getTipo().lower()=='cbz'):
-            try:
-                self.cbFile = zipfile.ZipFile(self.path, 'a')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-            except BadZipFile:
-                self.cbFile = rarfile.RarFile(self.path, 'a')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
-
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-        elif (self.getTipo().lower()=='cbr'):
-            try:
-                self.cbFile = rarfile.RarFile(self.path, 'a')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
-
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-            except BadRarFile:
-                self.cbFile = zipfile.ZipFile(self.path, 'a')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-                #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
-
-        self.paginas.sort()
-        self.indicePaginaActual = 0
-
-
-    def getImagePage(self):
-        print('getImagePage'+self.getNombreArchivo())
-        return (Image.open(self.getPage()))
-
-    def getCantidadPaginas(self):
-        return (len(self.paginas))
-
-    def getPage(self):
-        return(BytesIO(self.cbFile.read(self.paginas[self.indicePaginaActual])))
-
-    def getPageExtension(self):
-        index = self.paginas[self.indicePaginaActual].rindex(".")-len(self.paginas[self.indicePaginaActual])
-
-        return (self.paginas[self.indicePaginaActual][index:])
-
-    def goto(self,index):
-        if index < len(self.paginas):
-            self.indicePaginaActual = index
-
-    def getTitulo(self):
-        return(self.titulo)
-
-    def getPath(self):
-        return(self.path)
-
-    def getNumero(self):
-        return(self.numero)
-
-    def getKey(self):
-        return(self.path)
-
-    def getTipo(self):
-        return(self.path[-3:])
-
-    def getSize(self):
-        tam = os.stat(self.path).st_size
-        return tam
-
-    def getNombreArchivo(self,conExtension=True):
-        if conExtension:
-            return(self.path[self.path.rfind(os.sep)+1:])
-        else:
-            return (self.path[self.path.rfind(os.sep) + 1:-4])
-
-
-
-
-# ##    def __str__(self):
-# ##        return ('<NOMBRE: '+self.nombre+' PATH :'+self.path)
-# if __name__ == "__main__":
-#     clave1 = '/root/Imagenes/Comics/superman1.cbz'
-# ##    comic1=ComicBook(clave1,'Superman inicio',1,1)
-# ##    comic2=ComicBook('/root/Imagenes/Comics/Green Lantern1.cbz','Origenes',1,1)
-# ##    comic3=ComicBook('/root/Imagenes/Comics/Flash1.cbz','Rebirth',1,1)
-# ##    comic1 = db[clave1]
-# ##    print(comic1.getPath())
-# ##    comic1.seriesAlternasNumero=([(1,6),(2,1)])
-# ##    db[clave1]=comic1
-
-
-

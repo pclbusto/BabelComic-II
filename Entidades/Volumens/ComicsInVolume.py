@@ -11,6 +11,7 @@ class ComicInVolumes(Entidades.Init.Base):
     # mantenemos esto para poder borrar
     id_volume_externo = Column(Integer, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')
+    site_detail_url = Column(String, nullable=False, default='')
 
     def __repr__(self):
         return "numero={} - id_comicbook_externo={} - id_volume_externo={} - titulo={}".format(self.numero, self.id_comicbook_externo, self.id_volume_externo, self.titulo)
