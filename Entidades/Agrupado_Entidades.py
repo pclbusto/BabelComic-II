@@ -65,13 +65,13 @@ class ArcoArgumental(Entidades.Init.Base):
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
-        orden = session.query(ArcosArgumentalesComics).filter(and_(ArcosArgumentalesComics.idArco == self.id, ArcosArgumentalesComics.idComic==idComic)).first()
+        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.idArco == self.id, ArcosArgumentalesComics.idComic==idComic)).first()
         if orden is not None:
             return orden.orden
         return -1
     def getIssuesCount(self):
         session = Entidades.Init.Session()
-        cantidad = session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == self.id).count()
+        cantidad = session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.idArco == self.id).count()
         return cantidad
 
     def getCantidadTitulos(self):
@@ -83,7 +83,7 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     hacemos relacion de many to many que seria 1 arco contiene varios isses y 1 issue contiene varios
     arcos
     '''
-    __tablename__='arcos_argumentales_aomics_reference'
+    __tablename__='arcos_argumentales_comics_reference'
     id_arco_argumental = Column(String,primary_key=True)
     id_comicbook_externo = Column(String,primary_key=True)
 

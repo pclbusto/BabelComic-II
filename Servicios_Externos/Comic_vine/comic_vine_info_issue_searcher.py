@@ -1,12 +1,15 @@
 import re
+# esta clase ya hace referencia a esta clase
+import Extras.ComicVineSearcher
+import Extras.Config
+
 from urllib.request import urlopen
 from Entidades.Agrupado_Entidades import  Comicbooks_Info,Comicbook_Info_cover_url, ArcoArgumental
 from datetime import date
 from Entidades import Init
-from Extras.ComicVineSearcher import ComicVineSearcher
-from Extras.Config import Config
 
-class comic_vine_info_issue_searcher():
+
+class Comic_Vine_Info_Issue_Searcher():
 
 
     regex_search_serie = r"<td class=\"listing_publisher\"> <a href=\"/publisher/(\d*)/\">([^<]*)</a></td>[^<]*<td>" \
@@ -27,16 +30,16 @@ class comic_vine_info_issue_searcher():
         html = urlopen(url).read().decode('utf-8')
         # print(html)
         comicbook_info = Comicbooks_Info()
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_number, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.numero = match.group(1)
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_name, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.titulo = match.group(1)
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_description, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_description, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.resumen = match.group(1)
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_cover_date, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_cover_date, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             fecha_tapa_issue = match.group(1)
             mes=0
@@ -66,7 +69,7 @@ class comic_vine_info_issue_searcher():
                 mes = 12
             anio = int(fecha_tapa_issue[-4:])
             comicbook_info.fechaTapa = date(anio, mes,1)
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_story_arc, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             arco_argumental = ArcoArgumental()
             arco_argumental.id_arco_argumental_externo = match.group(1)
@@ -75,12 +78,15 @@ class comic_vine_info_issue_searcher():
                 ArcoArgumental.id_arco_argumental_externo == arco_argumental.id_arco_argumental_externo).first()
             if existe is None:
                 #buscamos los datos del arco
-                config = Config()
-                comicVineSearcher = ComicVineSearcher(config.getClave('story_arc_credits'), session=session)
-                ArcoArgumental = comicVineSearcher.getVineEntity(ArcoArgumental.id_arco_argumental_externo)
+                config = Extras.Config.Config()
+                comicVineSearcher = Extras.ComicVineSearcher.ComicVineSearcher(config.getClave('story_arc_credits'), session=session)
+                comicVineSearcher.setEntidad('story_arc_credits')
+                arco_argumental = comicVineSearcher.getVineEntity(arco_argumental.id_arco_argumental_externo)
+                session.add(arco_argumental)
+                session.commit()
             comicbook_info.ids_arco_argumental.append(arco_argumental)
 
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_url_cover, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_cover_url(thumb_url=match.group(1))
             print(comic_url)
@@ -91,7 +97,7 @@ class comic_vine_info_issue_searcher():
 
 if __name__ == "__main__":
 
-    comcis_org_searcher = comic_vine_info_issue_searcher()
+    comcis_org_searcher = Comic_Vine_Info_Issue_Searcher()
     comcis_org_searcher.search_stotyarc('https://comicvine.gamespot.com/blackest-night/4045-55766/issues/')
 
     # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/green-lantern-39-agent-orange-part-1/4000-155207/')

@@ -1,5 +1,5 @@
 from datetime import datetime
-from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import comic_vine_info_issue_searcher
+from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Issue_Searcher
 from Entidades.Agrupado_Entidades import ComicBook,Comicbooks_Info,Publisher, ArcoArgumental, Arcos_Argumentales_Comics_Reference, Volume, ComicInVolumes
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -168,7 +168,6 @@ class ComicVineSearcher:
                 story_arc = root.find('results')
                 arco = ArcoArgumental()
                 arco.id_arco_argumental_externo = id
-                arco.id = story_arc.find('id').text
                 arco.nombre = story_arc.find('name').text
                 arco.deck = story_arc.find('deck').text
                 arco.descripcion = story_arc.find('description').text
@@ -177,14 +176,14 @@ class ComicVineSearcher:
                 pos = 1
                 self.session.add(arco)
                 self.session.commit()
-                self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.idArco == arco.id).delete()
+                self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == arco.id_arco_argumental).delete()
                 self.session.commit()
                 for issue in issues:
-                    arcoComic = Arcos_Argumentales_Comics_Reference()
-                    arcoComic.idArco = arco.id
-                    arcoComic.idComic = issue.find('id').text
-                    arcoComic.orden = pos
-                    self.session.add(arcoComic)
+                    arco_commics_reference = Arcos_Argumentales_Comics_Reference()
+                    arco_commics_reference.id_arco_argumental = arco.id_arco_argumental
+                    arco_commics_reference.id_comicbook_externo = issue.find('id').text
+                    arco_commics_reference.orden = pos
+                    self.session.add(arco_commics_reference)
                     pos += 1
                 self.session.commit()
                 return arco
@@ -255,8 +254,8 @@ class ComicVineSearcher:
 
         # si no existe el comicbook info
         # if existe is None:
-        comcis_org_searcher = comic_vine_info_issue_searcher()
-        comicbook_info = comcis_org_searcher.search_serie(comic_in_volume.site_detail_url)
+        comics_searcher = Comic_Vine_Info_Issue_Searcher()
+        comicbook_info = comics_searcher.search_serie(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
         self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
