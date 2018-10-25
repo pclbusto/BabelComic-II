@@ -35,6 +35,7 @@ class ComicVineSearcher:
         self.entidad = ''
         self.listaBusquedaVine = []
         self.listaBusquedaLocal = []
+        self.lista_comicbooks_info = []
         self.columnas = []
         self.statusMessage = 'Ok'
         # es el techo de cantidad resultados dividido 100
@@ -255,17 +256,16 @@ class ComicVineSearcher:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def hilo_procesar_comic_in_volume(self,comic_in_volume):
-        # print(comic_in_volume.site_detail_url)
-        existe = self.session.query(Comicbooks_Info).filter(
-            Comicbooks_Info.id_comicbooks_Info_externo == comic_in_volume.id_comicbook_externo).first()
+
+        # existe = self.session.query(Comicbooks_Info).filter(
+        #     Comicbooks_Info.id_comicbooks_Info_externo == comic_in_volume.id_comicbook_externo).first()
 
         # si no existe el comicbook info
-        if existe is None:
-            comcis_org_searcher = comic_vine_info_issue_searcher()
-            comicbook_info = comcis_org_searcher.search_serie(comic_in_volume.site_detail_url)
-            comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
-            comicbook_info.id_volume
-            self.lista_comicbooks_info.append(comicbook_info)
+        # if existe is None:
+        comcis_org_searcher = comic_vine_info_issue_searcher()
+        comicbook_info = comcis_org_searcher.search_serie(comic_in_volume.site_detail_url)
+        comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
+        self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
 
 
@@ -276,7 +276,7 @@ class ComicVineSearcher:
         # print("Cantidad Elementos: {}".format(cantidad_elementos ))
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
-                # print(lista_comics_in_volumen[index])
+                print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_comic_in_volume, args=[lista_comics_in_volumen[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1
@@ -286,12 +286,16 @@ class ComicVineSearcher:
 
         while self.cantidad_hilos>0:
             time.sleep(2)
+        self.porcentaje_procesado = 100
+        print("Cantidad registros: {}".format(len(self.lista_comicbooks_info)))
+        for com in self.lista_comicbooks_info:
+            print(com.numero, com.id_comicbooks_Info_externo)
 
 
 
     def cargar_comicbook_info(self, lista_comics_in_volumen):
         self.porcentaje_procesado=0
-        self.lista_comicbooks_info=[]
+        self.lista_comicbooks_info.clear()
         threading.Thread(target=self.hilo_cargar_comicbook_info, args=[lista_comics_in_volumen]).start()
 
 

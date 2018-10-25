@@ -15,6 +15,7 @@ class comic_vine_info_issue_searcher():
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
     regex_get_issue_story_arc = r"4045-(\d*)"
     regex_get_issue_id_volume = r"4050-(\d*)"
+    regex_get_issue_url_cover = r"(https://static.comicvine.com/uploads/scale_large[^\"]*)"
     def __init__(self):
         pass
 
@@ -22,12 +23,6 @@ class comic_vine_info_issue_searcher():
         html = urlopen(url).read().decode('utf-8')
         # print(html)
         comicbook_info = Comicbooks_Info()
-        # numero_issue = '0'
-        # nombre_issue =''
-        # descripcion_issue = ''
-        # fecha_tapa_issue =''
-        # id_story_arc = []
-        # id_volumen_issue=''
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.numero = match.group(1)
@@ -70,9 +65,9 @@ class comic_vine_info_issue_searcher():
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_story_arc, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.id_arco_argumental=match.group(1)
-        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_id_volume, html, re.DOTALL)
+        matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            id_volumen_issue=match.group(1)
+            comicbook_info.thumb_url=match.group(1)
 
         return comicbook_info
 

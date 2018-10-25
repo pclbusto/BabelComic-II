@@ -8,6 +8,8 @@ import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Volumens.ComicsInVolume import ComicInVolumes
+from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
+from Entidades.Volumens.Volume import Volume
 import threading
 import time
 class Volumen_vine_search_Gtk():
@@ -110,25 +112,46 @@ class Volumen_vine_search_Gtk():
         self.hilo1 = threading.Thread(target=self._buscar)
         self.hilo1.start()
 
-    def click_aceptar(self, widget):
+    def cargar_mensaje_status(self, mensaje):
+        self.label_status.set_text(mensaje)
+
+    def hilo_cargar_volume(self, id_volume_externo):
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(self.volume.id_volume_externo)
+        volumenAndIssues = cv.getVineEntity(id_volume_externo   )
+        # volumenAndIssues = cv.getVineEntity(106705)
+        while cv.porcentaje_procesado!=100:
+            time.sleep(2)
+            GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
         volume = volumenAndIssues[0]
-        print(volume)
-        # guardamos el volumen primero para obtener el id de volumen
+        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume_externo== volume.id_volume_externo).first()
+        if volumen_in_db:
+            # actualizo la cantidad de ejemplares nada mas
+            volumen_in_db.cantidadNumeros = volume.cantidadNumeros
+            volume = volumen_in_db
         self.session.add(volume)
+
         self.session.commit()
-        # print(volumenAndIssues[0])
-        # self.session.refresh(self.volume)
+        print(volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume_externo == volume.id_volume_externo).delete()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
             numeroComic.id_volume = volume.id_volume
             self.session.add(numeroComic)
         self.session.commit()
+        # limpiamos los comics info del volumen
+        self.session.query(Comicbooks_Info).filter(Comicbooks_Info.id_volume == volume.id_volume).delete()
+        for comicbook_info in cv.lista_comicbooks_info:
+            comicbook_info.id_volume = volume.id_volume
+            comicbook_info.nombre_volumen = volume.nombre
+            self.session.add(comicbook_info)
+            self.session.commit()
 
+    def click_aceptar(self, widget):
+        # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
+    #     86343
+        threading.Thread(target=self.hilo_cargar_volume, args=['86343']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()

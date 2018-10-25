@@ -16,7 +16,7 @@ if __name__ == "__main__":
     #
     searcher = ComicVineSearcher(vinekey='7e4368b71c5a66d710a62e996a660024f6a868d4', session=None)
     searcher.entidad='volume'
-    searcher.getVineEntity('91273')
+    searcher.getVineEntity('86343')
 
     # http://comicvine.gamespot.com/api/volume/4050-7300/?api_key=7e4368b71c5a66d710a62e996a660024f6a868d4
     # publisher_manager = Entity_manager(clase=Publisher)
