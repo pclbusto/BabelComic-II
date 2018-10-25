@@ -1,7 +1,10 @@
 import re
 from urllib.request import urlopen
-from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
+from Entidades.Agrupado_Entidades import  Comicbooks_Info,Comicbook_Info_cover_url, ArcoArgumental
 from datetime import date
+from Entidades import Init
+from Extras.ComicVineSearcher import ComicVineSearcher
+from Extras.Config import Config
 
 class comic_vine_info_issue_searcher():
 
@@ -16,6 +19,7 @@ class comic_vine_info_issue_searcher():
     regex_get_issue_story_arc = r"4045-(\d*)"
     regex_get_issue_id_volume = r"4050-(\d*)"
     regex_get_issue_url_cover = r"(https://static.comicvine.com/uploads/scale_large[^\"]*)"
+
     def __init__(self):
         pass
 
@@ -64,16 +68,33 @@ class comic_vine_info_issue_searcher():
             comicbook_info.fechaTapa = date(anio, mes,1)
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_story_arc, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            comicbook_info.id_arco_argumental=match.group(1)
+            arco_argumental = ArcoArgumental()
+            arco_argumental.id_arco_argumental_externo = match.group(1)
+            session = Init.Session()
+            existe = session.query(ArcoArgumental).filter(
+                ArcoArgumental.id_arco_argumental_externo == arco_argumental.id_arco_argumental_externo).first()
+            if existe is None:
+                #buscamos los datos del arco
+                config = Config()
+                comicVineSearcher = ComicVineSearcher(config.getClave('story_arc_credits'), session=session)
+                ArcoArgumental = comicVineSearcher.getVineEntity(ArcoArgumental.id_arco_argumental_externo)
+            comicbook_info.ids_arco_argumental.append(arco_argumental)
+
         matches = re.finditer(comic_vine_info_issue_searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
-            comicbook_info.thumb_url=match.group(1)
+            comic_url =Comicbook_Info_cover_url(thumb_url=match.group(1))
+            print(comic_url)
+            comicbook_info.thumbs_url.append(comic_url)
 
         return comicbook_info
 
+
 if __name__ == "__main__":
+
     comcis_org_searcher = comic_vine_info_issue_searcher()
-    comcis_org_searcher.search_serie('https://comicvine.gamespot.com/green-lantern-39-agent-orange-part-1/4000-155207/')
+    comcis_org_searcher.search_stotyarc('https://comicvine.gamespot.com/blackest-night/4045-55766/issues/')
+
+    # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/green-lantern-39-agent-orange-part-1/4000-155207/')
     # cadena = 'June 2018'
     # print(cadena[:-4])
     # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/batman-708-judgment-on-gotham-part-one-one-good-ma/4000-265991/')

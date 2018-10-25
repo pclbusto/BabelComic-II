@@ -1,17 +1,22 @@
-from sqlalchemy import Column, Integer, String, and_
+from sqlalchemy import Column, Integer, String, and_,ForeignKey
+from sqlalchemy.orm import relationship
 import Entidades.Init
-from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
+
 from sqlalchemy import Sequence
 
-class ArcoArgumental(Entidades.Init.Base):
+
+
+class ArcoArgumental():
     # todo implementar gui para ver y administar
-    __tablename__ = 'ArcosArgumentales'
+    __tablename__ = 'arcos_argumentales'
+
     id_arco_argumental = Column(Integer, Sequence('arco_id_seq'), primary_key=True)
-    id_arco_argumental_externo = Column(String,primary_key=True)
+    id_arco_argumental_externo = Column(String,nullable=False,default='')
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
+    ids_comicbooks_Info = relationship("Comicbooks_Info", secondary=comicbook_info_arco_argumental)
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()

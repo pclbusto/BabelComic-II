@@ -3,7 +3,7 @@ from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
 from Entidades import Init
 
-class ArcosArgumentales(Entity_manager):
+class ArcosArgumentales():
     def __init__(self, session = None):
         Entity_manager.__init__(self, session=session, clase=ArcoArgumental, id_externo=ArcoArgumental.id_arco_argumental_externo)
         if session is not None:

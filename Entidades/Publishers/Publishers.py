@@ -1,5 +1,5 @@
 
-from Entidades.Publishers.Publisher import Publisher
+from Entidades.Agrupado_Entidades import Publisher
 from Entidades.Entity_manager import Entity_manager
 from Entidades import Init
 

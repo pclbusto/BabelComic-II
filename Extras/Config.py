@@ -3,11 +3,8 @@ from _datetime import datetime
 import Extras.ComicVineSearcher
 import os
 import Entidades.Init
-import Entidades.Setups.SetupTipoArchivo
-import Entidades.Setups.SetupDirctorio
-import Entidades.Setups.SetupVineKey
-from Entidades.Setups.SetupVinekeysStatus import SetupVinekeyStatus
-import Entidades.Setups.Setup
+import Entidades.Agrupado_Entidades
+from Entidades.Agrupado_Entidades import SetupVinekeyStatus
 from sqlalchemy import and_
 import shutil
 '''
@@ -38,16 +35,16 @@ class Config:
 
         # recuperamos la lista de tipos, claves y directorios
 
-        for setupTipoArchivo in Entidades.Init.Session().query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo):
+        for setupTipoArchivo in Entidades.Init.Session().query(Entidades.Agrupado_Entidades.SetupTipoArchivo):
             self.listaTipos.append(setupTipoArchivo.tipoArchivo)
-        for setupDirectorio in Entidades.Init.Session().query(Entidades.Setups.SetupDirctorio.SetupDirectorio):
+        for setupDirectorio in Entidades.Init.Session().query(Entidades.Agrupado_Entidades.SetupDirectorio):
             self.listaDirectorios.append(setupDirectorio.pathDirectorio)
-        for setupVinekey in Entidades.Init.Session().query(Entidades.Setups.SetupVineKey.SetupVinekey):
+        for setupVinekey in Entidades.Init.Session().query(Entidades.Agrupado_Entidades.SetupVinekey):
             self.listaClaves.append(setupVinekey.key)
 
-        self.setup = self.session.query(Entidades.Setups.Setup.Setup).first()
+        self.setup = self.session.query(Entidades.Agrupado_Entidades.Setup).first()
         if not self.setup:
-            self.setup = Entidades.Setups.Setup.Setup()
+            self.setup = Entidades.Agrupado_Entidades.Setup()
             self.setup.setupkey=1
             self.setup.directorioBase=""
 
@@ -85,18 +82,18 @@ class Config:
         """
 
 
-        vinekey = Entidades.Setups.SetupVineKey.SetupVinekey()
+        vinekey = Entidades.Agrupado_Entidades.SetupVinekey()
 
-        vinekey = self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).filter(Entidades.Setups.SetupVineKey.SetupVinekey.key==clave).first()
+        vinekey = self.session.query(Entidades.Agrupado_Entidades.SetupVinekey).filter(Entidades.Agrupado_Entidades.SetupVinekey.key==clave).first()
         if (vinekey):
             for entidad in Extras.ComicVineSearcher.ComicVineSearcher.EntidadesPermitidas:
-                status = Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus(key=vinekey.key, recursoId = entidad,cantidadConsultas =0,fechaHoraInicioConsulta=0)
+                status = Entidades.Agrupado_Entidades.SetupVinekeyStatus(key=vinekey.key, recursoId = entidad,cantidadConsultas =0,fechaHoraInicioConsulta=0)
                 self.session.add(status)
             self.session.commit()
 
     def addClave(self, clave):
 
-        claveObj = Entidades.Setups.SetupVineKey.SetupVinekey()
+        claveObj = Entidades.Agrupado_Entidades.SetupVinekey()
         claveObj.key=clave
         print(claveObj)
         self.session.add(claveObj)
@@ -105,7 +102,7 @@ class Config:
 
     def addTipo(self, tipo):
 
-        tipoObj = Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo(tipoArchivo=tipo)
+        tipoObj = Entidades.Agrupado_Entidades.SetupTipoArchivo(tipoArchivo=tipo)
         self.session.add(tipoObj)
         self.session.commit()
 
@@ -116,9 +113,9 @@ class Config:
         :param recurso: identifica si es volumes, comic, editoria, etc
         :return: None
         '''
-        statusVinekey = self.session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).filter(
-            and_(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.key==key,
-                 Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus.recursoId==recurso)).first()
+        statusVinekey = self.session.query(Entidades.Agrupado_Entidades.SetupVinekeyStatus).filter(
+            and_(Entidades.Agrupado_Entidades.SetupVinekeyStatus.key==key,
+                 Entidades.Agrupado_Entidades.SetupVinekeyStatus.recursoId==recurso)).first()
         print(statusVinekey)
         if (statusVinekey):
             fecha_previa_stamp = statusVinekey.fechaHoraInicioConsulta
@@ -141,18 +138,18 @@ class Config:
 
 
     def __delAllTipos__(self):
-        self.session.query(Entidades.Setups.SetupTipoArchivo.SetupTipoArchivo).delete()
+        self.session.query(Entidades.Agrupado_Entidades.SetupTipoArchivo).delete()
         self.session.commit()
         self.listaTipos = []
 
     def __delAllDirectorios__(self):
-        self.session.query(Entidades.Setups.SetupDirctorio.SetupDirectorio).delete()
+        self.session.query(Entidades.Agrupado_Entidades.SetupDirectorio).delete()
         self.session.commit()
         self.listaDirectorios = []
 
     def __delAllClaves__(self):
-        self.session.query(Entidades.Setups.SetupVineKey.SetupVinekey).delete()
-        self.session.query(Entidades.Setups.SetupVinekeysStatus.SetupVinekeyStatus).delete()
+        self.session.query(Entidades.Agrupado_Entidades.SetupVinekey).delete()
+        self.session.query(Entidades.Agrupado_Entidades.SetupVinekeyStatus).delete()
         self.session.commit()
         self.listaClaves = []
 
@@ -232,7 +229,7 @@ class Config:
             return  statusVineStatus.key
         return ""
     def validarRecurso(self,recurso):
-        return recurso in ["volumes","issues", "publishers","issue","volume"]
+        return recurso in ["volumes","issues", "publishers","issue","volume","story_arc_credits"]
     def getClave(self, recurso):
         if self.validarRecurso(recurso):
             clave = self.__getClaveMenosUsadaPorRecurso__(recurso)

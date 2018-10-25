@@ -7,11 +7,10 @@ from gi.repository import GLib
 import Entidades.Init
 from Entidades.Publishers.Publishers import Publishers
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
-from Entidades.Volumens.ComicsInVolume import ComicInVolumes
-from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import ComicInVolumes, Comicbooks_Info, Volume
 import threading
 import time
+
 class Volumen_vine_search_Gtk():
     def __init__(self, session=None):
 
@@ -119,7 +118,7 @@ class Volumen_vine_search_Gtk():
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(id_volume_externo   )
+        volumenAndIssues = cv.getVineEntity(id_volume_externo)
         # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)
@@ -135,6 +134,7 @@ class Volumen_vine_search_Gtk():
         self.session.commit()
         print(volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume_externo == volume.id_volume_externo).delete()
+        self.session.commit()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
             numeroComic.id_volume = volume.id_volume
@@ -142,16 +142,17 @@ class Volumen_vine_search_Gtk():
         self.session.commit()
         # limpiamos los comics info del volumen
         self.session.query(Comicbooks_Info).filter(Comicbooks_Info.id_volume == volume.id_volume).delete()
+        self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
             comicbook_info.id_volume = volume.id_volume
             comicbook_info.nombre_volumen = volume.nombre
             self.session.add(comicbook_info)
-            self.session.commit()
+        self.session.commit()
 
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
     #     86343
-        threading.Thread(target=self.hilo_cargar_volume, args=['86343']).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()

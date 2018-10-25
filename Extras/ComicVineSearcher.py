@@ -1,18 +1,11 @@
 from datetime import datetime
-from Entidades.Publishers import Publisher
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.ComicBooks.ComicBookInfo import Comicbooks_Info
 from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import comic_vine_info_issue_searcher
-from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
-from Entidades.ArcosArgumentales.ArcosArgumentalesComics import ArcosArgumentalesComics
-from Entidades.Volumens.Volumens import Volumens
-
-import Entidades.Volumens.Volume
+from Entidades.Agrupado_Entidades import ComicBook,Comicbooks_Info,Publisher, ArcoArgumental, Arcos_Argumentales_Comics_Reference, Volume, ComicInVolumes
 import urllib.request
 import xml.etree.ElementTree as ET
 
 import Entidades.Init
-from Entidades.Volumens.ComicsInVolume import ComicInVolumes
+
 import math
 import threading
 import time
@@ -110,7 +103,6 @@ class ComicVineSearcher:
         # si estamos aca entoces la consulta se ralizao porque la entidad estaba OK.
         html = response.read()
         xml = html.decode()
-        # root = ET.parse('e:\\descarga.xml')
         print(xml)
         root = ET.fromstring(xml)
         self.statusCode = int(root.find('status_code').text)
@@ -175,6 +167,7 @@ class ComicVineSearcher:
             if self.entidad == 'story_arc_credits':
                 story_arc = root.find('results')
                 arco = ArcoArgumental()
+                arco.id_arco_argumental_externo = id
                 arco.id = story_arc.find('id').text
                 arco.nombre = story_arc.find('name').text
                 arco.deck = story_arc.find('deck').text
@@ -184,10 +177,10 @@ class ComicVineSearcher:
                 pos = 1
                 self.session.add(arco)
                 self.session.commit()
-                self.session.query(ArcosArgumentalesComics).filter(ArcosArgumentalesComics.idArco == arco.id).delete()
+                self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.idArco == arco.id).delete()
                 self.session.commit()
                 for issue in issues:
-                    arcoComic = ArcosArgumentalesComics()
+                    arcoComic = Arcos_Argumentales_Comics_Reference()
                     arcoComic.idArco = arco.id
                     arcoComic.idComic = issue.find('id').text
                     arcoComic.orden = pos
@@ -201,7 +194,7 @@ class ComicVineSearcher:
                 # actualizar los datos.
 
                 volumeVine = root.find('results')
-                volume = Entidades.Volumens.Volume.Volume()
+                volume = Entidades.Agrupado_Entidades.Volume()
                 volume.id_volume_externo = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
@@ -270,17 +263,18 @@ class ComicVineSearcher:
 
 
     def hilo_cargar_comicbook_info(self, lista_comics_in_volumen):
+        print("ACAAAAAAAAAAAAAAAAAAAAAA")
         index = 0
         self.cantidad_hilos=0
         cantidad_elementos = len(lista_comics_in_volumen)
-        # print("Cantidad Elementos: {}".format(cantidad_elementos ))
+
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
                 print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_comic_in_volume, args=[lista_comics_in_volumen[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1
-                self.porcentaje_procesado = int(100 * index / cantidad_elementos)
+                self.porcentaje_procesado = int(100 * (index-1) / cantidad_elementos)
             else:
                 time.sleep(2)
 
