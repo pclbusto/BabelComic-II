@@ -130,7 +130,6 @@ class Volumen_vine_search_Gtk():
             volumen_in_db.cantidadNumeros = volume.cantidadNumeros
             volume = volumen_in_db
         self.session.add(volume)
-
         self.session.commit()
         print(volume)
         self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume_externo == volume.id_volume_externo).delete()
@@ -152,7 +151,7 @@ class Volumen_vine_search_Gtk():
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
     #     86343
-        threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=['106705']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()
