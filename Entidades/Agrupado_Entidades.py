@@ -35,6 +35,7 @@ class Setup(Entidades.Init.Base):
     anchoArbol = Column(Integer,default=100)
     '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
     expresionRegularNumero= Column(String,default='',nullable=False)
+    id_publisher = Column(Integer,default=1)
 
     def __repr__(self):
         return "<Setup(setupkey = '%s'\n" \
@@ -296,15 +297,25 @@ class ComicInVolumes(Entidades.Init.Base):
 class Publisher(Entidades.Init.Base):
     __tablename__='Publishers'
 
-
-    id_publisher = Column(Integer, Sequence('publisher_id_seq'), primary_key=True)
-    id_publisher_externo = Column(String, nullable=False, default='')
+    id_publisher = Column(Integer, primary_key=True)
+    tipo_id_publisher = Column(Integer, primary_key=True, default=0)
+    # id_publisher_externo = Column(String, nullable=False, default='')
     name = Column(String, nullable=False,default='')
     deck = Column(String, nullable=False,default='')
     description = Column(String, nullable=False,default='')
     logoImagePath  = Column(String, nullable=False,default='')
     localLogoImagePath = Column(String, nullable=False,default='')
     siteDetailUrl = Column(String, nullable=False,default='')
+
+    def __init__(self, id_publisher=None):
+        if id_publisher is None:
+            setup = Entidades.Init.Session().query(Setup).first()
+            setup.id_publisher += 1
+            Entidades.Init.Session().add(setup)
+            Entidades.Init.Session().commit()
+            self.id_publisher = setup.id_publisher
+
+
 
     def hasImageCover(self):
         '''
@@ -503,7 +514,6 @@ class SetupVinekey(Entidades.Init.Base):
 
     def __repr__(self):
         return "<SetupVineKeys(Clave='%s')>" %(self.key)
-
 
 class SetupVinekeyStatus(Entidades.Init.Base):
     __tablename__='SetupVineKeysStatus'

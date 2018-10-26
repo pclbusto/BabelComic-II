@@ -1,7 +1,6 @@
 from Entidades.Entity_manager import Entity_manager
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Volumens.Volumens import Volumens,Volume
-from Entidades.Publishers.Publisher import Publisher
+from Entidades.Agrupado_Entidades import Publisher
 
 
 def retrieve_name(var):
@@ -14,17 +13,17 @@ if __name__ == "__main__":
     # print(cadena[-4:])
     #
     #
-    searcher = ComicVineSearcher(vinekey='7e4368b71c5a66d710a62e996a660024f6a868d4', session=None)
-    searcher.entidad='volume'
-    searcher.getVineEntity('86343')
+    # searcher = ComicVineSearcher(vinekey='7e4368b71c5a66d710a62e996a660024f6a868d4', session=None)
+    # searcher.entidad='volume'
+    # searcher.getVineEntity('86343')
 
     # http://comicvine.gamespot.com/api/volume/4050-7300/?api_key=7e4368b71c5a66d710a62e996a660024f6a868d4
-    # publisher_manager = Entity_manager(clase=Publisher)
+    publisher_manager = Entity_manager(clase=Publisher)
     #
-    # publisher_manager.entidad.name='dc comics'
-    # # publisher_manager.entidad.id_publisher = 123456
+    publisher_manager.entidad.name='dc comics'
+    # publisher_manager.entidad.id_publisher = 123456
     # # publisher_manager.entidad.id_publisher_externo = 123456
-    # publisher_manager.save()
+    publisher_manager.save()
     # # valor = getattr(volumens_manager.publisher, param[param.index(".")+1:])
     # # print(valor)
     # # print(getattr(volumens_manager, retrieve_name(volumens_manager.publisher)))
