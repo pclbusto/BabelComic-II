@@ -1,20 +1,18 @@
 import Entidades.Init
-from Entidades.Publishers import Publishers
-from Entidades.Setups. Setup import  Setup
-from Entidades.Volumens.Volumens import Volumens
+from Entidades.Entitiy_managers import Publishers, Volumens
+from Entidades.Agrupado_Entidades import Setup
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
 
-from Entidades.Volumens.Volume import Volume
-from Entidades.Publishers.Publisher import Publisher
+from Entidades.Agrupado_Entidades import Volume , Publisher
 import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Volumens.ComicsInVolume import ComicInVolumes
+from Entidades.Agrupado_Entidades import Comics_In_Volume
 from Extras.Config import Config
 
 class VolumeGuiGtk():

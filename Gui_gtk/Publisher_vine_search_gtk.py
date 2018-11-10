@@ -1,9 +1,8 @@
-from Entidades.Publishers import Publishers
 from  Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 import Entidades.Init
 from gi.repository import GLib
-from Entidades.Publishers.Publisher import Publisher
+from Entidades.Agrupado_Entidades import Publisher
 
 import gi
 gi.require_version('Gtk', '3.0')

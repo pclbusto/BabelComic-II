@@ -1,10 +1,9 @@
-from Entidades.Publishers.Publisher import Publisher
-from Entidades.Volumens.Volumens import Volumens
+from Entidades.Entitiy_managers import Publisher, Volumens
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import  Volume
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 
 

@@ -1,8 +1,8 @@
 import os
 import Entidades.Init
-from Entidades.Publishers.Publishers import Publishers
-from Entidades.Publishers.Publisher import Publisher
-from Entidades.Setups. Setup import  Setup
+from Entidades.Entitiy_managers import Publishers
+from Entidades.Agrupado_Entidades import Publisher
+from Entidades.Agrupado_Entidades import  Setup
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
 

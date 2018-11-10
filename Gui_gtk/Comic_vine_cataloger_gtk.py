@@ -2,20 +2,16 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import Comicbook, Volume,Comics_In_Volume, Setup
 
 
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Setups.Setup import Setup
-
 from Extras.ComicCataloger import Catalogador
 import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import re
 import threading
 
@@ -270,8 +266,8 @@ class Comic_vine_cataloger_gtk():
 
     def click_boton_traer_todo(self,widget):
 
-        self.comicInVolumeList = self.session.query(ComicInVolumes).filter(
-            ComicInVolumes.volumeId == self.volume.id).order_by(ComicInVolumes.numero).all()
+        self.comicInVolumeList = self.session.query(Comics_In_Volume).filter(
+            Comics_In_Volume.volumeId == self.volume.id).order_by(Comics_In_Volume.numero).all()
         self.liststore_comics_in_volumen.clear()
         for index, comic in enumerate(self.comicInVolumeList):
             self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.comicVineId), index])
@@ -281,12 +277,12 @@ class Comic_vine_cataloger_gtk():
         for comic in self.listore_comics_para_catalogar:
             lista_numeros.append(str(comic[0]))
         print(lista_numeros)
-        self.comicInVolumeList = self.session.query(ComicInVolumes).filter(
-            ComicInVolumes.id_volume == self.volume.id_volume).all()
+        self.comicInVolumeList = self.session.query(Comics_In_Volume).filter(
+            Comics_In_Volume.id_volume == self.volume.id_volume).all()
         self.comicInVolumeList = [comic for comic in self.comicInVolumeList if comic.numero in lista_numeros ]
         print(self.comicInVolumeList)
 
-        # .filter(ComicInVolumes.numero in lista_numeros).order_by(ComicInVolumes.numero).all()
+        # .filter(Comics_In_Volume.numero in lista_numeros).order_by(Comics_In_Volume.numero).all()
 
         print(self.comicInVolumeList)
         # listaNumeroComics = [comic for comic in self.comicInVolumeList if comic.numero>=desde and comic.numero<=hasta]
@@ -314,7 +310,7 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(ComicBook).filter(ComicBook.path.like('%s/Batman (2016) Issue #3.%')).all()
+    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%s/Batman (2016) Issue #3.%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 

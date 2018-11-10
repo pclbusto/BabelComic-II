@@ -1,7 +1,4 @@
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Publishers.Publisher import Publisher
-from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import Comicbook, Publisher,Arco_Argumental, Volume
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
@@ -21,13 +18,13 @@ class XmlManager:
     def crear_xml(self, comic):
         # recuperamos todas las entidades
         volume=Volume()
-        arco_argumental = ArcoArgumental()
+        arco_argumental = Arco_Argumental()
         publisher = Publisher()
 
         if comic.volumeId != '':
             volume = self.session.query(Volume).get(comic.id_volumen)
         if comic.arcoArgumentalId != '0':
-            arco_argumental = self.session.query(ArcoArgumental).get(comic.arcoArgumentalId)
+            arco_argumental = self.session.query(Arco_Argumental).get(comic.arcoArgumentalId)
         if comic.publisherId != '':
             publisher = self.session.query(Publisher).get(comic.publisherId)
 
@@ -88,7 +85,7 @@ class XmlManager:
 
     def set_for_all(self):
 
-        lista = self.session.query(ComicBook).all()
+        lista = self.session.query(Comicbook).all()
         for comic in lista:
             comic_root = self.crear_xml(comic)
             tree = ElementTree(comic_root)

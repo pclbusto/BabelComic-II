@@ -5,9 +5,9 @@ from Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 from gi.repository import GLib
 import Entidades.Init
-from Entidades.Publishers.Publishers import Publishers
+from Entidades.Entitiy_managers import Publishers
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
-from Entidades.Agrupado_Entidades import ComicInVolumes, Comicbooks_Info, Volume
+from Entidades.Agrupado_Entidades import Comics_In_Volume, Comicbooks_Info, Volume
 import threading
 import time
 

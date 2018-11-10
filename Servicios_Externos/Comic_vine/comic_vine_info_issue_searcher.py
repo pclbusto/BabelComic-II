@@ -4,7 +4,7 @@ import Extras.ComicVineSearcher
 import Extras.Config
 
 from urllib.request import urlopen
-from Entidades.Agrupado_Entidades import  Comicbooks_Info,Comicbook_Info_cover_url, ArcoArgumental
+from Entidades.Agrupado_Entidades import  Comicbooks_Info,Comicbook_Info_Cover_Url, Arco_Argumental
 from datetime import date
 from Entidades import Init
 

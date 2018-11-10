@@ -1,5 +1,5 @@
-from Entidades.Publishers.Publishers import Publishers
-from Entidades.Entity_manager import Entity_manager
+from Entidades.Entitiy_managers import Publishers
+from Entidades.Agrupado_Entidades import Publisher
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')

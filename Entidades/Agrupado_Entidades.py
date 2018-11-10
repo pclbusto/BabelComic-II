@@ -52,7 +52,7 @@ class Setup(Entidades.Init.Base):
                                                   self.expresionRegularNumero,
                                                   self.directorioBase)
 
-class ArcoArgumental(Entidades.Init.Base):
+class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
     __tablename__ = 'arcos_argumentales'
 
@@ -90,7 +90,7 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
 
     orden = Column(Integer)
 
-class ComicBook(Entidades.Init.Base):
+class Comicbook(Entidades.Init.Base):
 
     __tablename__='Comicbooks'
     __table_args__ = {'sqlite_autoincrement': True}
@@ -103,7 +103,7 @@ class ComicBook(Entidades.Init.Base):
     calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
 
     def __repr__(self):
-        return "id interno={}-comic vine id={}".format(self.id_comicbook, self.id_comicbook_externo)
+        return "id ={}-path={}".format(self.id_comicbook,self.getPath())
 
     def tieneArcoAlterno(self):
         return self.arcoArgumentalId != '0'
@@ -249,7 +249,7 @@ class Comicbooks_Info(Entidades.Init.Base):
     nombre_volumen = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
     fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    ids_arco_argumental = relationship("ArcoArgumental", secondary=comicbook_info_arco_argumental)
+    ids_arco_argumental = relationship("Arco_Argumental", secondary=comicbook_info_arco_argumental)
     arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
@@ -258,7 +258,7 @@ class Comicbooks_Info(Entidades.Init.Base):
 
     id_publisher = Column(String,nullable=False,default='')
     api_detail_url = Column(String,nullable=False,default='')
-    thumbs_url  = relationship("Comicbook_Info_cover_url")
+    thumbs_url  = relationship("Comicbook_Info_Cover_Url")
 
     '''Este campo se crea para ordenar los comics.
     Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
@@ -269,7 +269,10 @@ class Comicbooks_Info(Entidades.Init.Base):
     def __repr__(self):
         return "titulo={}-comic vine id={}".format(self.titulo, self.id_comicbooks_Info_externo)
 
-class Comicbook_Info_cover_url(Entidades.Init.Base):
+class Comicbook_Info_Cover_Url(Entidades.Init.Base):
+    '''Clase que mantiene la info de las caratulas, como un comic puede tener varias caratulas o covers
+    esta clase tiene un link por casa cover que tiene el numero. Esto es algo que la API de comic vine
+    no trae'''
     __tablename__ = 'comicbooks_info_cover_url'
 
     id_comicbooks_Info= Column(Integer, ForeignKey('comicbooks_info.id_comicbooks_Info'))
@@ -279,7 +282,7 @@ class Comicbook_Info_cover_url(Entidades.Init.Base):
     def __repr__(self):
         return "thumb_url={}".format(self.thumb_url)
 
-class ComicInVolumes(Entidades.Init.Base):
+class Comics_In_Volume(Entidades.Init.Base):
     __tablename__='ComicsInVolumes'
     # no lo pasamos a numerico porque algunos numeros tiene 11.3B
 
@@ -293,6 +296,17 @@ class ComicInVolumes(Entidades.Init.Base):
 
     def __repr__(self):
         return "numero={} - id_comicbook_externo={} - id_volume_externo={} - titulo={}".format(self.numero, self.id_comicbook_externo, self.id_volume_externo, self.titulo)
+
+class Comicbook_Detail(Entidades.Init.Base):
+    '''Clase que va a mantener la info del archivo, cantidad de paginas, para cada imagen dentro del archivo asignarle
+    un numero y una tipificacion por ejemplo, pagina, tapa, contra tapa, etc'''
+    __tablename__ = 'Comicbooksdetails'
+    COVER = 1
+    comicId = Column(Integer, primary_key=True)
+    indicePagina = Column(Integer,default=0,primary_key=True)
+    ordenPagina = Column(Integer, nullable=False, default=0)
+    #portada = 1, pagina = 2
+    tipoPagina = Column(Integer, nullable=False, default=2)
 
 class Publisher(Entidades.Init.Base):
     __tablename__='Publishers'
@@ -494,28 +508,28 @@ class Volume(Entidades.Init.Base):
         fImage = open(fullPath, 'rb')
         return (Image.open(fImage))
 
-class SetupDirectorio(Entidades.Init.Base):
+class Setup_Directorio(Entidades.Init.Base):
     __tablename__='SetupDirectorios'
     pathDirectorio = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupDirectorio(Directorio='%s')>" %(self.pathDirectorio)
 
-class SetupTipoArchivo(Entidades.Init.Base):
+class Setup_Tipo_Archivo(Entidades.Init.Base):
     __tablename__='SetupTiposArchivo'
     tipoArchivo = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupTiposArchivo(tipoArchivo='%s')>" %(self.tipoArchivo)
 
-class SetupVinekey(Entidades.Init.Base):
+class Setup_Vinekey(Entidades.Init.Base):
     __tablename__='SetupVineKeys'
     key = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupVineKeys(Clave='%s')>" %(self.key)
 
-class SetupVinekeyStatus(Entidades.Init.Base):
+class Setup_Vinekey_Status(Entidades.Init.Base):
     __tablename__='SetupVineKeysStatus'
     key = Column(String, primary_key=True)
     recursoId = Column(String, primary_key=True)

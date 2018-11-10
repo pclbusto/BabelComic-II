@@ -1,8 +1,7 @@
 from Extras.Config import Config
 from Extras.Scanner import BabelComicBookScanner
 import Entidades.Init
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Setups.Setup import Setup
+from Entidades.Agrupado_Entidades import Comicbook, Setup
 import threading
 import os
 import gi

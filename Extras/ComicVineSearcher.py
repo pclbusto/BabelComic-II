@@ -1,6 +1,6 @@
 from datetime import datetime
 from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Issue_Searcher
-from Entidades.Agrupado_Entidades import ComicBook,Comicbooks_Info,Publisher, ArcoArgumental, Arcos_Argumentales_Comics_Reference, Volume, ComicInVolumes
+from Entidades.Agrupado_Entidades import Comicbook,Comicbooks_Info,Publisher, Arco_Argumental, Arcos_Argumentales_Comics_Reference, Volume, Comics_In_Volume
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -109,7 +109,7 @@ class ComicVineSearcher:
         if self.statusCode == 1:
             if self.entidad == 'issue':
                 # dummy comic me interesa el resto de los campos que los sacamos de la consulta a comic vine
-                comic = ComicBook()
+                comic = Comicbook()
                 comic.path = 'path'
                 issue = root.find('results')
                 if issue.find('name').text is not None:
@@ -144,7 +144,7 @@ class ComicVineSearcher:
                         # .find('story_arc_credits').find('story_arc')
                         print('Id arco encontrado: ' + str(id_arco_externo))
                         arcos_manager = A
-                        arco = self.session.query(ArcoArgumental).filter(ArcoArgumental.id_arco_argumental_externo==idArco)
+                        arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental_externo==idArco)
                         if arco is not None:
                             print('el arco existe. obtenemos el numero del comic')
                             numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
@@ -166,7 +166,7 @@ class ComicVineSearcher:
 
             if self.entidad == 'story_arc_credits':
                 story_arc = root.find('results')
-                arco = ArcoArgumental()
+                arco = Arco_Argumental()
                 arco.id_arco_argumental_externo = id
                 arco.nombre = story_arc.find('name').text
                 arco.deck = story_arc.find('deck').text
@@ -218,7 +218,7 @@ class ComicVineSearcher:
                     print("ACA ESTAMOS")
                     comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
-                        comicInVolumes = ComicInVolumes()
+                        comicInVolumes = Comics_In_Volume()
                         comicInVolumes.id_volume_externo = volume.id_volume_externo
                         comicInVolumes.id_comicbook_externo = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
@@ -370,7 +370,7 @@ class ComicVineSearcher:
             results = root.find('results')
             if self.entidad == 'issues':
                 for item in results:
-                    comic = ComicBook()
+                    comic = Comicbook()
                     comic.fechaTapa = item.find('cover_date').text
                     comic.titulo = item.find('name').text
                     if comic.titulo is None:

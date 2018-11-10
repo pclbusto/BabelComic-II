@@ -1,4 +1,4 @@
-from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.Agrupado_Entidades import Comicbook
 from pathlib import Path
 import threading
 import Entidades.Init
@@ -66,7 +66,7 @@ class BabelComicBookScanner():
             lst = [x for x in p.iterdir() if (x.is_file() and x.name[-3:] in self.listaTipos)]
             dirs = [x for x in p.iterdir() if (x.is_dir())]
             for item in lst:
-                comic = ComicBook()
+                comic = Comicbook()
                 comic.path = str(item)
                 print(comic.path)
                 self.comics.append(comic)
@@ -77,7 +77,7 @@ class BabelComicBookScanner():
             self.porcentajeCompletado = 100 * (cantidadProcesada / cantidadAProcesar)
         for item in self.comics:
             try:
-                comic = self.session.query(ComicBook).filter(ComicBook.path==item.path).first()
+                comic = self.session.query(Comicbook).filter(Comicbook.path==item.path).first()
                 if comic is None:
                     self.session.add(item)
                     self.session.commit()

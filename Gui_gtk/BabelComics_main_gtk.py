@@ -6,9 +6,8 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
 from gi.repository import Gdk
 import Entidades.Init
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Publishers.Publisher import Publisher
-from Entidades.Setups.Setup import Setup
+from Entidades.Agrupado_Entidades import Comicbook, Publisher
+from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
@@ -203,9 +202,10 @@ class BabelComics_main_gtk():
         self.liststore.clear()
         self.lista_pendientes.clear()
         if self.filtro!='':
-            self.listaComics = self.session.query(ComicBook).filter(ComicBook.path.like("%{}%".format(self.filtro))).order_by(ComicBook.path).all()
+            self.listaComics = self.session.query(Comicbook).filter(
+                Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path).all()
         else:
-            self.listaComics = self.session.query(ComicBook).order_by(ComicBook.path).all()
+            self.listaComics = self.session.query(Comicbook).order_by(Comicbook.path).all()
         self.iconview.set_model(self.liststore)
         self.iconview.set_pixbuf_column(0)
         self.iconview.set_text_column(1)

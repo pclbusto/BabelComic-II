@@ -1,6 +1,6 @@
 import Entidades.Init
-import Entidades.Volumens.Volume
-from Entidades.ComicBooks.ComicBook import ComicBook
+import Entidades.Agrupado_Entidades
+from Entidades.Agrupado_Entidades import Comicbook
 from Extras.ComicXmlCreator import XmlManager
 class Catalogador():
     # todo hacer que la catalogacion sea mediante hilos. De esta forma las consultas se pueden hacer X veces mas rápidas
@@ -30,8 +30,8 @@ class Catalogador():
     def loadComicsFromList(self, lista):
         for nombreComic in lista:
             comic = None
-            comic = self.session.query(ComicBook).filter(ComicBook.path == nombreComic).order_by(
-                ComicBook.path.asc()).first()
+            comic = self.session.query(Comicbook).filter(Comicbook.path == nombreComic).order_by(
+                Comicbook.path.asc()).first()
             if comic is not None:
                 self.listaComicsACatalogar.append(comic)
 
