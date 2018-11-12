@@ -184,6 +184,7 @@ class ComicVineSearcher:
 
 
                 issues = story_arc.find('issues')
+                '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
                 self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == arco.id_arco_argumental).delete()
                 self.session.commit()
@@ -263,7 +264,7 @@ class ComicVineSearcher:
 
         # si no existe el comicbook info
         # if existe is None:
-        comics_searcher = Comic_Vine_Info_Issue_Searcher()
+        comics_searcher = Comic_Vine_Info_Issue_Searcher(self.session)
         comicbook_info = comics_searcher.search_serie(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
         self.lista_comicbooks_info.append(comicbook_info)
@@ -277,7 +278,7 @@ class ComicVineSearcher:
 
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
-                print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
+                # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_comic_in_volume, args=[lista_comics_in_volumen[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1

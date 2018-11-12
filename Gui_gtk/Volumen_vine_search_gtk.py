@@ -122,7 +122,7 @@ class Volumen_vine_search_Gtk():
             time.sleep(2)
             GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
         volume = volumenAndIssues[0]
-        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume== volume.id_volume).first()
+        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volume.id_volume).first()
         if volumen_in_db:
             # actualizo la cantidad de ejemplares nada mas
             volumen_in_db.cantidadNumeros = volume.cantidadNumeros
@@ -143,6 +143,7 @@ class Volumen_vine_search_Gtk():
         for comicbook_info in cv.lista_comicbooks_info:
             comicbook_info.id_volume = volume.id_volume
             comicbook_info.nombre_volumen = volume.nombre
+            print(comicbook_info)
             self.session.add(comicbook_info)
         self.session.commit()
 

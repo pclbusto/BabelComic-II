@@ -268,7 +268,7 @@ class Comicbook_Info(Entidades.Init.Base):
 
 
     def __repr__(self):
-        return "titulo={}-comic vine id={}".format(self.titulo, self.id_comicbooks_Info_externo)
+        return "titulo={}-comic vine id={}".format(self.titulo, self.id_comicbook_Info)
 
 class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     '''Clase que mantiene la info de las caratulas, como un comic puede tener varias caratulas o covers

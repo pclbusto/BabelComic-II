@@ -7,7 +7,7 @@ from urllib.request import urlopen
 from Entidades.Agrupado_Entidades import  Comicbook_Info,Comicbook_Info_Cover_Url, Arco_Argumental
 from datetime import date
 from Entidades import Init
-
+import Entidades
 
 class Comic_Vine_Info_Issue_Searcher():
 
@@ -23,8 +23,11 @@ class Comic_Vine_Info_Issue_Searcher():
     regex_get_issue_id_volume = r"4050-(\d*)"
     regex_get_issue_url_cover = r"(https://static.comicvine.com/uploads/scale_large[^\"]*)"
 
-    def __init__(self):
-        pass
+    def __init__(self, session):
+        if session is None:
+            self.session = Entidades.Init.Session()
+        else:
+            self.session = session
 
     def search_serie(self, url):
         html = urlopen(url).read().decode('utf-8')
@@ -74,17 +77,17 @@ class Comic_Vine_Info_Issue_Searcher():
             arco_argumental = Arco_Argumental()
             print("ARCO ARGIMENTOALASKL RECUPERANDOA {}".format(match.group(1)))
             arco_argumental.id_arco_argumental = match.group(1)
-            session = Init.Session()
-            existe = session.query(Arco_Argumental).filter(
+            existe = self.session.query(Arco_Argumental).filter(
                 Arco_Argumental.id_arco_argumental == arco_argumental.id_arco_argumental).first()
             if existe is None:
+                print("ARCO NO EXISTE EN DB VAMOS A CARGARLO")
                 #buscamos los datos del arco
                 config = Extras.Config.Config()
-                comicVineSearcher = Extras.ComicVineSearcher.ComicVineSearcher(config.getClave('story_arc_credits'), session=session)
+                comicVineSearcher = Extras.ComicVineSearcher.ComicVineSearcher(config.getClave('story_arc_credits'), session=self.session)
                 comicVineSearcher.setEntidad('story_arc_credits')
                 arco_argumental = comicVineSearcher.getVineEntity(arco_argumental.id_arco_argumental)
-                # session.add(arco_argumental)
-                # session.commit()
+                self.session.add(arco_argumental)
+                self.session.commit()
             comicbook_info.ids_arco_argumental.append(arco_argumental)
 
         matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
