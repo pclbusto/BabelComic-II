@@ -120,7 +120,7 @@ class Entity_manager:
                     self.entidad=entidad
         else:
             self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
-        print(self.entidad)
+        # print(self.entidad)
         return self.entidad
 
     def getPrev(self):
@@ -132,7 +132,7 @@ class Entity_manager:
                 # entidad = self.session.query(self.clase).filter(
                 #     self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
                 consulta = self._get_consulta()
-                print(consulta)
+                # print(consulta)
                 entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad = entidad

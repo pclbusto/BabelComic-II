@@ -10,15 +10,16 @@ from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
 from io import BytesIO
 from sqlalchemy import Sequence
+import urllib
 
 
 comicbook_info_arco_argumental = Table('comicbook_info_arco_argumental', Entidades.Init.Base.metadata,
-                          Column('id_comicbooks_Info',Integer, ForeignKey('comicbooks_info.id_comicbooks_Info')),
+                          Column('id_comicbook_Info',Integer, ForeignKey('comicbooks_info.id_comicbook_Info')),
                           Column('id_arco_argumental',Integer, ForeignKey('arcos_argumentales.id_arco_argumental'))
 )
 
 class Setup(Entidades.Init.Base):
-    __tablename__='Setups'
+    __tablename__='setups'
     setupkey = Column(Integer, primary_key=True)
     '''desde este direcotrio se calculan el resto de los directorios. Por esto 
     este directorio debe ser donde esta el proyecto
@@ -35,8 +36,12 @@ class Setup(Entidades.Init.Base):
     anchoArbol = Column(Integer,default=100)
     '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
     expresionRegularNumero= Column(String,default='',nullable=False)
-    id_publisher = Column(Integer,default=1)
+    '''Manejo las sucuencias de forma manual porque la idea es usar el id externo como clave
+    para esto los id externos son positivos y los internos son negativos. con esto espero que no haya coliciones'''
 
+    id_publisher = Column(Integer,default=0)
+    id_arco_argumental = Column(Integer,default=0)
+    id_volume = Column(Integer,default=0)
     def __repr__(self):
         return "<Setup(setupkey = '%s'\n" \
                "Cantidad Comics PorPagina = '%s'\n" \
@@ -56,13 +61,12 @@ class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
     __tablename__ = 'arcos_argumentales'
 
-    id_arco_argumental = Column(Integer, Sequence('arco_id_seq'), primary_key=True)
-    id_arco_argumental_externo = Column(String,nullable=False,default='')
+    id_arco_argumental = Column(Integer, primary_key=True)
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
-    ids_comicbooks_Info = relationship("Comicbooks_Info", secondary=comicbook_info_arco_argumental)
+    ids_comicbooks_Info = relationship("Comicbook_Info", secondary=comicbook_info_arco_argumental)
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
@@ -85,14 +89,12 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     arcos
     '''
     __tablename__='arcos_argumentales_comics_reference'
-    id_arco_argumental = Column(String,primary_key=True)
-    id_comicbook_externo = Column(String,primary_key=True)
-
-    orden = Column(Integer)
+    id_arco_argumental = Column(String, primary_key=True)
+    orden = Column(Integer, primary_key=True)
 
 class Comicbook(Entidades.Init.Base):
 
-    __tablename__='Comicbooks'
+    __tablename__='comicbooks'
     __table_args__ = {'sqlite_autoincrement': True}
 
     extensionesSoportadas = ['jpg', 'png', 'gif', 'jpeg']
@@ -194,7 +196,7 @@ class Comicbook(Entidades.Init.Base):
 
 
     def getImagePage(self):
-        print('getImagePage'+self.getNombreArchivo())
+        # print('getImagePage'+self.getNombreArchivo())
         return (Image.open(self.getPage()))
 
     def getCantidadPaginas(self):
@@ -237,20 +239,19 @@ class Comicbook(Entidades.Init.Base):
         else:
             return (self.path[self.path.rfind(os.sep) + 1:-4])
 
-class Comicbooks_Info(Entidades.Init.Base):
+class Comicbook_Info(Entidades.Init.Base):
     '''Esta clase representa la metadata del comic.
     '''
     __tablename__='comicbooks_info'
 
-    id_comicbooks_Info = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
-    id_comicbooks_Info_externo = Column(String,nullable=False,default='')
+    id_comicbook_Info = Column(Integer, primary_key=True)
     titulo = Column(String,nullable=False,default='')
     id_volume = Column(String, nullable=False, default='')
     nombre_volumen = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
-    fechaTapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
+    fecha_tapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
     ids_arco_argumental = relationship("Arco_Argumental", secondary=comicbook_info_arco_argumental)
-    arcoArgumentalNumero = Column(Integer,nullable=False,default=0) #numero dentro del arco
+    arco_argumental_numero = Column(Integer, nullable=False, default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
     rating = Column(Float,nullable=False,default=0.0)
@@ -275,7 +276,7 @@ class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     no trae'''
     __tablename__ = 'comicbooks_info_cover_url'
 
-    id_comicbooks_Info= Column(Integer, ForeignKey('comicbooks_info.id_comicbooks_Info'))
+    id_comicbook_Info= Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'))
     thumb_url = Column(String, primary_key=True)
     # numero_dentro_arco = Column(Integer, nullable=False,default=0)
 
@@ -283,33 +284,33 @@ class Comicbook_Info_Cover_Url(Entidades.Init.Base):
         return "thumb_url={}".format(self.thumb_url)
 
 class Comics_In_Volume(Entidades.Init.Base):
-    __tablename__='ComicsInVolumes'
+    __tablename__='comics_in_volume'
     # no lo pasamos a numerico porque algunos numeros tiene 11.3B
 
     numero = Column(String, primary_key=True)
-    id_comicbook_externo = Column(String, nullable=False, default='')
+    id_comicbook_Info = Column(String, nullable=False, default='')
     id_volume = Column(Integer, primary_key=True, default='')
     # mantenemos esto para poder borrar
-    id_volume_externo = Column(Integer, primary_key=True, default='')
+    id_volume = Column(Integer, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')
     site_detail_url = Column(String, nullable=False, default='')
 
     def __repr__(self):
-        return "numero={} - id_comicbook_externo={} - id_volume_externo={} - titulo={}".format(self.numero, self.id_comicbook_externo, self.id_volume_externo, self.titulo)
+        return "numero={} - id_comicbook_externo={} - id_volume={} - titulo={}".format(self.numero, self.id_comicbook_externo, self.id_volume, self.titulo)
 
 class Comicbook_Detail(Entidades.Init.Base):
     '''Clase que va a mantener la info del archivo, cantidad de paginas, para cada imagen dentro del archivo asignarle
     un numero y una tipificacion por ejemplo, pagina, tapa, contra tapa, etc'''
-    __tablename__ = 'Comicbooksdetails'
+    __tablename__ = 'comicbooks_detail'
     COVER = 1
-    comicId = Column(Integer, primary_key=True)
+    comicbook_id = Column(Integer, primary_key=True)
     indicePagina = Column(Integer,default=0,primary_key=True)
     ordenPagina = Column(Integer, nullable=False, default=0)
     #portada = 1, pagina = 2
     tipoPagina = Column(Integer, nullable=False, default=2)
 
 class Publisher(Entidades.Init.Base):
-    __tablename__='Publishers'
+    __tablename__='publishers'
 
     id_publisher = Column(Integer, primary_key=True)
     tipo_id_publisher = Column(Integer, primary_key=True, default=0)
@@ -321,13 +322,13 @@ class Publisher(Entidades.Init.Base):
     localLogoImagePath = Column(String, nullable=False,default='')
     siteDetailUrl = Column(String, nullable=False,default='')
 
-    def __init__(self, id_publisher=None):
-        if id_publisher is None:
-            setup = Entidades.Init.Session().query(Setup).first()
-            setup.id_publisher += 1
-            Entidades.Init.Session().add(setup)
-            Entidades.Init.Session().commit()
-            self.id_publisher = setup.id_publisher
+    # def __init__(self, id_publisher=None):
+    #     if id_publisher is None:
+    #         setup = Entidades.Init.Session().query(Setup).first()
+    #         setup.id_publisher += 1
+    #         Entidades.Init.Session().add(setup)
+    #         Entidades.Init.Session().commit()
+    #         self.id_publisher = setup.id_publisher
 
 
 
@@ -385,7 +386,7 @@ class Publisher(Entidades.Init.Base):
 
         size = (320, 496)
         if not (os.path.isfile(fullPath)):
-            print('No existe el cover recuperando de : '+self.logoImagePath)
+            # print('No existe el cover recuperando de : '+self.logoImagePath)
             jpg = urllib.request.urlopen(self.logoImagePath)
             jpgImage = jpg.read()
             fImage = open(fullPath, 'wb')
@@ -399,9 +400,8 @@ class Publisher(Entidades.Init.Base):
 
 class Volume(Entidades.Init.Base):
     # todo comics que si tenemos y comics que faltan. poder tener ese dato para mostrar
-    __tablename__='Volumens'
-    id_volume = Column(Integer, Sequence('volumen_id_seq'), primary_key=True)
-    id_volume_externo = Column(String, nullable=False, default='')
+    __tablename__='volumens'
+    id_volume = Column(Integer, primary_key=True)
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
@@ -426,11 +426,11 @@ class Volume(Entidades.Init.Base):
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
     def get_url(self):
-        return("http://comicvine/"+self.id_volume_externo)
+        return("http://comicvine/"+self.id_volume)
 
     def __repr__(self):
-        return "<Volume(name={}, id_volume={}, id_volume_externo={}, cantidad nros={}, descripcion={}," \
-               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre,self.id_volume,self.id_volume_externo, self.cantidadNumeros,self.descripcion,
+        return "<Volume(name={}, id_volume={}, id_volume={}, cantidad nros={}, descripcion={}," \
+               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre,self.id_volume,self.id_volume, self.cantidadNumeros,self.descripcion,
                                                                            self.image_url, self.publisher_name,
                                                                           self.AnioInicio)
 
@@ -458,7 +458,7 @@ class Volume(Entidades.Init.Base):
         if "/" in self.image_url:
             nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
             session = Entidades.Init.Session()
-            setup = session.query(Entidades.Setups.Setup.Setup).first()
+            setup = session.query(Entidades.Agrupado_Entidades.Setup).first()
             fullPath = setup.directorioBase + os.sep + 'images' + os.sep + 'coversvolumes' + os.sep + self.image_url[
                                                                                                       self.image_url.rindex(
                                                                                                           '/') + 1:]
@@ -482,7 +482,7 @@ class Volume(Entidades.Init.Base):
             self.getImageCover()
 
         session = Entidades.Init.Session()
-        setup = session.query(Entidades.Setups.Setup.Setup).first()
+        setup = session.query(Entidades.Agrupado_Entidades.Setup).first()
 
         return setup.directorioBase + os.sep + 'images' + os.sep + 'coversvolumes' + os.sep + self.image_url[
                                                                                        self.image_url.rindex('/') + 1:]
@@ -494,12 +494,12 @@ class Volume(Entidades.Init.Base):
         '''Asumo que se llamo antes al has cover'''
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
         session = Entidades.Init.Session()
-        setup = session.query(Entidades.Setups.Setup.Setup).first()
+        setup = session.query(Entidades.Agrupado_Entidades.Setup).first()
 
         fullPath = setup.directorioBase+os.sep+'images'+os.sep+'coversvolumes' + os.sep + self.image_url[self.image_url.rindex('/') + 1:]
         # print("imagen: "+ fullPath)
         if not (os.path.isfile(fullPath)):
-            print('No existe el cover recuperando de : '+self.image_url)
+            # print('No existe el cover recuperando de : '+self.image_url)
             jpg = urllib.request.urlopen(self.image_url)
             jpgImage = jpg.read()
             fImage = open(fullPath, 'wb')
@@ -509,28 +509,28 @@ class Volume(Entidades.Init.Base):
         return (Image.open(fImage))
 
 class Setup_Directorio(Entidades.Init.Base):
-    __tablename__='SetupDirectorios'
+    __tablename__='setup_directorios'
     pathDirectorio = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupDirectorio(Directorio='%s')>" %(self.pathDirectorio)
 
 class Setup_Tipo_Archivo(Entidades.Init.Base):
-    __tablename__='SetupTiposArchivo'
+    __tablename__='setup_tipos_archivo'
     tipoArchivo = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupTiposArchivo(tipoArchivo='%s')>" %(self.tipoArchivo)
 
 class Setup_Vinekey(Entidades.Init.Base):
-    __tablename__='SetupVineKeys'
+    __tablename__='setup_vineKeys'
     key = Column(String, primary_key=True)
 
     def __repr__(self):
         return "<SetupVineKeys(Clave='%s')>" %(self.key)
 
 class Setup_Vinekey_Status(Entidades.Init.Base):
-    __tablename__='SetupVineKeysStatus'
+    __tablename__='setup_vineKeys_status'
     key = Column(String, primary_key=True)
     recursoId = Column(String, primary_key=True)
     cantidadConsultas = Column(Integer)

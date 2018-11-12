@@ -105,6 +105,7 @@ if (__name__ == '__main__'):
     config = Config_gtk()
     config.window.connect("destroy", Gtk.main_quit)
     config.window.show()
+    config.entry_clave_servico_comicvine.set_text('7e4368b71c5a66d710a62e996a660024f6a868d4')
     # config.window.maximize()
     Gtk.main()
 

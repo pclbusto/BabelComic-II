@@ -135,8 +135,6 @@ class Config:
         if not os.path.exists(directorio):
             os.makedirs(directorio+os.sep+'images'+os.sep+'coversvolumes')
 
-
-
     def __delAllTipos__(self):
         self.session.query(Entidades.Agrupado_Entidades.Setup_Tipo_Archivo).delete()
         self.session.commit()
@@ -241,10 +239,10 @@ class Config:
 
 if __name__ == "__main__":
     config = Config()
-    config.delClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
+    config.addClave('7e4368b71c5a66d710a62e996a660024f6a868d4')
     # config.__delAllTipos__()
-    # config.addTipo('cbz')
-    # config.addTipo('cbr')
+    config.addTipo('cbz')
+    config.addTipo('cbr')
     # config.__delAllClaves__()
     # config.addClave('64f7e65686c40cc016b8b8e499f46d6657d26752')
     # config.__initStatus__('64f7e65686c40cc016b8b8e499f46d6657d26752')

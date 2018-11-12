@@ -55,7 +55,6 @@ class VolumeGuiGtk():
         self.getFirst("")
 
     def combobox_change(self, widget):
-        print("dsaodkosdksao")
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(
                 self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])

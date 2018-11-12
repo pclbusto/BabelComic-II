@@ -1,6 +1,8 @@
 from datetime import datetime
 from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Issue_Searcher
-from Entidades.Agrupado_Entidades import Comicbook,Comicbooks_Info,Publisher, Arco_Argumental, Arcos_Argumentales_Comics_Reference, Volume, Comics_In_Volume
+from Entidades.Agrupado_Entidades import Comicbook,Comicbook_Info,Publisher, Arco_Argumental
+from Entidades.Agrupado_Entidades import Arcos_Argumentales_Comics_Reference, Volume, Comics_In_Volume
+from Entidades.Entitiy_managers import Volumens
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -103,7 +105,7 @@ class ComicVineSearcher:
         # si estamos aca entoces la consulta se ralizao porque la entidad estaba OK.
         html = response.read()
         xml = html.decode()
-        print(xml)
+        # print(xml)
         root = ET.fromstring(xml)
         self.statusCode = int(root.find('status_code').text)
         if self.statusCode == 1:
@@ -133,49 +135,56 @@ class ComicVineSearcher:
                 comic.rating = 0
                 comic.nota = ""
                 comic.arcoArgumentalId = '0'
-                comic.arcoArgumentalNumero = 0
+                comic.arco_argumental_numero = 0
                 if issue.find('story_arc_credits') != None:
                     # vamos a verificar si existe el arco si no existe lo damos de alta
                     # al dar de alta el arco tenemos que recuperar el numero u orden dentro del arco.
-                    print('buscamos arco')
+                    # print('buscamos arco')
 
                     for item in issue.find('story_arc_credits').findall('story_arc'):
-                        id_arco_externo = int(item.find('id').text)
+                        id_arco = int(item.find('id').text)
                         # .find('story_arc_credits').find('story_arc')
-                        print('Id arco encontrado: ' + str(id_arco_externo))
-                        arcos_manager = A
-                        arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental_externo==idArco)
+                        # print('Id arco encontrado: ' + str(id_arco_externo))
+                        arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental==id_arco)
                         if arco is not None:
-                            print('el arco existe. obtenemos el numero del comic')
+                            # print('el arco existe. obtenemos el numero del comic')
                             numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
-                            print('Arco y numero:', arco.id, str(numeroDentroArco))
+                            # print('Arco y numero:', arco.id, str(numeroDentroArco))
                         else:
-                            print('el arco  NO EXISTEexiste. Cargamos el arco y luego obtenemos el numero del comic')
+                            # print('el arco  NO EXISTEexiste. Cargamos el arco y luego obtenemos el numero del comic')
                             self.entidad = 'story_arc_credits'
-                            arco = self.getVineEntity(idArco)
+                            arco = self.getVineEntity(id_arco)
                             self.session.add(arco)
                             self.session.commit()
                             numeroDentroArco = arco.getIssueOrder(comic.comicVineId)
 
-                        print(arco.id)
-                        print(numeroDentroArco)
+                        # print(arco.id)
+                        # print(numeroDentroArco)
                         comic.arcoArgumentalId = arco.id
-                        comic.arcoArgumentalNumero = numeroDentroArco
+                        comic.arco_argumental_numero = numeroDentroArco
 
                 return comic
 
             if self.entidad == 'story_arc_credits':
                 story_arc = root.find('results')
-                arco = Arco_Argumental()
-                arco.id_arco_argumental_externo = id
-                arco.nombre = story_arc.find('name').text
-                arco.deck = story_arc.find('deck').text
-                arco.descripcion = story_arc.find('description').text
-                arco.ultimaFechaActualizacion = datetime.today().toordinal()
+
+                arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental == id).first()
+                if arco is None:
+                    arco = Arco_Argumental()
+                    arco.id_arco_argumental = id
+                    arco.nombre = story_arc.find('name').text
+                    arco.deck = story_arc.find('deck').text
+                    arco.descripcion = story_arc.find('description').text
+                    arco.ultimaFechaActualizacion = datetime.today().toordinal()
+                    try:
+                        self.session.add(arco)
+                        self.session.commit()
+                    except:
+                        print("Unexpected error:")
+
+
                 issues = story_arc.find('issues')
                 pos = 1
-                self.session.add(arco)
-                self.session.commit()
                 self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == arco.id_arco_argumental).delete()
                 self.session.commit()
                 for issue in issues:
@@ -194,7 +203,7 @@ class ComicVineSearcher:
 
                 volumeVine = root.find('results')
                 volume = Entidades.Agrupado_Entidades.Volume()
-                volume.id_volume_externo = volumeVine.find('id').text
+                volume.id_volume = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
                 volume.AnioInicio =volumeVine.find('start_year').text
@@ -219,8 +228,8 @@ class ComicVineSearcher:
                     comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = Comics_In_Volume()
-                        comicInVolumes.id_volume_externo = volume.id_volume_externo
-                        comicInVolumes.id_comicbook_externo = issue.find("id").text
+                        comicInVolumes.id_volume = volume.id_volume
+                        comicInVolumes.id_comicbook_Info = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
                         comicInVolumes.site_detail_url= issue.find("site_detail_url").text
@@ -256,10 +265,9 @@ class ComicVineSearcher:
         # if existe is None:
         comics_searcher = Comic_Vine_Info_Issue_Searcher()
         comicbook_info = comics_searcher.search_serie(comic_in_volume.site_detail_url)
-        comicbook_info.id_comicbooks_Info_externo = comic_in_volume.id_comicbook_externo
+        comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
         self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
-
 
     def hilo_cargar_comicbook_info(self, lista_comics_in_volumen):
         print("ACAAAAAAAAAAAAAAAAAAAAAA")
@@ -280,11 +288,9 @@ class ComicVineSearcher:
         while self.cantidad_hilos>0:
             time.sleep(2)
         self.porcentaje_procesado = 100
-        print("Cantidad registros: {}".format(len(self.lista_comicbooks_info)))
-        for com in self.lista_comicbooks_info:
-            print(com.numero, com.id_comicbooks_Info_externo)
-
-
+        # print("Cantidad registros: {}".format(len(self.lista_comicbooks_info)))
+        # for com in self.lista_comicbooks_info:
+        #     print(com.numero, com.id_comicbook_Info)
 
     def cargar_comicbook_info(self, lista_comics_in_volumen):
         self.porcentaje_procesado=0
@@ -387,7 +393,7 @@ class ComicVineSearcher:
 
             elif self.entidad == 'volumes':
                 for item in results:
-                    l_serie = Entidades.Volumens.Volume.Volume(id_volume_externo=item.find('id').text, nombre=item.find('name').text)
+                    l_serie = Entidades.Agrupado_Entidades.Volume(id_volume=item.find('id').text, nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
                     l_serie.cantidadNumeros = item.find('count_of_issues').text

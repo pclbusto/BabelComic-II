@@ -7,7 +7,7 @@ from gi.repository import GLib
 import Entidades.Init
 from Entidades.Entitiy_managers import Publishers
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
-from Entidades.Agrupado_Entidades import Comics_In_Volume, Comicbooks_Info, Volume
+from Entidades.Agrupado_Entidades import Comics_In_Volume, Comicbook_Info, Volume
 import threading
 import time
 
@@ -103,8 +103,6 @@ class Volumen_vine_search_Gtk():
         self.comicVineSearcher.vine_Search_all()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
 
-
-
     def click_buscar_serie(self, widget):
         self.spinner.start()
         self.listmodel_volumenes.clear()
@@ -124,7 +122,7 @@ class Volumen_vine_search_Gtk():
             time.sleep(2)
             GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
         volume = volumenAndIssues[0]
-        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume_externo== volume.id_volume_externo).first()
+        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume== volume.id_volume).first()
         if volumen_in_db:
             # actualizo la cantidad de ejemplares nada mas
             volumen_in_db.cantidadNumeros = volume.cantidadNumeros
@@ -132,7 +130,7 @@ class Volumen_vine_search_Gtk():
         self.session.add(volume)
         self.session.commit()
         print(volume)
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.id_volume_externo == volume.id_volume_externo).delete()
+        self.session.query(Comics_In_Volume).filter(Comics_In_Volume.id_volume == volume.id_volume).delete()
         self.session.commit()
         for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
             numeroComic.offset = int(index / 100)
@@ -140,7 +138,7 @@ class Volumen_vine_search_Gtk():
             self.session.add(numeroComic)
         self.session.commit()
         # limpiamos los comics info del volumen
-        self.session.query(Comicbooks_Info).filter(Comicbooks_Info.id_volume == volume.id_volume).delete()
+        self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volume.id_volume).delete()
         self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
             comicbook_info.id_volume = volume.id_volume
@@ -182,12 +180,9 @@ class Volumen_vine_search_Gtk():
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
-
         if len(self.listaFiltrada) > 1400:
             self.label_status.set_text("La cantidad de registros es mayor a 1400. Trate de filtrar la consulta.")
             return
-
-
         for idx, volume in enumerate(self.listaFiltrada):
             nombre = ''
             cantidad_numeros = 0

@@ -225,9 +225,8 @@ class BabelComics_main_gtk():
                     iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
                     self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
-                    # print(nombreThumnail)
                     cover = Pixbuf.new_from_file(nombreThumnail)
-                    if comic.id_comicbook_externo!='':
+                    if comic.id_comicbook_info!='':
                         self.cataloged_pix.composite(cover,
                                                      cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
                                                      self.cataloged_pix.props.width,self.cataloged_pix.props.height,

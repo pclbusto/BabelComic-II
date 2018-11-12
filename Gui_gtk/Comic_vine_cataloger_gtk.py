@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
-from Entidades.Agrupado_Entidades import Comicbook, Volume,Comics_In_Volume, Setup
+from Entidades.Agrupado_Entidades import Comicbook, Volume,Comics_In_Volume, Setup, Comicbook_Info
 
 
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
@@ -64,7 +64,13 @@ class Comic_vine_cataloger_gtk():
         self.listore_comics_para_catalogar.clear()
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append([int(comic.numero), comic.path, index, 0])
+            comicbooks_info = None
+            if comic.id_comicbook_info is not None:
+                comicbooks_info = self.session.query(Comicbook_Info).get(comic.id_comicbook_info)
+                # comic.numero = comicbooks_info.numero
+            else:
+                comic.numero = 0
+            self.listore_comics_para_catalogar.append([int(0), comic.path, index, 0])
 
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")

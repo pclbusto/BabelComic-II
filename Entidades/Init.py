@@ -8,7 +8,7 @@ y que no de error despues al usuarlo poque no se creo en el mismo thread.
 '''
 pathdb = os.path.abspath("..")
 pathdb = os.path.join(pathdb,"BabelComic.db")
-print(pathdb )
+# print(pathdb )
 engine = create_engine('sqlite:///'+pathdb, echo=False, connect_args={'check_same_thread':False})
 Base = declarative_base()
 Session = sessionmaker(bind = engine)
@@ -18,7 +18,7 @@ def recreateTables():
     Base.metadata.drop_all(engine)
     lista = []
     for k,value in Base.metadata.tables.items():
-        if value.name == 'Setups':
+        if value.name == 'setups':
             lista.append(value)
     Base.metadata.create_all(engine, tables=lista)
 

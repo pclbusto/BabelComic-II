@@ -37,7 +37,7 @@ class XmlManager:
         SubElement(comic_node, "numero").text = comic.numero
         SubElement(comic_node, "fechaTapa").text = str(comic.fechaTapa)
         SubElement(comic_node, "id_arco_argumental_externo").text = arco_argumental.id_arco_argumental_externo
-        SubElement(comic_node, "arcoArgumentalNumero").text = str(comic.arcoArgumentalNumero)
+        SubElement(comic_node, "arcoArgumentalNumero").text = str(comic.arco_argumental_numero)
         SubElement(comic_node, "resumen").text = comic.resumen
         SubElement(comic_node, "nota").text = comic.nota
         SubElement(comic_node, "rating").text = comic.rating
