@@ -176,13 +176,11 @@ class ComicVineSearcher:
                     arco.deck = story_arc.find('deck').text
                     arco.descripcion = story_arc.find('description').text
                     arco.ultimaFechaActualizacion = datetime.today().toordinal()
-                    try:
-                        self.session.add(arco)
-                        self.session.commit()
-                    except:
-                        print("Unexpected error:")
-
-
+                    # try:
+                    #     self.session.add(arco)
+                    #     self.session.commit()
+                    # except:
+                    #     print("Unexpected error:")
                 issues = story_arc.find('issues')
                 '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
@@ -191,7 +189,7 @@ class ComicVineSearcher:
                 for issue in issues:
                     arco_commics_reference = Arcos_Argumentales_Comics_Reference()
                     arco_commics_reference.id_arco_argumental = arco.id_arco_argumental
-                    arco_commics_reference.id_comicbook_externo = issue.find('id').text
+                    arco_commics_reference.id_comicbook = issue.find('id').text
                     arco_commics_reference.orden = pos
                     self.session.add(arco_commics_reference)
                     pos += 1
@@ -258,20 +256,22 @@ class ComicVineSearcher:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def hilo_procesar_comic_in_volume(self,comic_in_volume):
-
-        # existe = self.session.query(Comicbooks_Info).filter(
-        #     Comicbooks_Info.id_comicbooks_Info_externo == comic_in_volume.id_comicbook_externo).first()
-
-        # si no existe el comicbook info
-        # if existe is None:
         comics_searcher = Comic_Vine_Info_Issue_Searcher(self.session)
-        comicbook_info = comics_searcher.search_serie(comic_in_volume.site_detail_url)
+        comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
         self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
 
+    def hilo_procesar_arco(self, id_arco):
+        arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental == id_arco).first()
+        if arco is None:
+            self.entidad = 'story_arc_credits'
+            arco = self.getVineEntity(id_arco)
+        self.lista_arcos.append(arco)
+        self.cantidad_hilos -= 1
+
     def hilo_cargar_comicbook_info(self, lista_comics_in_volumen):
-        print("ACAAAAAAAAAAAAAAAAAAAAAA")
+
         index = 0
         self.cantidad_hilos=0
         cantidad_elementos = len(lista_comics_in_volumen)
@@ -279,19 +279,65 @@ class ComicVineSearcher:
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
-                threading.Thread(target=self.hilo_procesar_comic_in_volume, args=[lista_comics_in_volumen[index]]).start()
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[lista_comics_in_volumen[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1
-                self.porcentaje_procesado = int(100 * (index-1) / cantidad_elementos)
+                '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
+                en el peor de los casos tenemos un arco por issue por eso es el 2'''
+                self.porcentaje_procesado = int(100 * (index-1) / (2*cantidad_elementos))
             else:
                 time.sleep(2)
 
+        # Aca iteramos hasta que todos los hilos terminen  de ejecutar.
         while self.cantidad_hilos>0:
             time.sleep(2)
+
+        # si los calculos salieron bien aca deberíamos estar en el 50%
+        self.porcentaje_procesado = 50
+
+        # vamos a recuperar los arcos que haya en los comics usamos conjunto para eliminar repetidos
+        set_ids_arcos = set()
+        for issue in self.lista_comicbooks_info:
+            for arco in issue.ids_arco_argumental:
+                set_ids_arcos.add(arco.id_arco_argumental)
+        list_ids_arcos = list(set_ids_arcos)
+        # creamos una lista de arcos y recuperamos toda su info
+        cantidad_elementos = len(set_ids_arcos)
+        print("lista de arcos{}".format(list_ids_arcos))
+        self.lista_arcos=[]
+        index = 0
+        while index < cantidad_elementos:
+            if self.cantidad_hilos<20:
+                # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
+                threading.Thread(target=self.hilo_procesar_arco, name = str(index), args=[list_ids_arcos[index]]).start()
+                index+=1
+                self.cantidad_hilos += 1
+                self.porcentaje_procesado = 50 + int(100 * (index-1) / (2*cantidad_elementos))
+            else:
+                time.sleep(2)
+
+        # Aca iteramos hasta que todos los hilos terminen  de ejecutar.
+        while self.cantidad_hilos > 0:
+            time.sleep(2)
+
+        print("RECUPERAMOS LA INFO DE LOS ARCOS")
+        for arco in self.lista_arcos:
+            print(arco)
+
+        self.porcentaje_procesado = 99
+        # guardamos los arcos para probar eliminar error clave duplicada
+        for arco in self.lista_arcos:
+            self.session.add(arco)
+        self.session.commit()
+
+        # tenemos la info de los arcos ahora a recorrer la lista de issues y actualizar la referencias
+        for arco in self.lista_arcos:
+            for issue in self.lista_comicbooks_info:
+                for index, arco in enumerate(issue.ids_arco_argumental):
+                    if arco.id_arco_argumental == arco.id_arco_argumental:
+                        # cambiamos el arco que solo tiene el id por uno con la info completa
+                        issue.ids_arco_argumental[index]=arco
         self.porcentaje_procesado = 100
-        # print("Cantidad registros: {}".format(len(self.lista_comicbooks_info)))
-        # for com in self.lista_comicbooks_info:
-        #     print(com.numero, com.id_comicbook_Info)
 
     def cargar_comicbook_info(self, lista_comics_in_volumen):
         self.porcentaje_procesado=0
@@ -443,6 +489,7 @@ class ComicVineSearcher:
         if io_offset>0:
             self.hilos.pop()
         self.statusMessage='Ok'
+
 if __name__ == '__main__':
     cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4', None)
     ##    cv = comicVineSearcher('64f7e65686c40cc016b8b8e499f46d6657d26752')

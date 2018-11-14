@@ -132,18 +132,16 @@ class Volumen_vine_search_Gtk():
         print(volume)
         self.session.query(Comics_In_Volume).filter(Comics_In_Volume.id_volume == volume.id_volume).delete()
         self.session.commit()
-        for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
-            numeroComic.offset = int(index / 100)
-            numeroComic.id_volume = volume.id_volume
-            self.session.add(numeroComic)
-        self.session.commit()
+        # for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
+        #     print(numeroComic)
+        #     self.session.add(numeroComic)
+        # self.session.commit()
         # limpiamos los comics info del volumen
         self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volume.id_volume).delete()
         self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
             comicbook_info.id_volume = volume.id_volume
             comicbook_info.nombre_volumen = volume.nombre
-            print(comicbook_info)
             self.session.add(comicbook_info)
         self.session.commit()
 
@@ -211,8 +209,18 @@ class Volumen_vine_search_Gtk():
         self.spinner.stop()
 
 if __name__ == "__main__":
+    from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
+    from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
+
     volumen = Volumen_vine_search_Gtk()
     volumen.window.show()
     volumen.window.connect("destroy", Gtk.main_quit)
+    volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
+    volumen.session.query(Arco_Argumental).delete()
+    volumen.session.query(Volume).delete()
+    volumen.session.query(Comicbook_Info_Cover_Url).delete()
+    volumen.session.query(Comicbook_Info).delete()
+    volumen.session.commit()
+    volumen.click_aceptar(None)
     Gtk.main()
 

@@ -8,6 +8,7 @@ from Entidades.Agrupado_Entidades import  Comicbook_Info,Comicbook_Info_Cover_Ur
 from datetime import date
 from Entidades import Init
 import Entidades
+import threading
 
 class Comic_Vine_Info_Issue_Searcher():
 
@@ -29,7 +30,7 @@ class Comic_Vine_Info_Issue_Searcher():
         else:
             self.session = session
 
-    def search_serie(self, url):
+    def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
         # print(html)
         comicbook_info = Comicbook_Info()
@@ -73,29 +74,16 @@ class Comic_Vine_Info_Issue_Searcher():
             anio = int(fecha_tapa_issue[-4:])
             comicbook_info.fechaTapa = date(anio, mes,1)
         matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
+        # guardamos los arcos si es que tiene
         for matchNum, match in enumerate(matches):
             arco_argumental = Arco_Argumental()
-            print("ARCO ARGIMENTOALASKL RECUPERANDOA {}".format(match.group(1)))
             arco_argumental.id_arco_argumental = match.group(1)
-            existe = self.session.query(Arco_Argumental).filter(
-                Arco_Argumental.id_arco_argumental == arco_argumental.id_arco_argumental).first()
-            if existe is None:
-                print("ARCO NO EXISTE EN DB VAMOS A CARGARLO")
-                #buscamos los datos del arco
-                config = Extras.Config.Config()
-                comicVineSearcher = Extras.ComicVineSearcher.ComicVineSearcher(config.getClave('story_arc_credits'), session=self.session)
-                comicVineSearcher.setEntidad('story_arc_credits')
-                arco_argumental = comicVineSearcher.getVineEntity(arco_argumental.id_arco_argumental)
-                self.session.add(arco_argumental)
-                self.session.commit()
             comicbook_info.ids_arco_argumental.append(arco_argumental)
-
         matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_Cover_Url(thumb_url=match.group(1))
-            print(comic_url)
             comicbook_info.thumbs_url.append(comic_url)
-
+        # retornamos un comic info con un id de arco. Que puede o no estar en la base eso lo resolvemos mas adelante
         return comicbook_info
 
 

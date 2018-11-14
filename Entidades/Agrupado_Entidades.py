@@ -70,7 +70,7 @@ class Arco_Argumental(Entidades.Init.Base):
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
-        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.idArco == self.id, ArcosArgumentalesComics.idComic==idComic)).first()
+        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.idArco == self.id, Arcos_Argumentales_Comics_Reference.id==idComic)).first()
         if orden is not None:
             return orden.orden
         return -1
@@ -82,6 +82,9 @@ class Arco_Argumental(Entidades.Init.Base):
     def getCantidadTitulos(self):
         return (len(self.comics))
 
+    def __repr__(self):
+        return "id_arco_argumental={} nombre={}".format(self.id_arco_argumental, self.nombre)
+
 class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     '''Esta clase nos da un orden del arco. No tienen que existir los comic books info, solo guardo los
     Id externos para saber el orden y saber cuantos me faltan para completar el arco. Por esto no
@@ -90,7 +93,8 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     '''
     __tablename__='arcos_argumentales_comics_reference'
     id_arco_argumental = Column(String, primary_key=True)
-    orden = Column(Integer, primary_key=True)
+    id_comic_info = Column(String, primary_key=True)
+    orden = Column(Integer, nullable=False)
 
 class Comicbook(Entidades.Init.Base):
 
@@ -278,25 +282,23 @@ class Comicbook_Info_Cover_Url(Entidades.Init.Base):
 
     id_comicbook_Info= Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'))
     thumb_url = Column(String, primary_key=True)
-    # numero_dentro_arco = Column(Integer, nullable=False,default=0)
 
     def __repr__(self):
         return "thumb_url={}".format(self.thumb_url)
 
 class Comics_In_Volume(Entidades.Init.Base):
+    '''Relacion entre '''
     __tablename__='comics_in_volume'
     # no lo pasamos a numerico porque algunos numeros tiene 11.3B
 
     numero = Column(String, primary_key=True)
     id_comicbook_Info = Column(String, nullable=False, default='')
     id_volume = Column(Integer, primary_key=True, default='')
-    # mantenemos esto para poder borrar
-    id_volume = Column(Integer, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')
     site_detail_url = Column(String, nullable=False, default='')
 
     def __repr__(self):
-        return "numero={} - id_comicbook_externo={} - id_volume={} - titulo={}".format(self.numero, self.id_comicbook_externo, self.id_volume, self.titulo)
+        return "numero={} - id_comicbook_externo={} - id_volume={} - titulo={}".format(self.numero, self.id_comicbook_Info, self.id_volume, self.titulo)
 
 class Comicbook_Detail(Entidades.Init.Base):
     '''Clase que va a mantener la info del archivo, cantidad de paginas, para cada imagen dentro del archivo asignarle
@@ -429,11 +431,8 @@ class Volume(Entidades.Init.Base):
         return("http://comicvine/"+self.id_volume)
 
     def __repr__(self):
-        return "<Volume(name={}, id_volume={}, id_volume={}, cantidad nros={}, descripcion={}," \
-               "image_url={}, publisher_name={}, Año inicio={} )>".format(self.nombre,self.id_volume,self.id_volume, self.cantidadNumeros,self.descripcion,
-                                                                           self.image_url, self.publisher_name,
-                                                                          self.AnioInicio)
-
+        return "<Volume(name={}, id_volume={}, cantidad nros={}, publisher_name={}, Año inicio={} )>". \
+            format(self.nombre, self.id_volume, self.cantidadNumeros, self.publisher_name, self.AnioInicio)
 
     def hasLocalCover(self):
         if self.image_url:

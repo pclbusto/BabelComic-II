@@ -116,7 +116,7 @@ class Config:
         statusVinekey = self.session.query(Entidades.Agrupado_Entidades.Setup_Vinekey_Status).filter(
             and_(Entidades.Agrupado_Entidades.Setup_Vinekey_Status.key==key,
                  Entidades.Agrupado_Entidades.Setup_Vinekey_Status.recursoId==recurso)).first()
-        print(statusVinekey)
+
         if (statusVinekey):
             fecha_previa_stamp = statusVinekey.fechaHoraInicioConsulta
             fecha_actual_stamp = datetime.now().timestamp()
@@ -228,10 +228,11 @@ class Config:
         return ""
     def validarRecurso(self,recurso):
         return recurso in ["volumes","issues", "publishers","issue","volume","story_arc_credits"]
+
     def getClave(self, recurso):
         if self.validarRecurso(recurso):
             clave = self.__getClaveMenosUsadaPorRecurso__(recurso)
-            print("CLAVE: "+clave)
+            # print("CLAVE: "+clave)
             return clave
         else:
             print("no existe el recurso " + recurso)
