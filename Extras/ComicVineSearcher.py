@@ -52,7 +52,7 @@ class ComicVineSearcher:
         ##104:Filter Error
         ##105:Subscriber only video is for subscribers only
         self.statusCode = 1
-
+        self.porcentaje_procesado = 0
     def localSearch(self, filtro, columnasBuscar=1, columnasMostrar=(0, 1, 2, 3, 4, 5, 6, 7)):
         del self.listaBusquedaLocal[:]
         self.columnas = columnasMostrar
@@ -176,16 +176,15 @@ class ComicVineSearcher:
                 issues = story_arc.find('issues')
                 '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
-                self.session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == arco.id_arco_argumental).delete()
-                self.session.commit()
+                arco.ids_issues=[]
                 for issue in issues:
                     arco_comics_reference = Arcos_Argumentales_Comics_Reference()
-                    arco_comics_reference.id_arco_argumental = arco.id_arco_argumental
-                    arco_comics_reference.id_comic_info = issue.find('id').text
+                    arco.ids_comicbooks_Info.append(arco_comics_reference)
+                    # arco_comics_reference.id_arco_argumental = arco.id_arco_argumental
+                    # arco_comics_reference.id_comic_info = issue.find('id').text
                     arco_comics_reference.orden = pos
-                    self.session.add(arco_comics_reference)
+                    # self.session.add(arco_comics_reference)
                     pos += 1
-                self.session.commit()
                 # print("REVISAR ARCOS")
                 # time.sleep(20)
                 return arco
@@ -298,6 +297,12 @@ class ComicVineSearcher:
         # creamos una lista de arcos y recuperamos toda su info
         cantidad_elementos = len(set_ids_arcos)
         print("lista de arcos{}".format(list_ids_arcos))
+
+        # for id_arco in list_ids_arcos:
+        #     self.session.query(Arcos_Argumentales_Comics_Reference).filter(
+        #         Arcos_Argumentales_Comics_Reference.id_arco_argumental == id_arco).delete()
+        #     self.session.commit()
+
         self.lista_arcos=[]
         index = 0
         while index < cantidad_elementos:
@@ -323,18 +328,29 @@ class ComicVineSearcher:
         for arco in self.lista_arcos:
             self.session.add(arco)
         self.session.commit()
-        print("GUARDAMOS LOS ARCOS PARA PODER HACER RELACION DE FORMA CORRECTA")
+        # print("Lista de comics antes de re asignar los arcos")
         # tenemos la info de los arcos ahora a recorrer la lista de issues y actualizar la referencias
+        # for issue in self.lista_comicbooks_info:
+        #     print("ISSUE {}".format(issue))
+        #     print("ARCOS")
+        #     for arcos_issue in issue.ids_arco_argumental:
+        #             print("ARCO:{}".format(arcos_issue))
+        #             print("ARCO RECUEPRADO:{}".format(self.lista_arcos[0]))
+        #             print("SON IGUALES:{}".format(self.lista_arcos[0].id_arco_argumental == arcos_issue.id_arco_argumental))
+
+
         for arco in self.lista_arcos:
             for issue in self.lista_comicbooks_info:
-                for idx, arcos_issue in enumerate(issue.ids_arco_argumental):
+                existe=False
+                for arcos_issue in issue.ids_arco_argumental:
                     if arcos_issue.id_arco_argumental == arco.id_arco_argumental:
-                    # cambiamos el arco que solo tiene el id por uno con la info completa
-                    print("encontramos arco lo borramos y agregamos el nuevo")
-                    issue.ids_arco_argumental.remove(issue.ids_arco_argumental[idx])
+                        # print("encontramos arco lo borramos y agregamos el nuevo")
+                        issue.ids_arco_argumental.remove(arcos_issue)
+                        existe=True
+                if existe:
                     issue.ids_arco_argumental.append(arco)
 
-        print("imprimimos info arcos de los comics info")
+        # print("imprimimos info arcos de los comics info")
         for issue in self.lista_comicbooks_info:
             for arco_issue in issue.ids_arco_argumental:
                 print("comic info {}".format(issue.id_comicbook_Info))

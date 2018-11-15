@@ -12,11 +12,11 @@ from io import BytesIO
 from sqlalchemy import Sequence
 import urllib
 
-
-comicbook_info_arco_argumental = Table('comicbook_info_arco_argumental', Entidades.Init.Base.metadata,
-                          Column('id_comicbook_Info',Integer, ForeignKey('comicbooks_info.id_comicbook_Info')),
-                          Column('id_arco_argumental',Integer, ForeignKey('arcos_argumentales.id_arco_argumental'))
-)
+#
+# comicbook_info_arco_argumental = Table('comicbook_info_arco_argumental', Entidades.Init.Base.metadata,
+#                           Column('id_comicbook_Info',Integer, ForeignKey('comicbooks_info.id_comicbook_Info')),
+#                           Column('id_arco_argumental',Integer, ForeignKey('arcos_argumentales.id_arco_argumental'))
+# )
 
 class Setup(Entidades.Init.Base):
     __tablename__='setups'
@@ -57,6 +57,22 @@ class Setup(Entidades.Init.Base):
                                                   self.expresionRegularNumero,
                                                   self.directorioBase)
 
+
+class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
+    '''Esta clase nos da un orden del arco. No tienen que existir los comic books info, solo guardo los
+    Id externos para saber el orden y saber cuantos me faltan para completar el arco. Por esto no
+    hacemos relacion de many to many que seria 1 arco contiene varios isses y 1 issue contiene varios
+    arcos
+    '''
+    __tablename__='arcos_argumentales_comics_reference'
+
+    id_comicbook_Info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'), primary_key=True)
+    id_arco_argumental = Column(Integer, ForeignKey('arcos_argumentales.id_arco_argumental'), primary_key=True)
+    # id_comicbook_Info = Column(Integer, primary_key=True)
+    # id_arco_argumental = Column(Integer, primary_key=True)
+    orden = Column(Integer, nullable=False, default=0)
+
+
 class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
     __tablename__ = 'arcos_argumentales'
@@ -66,17 +82,18 @@ class Arco_Argumental(Entidades.Init.Base):
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
-    ids_comicbooks_Info = relationship("Comicbook_Info", secondary=comicbook_info_arco_argumental)
+    ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference")
+    # , secondary=comicbook_info_arco_argumental)
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
-        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.idArco == self.id, Arcos_Argumentales_Comics_Reference.id==idComic)).first()
+        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.id_arco_argumental == self.id_arco_argumental, Arcos_Argumentales_Comics_Reference.id_comicbook_Info==idComic)).first()
         if orden is not None:
             return orden.orden
         return -1
     def getIssuesCount(self):
         session = Entidades.Init.Session()
-        cantidad = session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.idArco == self.id).count()
+        cantidad = session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == self.id_arco_argumental).count()
         return cantidad
 
     def getCantidadTitulos(self):
@@ -84,17 +101,6 @@ class Arco_Argumental(Entidades.Init.Base):
 
     def __repr__(self):
         return "id_arco_argumental={} nombre={}".format(self.id_arco_argumental, self.nombre)
-
-class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
-    '''Esta clase nos da un orden del arco. No tienen que existir los comic books info, solo guardo los
-    Id externos para saber el orden y saber cuantos me faltan para completar el arco. Por esto no
-    hacemos relacion de many to many que seria 1 arco contiene varios isses y 1 issue contiene varios
-    arcos
-    '''
-    __tablename__='arcos_argumentales_comics_reference'
-    id_arco_argumental = Column(String, primary_key=True)
-    id_comic_info = Column(String, primary_key=True)
-    orden = Column(Integer, nullable=False)
 
 class Comicbook(Entidades.Init.Base):
 
@@ -254,7 +260,9 @@ class Comicbook_Info(Entidades.Init.Base):
     nombre_volumen = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
     fecha_tapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-    ids_arco_argumental = relationship("Arco_Argumental", secondary=comicbook_info_arco_argumental)
+
+    # ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
+
     arco_argumental_numero = Column(Integer, nullable=False, default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
@@ -272,7 +280,8 @@ class Comicbook_Info(Entidades.Init.Base):
 
 
     def __repr__(self):
-        return "titulo={}-comic vine id={}".format(self.titulo, self.id_comicbook_Info)
+
+        return "titulo={}-comic vine id={}\nurls={}".format(self.titulo, self.id_comicbook_Info,self.thumbs_url)
 
 class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     '''Clase que mantiene la info de las caratulas, como un comic puede tener varias caratulas o covers

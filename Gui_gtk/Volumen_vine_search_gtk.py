@@ -141,6 +141,7 @@ class Volumen_vine_search_Gtk():
         self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
             print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
+            print("Comic  cover url {}".format(comicbook_info.thumbs_url))
             comicbook_info.id_volume = volume.id_volume
             comicbook_info.nombre_volumen = volume.nombre
             self.session.add(comicbook_info)
@@ -150,7 +151,7 @@ class Volumen_vine_search_Gtk():
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
     #     86343
-        threading.Thread(target=self.hilo_cargar_volume, args=['106705']).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=['5868']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()

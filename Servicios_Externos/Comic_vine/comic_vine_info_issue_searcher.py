@@ -22,9 +22,9 @@ class Comic_Vine_Info_Issue_Searcher():
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
     regex_get_issue_story_arc = r"4045-(\d*)"
     regex_get_issue_id_volume = r"4050-(\d*)"
-    regex_get_issue_url_cover = r"(https://static.comicvine.com/uploads/scale_large[^\"]*)"
+    regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
 
-    def __init__(self, session):
+    def __init__(self, session=None):
         if session is None:
             self.session = Entidades.Init.Session()
         else:
@@ -77,7 +77,7 @@ class Comic_Vine_Info_Issue_Searcher():
         # guardamos los arcos si es que tiene
         for matchNum, match in enumerate(matches):
             arco_argumental = Arco_Argumental()
-            arco_argumental.id_arco_argumental = match.group(1)
+            arco_argumental.id_arco_argumental = int(match.group(1))
             comicbook_info.ids_arco_argumental.append(arco_argumental)
         matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
@@ -90,10 +90,5 @@ class Comic_Vine_Info_Issue_Searcher():
 if __name__ == "__main__":
 
     comcis_org_searcher = Comic_Vine_Info_Issue_Searcher()
-    comcis_org_searcher.search_stotyarc('https://comicvine.gamespot.com/blackest-night/4045-55766/issues/')
-
-    # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/green-lantern-39-agent-orange-part-1/4000-155207/')
-    # cadena = 'June 2018'
-    # print(cadena[:-4])
-    # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/batman-708-judgment-on-gotham-part-one-one-good-ma/4000-265991/')
-    # comcis_org_searcher.search_serie('https://comicvine.gamespot.com/batman-713-in-storybook-endings/4000-286879/')
+    comicbook_info = comcis_org_searcher.search_issue('https://comicvine.gamespot.com/the-darkness-11-hearts-of-darkness-part-one/4000-118663/')
+    print(comicbook_info)
