@@ -22,7 +22,7 @@ if __name__ == "__main__":
     #     session.add(p2)
     # session.commit()
     # session.close()
-    conj = {1,2,3,4,5,6,7,8}
+    conj = [1,2,3,1,5,4,7,8]
     print(conj)
-    conj.add(1)
-    print(conj)
+
+    print(conj.index(4))
