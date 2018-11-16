@@ -12,12 +12,6 @@ from io import BytesIO
 from sqlalchemy import Sequence
 import urllib
 
-#
-# comicbook_info_arco_argumental = Table('comicbook_info_arco_argumental', Entidades.Init.Base.metadata,
-#                           Column('id_comicbook_Info',Integer, ForeignKey('comicbooks_info.id_comicbook_Info')),
-#                           Column('id_arco_argumental',Integer, ForeignKey('arcos_argumentales.id_arco_argumental'))
-# )
-
 class Setup(Entidades.Init.Base):
     __tablename__='setups'
     setupkey = Column(Integer, primary_key=True)
@@ -261,7 +255,7 @@ class Comicbook_Info(Entidades.Init.Base):
     numero = Column(String,nullable=False,default='0')
     fecha_tapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
 
-    # ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
+    ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
 
     arco_argumental_numero = Column(Integer, nullable=False, default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
@@ -300,9 +294,9 @@ class Comics_In_Volume(Entidades.Init.Base):
     __tablename__='comics_in_volume'
     # no lo pasamos a numerico porque algunos numeros tiene 11.3B
 
+    id_volume = Column(Integer, primary_key=True, default='')
     numero = Column(String, primary_key=True)
     id_comicbook_Info = Column(String, nullable=False, default='')
-    id_volume = Column(Integer, primary_key=True, default='')
     titulo = Column(String, nullable=False, default='')
     site_detail_url = Column(String, nullable=False, default='')
 

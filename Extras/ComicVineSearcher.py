@@ -228,10 +228,8 @@ class ComicVineSearcher:
                         comicIds.append(comicInVolumes)
 
                 #     cargamos la info de los comics los arcos que hagan falta este proceso es largo pero
-                # solo debería tardar la primera vez
-                    self.cargar_comicbook_info(comicIds)
-
-                return volume, comicIds
+                # solo debería tardar la primera vezç
+                    return volume, comicIds
             else:
                 print('Entidad %1 sin implementar', self.entidad)
 
