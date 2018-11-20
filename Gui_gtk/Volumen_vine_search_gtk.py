@@ -116,9 +116,9 @@ class Volumen_vine_search_Gtk():
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
-        volumenAndIssues = cv.getVineEntity(id_volume_externo)
-        # recuperamos los isseues del volumen
-        self.cv.cargar_comicbook_info(volumenAndIssues[1])
+        volumen = cv.getVineEntity(id_volume_externo)
+        # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
+        cv.cargar_comicbook_info()
         # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)

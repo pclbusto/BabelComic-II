@@ -176,17 +176,24 @@ class ComicVineSearcher:
                 issues = story_arc.find('issues')
                 '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
-                arco.ids_issues=[]
                 for issue in issues:
-                    arco_comics_reference = Arcos_Argumentales_Comics_Reference()
+                    '''por cada issue del arco reviso si esta en tabla o para insertar si no esta lo creo solo con el id
+                    y si esta lo recupero'''
+                    issue_db = self.session.query(Comicbook).get(int(issue.find('id').text))
+                    if issue_db is None:
+                        for issue_to_save in self.lista_comicbooks_info:
+                            if issue_to_save.id_comicbook_Info == int(issue.find('id').text):
+                                issue_db = issue_to_save
+                    # si es None entonces no existe este iisue lo creamos y cerramos la relacion
+
+                    if issue_db is None:
+                        issue_db = Comicbook_Info()
+                        issue_db.id_comicbook_Info = int(issue.find('id').text)
+                        issue_db.ids_arco_argumental.append(arco)
+                    arco_comics_reference = Arcos_Argumentales_Comics_Reference(orden = pos)
+                    arco_comics_reference.ids_comicbooks_Info= issue_db
                     arco.ids_comicbooks_Info.append(arco_comics_reference)
-                    # arco_comics_reference.id_arco_argumental = arco.id_arco_argumental
-                    # arco_comics_reference.id_comic_info = issue.find('id').text
-                    arco_comics_reference.orden = pos
-                    # self.session.add(arco_comics_reference)
                     pos += 1
-                # print("REVISAR ARCOS")
-                # time.sleep(20)
                 return arco
 
             if self.entidad == 'volume':
@@ -216,8 +223,8 @@ class ComicVineSearcher:
                     '''se cargan los issues que trae el xml. no toda la info solo los numeros.
                     esto se usa para poder calcular los offset correctos en la busqueda de issues
                     '''
-                    print("ACA ESTAMOS")
-                    comicIds = []
+                    print("cargamos issues del volumen")
+                    self.comicIds = []
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = Comics_In_Volume()
                         comicInVolumes.id_volume = volume.id_volume
@@ -225,11 +232,11 @@ class ComicVineSearcher:
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
                         comicInVolumes.site_detail_url= issue.find("site_detail_url").text
-                        comicIds.append(comicInVolumes)
+                        self.comicIds.append(comicInVolumes)
 
                 #     cargamos la info de los comics los arcos que hagan falta este proceso es largo pero
                 # solo debería tardar la primera vezç
-                    return volume, comicIds
+                    return volume
             else:
                 print('Entidad %1 sin implementar', self.entidad)
 
@@ -261,16 +268,16 @@ class ComicVineSearcher:
         self.lista_arcos.append(arco)
         self.cantidad_hilos -= 1
 
-    def hilo_cargar_comicbook_info(self, lista_comics_in_volumen):
+    def hilo_cargar_comicbook_info(self):
 
         index = 0
         self.cantidad_hilos=0
-        cantidad_elementos = len(lista_comics_in_volumen)
+        cantidad_elementos = len(self.comicIds)
 
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
-                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[lista_comics_in_volumen[index]]).start()
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1
                 '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
@@ -355,10 +362,10 @@ class ComicVineSearcher:
                 print(arco_issue)
         self.porcentaje_procesado = 100
 
-    def cargar_comicbook_info(self, lista_comics_in_volumen):
+    def cargar_comicbook_info(self):
         self.porcentaje_procesado=0
         self.lista_comicbooks_info.clear()
-        threading.Thread(target=self.hilo_cargar_comicbook_info, args=[lista_comics_in_volumen]).start()
+        threading.Thread(target=self.hilo_cargar_comicbook_info).start()
 
 
 

@@ -62,10 +62,12 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
 
     id_comicbook_Info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'), primary_key=True)
     id_arco_argumental = Column(Integer, ForeignKey('arcos_argumentales.id_arco_argumental'), primary_key=True)
-    # id_comicbook_Info = Column(Integer, primary_key=True)
-    # id_arco_argumental = Column(Integer, primary_key=True)
+    ids_comicbooks_Info= relationship("Comicbook_Info", back_populates="ids_arco_argumental")
+    ids_arco_argumental = relationship("Arco_Argumental", back_populates="ids_comicbooks_Info")
     orden = Column(Integer, nullable=False, default=0)
 
+    def __repr__(self):
+        return "orden={}-id_comicbook_Info={} id_arco_argumental={}".format(self.orden, self.ids_comicbooks_Info,self.ids_arco_argumental)
 
 class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
@@ -76,7 +78,7 @@ class Arco_Argumental(Entidades.Init.Base):
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
-    ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference")
+    ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference", back_populates="ids_arco_argumental")
     # , secondary=comicbook_info_arco_argumental)
 
     def getIssueOrder(self,idComic):
