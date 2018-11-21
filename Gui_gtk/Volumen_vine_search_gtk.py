@@ -118,27 +118,19 @@ class Volumen_vine_search_Gtk():
         cv.entidad = 'volume'
         volumen = cv.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
-        cv.cargar_comicbook_info()
+        cv.cargar_comicboo_info()
         # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)
             GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
-        volume = volumenAndIssues[0]
-        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volume.id_volume).first()
-        if volumen_in_db:
+        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volumen.id_volume).first()
+        if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
-            volumen_in_db.cantidadNumeros = volume.cantidadNumeros
+            volumen_in_db.cantidadNumeros = volumen.cantidadNumeros
             volume = volumen_in_db
         self.session.add(volume)
         self.session.commit()
         print(volume)
-        # self.session.query(Comics_In_Volume).filter(Comics_In_Volume.id_volume == volume.id_volume).delete()
-        # self.session.commit()
-        # for index, numeroComic in enumerate(volumenAndIssues[1], start=0):
-        #     print(numeroComic)
-        #     self.session.add(numeroComic)
-        # self.session.commit()
-        # limpiamos los comics info del volumen
         self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volume.id_volume).delete()
         self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
@@ -225,6 +217,11 @@ if __name__ == "__main__":
     volumen.session.query(Volume).delete()
     volumen.session.query(Comicbook_Info_Cover_Url).delete()
     volumen.session.query(Comicbook_Info).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
     volumen.session.commit()
     volumen.click_aceptar(None)
     Gtk.main()

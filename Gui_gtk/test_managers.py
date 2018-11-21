@@ -21,19 +21,24 @@ if __name__ == "__main__":
     arco1.id_arco_argumental=123
     comicbook = Entidades.Agrupado_Entidades.Comicbook_Info()
     comicbook.id_comicbook_Info = 999999
+
     # session.add(arco1)
-    # session.add(comicbook)
+    session.add(comicbook)
+    session.commit()
+
     # comicbook.ids_arco_argumental.append(arco)
     rel = Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference()
     rel.ids_comicbooks_Info = comicbook
     rel.ids_arco_argumental = arco1
+    session.add(rel)
+    session.commit()
+
     arco2 = Entidades.Agrupado_Entidades.Arco_Argumental()
     arco2.id_arco_argumental = 456
     rel2 = Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference(orden = 11111)
     rel2.ids_comicbooks_Info = comicbook
     rel2.ids_arco_argumental = arco2
     session.add(rel2)
-    session.add(rel)
     session.commit()
 
 

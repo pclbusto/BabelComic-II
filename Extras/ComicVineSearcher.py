@@ -184,15 +184,14 @@ class ComicVineSearcher:
                         for issue_to_save in self.lista_comicbooks_info:
                             if issue_to_save.id_comicbook_Info == int(issue.find('id').text):
                                 issue_db = issue_to_save
-                    # si es None entonces no existe este iisue lo creamos y cerramos la relacion
-
+                    # no esta en la base o en la lista para agregar los nuevos comicbooks_info entonces creamos uno
+                    # vacío si es None entonces no existe este iisue lo creamos y cerramos la relacion
                     if issue_db is None:
                         issue_db = Comicbook_Info()
                         issue_db.id_comicbook_Info = int(issue.find('id').text)
-                        issue_db.ids_arco_argumental.append(arco)
                     arco_comics_reference = Arcos_Argumentales_Comics_Reference(orden = pos)
                     arco_comics_reference.ids_comicbooks_Info= issue_db
-                    arco.ids_comicbooks_Info.append(arco_comics_reference)
+                    arco_comics_reference.ids_arco_argumental = arco
                     pos += 1
                 return arco
 
