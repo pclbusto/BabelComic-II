@@ -118,7 +118,7 @@ class Volumen_vine_search_Gtk():
         cv.entidad = 'volume'
         volumen = cv.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
-        cv.cargar_comicboo_info()
+        cv.cargar_comicbook_info()
         # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)
@@ -133,19 +133,19 @@ class Volumen_vine_search_Gtk():
         print(volume)
         self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volume.id_volume).delete()
         self.session.commit()
-        for comicbook_info in cv.lista_comicbooks_info:
-            print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
-            print("Comic  cover url {}".format(comicbook_info.thumbs_url))
-            comicbook_info.id_volume = volume.id_volume
-            comicbook_info.nombre_volumen = volume.nombre
-            self.session.add(comicbook_info)
-            self.session.commit()
+        for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
+            # print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
+            # print("Comic  cover url {}".format(comicbook_info.thumbs_url))
+            # comicbook_info.id_volume = volume.id_volume
+            # comicbook_info.nombre_volumen = volume.nombre
+            self.session.add(arco_comicbook_reference)
+        self.session.commit()
 
 
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
-    #     86343
-        threading.Thread(target=self.hilo_cargar_volume, args=['5868']).start()
+    #     86343 - 5868
+        threading.Thread(target=self.hilo_cargar_volume, args=['86343']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()

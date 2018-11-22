@@ -31,6 +31,8 @@ class ComicVineSearcher:
         self.listaBusquedaVine = []
         self.listaBusquedaLocal = []
         self.lista_comicbooks_info = []
+        self.lista_arco_argumental_comic_reference = []
+
         self.columnas = []
         self.statusMessage = 'Ok'
         # es el techo de cantidad resultados dividido 100
@@ -192,6 +194,7 @@ class ComicVineSearcher:
                     arco_comics_reference = Arcos_Argumentales_Comics_Reference(orden = pos)
                     arco_comics_reference.ids_comicbooks_Info= issue_db
                     arco_comics_reference.ids_arco_argumental = arco
+                    self.lista_arco_argumental_comic_reference.append(arco_comics_reference)
                     pos += 1
                 return arco
 
@@ -329,9 +332,9 @@ class ComicVineSearcher:
 
         self.porcentaje_procesado = 99
         # guardamos los arcos para probar eliminar error clave duplicada
-        for arco in self.lista_arcos:
-            self.session.add(arco)
-        self.session.commit()
+        # for arco in self.lista_arcos:
+        #     self.session.add(arco)
+        # self.session.commit()
         # print("Lista de comics antes de re asignar los arcos")
         # tenemos la info de los arcos ahora a recorrer la lista de issues y actualizar la referencias
         # for issue in self.lista_comicbooks_info:
@@ -342,17 +345,22 @@ class ComicVineSearcher:
         #             print("ARCO RECUEPRADO:{}".format(self.lista_arcos[0]))
         #             print("SON IGUALES:{}".format(self.lista_arcos[0].id_arco_argumental == arcos_issue.id_arco_argumental))
 
-
-        for arco in self.lista_arcos:
+        # tengo los arcos y los issues armamos la relacion
+        for arco_comic_referencia in self.lista_arco_argumental_comic_reference:
+            existe = False
             for issue in self.lista_comicbooks_info:
-                existe=False
-                for arcos_issue in issue.ids_arco_argumental:
-                    if arcos_issue.id_arco_argumental == arco.id_arco_argumental:
-                        # print("encontramos arco lo borramos y agregamos el nuevo")
-                        issue.ids_arco_argumental.remove(arcos_issue)
-                        existe=True
-                if existe:
-                    issue.ids_arco_argumental.append(arco)
+                if arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info == issue.id_comicbook_Info:
+                    # relacionamos el iise de la lista a arco porque es el que vamso a guarda en la bs
+                    arco_comic_referencia.ids_comicbooks_Info=issue
+                    existe= True
+            if not existe:
+                # No esta en los issues por agrgar, puede estar en la base de datos o no exisistir.
+                comicbook_info_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info)
+                if comicbook_info_db  is None:
+                  # no esta en la base lo agregamos para que quede
+                    self.lista_comicbooks_info.append(arco_comic_referencia.ids_comicbooks_Info)
+                else:
+                    arco_comic_referencia.ids_comicbooks_Info = comicbook_info_db
 
         # print("imprimimos info arcos de los comics info")
         for issue in self.lista_comicbooks_info:
