@@ -127,11 +127,15 @@ class Volumen_vine_search_Gtk():
         if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
             volumen_in_db.cantidadNumeros = volumen.cantidadNumeros
-            volume = volumen_in_db
-        self.session.add(volume)
+            volumen = volumen_in_db
+        self.session.add(volumen)
         self.session.commit()
-        print(volume)
-        self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volume.id_volume).delete()
+        print(volumen)
+        self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
+        self.session.commit()
+        for comicbook_info in cv.lista_comicbooks_info:
+            self.session.add(comicbook_info)
+            print(comicbook_info)
         self.session.commit()
         for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
             # print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
@@ -144,8 +148,8 @@ class Volumen_vine_search_Gtk():
 
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
-    #     86343 - 5868
-        threading.Thread(target=self.hilo_cargar_volume, args=['86343']).start()
+    #     86343 - 5868-106705-18216
+        threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()
