@@ -4,7 +4,7 @@ import zipfile
 import rarfile
 import Entidades.Init
 from PIL import Image, ImageTk
-from sqlalchemy import Column, Integer, String, and_,ForeignKey, Table, Float
+from sqlalchemy import Column, Integer, String, and_,ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship
 from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
@@ -273,11 +273,15 @@ class Comicbook_Info(Entidades.Init.Base):
     Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
     El tema es que por ser string pierdo el orden entonces despues del 1 no viene el 2 si no 10.'''
     orden = Column(Integer,nullable=False,default=0 )
-
+    actualizado_externamente = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
+        cadena = "titulo={}-comic vine id={}\n  URLS:\n".format(self.titulo, self.id_comicbook_Info)
+        lista = ""
+        for url in self.thumbs_url:
+            lista = lista+"      "+url.thumb_url+"\n"
 
-        return "titulo={}-comic vine id={}\nurls={}".format(self.titulo, self.id_comicbook_Info,self.thumbs_url)
+        return cadena+lista
 
 class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     '''Clase que mantiene la info de las caratulas, como un comic puede tener varias caratulas o covers
@@ -418,6 +422,7 @@ class Volume(Entidades.Init.Base):
     publisher_name=Column(String,nullable=False,default='')
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
+
 
 
     def hasPublisher(self):

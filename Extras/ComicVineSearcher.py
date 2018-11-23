@@ -230,7 +230,7 @@ class ComicVineSearcher:
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = Comics_In_Volume()
                         comicInVolumes.id_volume = volume.id_volume
-                        comicInVolumes.id_comicbook_Info = issue.find("id").text
+                        comicInVolumes.id_comicbook_Info = int(issue.find("id").text)
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
                         comicInVolumes.site_detail_url= issue.find("site_detail_url").text
@@ -255,10 +255,12 @@ class ComicVineSearcher:
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
-    def hilo_procesar_comic_in_volume(self,comic_in_volume):
+    def hilo_procesar_comic_in_volume(self,comic_in_volume,volumen):
         comics_searcher = Comic_Vine_Info_Issue_Searcher(self.session)
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
+        comicbook_info.id_volume = volumen.id_volume
+        comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos-=1
 
@@ -270,7 +272,7 @@ class ComicVineSearcher:
         self.lista_arcos.append(arco)
         self.cantidad_hilos -= 1
 
-    def hilo_cargar_comicbook_info(self):
+    def hilo_cargar_comicbook_info(self,volumen):
 
         index = 0
         self.cantidad_hilos=0
@@ -279,7 +281,7 @@ class ComicVineSearcher:
         while index < cantidad_elementos :
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
-                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index]]).start()
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index], volumen]).start()
                 index+=1
                 self.cantidad_hilos += 1
                 '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
@@ -343,6 +345,8 @@ class ComicVineSearcher:
                     # relacionamos el iise de la lista a arco porque es el que vamso a guarda en la bs
                     arco_comic_referencia.ids_comicbooks_Info = issue
                     existe= True
+                    print("Corte")
+                    break
             if not existe:
                 # No esta en los issues por agrgar, puede estar en la base de datos o no exisistir.
                 print("buscando en la base de datos")
@@ -360,10 +364,10 @@ class ComicVineSearcher:
         #         print(arco_issue)
         self.porcentaje_procesado = 100
 
-    def cargar_comicbook_info(self):
+    def cargar_comicbook_info(self,volumen):
         self.porcentaje_procesado=0
         self.lista_comicbooks_info.clear()
-        threading.Thread(target=self.hilo_cargar_comicbook_info).start()
+        threading.Thread(target=self.hilo_cargar_comicbook_info, args=[volumen]).start()
 
 
 

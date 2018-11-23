@@ -118,7 +118,7 @@ class Volumen_vine_search_Gtk():
         cv.entidad = 'volume'
         volumen = cv.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
-        cv.cargar_comicbook_info()
+        cv.cargar_comicbook_info(volumen)
         # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)
@@ -131,11 +131,15 @@ class Volumen_vine_search_Gtk():
         self.session.add(volumen)
         self.session.commit()
         print(volumen)
-        self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
-        self.session.commit()
+        # self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
+        # self.session.commit()
         for comicbook_info in cv.lista_comicbooks_info:
-            self.session.add(comicbook_info)
-            print(comicbook_info)
+            cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_Info)
+            if cbi_db is not None and not cbi_db.actualizado_externamente:
+                self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_Info == comicbook_info.id_comicbook_Info).delete()
+                self.session.commit()
+            if cbi_db is None:
+                self.session.add(comicbook_info)
         self.session.commit()
         for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
             # print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
@@ -148,8 +152,11 @@ class Volumen_vine_search_Gtk():
 
     def click_aceptar(self, widget):
         # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
-    #     86343 - 5868-106705-18216
-        threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
+    #     86343 - 5868-106705-18216-
+        # 32561 - Brightest Day
+        # 32562 - The flash vol3
+
+        threading.Thread(target=self.hilo_cargar_volume, args=['32562']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()
@@ -210,23 +217,23 @@ class Volumen_vine_search_Gtk():
         self.spinner.stop()
 
 if __name__ == "__main__":
-    from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
-    from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
-
+    # from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
+    # from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
+    #
     volumen = Volumen_vine_search_Gtk()
     volumen.window.show()
     volumen.window.connect("destroy", Gtk.main_quit)
-    volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
-    volumen.session.query(Arco_Argumental).delete()
-    volumen.session.query(Volume).delete()
-    volumen.session.query(Comicbook_Info_Cover_Url).delete()
-    volumen.session.query(Comicbook_Info).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
-    volumen.session.commit()
+    # volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
+    # volumen.session.query(Arco_Argumental).delete()
+    # volumen.session.query(Volume).delete()
+    # volumen.session.query(Comicbook_Info_Cover_Url).delete()
+    # volumen.session.query(Comicbook_Info).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
+    # volumen.session.commit()
     volumen.click_aceptar(None)
     Gtk.main()
 

@@ -83,6 +83,7 @@ class Comic_Vine_Info_Issue_Searcher():
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_Cover_Url(thumb_url=match.group(1))
             comicbook_info.thumbs_url.append(comic_url)
+        comicbook_info.actualizado_externamente = True
         # retornamos un comic info con un id de arco. Que puede o no estar en la base eso lo resolvemos mas adelante
         return comicbook_info
 
