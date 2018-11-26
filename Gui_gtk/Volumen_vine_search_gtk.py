@@ -133,30 +133,50 @@ class Volumen_vine_search_Gtk():
         print(volumen)
         # self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
         # self.session.commit()
+        # time.sleep(30)
+        lista = []
         for comicbook_info in cv.lista_comicbooks_info:
             cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_Info)
             if cbi_db is not None and not cbi_db.actualizado_externamente:
                 self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_Info == comicbook_info.id_comicbook_Info).delete()
                 self.session.commit()
-            if cbi_db is None:
+            if cbi_db is None and not comicbook_info.actualizado_externamente:
                 self.session.add(comicbook_info)
-        self.session.commit()
-        for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
+                lista.append(comicbook_info)
+                try:
+                    self.session.commit()
+                except Exception :
+                    print("Agregando a comic")
+                    print(comicbook_info)
+                    print("LISTA DE ARCOS RELACIONADO")
+                    for arco_ref in cv.lista_arco_argumental_comic_reference:
+                        print(type(arco_ref))
+                        print(arco_ref)
+                    print("FIN LISTA DE ARCOS RELACIONADO")
+                    raise
+
+
+        # print(lista)
+
+        # for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
             # print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
-            # print("Comic  cover url {}".format(comicbook_info.thumbs_url))
+            # print(arco_comicbook_reference)
             # comicbook_info.id_volume = volume.id_volume
             # comicbook_info.nombre_volumen = volume.nombre
-            self.session.add(arco_comicbook_reference)
-        self.session.commit()
+            # self.session.add(arco_comicbook_reference)
+            # self.session.commit()
 
 
     def click_aceptar(self, widget):
-        # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume_externo]).start()
+        # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
     #     86343 - 5868-106705-18216-
         # 32561 - Brightest Day
         # 32562 - The flash vol3
+        # 18127 - Justice League of America
+        # 4363 - green lantern vol 3
+        # 18058 - detective comics
 
-        threading.Thread(target=self.hilo_cargar_volume, args=['32562']).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=['18058']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()
@@ -217,23 +237,23 @@ class Volumen_vine_search_Gtk():
         self.spinner.stop()
 
 if __name__ == "__main__":
-    # from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
-    # from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
+    from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
+    from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
     #
     volumen = Volumen_vine_search_Gtk()
     volumen.window.show()
     volumen.window.connect("destroy", Gtk.main_quit)
-    # volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
-    # volumen.session.query(Arco_Argumental).delete()
-    # volumen.session.query(Volume).delete()
-    # volumen.session.query(Comicbook_Info_Cover_Url).delete()
-    # volumen.session.query(Comicbook_Info).delete()
-    # volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
-    # volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
-    # volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
-    # volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
-    # volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
-    # volumen.session.commit()
+    volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
+    volumen.session.query(Arco_Argumental).delete()
+    volumen.session.query(Volume).delete()
+    volumen.session.query(Comicbook_Info_Cover_Url).delete()
+    volumen.session.query(Comicbook_Info).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
+    volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
+    volumen.session.commit()
     volumen.click_aceptar(None)
     Gtk.main()
 

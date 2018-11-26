@@ -13,7 +13,7 @@ class Entity_manager:
     ORDER_DESC=1
 
 
-    def __init__(self, session = None, clase=None, id_externo=None):
+    def __init__(self, session = None, clase=None):
         if session is not None:
             self.session = session
         else:
@@ -21,7 +21,6 @@ class Entity_manager:
 
         self.clase = clase
         self.entidad = self.clase()
-        self.id_externo = id_externo
 
         self.filtro = None
         self.order = None

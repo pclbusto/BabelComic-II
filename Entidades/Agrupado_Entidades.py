@@ -67,7 +67,7 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     orden = Column(Integer, nullable=False, default=0)
 
     def __repr__(self):
-        return "orden={}-id_comicbook_Info={} id_arco_argumental={}".format(self.orden, self.ids_comicbooks_Info,self.ids_arco_argumental)
+        return "orden={}-id_comicbook_Info={} id_arco_argumental={}".format(self.orden, self.ids_comicbooks_Info.id_comicbook_Info,self.ids_arco_argumental.id_arco_argumental)
 
 class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
@@ -278,8 +278,8 @@ class Comicbook_Info(Entidades.Init.Base):
     def __repr__(self):
         cadena = "titulo={}-comic vine id={}\n  URLS:\n".format(self.titulo, self.id_comicbook_Info)
         lista = ""
-        for url in self.thumbs_url:
-            lista = lista+"      "+url.thumb_url+"\n"
+        # for url in self.thumbs_url:
+        #     lista = lista+"      "+url.thumb_url+"\n"
 
         return cadena+lista
 
@@ -438,7 +438,7 @@ class Volume(Entidades.Init.Base):
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
     def get_url(self):
-        return("http://comicvine/"+self.id_volume)
+        return("http://comicvine/"+str(self.id_volume))
 
     def __repr__(self):
         return "<Volume(name={}, id_volume={}, cantidad nros={}, publisher_name={}, Año inicio={} )>". \

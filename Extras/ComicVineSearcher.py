@@ -274,11 +274,12 @@ class ComicVineSearcher:
 
     def hilo_cargar_comicbook_info(self,volumen):
 
-        index = 0
+        index = 675
         self.cantidad_hilos=0
         cantidad_elementos = len(self.comicIds)
 
-        while index < cantidad_elementos :
+        # while index < cantidad_elementos :
+        while index < 678 :
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index], volumen]).start()
@@ -337,6 +338,7 @@ class ComicVineSearcher:
         for cbi in self.lista_comicbooks_info:
             print(cbi)
         print("LISTO CBI LIST")
+        lista_remover = []
         for arco_comic_referencia in self.lista_arco_argumental_comic_reference:
             existe = False
             for issue in self.lista_comicbooks_info:
@@ -345,6 +347,7 @@ class ComicVineSearcher:
                     # relacionamos el iise de la lista a arco porque es el que vamso a guarda en la bs
                     arco_comic_referencia.ids_comicbooks_Info = issue
                     existe= True
+                    lista_remover.append(issue)
                     print("Corte")
                     break
             if not existe:
@@ -356,6 +359,21 @@ class ComicVineSearcher:
                     self.lista_comicbooks_info.append(arco_comic_referencia.ids_comicbooks_Info)
                 else:
                     arco_comic_referencia.ids_comicbooks_Info = comicbook_info_db
+        for item in lista_remover:
+            self.lista_comicbooks_info.remove(item)
+        print("LISTADO DE COMICBOOK INFO DESPUES DE REVISAR LOS ARCOS")
+        for cbi in self.lista_comicbooks_info:
+            # contador = 0
+            # for cbi_2 in  self.lista_comicbooks_info:
+            #     if int(cbi.id_comicbook_Info) == int(cbi_2.id_comicbook_Info):
+            #         contador +=1
+            #     if  contador >=2:
+            #         print("REPETIDO")
+            print(cbi)
+        print("LISTO CBI LIST")
+
+        # for arco in self.lista_arcos:
+        #     arco.ids_comicbooks_Info.clear()
 
         # print("imprimimos info arcos de los comics info")
         # for issue in self.lista_comicbooks_info:
@@ -363,6 +381,7 @@ class ComicVineSearcher:
         #         print("comic info {}".format(issue.id_comicbook_Info))
         #         print(arco_issue)
         self.porcentaje_procesado = 100
+        print("TERMINO")
 
     def cargar_comicbook_info(self,volumen):
         self.porcentaje_procesado=0

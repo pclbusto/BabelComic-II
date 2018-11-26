@@ -46,7 +46,7 @@ class Publishers(Entity_manager):
 class Volumens(Entity_manager):
 
     def __init__(self, session = None):
-        Entity_manager.__init__(self, session=session, clase=Volume, id_externo=Volume.id_volume_externo)
+        Entity_manager.__init__(self, session=session, clase=Volume)
 
         if session is not None:
             self.session = session
