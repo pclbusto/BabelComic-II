@@ -78,7 +78,7 @@ class Comic_Vine_Info_Issue_Searcher():
         for matchNum, match in enumerate(matches):
             arco_argumental = Arco_Argumental()
             arco_argumental.id_arco_argumental = int(match.group(1))
-            comicbook_info.ids_arco_argumental.append(arco_argumental)
+            comicbook_info.lista_ids_arcos_para_procesar.append(arco_argumental)
         matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_Cover_Url(thumb_url=match.group(1))

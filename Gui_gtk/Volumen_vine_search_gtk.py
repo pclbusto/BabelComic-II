@@ -1,5 +1,6 @@
 import gi
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GdkPixbuf
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
@@ -7,7 +8,7 @@ from gi.repository import GLib
 import Entidades.Init
 from Entidades.Entitiy_managers import Publishers
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
-from Entidades.Agrupado_Entidades import Comics_In_Volume, Comicbook_Info, Volume
+from Entidades.Agrupado_Entidades import Comicbook_Info, Volume, Arcos_Argumentales_Comics_Reference
 import threading
 import time
 
@@ -134,27 +135,28 @@ class Volumen_vine_search_Gtk():
         # self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
         # self.session.commit()
         # time.sleep(30)
-        lista = []
         for comicbook_info in cv.lista_comicbooks_info:
             cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_Info)
             if cbi_db is not None and not cbi_db.actualizado_externamente:
                 self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_Info == comicbook_info.id_comicbook_Info).delete()
                 self.session.commit()
-            if cbi_db is None and not comicbook_info.actualizado_externamente:
-                self.session.add(comicbook_info)
-                lista.append(comicbook_info)
-                try:
-                    self.session.commit()
-                except Exception :
-                    print("Agregando a comic")
-                    print(comicbook_info)
-                    print("LISTA DE ARCOS RELACIONADO")
-                    for arco_ref in cv.lista_arco_argumental_comic_reference:
-                        print(type(arco_ref))
-                        print(arco_ref)
-                    print("FIN LISTA DE ARCOS RELACIONADO")
-                    raise
-
+            self.session.add(comicbook_info)
+        for arco in cv.lista_arcos:
+            self.session.add(arco)
+        self.session.commit()
+        # construimos la relacion para cada arco con la lista de comics.
+        for arco in cv.lista_arcos:
+            print(arco.lista_ids_comicbook_info_para_procesar)
+            for comicbook_info in cv.lista_comicbooks_info:
+                for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
+                    if comicbook_info.id_comicbook_Info == arco_comicbook_info:
+                        print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
+                        arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
+                        arco_argumental_comicsbook_reference.orden = pos
+                        arco_argumental_comicsbook_reference.ids_arco_argumental=arco
+                        arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info
+                        self.session.add(arco_argumental_comicsbook_reference)
+        self.session.commit()
 
         # print(lista)
 
@@ -175,8 +177,9 @@ class Volumen_vine_search_Gtk():
         # 18127 - Justice League of America
         # 4363 - green lantern vol 3
         # 18058 - detective comics
-
-        threading.Thread(target=self.hilo_cargar_volume, args=['18058']).start()
+        # 18216 - green lantern vol 4
+        # 6498 - birdth of prey
+        threading.Thread(target=self.hilo_cargar_volume, args=['6498']).start()
 
     def _seleccion(self):
         self.volume.localLogoImagePath = self.volume.getImageCover()
@@ -237,23 +240,23 @@ class Volumen_vine_search_Gtk():
         self.spinner.stop()
 
 if __name__ == "__main__":
-    from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
-    from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
+    # from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
+    # from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
     #
     volumen = Volumen_vine_search_Gtk()
     volumen.window.show()
     volumen.window.connect("destroy", Gtk.main_quit)
-    volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
-    volumen.session.query(Arco_Argumental).delete()
-    volumen.session.query(Volume).delete()
-    volumen.session.query(Comicbook_Info_Cover_Url).delete()
-    volumen.session.query(Comicbook_Info).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
-    volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
-    volumen.session.commit()
+    # volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
+    # volumen.session.query(Arco_Argumental).delete()
+    # volumen.session.query(Volume).delete()
+    # volumen.session.query(Comicbook_Info_Cover_Url).delete()
+    # volumen.session.query(Comicbook_Info).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Volume).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
+    # volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
+    # volumen.session.commit()
     volumen.click_aceptar(None)
     Gtk.main()
 

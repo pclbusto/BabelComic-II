@@ -79,7 +79,7 @@ class Arco_Argumental(Entidades.Init.Base):
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
     ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference", back_populates="ids_arco_argumental")
-    # , secondary=comicbook_info_arco_argumental)
+
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
@@ -87,6 +87,8 @@ class Arco_Argumental(Entidades.Init.Base):
         if orden is not None:
             return orden.orden
         return -1
+
+
     def getIssuesCount(self):
         session = Entidades.Init.Session()
         cantidad = session.query(Arcos_Argumentales_Comics_Reference).filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental == self.id_arco_argumental).count()
@@ -94,6 +96,9 @@ class Arco_Argumental(Entidades.Init.Base):
 
     def getCantidadTitulos(self):
         return (len(self.comics))
+
+    def __init__(self):
+        self.lista_ids_comicbook_info_para_procesar = []
 
     def __repr__(self):
         return "id_arco_argumental={} nombre={}".format(self.id_arco_argumental, self.nombre)
@@ -259,6 +264,7 @@ class Comicbook_Info(Entidades.Init.Base):
 
     ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
 
+
     arco_argumental_numero = Column(Integer, nullable=False, default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
@@ -275,8 +281,11 @@ class Comicbook_Info(Entidades.Init.Base):
     orden = Column(Integer,nullable=False,default=0 )
     actualizado_externamente = Column(Boolean, nullable=False, default=False)
 
+    def __init__(self):
+        self.lista_ids_arcos_para_procesar = []
+
     def __repr__(self):
-        cadena = "titulo={}-comic vine id={}\n  URLS:\n".format(self.titulo, self.id_comicbook_Info)
+        cadena = "titulo={}-comic vine id={}\n  actualizado_externamente:{}\n".format(self.titulo, self.id_comicbook_Info,self.actualizado_externamente)
         lista = ""
         # for url in self.thumbs_url:
         #     lista = lista+"      "+url.thumb_url+"\n"
