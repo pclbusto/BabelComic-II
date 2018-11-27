@@ -179,7 +179,9 @@ class ComicVineSearcher:
                 issues = story_arc.find('issues')
                 '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
+                print("procesando arco: {}".format(arco.id_arco_argumental))
                 for issue in issues:
+
                     '''por cada issue del arco reviso si esta en tabla o para insertar si no esta lo creo solo con el id
                     y si esta lo recupero'''
                     arco.lista_ids_comicbook_info_para_procesar.append(int(issue.find('id').text))
@@ -199,6 +201,7 @@ class ComicVineSearcher:
                     # arco_comics_reference.ids_arco_argumental = arco
                     # self.lista_arco_argumental_comic_reference.append(arco_comics_reference)
                     # pos += 1
+                print("lista issues {}".format(arco.lista_ids_comicbook_info_para_procesar))
                 return arco
 
             if self.entidad == 'volume':
