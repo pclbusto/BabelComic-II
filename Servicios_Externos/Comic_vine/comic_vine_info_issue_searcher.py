@@ -10,7 +10,7 @@ from Entidades import Init
 import Entidades
 import threading
 
-class Comic_Vine_Info_Issue_Searcher():
+class Comic_Vine_Info_Searcher():
 
 
     regex_search_serie = r"<td class=\"listing_publisher\"> <a href=\"/publisher/(\d*)/\">([^<]*)</a></td>[^<]*<td>" \
@@ -20,9 +20,12 @@ class Comic_Vine_Info_Issue_Searcher():
     regex_get_issue_name = r"<th>Name<\/th>[^<]*<td>[^<][^>]*[^<]*<span>[^>]*>([^<]*)"
     regex_get_issue_description = r'<div class="wiki-item-display js-toc-content">[^<]*(.*)<\/div>[^<]*<div class="wiki-item-edit">[^<]*<div    id='
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
-    regex_get_issue_story_arc = r"4045-(\d*)"
+    regex_get_issue_story_arc = r"4045-(\d*)/\">"
     regex_get_issue_id_volume = r"4050-(\d*)"
     regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
+
+    regex_get_arcs_issues = r"/4000-(\d+)/\">[^\w|^\d]"
+    regex_get_arcs_pages_count = r"\/issues\/\?page=\d+\">"
 
     def __init__(self, session=None):
         if session is None:
@@ -33,17 +36,18 @@ class Comic_Vine_Info_Issue_Searcher():
     def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
         # print(html)
+        # print(url)
         comicbook_info = Comicbook_Info()
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_number, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.numero = match.group(1)
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_name, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.titulo = match.group(1)
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_description, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_description, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.resumen = match.group(1)
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_cover_date, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_cover_date, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             fecha_tapa_issue = match.group(1)
             mes=0
@@ -73,13 +77,13 @@ class Comic_Vine_Info_Issue_Searcher():
                 mes = 12
             anio = int(fecha_tapa_issue[-4:])
             comicbook_info.fechaTapa = date(anio, mes,1)
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
         # guardamos los arcos si es que tiene
         for matchNum, match in enumerate(matches):
             arco_argumental = Arco_Argumental()
             arco_argumental.id_arco_argumental = int(match.group(1))
             comicbook_info.lista_ids_arcos_para_procesar.append(arco_argumental)
-        matches = re.finditer(Comic_Vine_Info_Issue_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_Cover_Url(thumb_url=match.group(1))
             comicbook_info.thumbs_url.append(comic_url)
@@ -87,9 +91,30 @@ class Comic_Vine_Info_Issue_Searcher():
         # retornamos un comic info con un id de arco. Que puede o no estar en la base eso lo resolvemos mas adelante
         return comicbook_info
 
+    def search_issues_in_arc(self, url):
+        html = urlopen(url).read().decode('utf-8')
+        # print(html)
+        lista_ids_arcos_para_procesar = []
+        cantidad_paginas = 0
 
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_pages_count, html, re.DOTALL)
+        for matchNum, match in enumerate(matches):
+            cantidad_paginas+=1
+        if cantidad_paginas>1:
+            for i in range(1, cantidad_paginas+1):
+                # print(url+"?page={}".format(i))
+                html = urlopen(url+"?page={}".format(i)).read().decode('utf-8')
+                matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_issues, html, re.DOTALL)
+                for matchNum, match in enumerate(matches):
+                    lista_ids_arcos_para_procesar.append(int(match.group(1)))
+        else:
+            matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_issues, html, re.DOTALL)
+            for matchNum, match in enumerate(matches):
+                lista_ids_arcos_para_procesar.append(int(match.group(1)))
+
+        return  lista_ids_arcos_para_procesar
 if __name__ == "__main__":
 
-    comcis_org_searcher = Comic_Vine_Info_Issue_Searcher()
-    comicbook_info = comcis_org_searcher.search_issue('https://comicvine.gamespot.com/the-darkness-11-hearts-of-darkness-part-one/4000-118663/')
-    print(comicbook_info)
+    comcis_org_searcher = Comic_Vine_Info_Searcher()
+    lista = comcis_org_searcher.search_issues_in_arc('https://comicvine.gamespot.com/faces-of-evil/4045-55781/issues/')
+    print(lista)

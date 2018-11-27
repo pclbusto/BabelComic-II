@@ -1,5 +1,5 @@
 from datetime import datetime
-from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Issue_Searcher
+from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Searcher
 from Entidades.Agrupado_Entidades import Comicbook,Comicbook_Info,Publisher, Arco_Argumental
 from Entidades.Agrupado_Entidades import Arcos_Argumentales_Comics_Reference, Volume, Comics_In_Volume
 from Entidades.Entitiy_managers import Volumens
@@ -87,6 +87,8 @@ class ComicVineSearcher:
             ##        print('http://www.comicvine.com/api/'+self.entidad+'/?api_key='+self.vinekey+self.filter+'&offset='+str(0)+'&sort=id:asc')
 
     def getVineEntity(self, id):
+
+        print("Vamos a porcesoar el arco {}".format(id))
         # TODO: Este metodo debe incrementar el contador de consulta para la clave. asi no sobrecargamos
         if self.entidad == 'issue':
             print('http://comicvine.gamespot.com/api/issue/4000-' + str(id) + '/?api_key=' + self.vinekey)
@@ -176,15 +178,19 @@ class ComicVineSearcher:
                 arco.descripcion = story_arc.find('description').text
                 arco.ultimaFechaActualizacion = datetime.today().toordinal()
                 arco.lista_ids_comicbook_info_para_procesar.clear()
+                urls_issues = story_arc.find('site_detail_url').text
                 issues = story_arc.find('issues')
                 '''hay que cargar de nuevo los numeros dentro del arco'''
                 pos = 1
+                comics_searcher = Comic_Vine_Info_Searcher(self.session)
                 print("procesando arco: {}".format(arco.id_arco_argumental))
-                for issue in issues:
+                arco.lista_ids_comicbook_info_para_procesar = comics_searcher.search_issues_in_arc(urls_issues)
+                # for issue in issues:
 
-                    '''por cada issue del arco reviso si esta en tabla o para insertar si no esta lo creo solo con el id
-                    y si esta lo recupero'''
-                    arco.lista_ids_comicbook_info_para_procesar.append(int(issue.find('id').text))
+
+                    # '''por cada issue del arco reviso si esta en tabla o para insertar si no esta lo creo solo con el id
+                    # y si esta lo recupero'''
+                    # arco.lista_ids_comicbook_info_para_procesar.append(int(issue.find('id').text))
 
                     # issue_db = self.session.query(Comicbook).get(int(issue.find('id').text))
                     # if issue_db is None:
@@ -262,7 +268,7 @@ class ComicVineSearcher:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def hilo_procesar_comic_in_volume(self,comic_in_volume,volumen):
-        comics_searcher = Comic_Vine_Info_Issue_Searcher(self.session)
+        comics_searcher = Comic_Vine_Info_Searcher(self.session)
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
         comicbook_info.id_volume = volumen.id_volume
@@ -285,7 +291,7 @@ class ComicVineSearcher:
         cantidad_elementos = len(self.comicIds)
 
         while index < cantidad_elementos :
-        # while index < 678 :
+        # while index < 411  :
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index], volumen]).start()
