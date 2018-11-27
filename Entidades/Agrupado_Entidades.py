@@ -333,8 +333,6 @@ class Publisher(Entidades.Init.Base):
     __tablename__='publishers'
 
     id_publisher = Column(Integer, primary_key=True)
-    tipo_id_publisher = Column(Integer, primary_key=True, default=0)
-    # id_publisher_externo = Column(String, nullable=False, default='')
     name = Column(String, nullable=False,default='')
     deck = Column(String, nullable=False,default='')
     description = Column(String, nullable=False,default='')
@@ -416,7 +414,7 @@ class Publisher(Entidades.Init.Base):
         return (Image.open(fImage))
 
     def __repr__(self):
-        return "<Publisher(id_publisher='{}',name='{}', id_publisher_externo='{}'".format(self.id_publisher, self.localLogoImagePath, self.id_publisher_externo)
+        return "<Publisher(id_publisher='{}',name='{}'".format(self.id_publisher, self.localLogoImagePath)
 
 class Volume(Entidades.Init.Base):
     # todo comics que si tenemos y comics que faltan. poder tener ese dato para mostrar

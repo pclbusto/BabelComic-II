@@ -93,7 +93,7 @@ class PublisherGtk():
         if publisher is not None:
             self.entry_id.set_text(str(publisher.id_publisher))
             self.entry_nombre.set_text(publisher.name)
-            self.entry_id_externo.set_text(publisher.id_publisher_externo)
+            # self.entry_id_externo.set_text(publisher.id_publisher_externo)
             self.entry_url.set_text(publisher.siteDetailUrl)
 
             if publisher.hasImageCover():

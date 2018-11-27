@@ -228,8 +228,8 @@ class Volumen_vine_search_Gtk():
         self.listaFiltrada.clear()
         for volume in listavolumes:
             if self.publisher is not None:
-                print("Editorial de fitro: {} Editorial Comics: {}".format(self.publisher.id_publisher_externo,volume.id_publisher_externo))
-                if self.publisher.id_publisher_externo==volume.id_publisher_externo:
+                print("Editorial de fitro: {} Editorial Comics: {}".format(self.publisher.id_publisher,volume.id_publisher))
+                if self.publisher.id_publisher==volume.id_publisher:
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
