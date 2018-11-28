@@ -79,7 +79,7 @@ class Arco_Argumental(Entidades.Init.Base):
     descripcion = Column(String,nullable=False,default='')
     ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
     ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference", back_populates="ids_arco_argumental")
-
+    cantidad_comicbooks = Column(Integer, nullable=False, default='')
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()

@@ -185,6 +185,7 @@ class ComicVineSearcher:
                 comics_searcher = Comic_Vine_Info_Searcher(self.session)
                 print("procesando arco: {}".format(arco.id_arco_argumental))
                 arco.lista_ids_comicbook_info_para_procesar = comics_searcher.search_issues_in_arc(urls_issues)
+                arco.cantidad_comicbooks = len(arco.lista_ids_comicbook_info_para_procesar)
                 # for issue in issues:
 
 
