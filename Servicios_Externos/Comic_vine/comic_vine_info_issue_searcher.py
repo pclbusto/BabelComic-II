@@ -24,7 +24,7 @@ class Comic_Vine_Info_Searcher():
     regex_get_issue_id_volume = r"4050-(\d*)"
     regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
 
-    regex_get_arcs_issues = r"/4000-(\d+)/\">[^\w|^\d]"
+    regex_get_arcs_issues = r"/4000-(\d+)/\">[^\w|^\d^<]"
     regex_get_arcs_pages_count = r"\/issues\/\?page=\d+\">"
 
     def __init__(self, session=None):
@@ -93,7 +93,7 @@ class Comic_Vine_Info_Searcher():
 
     def search_issues_in_arc(self, url):
         html = urlopen(url).read().decode('utf-8')
-        # print(html)
+        print(url)
         lista_ids_arcos_para_procesar = []
         cantidad_paginas = 0
 

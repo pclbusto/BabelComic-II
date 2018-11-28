@@ -197,6 +197,8 @@ class Volumen_vine_search_Gtk():
         # threading.Thread(target=self.hilo_cargar_volume, args=['25372']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['25543']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['18058']).start()
+        # threading.Thread(target=self.hilo_cargar_volume, args=['7300']).start()
+
 
         # 25543
 
@@ -233,6 +235,7 @@ class Volumen_vine_search_Gtk():
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
+        print("Longitud: {}".format(len(self.listaFiltrada)))
         if len(self.listaFiltrada) > 1400:
             self.label_status.set_text("La cantidad de registros es mayor a 1400. Trate de filtrar la consulta.")
             return

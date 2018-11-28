@@ -124,8 +124,9 @@ class Comic_vine_cataloger_gtk():
         lookup.window.show()
 
     def _load_comic(self, comic):
-
-        self.entry_serie_local.set_text(comic.nombre_volumen)
+        if comic.id_comicbook_info != '':
+            comic_info = self.session.query(Comicbook_Info).get(comic.id_comicbook_info)
+            self.entry_serie_local.set_text(comic_info.nombre_volumen)
         self.entry_nombre_archivo_local.set_text(comic.getNombreArchivo())
         comic.openCbFile()
         nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
@@ -247,7 +248,7 @@ class Comic_vine_cataloger_gtk():
             cv = ComicVineSearcher(cnf.getClave('issues'), session=self.session)
             cv.setEntidad('issues')
             # print(item['values'][2])
-            cv.addFilter("id:" + str(comic_in_volumen.comicVineId))
+            cv.addFilter("id:" + str(comic_in_volumen.id_comicbook_Info))
             cv.vineSearch()
             webImage = cv.listaBusquedaVine[0].thumb_url
             nombreImagen = webImage[webImage.rindex('/') + 1:]
@@ -272,19 +273,19 @@ class Comic_vine_cataloger_gtk():
 
     def click_boton_traer_todo(self,widget):
 
-        self.comicInVolumeList = self.session.query(Comics_In_Volume).filter(
-            Comics_In_Volume.volumeId == self.volume.id).order_by(Comics_In_Volume.numero).all()
+        self.comicInVolumeList = self.session.query(Comicbook_Info).filter(
+            Comicbook_Info.id_volume== self.volume.id_volume).order_by(Comicbook_Info.numero).all()
         self.liststore_comics_in_volumen.clear()
         for index, comic in enumerate(self.comicInVolumeList):
-            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.comicVineId), index])
+            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_Info), index])
 
     def click_boton_traer_solo_para_catalogar(self, widget):
         lista_numeros = []
         for comic in self.listore_comics_para_catalogar:
             lista_numeros.append(str(comic[0]))
         print(lista_numeros)
-        self.comicInVolumeList = self.session.query(Comics_In_Volume).filter(
-            Comics_In_Volume.id_volume == self.volume.id_volume).all()
+        self.comicInVolumeList = self.session.query(Comicbook_Info).filter(
+            Comicbook_Info.id_volume == self.volume.id_volume).all()
         self.comicInVolumeList = [comic for comic in self.comicInVolumeList if comic.numero in lista_numeros ]
         print(self.comicInVolumeList)
 
@@ -302,7 +303,7 @@ class Comic_vine_cataloger_gtk():
         self.liststore_comics_in_volumen.clear()
 
         for index, comic in enumerate(self.comicInVolumeList):
-            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_externo), index])
+            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_Info), index])
 
 
 if __name__ == '__main__':

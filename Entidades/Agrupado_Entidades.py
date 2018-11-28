@@ -51,7 +51,6 @@ class Setup(Entidades.Init.Base):
                                                   self.expresionRegularNumero,
                                                   self.directorioBase)
 
-
 class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     '''Esta clase nos da un orden del arco. No tienen que existir los comic books info, solo guardo los
     Id externos para saber el orden y saber cuantos me faltan para completar el arco. Por esto no
@@ -425,7 +424,6 @@ class Volume(Entidades.Init.Base):
     descripcion = Column(String,nullable=False,default='')
     image_url = Column(String,nullable=False,default='')  # la mas grande. Las chicas las hacemos locales.
     id_publisher = Column(String,nullable=False,default='')
-    id_publisher_externo= Column(String, nullable=False, default='')
     publisher_name=Column(String,nullable=False,default='')
     AnioInicio = Column(Integer,nullable=False,default=0)
     cantidadNumeros = Column(Integer,nullable=False,default=0)
