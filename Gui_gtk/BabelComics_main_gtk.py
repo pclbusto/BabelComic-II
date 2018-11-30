@@ -41,25 +41,31 @@ class BabelComics_main_gtk():
                          'click_boton_edit':self.click_boton_edit,
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
-                         'search_change':self.search_change}
+                         'search_change':self.search_change,
+                         'atajos_teclado':self.atajos_teclado,
+                         'evento_cierre':self.evento_cierre}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../BabelComic_main_gtk.glade")
+        self.builder.add_from_file("../BabelComic_main_gtk-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
         self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
         self.search_entry_filtro_comics = self.builder.get_object('search_entry_filtro_comics')
         self.tree_left = self.builder.get_object("tree_left")
-        self.gtk_tree_view_publisher = self.builder.get_object('gtk_tree_view_publisher')
+        self.gtk_tree_view_publisher = self.builder.get_object('tree_general')
         self.menu_comic = self.builder.get_object("menu_comic")
         self.search_bar = self.builder.get_object("search_bar")
+        self.search_bar_general = self.builder.get_object("search_bar_general")
+        self.search_entry_filtro_general = self.builder.get_object("search_entry_filtro_general")
+        self.search_bar_comics = self.builder.get_object("search_bar_comics")
+        self.search_entry_filtro_comics = self.builder.get_object("search_entry_filtro_comics")
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
-
+        self.list_navegacion.append("")
         for editorial in self.listaEditoriales:
             self.list_navegacion.append([editorial.name])
             print(editorial.id_publisher)
@@ -73,6 +79,33 @@ class BabelComics_main_gtk():
         self.iconview.set_item_padding(10)
         self.iconview.set_item_width(1)
         self.iconview.set_spacing(30)
+
+    def evento_cierre(self,event):
+        print("hola")
+
+    def atajos_teclado(self,widget, event):
+        ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
+        if ctrl and event.keyval == Gdk.KEY_f:
+            self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
+            if self.search_bar_general.get_search_mode():
+                self.search_entry_filtro_general.grab_focus()
+        if ctrl and event.keyval == Gdk.KEY_g:
+            self.search_bar_comics.set_search_mode(not self.search_bar_comics.get_search_mode())
+            if self.search_bar_comics.get_search_mode():
+                self.search_entry_filtro_comics.grab_focus()
+        if ctrl and event.keyval == Gdk.KEY_q:
+            self.click_editorial(None)
+        if ctrl and event.keyval == Gdk.KEY_w:
+            self.click_boton_serie(None)
+        if ctrl and event.keyval == Gdk.KEY_e:
+            self.click_boton_edit(None)
+        if ctrl and event.keyval == Gdk.KEY_a:
+            self.click_boton_refresh(None)
+        if ctrl and event.keyval == Gdk.KEY_s:
+            self.click_boton_open_scanear(None)
+        if ctrl and event.keyval == Gdk.KEY_d:
+            self.click_boton_config(None)
+
 
     def click_boton_buscar(self, event):
         self.search_bar.set_search_mode(not self.search_bar.get_search_mode())

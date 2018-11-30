@@ -13,3 +13,7 @@ del archivo.
 claves
 '64f7e65686c40cc016b8b8e499f46d6657d26752'
 '7e4368b71c5a66d710a62e996a660024f6a868d4'
+
+
+Para hacerlos funcionar en window por ahora no tengo manera el mayor avance si hizo con linux y se va mantener asi. mediante samba mounte
+la carpeta de comics en mi linux y desde ahi catalogo todos los comics que tngo.
