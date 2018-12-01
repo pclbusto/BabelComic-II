@@ -107,7 +107,7 @@ class Comicbook(Entidades.Init.Base):
     __tablename__='comicbooks'
     __table_args__ = {'sqlite_autoincrement': True}
 
-    extensionesSoportadas = ['jpg', 'png', 'gif', 'jpeg']
+    extensionesSoportadas = ['jpg', 'png', 'gif', 'jpeg', 'bmp']
 
     path = Column(String,unique=True)
     id_comicbook = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
@@ -123,38 +123,40 @@ class Comicbook(Entidades.Init.Base):
     def openCbFile(self):
         #print('En openCbFile: '+self.getTipo())
         self.paginas=[]
-        if (self.getTipo().lower()=='cbz'):
-            try:
-                self.cbFile = zipfile.ZipFile(self.path, 'r')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-            except BadZipFile:
-                self.cbFile = rarfile.RarFile(self.path, 'r')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
+        try:
+            if (self.getTipo().lower()=='cbz'):
+                try:
+                    self.cbFile = zipfile.ZipFile(self.path, 'r')
+                    for x in self.cbFile.namelist():
+                        if '.' in x:
+                            if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
+                                self.paginas.append(x)
+                except BadZipFile:
+                    self.cbFile = rarfile.RarFile(self.path, 'r')
+                    for x in self.cbFile.infolist():
+                        if '.' in x.filename:
+                            if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                                self.paginas.append(x.filename)
 
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-        elif (self.getTipo().lower()=='cbr'):
-            try:
-                self.cbFile = rarfile.RarFile(self.path, 'r')
-                for x in self.cbFile.infolist():
-                    if '.' in x.filename:
-                        if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x.filename)
+                    #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+            elif (self.getTipo().lower()=='cbr'):
+                try:
+                    self.cbFile = rarfile.RarFile(self.path, 'r')
+                    for x in self.cbFile.infolist():
+                        if '.' in x.filename:
+                            if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
+                                self.paginas.append(x.filename)
 
-                #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
-            except BadRarFile:
-                self.cbFile = zipfile.ZipFile(self.path, 'r')
-                for x in self.cbFile.namelist():
-                    if '.' in x:
-                        if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
-                            self.paginas.append(x)
-                #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
-
+                    #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
+                except BadRarFile:
+                    self.cbFile = zipfile.ZipFile(self.path, 'r')
+                    for x in self.cbFile.namelist():
+                        if '.' in x:
+                            if x[(x.rindex('.') - len(x) + 1):].lower() in self.extensionesSoportadas:
+                                self.paginas.append(x)
+                    #self.paginas = [x for x in self.cbFile.namelist() if (x[-3:].lower() in self.extensionesSoportadas)]
+        except Exception:
+            return -1
         self.paginas.sort()
         self.indicePaginaActual = 0
 

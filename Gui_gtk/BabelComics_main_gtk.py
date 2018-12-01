@@ -248,26 +248,31 @@ class BabelComics_main_gtk():
         for index, comic in enumerate(self.listaComics):
             self.cantidadThumnailsGenerados += 1
             try:
-                comic.openCbFile()
-                nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
-                print(nombreThumnail)
-                cover = None
-                if (not os.path.isfile(nombreThumnail)):
-                    cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                if comic.openCbFile()==-1:
+                    cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
                     # help(cover)
                     iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
-                    self.lista_pendientes.append((comic, nombreThumnail, iter))
+                    # self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
-                    cover = Pixbuf.new_from_file(nombreThumnail)
-                    if comic.id_comicbook_info!='':
-                        self.cataloged_pix.composite(cover,
-                                                     cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
-                                                     self.cataloged_pix.props.width,self.cataloged_pix.props.height,
-                                                     cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
-                                                     1, 1,
-                                                     3, 200)
+                    nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
+                    print(nombreThumnail)
+                    cover = None
+                    if (not os.path.isfile(nombreThumnail)):
+                        cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                        # help(cover)
+                        iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
+                        self.lista_pendientes.append((comic, nombreThumnail, iter))
+                    else:
+                        cover = Pixbuf.new_from_file(nombreThumnail)
+                        if comic.id_comicbook_info!='':
+                            self.cataloged_pix.composite(cover,
+                                                         cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
+                                                         self.cataloged_pix.props.width,self.cataloged_pix.props.height,
+                                                         cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
+                                                         1, 1,
+                                                         3, 200)
 
-                    self.liststore.append([cover, comic.getNombreArchivo(), index])
+                        self.liststore.append([cover, comic.getNombreArchivo(), index])
 
             except NotRarFile:
                 print('error en el archivo ' + comic.path)
