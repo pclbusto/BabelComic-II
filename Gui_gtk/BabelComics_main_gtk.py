@@ -14,6 +14,7 @@ from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
 import os.path
+import math
 from PIL import Image
 from rarfile import NotRarFile, BadRarFile
 
@@ -43,7 +44,12 @@ class BabelComics_main_gtk():
                          'click_boton_buscar':self.click_boton_buscar,
                          'search_change':self.search_change,
                          'atajos_teclado':self.atajos_teclado,
-                         'evento_cierre':self.evento_cierre}
+                         'evento_cierre':self.evento_cierre,
+                         'click_primero':self.click_primero,
+                         'click_anterior':self.click_anterior,
+                         'click_siguiente':self.click_siguiente,
+                         'click_ultimo':self.click_ultimo,
+                         'cambio_pagina':self.cambio_pagina}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
@@ -62,6 +68,7 @@ class BabelComics_main_gtk():
         self.search_entry_filtro_general = self.builder.get_object("search_entry_filtro_general")
         self.search_bar_comics = self.builder.get_object("search_bar_comics")
         self.search_entry_filtro_comics = self.builder.get_object("search_entry_filtro_comics")
+        self.cbx_text_paginas = self.builder.get_object("cbx_text_paginas")
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
@@ -73,12 +80,36 @@ class BabelComics_main_gtk():
         self.liststore = Gtk.ListStore(Pixbuf, str, int)
         self.lista_pendientes = []
         self.filtro=''
-        self.loadAndCreateThumbnails()
+        self.limit = 200
+        self.offset = 0
+        self.query = None
+        self.search_change(None)
 
         self.iconview.set_column_spacing(-1)
         self.iconview.set_item_padding(10)
         self.iconview.set_item_width(1)
         self.iconview.set_spacing(30)
+
+
+    def cambio_pagina(self,event):
+        index = self.cbx_text_paginas.get_active()
+        self.offset = index*self.limit
+        self.loadAndCreateThumbnails()
+
+    def click_primero(self,event):
+        self.cbx_text_paginas.set_active(0)
+        # self.loadAndCreateThumbnails()
+
+    def click_anterior(self,event):
+        if self.cbx_text_paginas.get_active()>0:
+            self.cbx_text_paginas.set_active(self.cbx_text_paginas.get_active()-1)
+
+    def click_siguiente(self,event):
+        if self.cbx_text_paginas.get_active()<len(self.cbx_text_paginas.get_model())-1:
+            self.cbx_text_paginas.set_active(self.cbx_text_paginas.get_active() + 1)
+
+    def click_ultimo(self,event):
+        self.cbx_text_paginas.set_active(len(self.cbx_text_paginas.get_model())-1)
 
     def evento_cierre(self,event):
         print("hola")
@@ -114,6 +145,21 @@ class BabelComics_main_gtk():
 
     def search_change(self,widget):
         self.filtro = self.search_entry_filtro_comics.get_text()
+
+        if self.filtro != '':
+            self.query = self.session.query(Comicbook).filter(
+                Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path)
+        else:
+            self.query = self.session.query(Comicbook).order_by(Comicbook.path)
+
+        cantidad_total_registros = self.query.count()
+        self.cbx_text_paginas.remove_all()
+        # calculamos la cantidad de paginas para la consulta que tenemos
+        cantidad_paginas = math.ceil(cantidad_total_registros / self.limit)
+        print("CANTIDAD {}".format(cantidad_paginas))
+        for i in range(0, cantidad_paginas):
+            self.cbx_text_paginas.insert(i, str(i), "Página {} de {}".format(i + 1, cantidad_paginas))
+        self.cbx_text_paginas.set_active(0)
         self.loadAndCreateThumbnails()
 
     def click_boton_config(self,widget):
@@ -234,11 +280,8 @@ class BabelComics_main_gtk():
     def loadAndCreateThumbnails(self):
         self.liststore.clear()
         self.lista_pendientes.clear()
-        if self.filtro!='':
-            self.listaComics = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path).all()
-        else:
-            self.listaComics = self.session.query(Comicbook).order_by(Comicbook.path).all()
+        self.listaComics = self.query.limit(self.limit).offset(self.offset).all()
+
         self.iconview.set_model(self.liststore)
         self.iconview.set_pixbuf_column(0)
         self.iconview.set_text_column(1)
@@ -255,7 +298,7 @@ class BabelComics_main_gtk():
                     # self.lista_pendientes.append((comic, nombreThumnail, iter))
                 else:
                     nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
-                    print(nombreThumnail)
+                    # print(nombreThumnail)
                     cover = None
                     if (not os.path.isfile(nombreThumnail)):
                         cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
