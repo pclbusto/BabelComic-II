@@ -42,7 +42,7 @@ class BabelComics_main_gtk():
                          'click_boton_edit':self.click_boton_edit,
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
-                         'search_change':self.search_change,
+                         #'search_change':self.search_change,
                          'atajos_teclado':self.atajos_teclado,
                          'evento_cierre':self.evento_cierre,
                          'click_primero':self.click_primero,
@@ -63,11 +63,11 @@ class BabelComics_main_gtk():
         self.tree_left = self.builder.get_object("tree_left")
         self.gtk_tree_view_publisher = self.builder.get_object('tree_general')
         self.menu_comic = self.builder.get_object("menu_comic")
-        self.search_bar = self.builder.get_object("search_bar")
         self.search_bar_general = self.builder.get_object("search_bar_general")
         self.search_entry_filtro_general = self.builder.get_object("search_entry_filtro_general")
         self.search_bar_comics = self.builder.get_object("search_bar_comics")
         self.search_entry_filtro_comics = self.builder.get_object("search_entry_filtro_comics")
+        self.id = self.search_entry_filtro_comics.connect("changed", self.search_change)
         self.cbx_text_paginas = self.builder.get_object("cbx_text_paginas")
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
@@ -153,14 +153,16 @@ class BabelComics_main_gtk():
             self.query = self.session.query(Comicbook).order_by(Comicbook.path)
 
         cantidad_total_registros = self.query.count()
+        self.cbx_text_paginas.disconnect(self.id)
         self.cbx_text_paginas.remove_all()
+        self.id = self.cbx_text_paginas.connect("changed", self.search_change)
         # calculamos la cantidad de paginas para la consulta que tenemos
         cantidad_paginas = math.ceil(cantidad_total_registros / self.limit)
         print("CANTIDAD {}".format(cantidad_paginas))
         for i in range(0, cantidad_paginas):
             self.cbx_text_paginas.insert(i, str(i), "Página {} de {}".format(i + 1, cantidad_paginas))
         self.cbx_text_paginas.set_active(0)
-        self.loadAndCreateThumbnails()
+        #self.loadAndCreateThumbnails()
 
     def click_boton_config(self,widget):
         config = Config_gtk()
@@ -255,27 +257,38 @@ class BabelComics_main_gtk():
             GLib.idle_add(self.crear_thumnail_background, cover, iter)
         print('termiando crear_thumnails_background')
 
-    def crear_thumnail_background(self, cover, iter):
-
-        self.liststore.set_value(iter, 0, cover)
-
-    # def load_thumnails_in_background(self):
-    #     # proceso que recorre la lista hasta que se terminen de cargar todos los thumnails
-    #     while len(self.lista_pendientes) > 0:
-    #         GLib.idle_add(self.load_thumnail_in_background)
-    #         time.sleep(1)
-    #         print(len(self.lista_pendientes))
-    # def load_thumnail_in_background(self):
-    #     # proceso que recorre la lista de pendientes y carga tod o thumnails que exista en el disco
-    #     for item in self.lista_pendientes:
-    #         if (os.path.isfile(item[1])):
-    #             try:
-    #                 cover = Pixbuf.new_from_file(item[1])
-    #                 # self.liststore.append([cover, item[0].getNombreArchivo()])
-    #                 self.liststore.set_value(item[2], 0, cover)
-    #                 self.lista_pendientes.remove(item)
-    #             except:
-    #                 print("No se pudo leer el archivo")
+    def crear_thumnail_background(self, comic, iter, index):
+        '''Recie el comi y el iter para poder refresacar el thumnail del cover'''
+        # self.liststore.set_value(iter, 0, cover)
+        if comic.openCbFile()==-1:
+            cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
+            # GLib.idle_add(self.liststore.set_value, iter, 0, cover)
+            # help(cover)
+            #iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
+            # self.lista_pendientes.append((comic, nombreThumnail, iter))
+        else:
+            nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
+            cover = None
+            if (not os.path.isfile(nombreThumnail)):
+                imagen_height_percent = 150 / comic.getImagePage().size[1]
+                self.size = self.size = (int(imagen_height_percent * comic.getImagePage().size[0]), int(150))
+                cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
+                cover.save(nombreThumnail)
+                cover = Pixbuf.new_from_file(nombreThumnail)
+                # self.liststore.set_value(iter, 0, cover)
+            else:
+                cover = Pixbuf.new_from_file(nombreThumnail)
+                if comic.id_comicbook_info!='':
+                    self.cataloged_pix.composite(cover,
+                                                 cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
+                                                 self.cataloged_pix.props.width,self.cataloged_pix.props.height,
+                                                 cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
+                                                 1, 1,
+                                                 3, 200)
+                # self.liststore.set_value(iter, 0, cover)
+                #self.liststore.append([cover, comic.getNombreArchivo(), index])
+        assert isinstance(cover, object)
+        GLib.idle_add(self.liststore.set_value, iter, 0, cover)
 
     def loadAndCreateThumbnails(self):
         self.liststore.clear()
@@ -291,40 +304,47 @@ class BabelComics_main_gtk():
         for index, comic in enumerate(self.listaComics):
             self.cantidadThumnailsGenerados += 1
             try:
-                if comic.openCbFile()==-1:
-                    cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
-                    # help(cover)
-                    iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
-                    # self.lista_pendientes.append((comic, nombreThumnail, iter))
-                else:
-                    nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
-                    # print(nombreThumnail)
-                    cover = None
-                    if (not os.path.isfile(nombreThumnail)):
-                        cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
-                        # help(cover)
-                        iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
-                        self.lista_pendientes.append((comic, nombreThumnail, iter))
-                    else:
-                        cover = Pixbuf.new_from_file(nombreThumnail)
-                        if comic.id_comicbook_info!='':
-                            self.cataloged_pix.composite(cover,
-                                                         cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
-                                                         self.cataloged_pix.props.width,self.cataloged_pix.props.height,
-                                                         cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
-                                                         1, 1,
-                                                         3, 200)
-
-                        self.liststore.append([cover, comic.getNombreArchivo(), index])
+                cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
+                #thread_create = threading.Thread(target=self.crear_thumnail_background, args=[comic, iter, index])
+                #thread_create.daemon = True
+                # thread_create.start()
+                # GLib.idle_add(self.crear_thumnail_background, comic, iter, index)
+                #
+                # if comic.openCbFile()==-1:
+                #     cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
+                #     # help(cover)
+                #     iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
+                #     # self.lista_pendientes.append((comic, nombreThumnail, iter))
+                # else:
+                #     nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
+                #     # print(nombreThumnail)
+                #     cover = None
+                #     if (not os.path.isfile(nombreThumnail)):
+                #         cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
+                #         # help(cover)
+                #         iter = self.liststore.append([cover, comic.getNombreArchivo(), index])
+                #         self.lista_pendientes.append((comic, nombreThumnail, iter))
+                #     else:
+                #         cover = Pixbuf.new_from_file(nombreThumnail)
+                #         if comic.id_comicbook_info!='':
+                #             self.cataloged_pix.composite(cover,
+                #                                          cover.props.width - self.cataloged_pix.props.width,cover.props.height-self.cataloged_pix.props.height,
+                #                                          self.cataloged_pix.props.width,self.cataloged_pix.props.height,
+                #                                          cover.props.width - self.cataloged_pix.props.width, cover.props.height-self.cataloged_pix.props.height,
+                #                                          1, 1,
+                #                                          3, 200)
+                #
+                #         self.liststore.append([cover, comic.getNombreArchivo(), index])
 
             except NotRarFile:
                 print('error en el archivo ' + comic.path)
             except BadRarFile:
                 print('error en el archivo ' + comic.path)
-        print('terminando thumnails')
-        thread_create = threading.Thread(target=self.crear_thumnails_background)
-        thread_create.daemon = True
-        thread_create.start()
+        # print('terminando thumnails')
+        # thread_create = threading.Thread(target=self.crear_thumnails_background)
+        # thread_create.daemon = True
+        # thread_create.start()
 
 if __name__ == "__main__":
     bc = BabelComics_main_gtk()

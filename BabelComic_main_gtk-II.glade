@@ -189,13 +189,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="active_id">1</property>
-                <items>
-                  <item id="1" translatable="yes">Página 1 de 5</item>
-                  <item id="2" translatable="yes">Página 2 de 5</item>
-                  <item id="3" translatable="yes">Página 3 de 5</item>
-                  <item id="4" translatable="yes">Página 4 de 5</item>
-                  <item id="5" translatable="yes">Página 5 de 5</item>
-                </items>
                 <signal name="changed" handler="cambio_pagina" swapped="no"/>
               </object>
               <packing>
