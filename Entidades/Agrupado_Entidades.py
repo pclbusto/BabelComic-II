@@ -160,6 +160,8 @@ class Comicbook(Entidades.Init.Base):
         self.paginas.sort()
         self.indicePaginaActual = 0
 
+    def closeCbFile(self):
+        self.cbFile.close()
     def has_xml(self):
         self.openCbFile()
         xmls = [x for x in self.cbFile.namelist() if (x[-3:].lower() in ["xml"])]

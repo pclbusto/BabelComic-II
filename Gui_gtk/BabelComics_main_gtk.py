@@ -258,12 +258,16 @@ class BabelComics_main_gtk():
                 cover = None
                 # pregunto lo mismo porque puede que el proceso de pagina esta creando thumnails y puede que este ya
                 # la haya generado.
-                if os.path.isfile(nombreThumnail):
-                    imagen_height_percent = 150 / comicbook.getImagePage().size[1]
-                    self.size = self.size = (int(imagen_height_percent * comicbook.getImagePage().size[0]), int(150))
-                    cover = comicbook.getImagePage().resize(self.size, Image.LANCZOS)
-                    cover.save(nombreThumnail)
-            except Exception:
+                if not os.path.isfile(nombreThumnail):
+                    if comicbook.openCbFile() == -1:
+                        raise Exception("Error añ abrir el archuivo {}".format(comicbook.id_comicbook))
+                    else:
+                        imagen_height_percent = 350 / comicbook.getImagePage().size[1]
+                        self.size = self.size = (int(imagen_height_percent * comicbook.getImagePage().size[0]), int(350))
+                        cover = comicbook.getImagePage().resize(self.size, Image.LANCZOS)
+                        cover.save(nombreThumnail)
+                        comicbook.closeCbFile()
+            except Exception :
                 print('error en el archivo ' + comicbook.path)
 
         print('termiando crear_thumnails_background')
@@ -287,6 +291,7 @@ class BabelComics_main_gtk():
                     cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
                     cover.convert('RGB').save(nombreThumnail)
                 cover = Pixbuf.new_from_file(nombreThumnail)
+                comic.closeCbFile()
             GLib.idle_add(self.liststore.set_value, iter, 0, cover)
             self.cantidad_thumnails_pendiente-=1
             if self.salir_thread:
@@ -319,6 +324,7 @@ class BabelComics_main_gtk():
                         if comic.id_comicbook_info != '':
                             self.cataloged_pix.composite(cover,
                                                          cover.props.width - self.cataloged_pix.props.width,
+
                                                          cover.props.height - self.cataloged_pix.props.height,
                                                          self.cataloged_pix.props.width,
                                                          self.cataloged_pix.props.height,
@@ -326,7 +332,7 @@ class BabelComics_main_gtk():
                                                          cover.props.height - self.cataloged_pix.props.height,
                                                          1, 1,
                                                          3, 200)
-                        #cover.scale(cover, 0, 0, 150, 350, 0, 0, 1, 1, Pixbuf.scale_simple)
+                            cover.scale_simple(50,10, 3)
                         self.liststore.append([cover, comic.getNombreArchivo(), index])
                     else:
                         cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
