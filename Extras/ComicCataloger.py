@@ -27,6 +27,15 @@ class Catalogador():
         else:
             self.session = session
 
+    def catalogar_comics(self, lista_tupla_comicbook_numero, lista_comicbooks_info):
+        for comicbook, numero in lista_comicbooks_info:
+            for comicbook_info in lista_comicbooks_info:
+                if numero == comicbook_info:
+                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    self.session.add(comicbook)
+        self.session.commit()
+
+
     def loadComicsFromList(self, lista):
         for nombreComic in lista:
             comic = None

@@ -31,7 +31,7 @@
   <object class="GtkListStore" id="listore_comics_para_catalogar">
     <columns>
       <!-- column-name Numero -->
-      <column type="gint"/>
+      <column type="gchararray"/>
       <!-- column-name Archivo -->
       <column type="gchararray"/>
       <!-- column-name index -->
@@ -41,13 +41,13 @@
     </columns>
     <data>
       <row>
-        <col id="0">5</col>
+        <col id="0" translatable="yes"/>
         <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
         <col id="2">0</col>
         <col id="3">False</col>
       </row>
       <row>
-        <col id="0">15</col>
+        <col id="0" translatable="yes"/>
         <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
         <col id="2">1</col>
         <col id="3">True</col>

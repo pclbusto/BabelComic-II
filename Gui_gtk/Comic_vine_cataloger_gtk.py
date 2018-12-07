@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
-from Entidades.Agrupado_Entidades import Comicbook, Volume,Comics_In_Volume, Setup, Comicbook_Info
+from Entidades.Agrupado_Entidades import Comicbook, Volume,Comicbook_Info_Cover_Url, Setup, Comicbook_Info
 
 
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
@@ -14,7 +14,7 @@ from  Extras.Config import Config
 import Entidades.Init
 import re
 import threading
-
+from datetime import datetime
 
 class Comic_vine_cataloger_gtk():
     def __init__(self,  comicbooks=None, session=None):
@@ -62,18 +62,20 @@ class Comic_vine_cataloger_gtk():
 
         self.listaAMostrar =[]
         self.listore_comics_para_catalogar.clear()
+        # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            comicbooks_info = None
-            if comic.id_comicbook_info is not None:
-                comicbooks_info = self.session.query(Comicbook_Info).get(comic.id_comicbook_info)
-                # comic.numero = comicbooks_info.numero
-            else:
-                comic.numero = 0
-            self.listore_comics_para_catalogar.append([int(0), comic.path, index, 0])
+            # comicbooks_info = None
+            # if comic.id_comicbook_info is not None:
+            #     comicbooks_info = self.session.query(Comicbook_Info).get(comic.id_comicbook_info)
+            #     # comic.numero = comicbooks_info.numero
+            # else:
+            #     comic.numero = 0
+            self.listore_comics_para_catalogar.append(['0', comic.path, index, 0])
 
         self._load_comic(comicbooks[0])
-        self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
+        # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
+        self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
 
     def return_lookup(self,id_volume):
         if id_volume!='':
@@ -96,7 +98,7 @@ class Comic_vine_cataloger_gtk():
                 match = re.search(expresion, comic[1])
                 if match is not None:
                     if match.group(1).isdigit():
-                        comic[0] = int(match.group(1))
+                        comic[0] = str(int(match.group(1)))
                         self.comicbooks[index].numero = match.group(1)
                         if hasta == 0:
                             hasta = comic[0]
@@ -140,11 +142,15 @@ class Comic_vine_cataloger_gtk():
 
     def _load_comic_vine(self, comic):
 
-        self.entry_serie_vine.set_text(comic.volumeNombre)
-        self.entry_fecha_vine.set_text(comic.fechaTapa)
+        self.entry_serie_vine.set_text(comic.nombre_volumen)
+        if comic.fecha_tapa==0:
+            dt = datetime.fromordinal(1)
+        else:
+            dt = datetime.fromordinal(comic.fecha_tapa)
+        self.entry_fecha_vine.set_text("{}/{}/{}".format(dt.year,dt.month,dt.day))
         self.entry_titulo_vine.set_text(comic.titulo)
         self.entry_numero_vine.set_text(comic.numero)
-        comic.openCbFile()
+        # comic.openCbFile()
         nombreThumnail = comic.path
         print("PATH COVER {}".format(nombreThumnail))
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -181,39 +187,47 @@ class Comic_vine_cataloger_gtk():
 
     def _catalogar_grupo(self):
         cantidadZeros=0
+
         for comic in self.comicbooks:
             if comic.numero == 0:
                 cantidadZeros+=1
         if cantidadZeros>1:
             print("hay mas de un cero en la lista a catalogar. Se anula el proceso")
             return
+        for numero in self.listore_comics_para_catalogar:
+            nro = numero[0]
+            comicbook = self.comicbooks[numero[2]]
+            for comicbook_info in self.lista_comicbook_info_por_volumen:
+                print(nro,type(nro),comicbook_info.numero, type(comicbook_info.numero))
+                if nro==comicbook_info.numero:
+                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    self.session.add(comicbook)
+                    break
 
-        cnf = Config(self.session)
-        print('clave: ' + cnf.getClave('issue'))
-        cv = ComicVineSearcher(cnf.getClave('issue'), session=self.session)
-        cv.setEntidad('issue')
-        catalogador = Catalogador(self.session)
-        for index, comic in enumerate(self.comicbooks):
-            print("Vamos a ACTUALIZAR EL COMIC:{}".format(comic.path))
-            comicInfo=None
-            '''Buscamos en la lista de Vine el numero de comic'''
-            for comicVine in self.comicInVolumeList:
-                    print("Numero Vine:{} numero comic:{}".format(comicVine.numero, comic.numero))
-                    if comicVine.numero == comic.numero:
-                        comicInfo = comicVine
-                        break
-            print("Encontramos el comic:")
-            print(comicInfo)
-            '''Si existe lo catalogamos'''
-            if comicInfo is not None:
-                print("LA INFO COMPLETA")
-                print(comicInfo)
-                cv.setEntidad('issue')
-                completComicInfo = cv.getVineEntity(comicInfo.id_comicbook_externo)
-                comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
-                catalogador.copyFromComicToComic(completComicInfo,comicbook)
-                GLib.idle_add(self.check_fila_treeview_comics_para_catalogar, index)
-        self.save_estado_catalogo()
+        self.session.commit()
+        # catalogador = Catalogador(self.session)
+        # catalogador.catalogar_comics()
+        # for index, comic in enumerate(self.comicbooks):
+        #     print("Vamos a ACTUALIZAR EL COMIC:{}".format(comic.path))
+        #     comicInfo=None
+        #     '''Buscamos en la lista de Vine el numero de comic'''
+        #     for comicVine in self.comicInVolumeList:
+        #             print("Numero Vine:{} numero comic:{}".format(comicVine.numero, comic.numero))
+        #             if comicVine.numero == comic.numero:
+        #                 comicInfo = comicVine
+        #                 break
+        #     print("Encontramos el comic:")
+        #     print(comicInfo)
+        #     '''Si existe lo catalogamos'''
+        #     if comicInfo is not None:
+        #         print("LA INFO COMPLETA")
+        #         print(comicInfo)
+        #         cv.setEntidad('issue')
+        #         completComicInfo = cv.getVineEntity(comicInfo.id_comicbook_externo)
+        #         comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
+        #         catalogador.copyFromComicToComic(completComicInfo,comicbook)
+        #         GLib.idle_add(self.check_fila_treeview_comics_para_catalogar, index)
+        # self.save_estado_catalogo()
 
 
     def check_fila_treeview_comics_para_catalogar(self, index):
@@ -243,14 +257,9 @@ class Comic_vine_cataloger_gtk():
     def treeview_issues_in_volumen_selection_change(self, selection):
         (model, iter) = selection.get_selected()
         if iter:
-            comic_in_volumen = self.comicInVolumeList[model[iter][3]]
-            cnf = Config(self.session)
-            cv = ComicVineSearcher(cnf.getClave('issues'), session=self.session)
-            cv.setEntidad('issues')
-            # print(item['values'][2])
-            cv.addFilter("id:" + str(comic_in_volumen.id_comicbook_Info))
-            cv.vineSearch()
-            webImage = cv.listaBusquedaVine[0].thumb_url
+            comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
+            comicbook_info_cover_url = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_Info==comicbook_info_de_volumen.id_comicbook_Info).first()
+            webImage = comicbook_info_cover_url.thumb_url
             nombreImagen = webImage[webImage.rindex('/') + 1:]
             print(webImage)
             print(nombreImagen)
@@ -260,50 +269,38 @@ class Comic_vine_cataloger_gtk():
             if not (os.path.isfile(path + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
-                # path = setup.directorioBase + os.sep + "images"+ os.sep+"searchCache" + os.sep
                 jpg = urllib.request.urlopen(webImage)
                 jpgImage = jpg.read()
                 fImage = open(path + nombreImagen, 'wb')
                 fImage.write(jpgImage)
                 fImage.close()
-            self.comicBookVine = cv.listaBusquedaVine[0]
+            self.comicBookVine = comicbook_info_de_volumen
             self.comicBookVine.path = path + nombreImagen
             self._load_comic_vine(self.comicBookVine)
 
 
     def click_boton_traer_todo(self,widget):
 
-        self.comicInVolumeList = self.session.query(Comicbook_Info).filter(
+        self.lista_comicbook_info_por_volumen = self.session.query(Comicbook_Info).filter(
             Comicbook_Info.id_volume== self.volume.id_volume).order_by(Comicbook_Info.numero).all()
         self.liststore_comics_in_volumen.clear()
-        for index, comic in enumerate(self.comicInVolumeList):
+        for index, comic in enumerate(self.lista_comicbook_info_por_volumen):
             self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_Info), index])
 
     def click_boton_traer_solo_para_catalogar(self, widget):
         lista_numeros = []
+        print(self.listore_comics_para_catalogar)
         for comic in self.listore_comics_para_catalogar:
             lista_numeros.append(str(comic[0]))
         print(lista_numeros)
-        self.comicInVolumeList = self.session.query(Comicbook_Info).filter(
+        self.lista_comicbook_info_por_volumen = self.session.query(Comicbook_Info).filter(
             Comicbook_Info.id_volume == self.volume.id_volume).all()
-        self.comicInVolumeList = [comic for comic in self.comicInVolumeList if comic.numero in lista_numeros ]
-        print(self.comicInVolumeList)
-
-        # .filter(Comics_In_Volume.numero in lista_numeros).order_by(Comics_In_Volume.numero).all()
-
-        print(self.comicInVolumeList)
-        # listaNumeroComics = [comic for comic in self.comicInVolumeList if comic.numero>=desde and comic.numero<=hasta]
+        self.lista_comicbook_info_por_volumen = [comicbook_info for comicbook_info in self.lista_comicbook_info_por_volumen if comicbook_info.numero in lista_numeros ]
+        print(self.lista_comicbook_info_por_volumen)
         self.listaAMostrar.clear()
-        self.listaAMostrar = []
-
-        # print(listaNumeroComics)
-        # for comic in self.comicbooks:
-        #     if comic.numero in listaNumeroComics:
-        #         self.listaAMostrar.append(comic)
         self.liststore_comics_in_volumen.clear()
-
-        for index, comic in enumerate(self.comicInVolumeList):
-            self.liststore_comics_in_volumen.append([comic.numero, comic.titulo, int(comic.id_comicbook_Info), index])
+        for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
+            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_Info), index])
 
 
 if __name__ == '__main__':
