@@ -128,6 +128,14 @@
       </packing>
     </child>
   </object>
+  <object class="GtkRadioButton" id="radiobutton1">
+    <property name="label" translatable="yes">radiobutton</property>
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="receives_default">False</property>
+    <property name="active">True</property>
+    <property name="draw_indicator">True</property>
+  </object>
   <object class="GtkWindow" id="BabelComics_main_gtk">
     <property name="can_focus">False</property>
     <property name="window_position">center-always</property>
@@ -411,6 +419,7 @@
                           <packing>
                             <property name="left_attach">0</property>
                             <property name="top_attach">0</property>
+                            <property name="width">2</property>
                           </packing>
                         </child>
                         <child>
@@ -419,12 +428,15 @@
                             <property name="can_focus">False</property>
                             <property name="homogeneous">True</property>
                             <child>
-                              <object class="GtkCheckButton" id="all_check">
-                                <property name="label" translatable="yes">catalogados	</property>
+                              <object class="GtkRadioButton" id="all_radio">
+                                <property name="label" translatable="yes">todos</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <property name="group">radiobutton1</property>
+                                <signal name="toggled" handler="search_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -433,12 +445,15 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton">
-                                <property name="label" translatable="yes">no catalogados</property>
+                              <object class="GtkRadioButton" id="selected_radio">
+                                <property name="label" translatable="yes">catalogados</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <property name="group">radiobutton1</property>
+                                <signal name="toggled" handler="search_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -453,10 +468,20 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
+                          <object class="GtkRadioButton" id="none_radio">
+                            <property name="label" translatable="yes">no calatalogados</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">radiobutton1</property>
+                            <signal name="toggled" handler="search_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
                         </child>
                         <child>
                           <placeholder/>

@@ -115,7 +115,7 @@ class Comicbook(Entidades.Init.Base):
     calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
 
     def __repr__(self):
-        return "id ={}-path={}".format(self.id_comicbook,self.getPath())
+        return "\nid ={}\npath={}\ncomic_info_id:*{}*".format(self.id_comicbook, self.getPath(), self.id_comicbook_info)
 
     def tieneArcoAlterno(self):
         return self.arcoArgumentalId != '0'

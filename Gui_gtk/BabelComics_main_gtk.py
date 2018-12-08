@@ -68,6 +68,11 @@ class BabelComics_main_gtk():
         self.search_bar_comics = self.builder.get_object("search_bar_comics")
         self.search_entry_filtro_comics = self.builder.get_object("search_entry_filtro_comics")
         self.cbx_text_paginas = self.builder.get_object("cbx_text_paginas")
+        self.none_radio = self.builder.get_object("none_radio")
+        self.selected_radio = self.builder.get_object("selected_radio")
+        self.all_radio = self.builder.get_object("all_radio")
+
+
         self.thread_creacion_thumnails = None
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
@@ -92,8 +97,8 @@ class BabelComics_main_gtk():
         self.iconview.set_item_padding(10)
         self.iconview.set_item_width(1)
         self.iconview.set_spacing(30)
-        thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
-        thread_creacion_thumnails.start()
+        # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
+        # thread_creacion_thumnails.start()
 
     def cambio_pagina(self,event):
         index = self.cbx_text_paginas.get_active()
@@ -150,12 +155,20 @@ class BabelComics_main_gtk():
     def search_change(self, widget):
 
         self.filtro = self.search_entry_filtro_comics.get_text()
-
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
                 Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path)
         else:
             self.query = self.session.query(Comicbook).order_by(Comicbook.path)
+        # cantidad = self.session.query(Comicbook).filter(Comicbook.path.like("%Green lantern%")).count()
+        # print("Cantidad de registros {}".format(cantidad))
+        # #
+        if self.none_radio.get_active():
+             self.query = self.query.filter(Comicbook.id_comicbook_info=='')
+        if self.all_radio.get_active():
+            pass
+        if self.selected_radio.get_active():
+            self.query = self.query.filter(Comicbook.id_comicbook_info != ' ')
 
         cantidad_total_registros = self.query.count()
         self.updating_gui = True
@@ -306,6 +319,7 @@ class BabelComics_main_gtk():
             self.liststore.clear()
             self.lista_pendientes.clear()
             self.listaComics = self.query.limit(self.limit).offset(self.offset).all()
+            print("Cantidad de comics: {}".format(len(self.listaComics)))
 
             self.iconview.set_model(self.liststore)
             self.iconview.set_pixbuf_column(0)
