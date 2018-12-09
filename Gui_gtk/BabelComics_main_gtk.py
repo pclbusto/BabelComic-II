@@ -168,7 +168,7 @@ class BabelComics_main_gtk():
         if self.all_radio.get_active():
             pass
         if self.selected_radio.get_active():
-            self.query = self.query.filter(Comicbook.id_comicbook_info != ' ')
+            self.query = self.query.filter(Comicbook.id_comicbook_info != '')
 
         cantidad_total_registros = self.query.count()
         self.updating_gui = True
