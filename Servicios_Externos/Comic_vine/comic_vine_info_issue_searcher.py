@@ -36,7 +36,7 @@ class Comic_Vine_Info_Searcher():
     def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
         # print(html)
-        # print(url)
+        print(url)
         comicbook_info = Comicbook_Info()
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
@@ -75,6 +75,9 @@ class Comic_Vine_Info_Searcher():
                 mes = 11
             if fecha_tapa_issue.find("December")!=-1:
                 mes = 12
+            else:
+                mes = 12
+
             anio = int(fecha_tapa_issue[-4:])
             comicbook_info.fechaTapa = date(anio, mes,1)
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
