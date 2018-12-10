@@ -131,7 +131,7 @@ class Comic_vine_cataloger_gtk():
             self.entry_serie_local.set_text(comic_info.nombre_volumen)
         self.entry_nombre_archivo_local.set_text(comic.getNombreArchivo())
         comic.openCbFile()
-        nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + comic.getPageExtension()
+        nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=nombreThumnail,
             width=150,

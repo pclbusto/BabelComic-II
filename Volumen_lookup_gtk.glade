@@ -14,8 +14,6 @@
   </object>
   <object class="GtkListStore" id="listmodel_volumens">
     <columns>
-      <!-- column-name Id -->
-      <column type="gint"/>
       <!-- column-name Nombre -->
       <column type="gchararray"/>
       <!-- column-name Números -->
@@ -26,22 +24,24 @@
       <column type="gint"/>
       <!-- column-name index -->
       <column type="gint"/>
+      <!-- column-name Id -->
+      <column type="gint"/>
     </columns>
     <data>
       <row>
-        <col id="0">0</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">254</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1979</col>
+        <col id="0" translatable="yes">Green Lantern</col>
+        <col id="1">254</col>
+        <col id="2" translatable="yes">dc</col>
+        <col id="3">1979</col>
+        <col id="4">0</col>
         <col id="5">0</col>
       </row>
       <row>
-        <col id="0">0</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">39</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1972</col>
+        <col id="0" translatable="yes">Green Lantern</col>
+        <col id="1">39</col>
+        <col id="2" translatable="yes">dc</col>
+        <col id="3">1972</col>
+        <col id="4">0</col>
         <col id="5">0</col>
       </row>
     </data>
@@ -217,7 +217,7 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">1</property>
+                        <property name="sort_column_id">0</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
@@ -233,7 +233,7 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">2</property>
+                        <property name="sort_column_id">1</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
@@ -267,7 +267,7 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">4</property>
+                        <property name="sort_column_id">3</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
