@@ -181,7 +181,7 @@ class Comicbook(Entidades.Init.Base):
                         if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
                             self.paginas.append(x)
             except BadZipFile:
-                self.cbFile = rarfile.RarFile(self.path, 'a')
+                self.cbFile = rarfile.RarFile(self.path, 'r')
                 for x in self.cbFile.infolist():
                     if '.' in x.filename:
                         if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
@@ -190,7 +190,7 @@ class Comicbook(Entidades.Init.Base):
                 #self.paginas = [x.filename for x in self.cbFile.infolist() if (x.filename[-3:].lower() in ComicBook.extensionesSoportadas)]
         elif (self.getTipo().lower()=='cbr'):
             try:
-                self.cbFile = rarfile.RarFile(self.path, 'a')
+                self.cbFile = rarfile.RarFile(self.path, 'r')
                 for x in self.cbFile.infolist():
                     if '.' in x.filename:
                         if x.filename[(x.filename.rindex('.')-len(x.filename)+1):].lower() in self.extensionesSoportadas:
@@ -210,14 +210,22 @@ class Comicbook(Entidades.Init.Base):
 
 
     def getImagePage(self):
-        # print('getImagePage'+self.getNombreArchivo())
-        return (Image.open(self.getPage()))
+
+        pagina = self.getPage()
+        if pagina is None:
+            return None
+        else:
+            return (Image.open(pagina))
 
     def getCantidadPaginas(self):
         return (len(self.paginas))
 
     def getPage(self):
-        return(BytesIO(self.cbFile.read(self.paginas[self.indicePaginaActual])))
+        try:
+            return(BytesIO(self.cbFile.read(self.paginas[self.indicePaginaActual])))
+        except:
+            print(self.id_comicbook, self.indicePaginaActual)
+            return (None)
 
     def getPageExtension(self):
         index = self.paginas[self.indicePaginaActual].rindex(".")-len(self.paginas[self.indicePaginaActual])

@@ -215,19 +215,23 @@ class BabelComics_main_gtk():
     def click_derecho(self, widget, event):
         # click derecho
         if event.button == 3:
-            print(self.tree_left.get_allocation().width)
+            # print(self.tree_left.get_allocation().width)
             # print('mostrando menu')
             # help(event)
             # self.menu_comic.set_relative_to(None)
             rect = Gdk.Rectangle()
-            rect.height=100
-            rect.width= 100
-            rect.x= event.x_root-self.tree_left.get_allocation().width
+            rect.height=10
+            rect.width= 10
+            # print(event.x_root, event.y_root)
+            # print(event.x,event.y)
+            rect.x= int(event.x)
+            rect.y = int(event.y + (event.y_root-event.y)-80)
             # print(self.iconview.get_item_at_pos(event.x_root, event.y_root))
             # print(self.iconview.get_item_at_pos(event.x, event.y)[1])
             # print(event.x_root,event.y_root)
             self.menu_comic.set_pointing_to(rect)
             self.menu_comic.set_position(3)
+            self.menu_comic.set_relative_to(widget)
             # self.menu_comic.show_all()
             self.menu_comic.popup()
 

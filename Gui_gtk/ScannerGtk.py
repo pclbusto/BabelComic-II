@@ -47,7 +47,7 @@ class ScannerGtk():
 
     def borrarComics(self, widget):
         session = Entidades.Init.Session()
-        session.query(ComicBook).delete()
+        session.query(Comicbook).delete()
         session.commit()
         setup = session.query(Setup).get(1)
         for nombre_archivo in os.listdir(os.path.join(os.path.join(setup.directorioBase,'images'),'coverIssuesThumbnails')):

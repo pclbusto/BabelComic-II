@@ -38,6 +38,18 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkPopover" id="menu_comic">
+    <property name="can_focus">False</property>
+    <property name="constrain_to">none</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Hola
+</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkPopoverMenu" id="popovermenu1">
     <property name="can_focus">False</property>
     <child>
@@ -382,6 +394,7 @@
                     <property name="can_focus">True</property>
                     <property name="margin">6</property>
                     <property name="selection_mode">multiple</property>
+                    <signal name="button-release-event" handler="click_derecho" swapped="no"/>
                   </object>
                 </child>
               </object>
@@ -482,21 +495,6 @@
                             <property name="left_attach">1</property>
                             <property name="top_attach">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                     </child>
