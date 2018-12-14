@@ -35,7 +35,8 @@ class Comic_vine_cataloger_gtk():
                          'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
                          'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
                          'boton_catalogar_simple':self.boton_catalogar_simple,
-                         'boton_catalogar_grupo':self.boton_catalogar_grupo}
+                         'boton_catalogar_grupo':self.boton_catalogar_grupo,
+                         'text_edited':self.text_edited}
 
 
 
@@ -76,6 +77,10 @@ class Comic_vine_cataloger_gtk():
         self._load_comic(comicbooks[0])
         # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
         self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
+
+    def text_edited(self, widget, path, text):
+        print(text)
+        self.listore_comics_para_catalogar[path][0] = text
 
     def return_lookup(self,id_volume):
         if id_volume!='':
@@ -314,7 +319,7 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%s/Batman (2016) Issue #3.%')).all()
+    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Green lantern%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 

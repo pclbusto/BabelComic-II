@@ -735,7 +735,10 @@
                         <property name="title" translatable="yes">Número</property>
                         <property name="sort_column_id">0</property>
                         <child>
-                          <object class="GtkCellRendererText" id="seleccionado"/>
+                          <object class="GtkCellRendererText" id="seleccionado">
+                            <property name="editable">True</property>
+                            <signal name="edited" handler="text_edited" swapped="no"/>
+                          </object>
                           <attributes>
                             <attribute name="text">0</attribute>
                           </attributes>
