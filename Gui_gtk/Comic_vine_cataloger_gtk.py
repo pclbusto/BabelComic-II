@@ -66,13 +66,7 @@ class Comic_vine_cataloger_gtk():
         # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            # comicbooks_info = None
-            # if comic.id_comicbook_info is not None:
-            #     comicbooks_info = self.session.query(Comicbook_Info).get(comic.id_comicbook_info)
-            #     # comic.numero = comicbooks_info.numero
-            # else:
-            #     comic.numero = 0
-            self.listore_comics_para_catalogar.append(['0', comic.path, index, 0])
+            self.listore_comics_para_catalogar.append(['', comic.path, index, 0])
 
         self._load_comic(comicbooks[0])
         # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
@@ -104,7 +98,6 @@ class Comic_vine_cataloger_gtk():
                 if match is not None:
                     if match.group(1).isdigit():
                         comic[0] = str(int(match.group(1)))
-                        self.comicbooks[index].numero = match.group(1)
                         if hasta == 0:
                             hasta = comic[0]
                         if desde == 0:
@@ -165,27 +158,6 @@ class Comic_vine_cataloger_gtk():
             preserve_aspect_ratio=True)
         self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
 
-    def AutoAsignar(self):
-        if self.entryPathRe.get() != '':
-            expresion = self.entryPathRe.get()
-            for comic in self.comicbooks:
-                match = re.search(expresion, comic.path)
-                if match is not None:
-                    if match.group(1).isdigit():
-                        comic.numero = str(int(match.group(1)))
-                    else:
-                        comic.numero=match.group(1)
-
-        for item in self.listViewComics.get_children():
-            self.listViewComics.delete(item)
-
-        '''cargamos los comics de nuevo con los numeros asignados.'''
-        for index,comic in enumerate(self.comicbooks):
-            self.listViewComics.insert('', 'end', text=comic.numero, image=self.iconoRedOrb,
-                                    values=([index,comic.path]))
-        for comic in self.comicbooks:
-            print(comic)
-
     def boton_catalogar_grupo(self,widget):
         t = threading.Thread(target=self._catalogar_grupo)
         t.start()
@@ -193,8 +165,8 @@ class Comic_vine_cataloger_gtk():
     def _catalogar_grupo(self):
         cantidadZeros=0
 
-        for comic in self.comicbooks:
-            if comic.numero == 0:
+        for index, comic in enumerate(self.listore_comics_para_catalogar):
+            if comic[0] == '':
                 cantidadZeros+=1
         if cantidadZeros>1:
             print("hay mas de un cero en la lista a catalogar. Se anula el proceso")
@@ -205,34 +177,16 @@ class Comic_vine_cataloger_gtk():
             for comicbook_info in self.lista_comicbook_info_por_volumen:
                 print(nro,type(nro),comicbook_info.numero, type(comicbook_info.numero))
                 if nro==comicbook_info.numero:
-                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
-                    self.session.add(comicbook)
+                    #print(comicbook)
+                    #comic_db = self.session.query(Comicbook).get(comicbook.id_comicbook)
+                    #comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    #print(comic_db)
+                    comicbook_info.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    #self.session.add(comicbook)
+                    #print(comic_db)
                     break
 
         self.session.commit()
-        # catalogador = Catalogador(self.session)
-        # catalogador.catalogar_comics()
-        # for index, comic in enumerate(self.comicbooks):
-        #     print("Vamos a ACTUALIZAR EL COMIC:{}".format(comic.path))
-        #     comicInfo=None
-        #     '''Buscamos en la lista de Vine el numero de comic'''
-        #     for comicVine in self.comicInVolumeList:
-        #             print("Numero Vine:{} numero comic:{}".format(comicVine.numero, comic.numero))
-        #             if comicVine.numero == comic.numero:
-        #                 comicInfo = comicVine
-        #                 break
-        #     print("Encontramos el comic:")
-        #     print(comicInfo)
-        #     '''Si existe lo catalogamos'''
-        #     if comicInfo is not None:
-        #         print("LA INFO COMPLETA")
-        #         print(comicInfo)
-        #         cv.setEntidad('issue')
-        #         completComicInfo = cv.getVineEntity(comicInfo.id_comicbook_externo)
-        #         comicbook = self.session.query(ComicBook).filter(ComicBook.path==comic.path).first()
-        #         catalogador.copyFromComicToComic(completComicInfo,comicbook)
-        #         GLib.idle_add(self.check_fila_treeview_comics_para_catalogar, index)
-        # self.save_estado_catalogo()
 
 
     def check_fila_treeview_comics_para_catalogar(self, index):
@@ -319,12 +273,12 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Green lantern%')).all()
+    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%/home/pedro/shared/DC/Brightest-Day/Green Lantern Corps V2006 #11 (2007).cbz%')).all()
     # for comic in comics_query:
     #     comics.append(comic)
 
     cvs = Comic_vine_cataloger_gtk(comics_query)
     cvs.window.show_all()
     cvs.window.connect("destroy", Gtk.main_quit)
-    cvs.entry_id_volumen_catalogar.set_text('91273')
+    cvs.entry_id_volumen_catalogar.set_text('18248')
     Gtk.main()
