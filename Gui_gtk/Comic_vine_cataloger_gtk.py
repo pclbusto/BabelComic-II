@@ -66,7 +66,6 @@ class Comic_vine_cataloger_gtk():
         self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
 
     def borrar_linea(self,widget, event):
-        help(event)
         if event.keyval == Gdk.KEY_Delete:
             (model, iter) = self.treeview_comics_para_catalogar.get_selection().get_selected()
             if iter:
