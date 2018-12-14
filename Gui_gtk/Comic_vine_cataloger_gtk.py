@@ -31,7 +31,9 @@ class Comic_vine_cataloger_gtk():
                          'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
                          'boton_catalogar_grupo':self.boton_catalogar_grupo,
                          'text_edited':self.text_edited,
-                         'borrar_linea':self.borrar_linea}
+                         'borrar_linea':self.borrar_linea,
+                         'siguiente_cover':self.siguiente_cover,
+                         'anterior_cover':self.anterior_cover}
 
 
 
@@ -53,7 +55,8 @@ class Comic_vine_cataloger_gtk():
         self.entry_numero_vine = self.builder.get_object("entry_numero_vine")
         self.entry_fecha_vine = self.builder.get_object("entry_fecha_vine")
         self.image_cover_comic_vine = self.builder.get_object("image_cover_comic_vine")
-
+        self.lista_covers = []
+        self.index_lista_covers=0
         self.listaAMostrar =[]
         self.listore_comics_para_catalogar.clear()
         # contine la lista de comics que vamos a catalogar
@@ -64,6 +67,16 @@ class Comic_vine_cataloger_gtk():
         self._load_comic(comicbooks[0])
         # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
         self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
+
+    def siguiente_cover(self, widget):
+        if len(self.lista_covers)-1>self.index_lista_covers:
+            self.index_lista_covers += 1
+        self.load_cover_comic_info(self.comicBookVine)
+
+    def anterior_cover(self, widget):
+        if self.index_lista_covers>0:
+            self.index_lista_covers -= 1
+        self.load_cover_comic_info(self.comicBookVine)
 
     def borrar_linea(self,widget, event):
         if event.keyval == Gdk.KEY_Delete:
@@ -89,22 +102,10 @@ class Comic_vine_cataloger_gtk():
             self._load_comic(self.comicbooks[model[iter][2]])
             # print(self.c model[iter][2])
 
-    def calcular_desde_hasta(self):
-        desde = 0
-        hasta = 0
-        for index, comic in enumerate(self.listore_comics_para_catalogar):
-            if hasta == 0:
-                hasta = comic[0]
-            if desde == 0:
-                desde = comic[0]
-            if comic[0] > hasta:
-                hasta = comic[0]
-            if comic[0] < desde:
-                desde = comic[0]
+
 
     def click_boton_calcular_numeracion (self,widget):
-        desde = 0
-        hasta = 0
+
         if self.entry_expresion_regular_numeracion.get_text() != '':
             expresion = self.entry_expresion_regular_numeracion.get_text()
             for index, comic in enumerate(self.listore_comics_para_catalogar):
@@ -112,14 +113,9 @@ class Comic_vine_cataloger_gtk():
                 if match is not None:
                     if match.group(1).isdigit():
                         comic[0] = str(int(match.group(1)))
-                        if hasta == 0:
-                            hasta = comic[0]
-                        if desde == 0:
-                            desde = comic[0]
-                        if comic[0]>hasta :
-                            hasta = comic[0]
-                        if comic[0]<desde:
-                            desde = comic[0]
+                    else:
+                        comic[0] = match.group(1)
+
         self._load_comic(self.comicbooks[0])
 
     def change_entry_id_volumen_catalogar(self,widget):
@@ -208,25 +204,30 @@ class Comic_vine_cataloger_gtk():
         (model, iter) = selection.get_selected()
         if iter:
             comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
-            comicbook_info_cover_url = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_Info==comicbook_info_de_volumen.id_comicbook_Info).first()
-            webImage = comicbook_info_cover_url.thumb_url
-            nombreImagen = webImage[webImage.rindex('/') + 1:]
-            print(webImage)
+            self.index_lista_covers = 0
+            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_Info==comicbook_info_de_volumen.id_comicbook_Info).all()
+            self.load_cover_comic_info(comicbook_info_de_volumen)
+
+    def load_cover_comic_info(self, comicbook_info_de_volumen):
+        comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+        webImage = comicbook_info_cover_url.thumb_url
+        nombreImagen = webImage[webImage.rindex('/') + 1:]
+        print(webImage)
+        print(nombreImagen)
+
+        path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
+
+        if not (os.path.isfile(path + nombreImagen)):
+            print('no existe')
             print(nombreImagen)
-
-            path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
-
-            if not (os.path.isfile(path + nombreImagen)):
-                print('no existe')
-                print(nombreImagen)
-                jpg = urllib.request.urlopen(webImage)
-                jpgImage = jpg.read()
-                fImage = open(path + nombreImagen, 'wb')
-                fImage.write(jpgImage)
-                fImage.close()
-            self.comicBookVine = comicbook_info_de_volumen
-            self.comicBookVine.path = path + nombreImagen
-            self._load_comic_vine(self.comicBookVine)
+            jpg = urllib.request.urlopen(webImage)
+            jpgImage = jpg.read()
+            fImage = open(path + nombreImagen, 'wb')
+            fImage.write(jpgImage)
+            fImage.close()
+        self.comicBookVine = comicbook_info_de_volumen
+        self.comicBookVine.path = path + nombreImagen
+        self._load_comic_vine(self.comicBookVine)
 
     def click_boton_traer_solo_para_catalogar(self, widget):
         lista_numeros = []

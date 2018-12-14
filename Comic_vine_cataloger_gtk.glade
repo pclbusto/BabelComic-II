@@ -22,6 +22,49 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-go-forward</property>
   </object>
+  <object class="GtkImage" id="image_traer_coincidentes">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-find-and-replace</property>
+  </object>
+  <object class="GtkListStore" id="listore_comics_para_catalogar">
+    <columns>
+      <!-- column-name Numero -->
+      <column type="gchararray"/>
+      <!-- column-name Archivo -->
+      <column type="gchararray"/>
+      <!-- column-name index -->
+      <column type="gint"/>
+      <!-- column-name procesado -->
+      <column type="gboolean"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes"/>
+        <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
+        <col id="2">0</col>
+        <col id="3">False</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes"/>
+        <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
+        <col id="2">1</col>
+        <col id="3">True</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="liststore_comics_in_volumen">
+    <columns>
+      <!-- column-name Numero -->
+      <column type="gchararray"/>
+      <!-- column-name Titulo -->
+      <column type="gchararray"/>
+      <!-- column-name Id -->
+      <column type="gint"/>
+      <!-- column-name index -->
+      <column type="gint"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="Comic_vine_cataloger_gtk">
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
@@ -425,6 +468,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">image_anterior</property>
+                            <signal name="clicked" handler="anterior_cover" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -438,6 +482,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">image_siguiente</property>
+                            <signal name="clicked" handler="siguiente_cover" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -712,48 +757,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="image_traer_coincidentes">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-find-and-replace</property>
-  </object>
-  <object class="GtkListStore" id="listore_comics_para_catalogar">
-    <columns>
-      <!-- column-name Numero -->
-      <column type="gchararray"/>
-      <!-- column-name Archivo -->
-      <column type="gchararray"/>
-      <!-- column-name index -->
-      <column type="gint"/>
-      <!-- column-name procesado -->
-      <column type="gboolean"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes"/>
-        <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
-        <col id="2">0</col>
-        <col id="3">False</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes"/>
-        <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
-        <col id="2">1</col>
-        <col id="3">True</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="liststore_comics_in_volumen">
-    <columns>
-      <!-- column-name Numero -->
-      <column type="gchararray"/>
-      <!-- column-name Titulo -->
-      <column type="gchararray"/>
-      <!-- column-name Id -->
-      <column type="gint"/>
-      <!-- column-name index -->
-      <column type="gint"/>
-    </columns>
   </object>
 </interface>
