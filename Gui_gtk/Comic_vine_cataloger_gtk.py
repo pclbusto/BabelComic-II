@@ -177,13 +177,7 @@ class Comic_vine_cataloger_gtk():
             for comicbook_info in self.lista_comicbook_info_por_volumen:
                 print(nro,type(nro),comicbook_info.numero, type(comicbook_info.numero))
                 if nro==comicbook_info.numero:
-                    #print(comicbook)
-                    #comic_db = self.session.query(Comicbook).get(comicbook.id_comicbook)
-                    #comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
-                    #print(comic_db)
                     comicbook_info.id_comicbook_info = comicbook_info.id_comicbook_Info
-                    #self.session.add(comicbook)
-                    #print(comic_db)
                     break
 
         self.session.commit()
