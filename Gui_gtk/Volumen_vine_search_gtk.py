@@ -183,7 +183,7 @@ class Volumen_vine_search_Gtk():
 
 
     def click_aceptar(self, widget):
-        # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
     #     86343 - 5868-106705-18216-
         # 32561 - Brightest Day
         # 32562 - The flash vol3
@@ -199,7 +199,7 @@ class Volumen_vine_search_Gtk():
         # threading.Thread(target=self.hilo_cargar_volume, args=['18058']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['7300']).start()
         #threading.Thread(target=self.hilo_cargar_volume, args=['4740']).start()
-        threading.Thread(target=self.hilo_cargar_volume, args=['2050']).start()
+        # threading.Thread(target=self.hilo_cargar_volume, args=['2050']).start()
 #4740
 
         # 25543
