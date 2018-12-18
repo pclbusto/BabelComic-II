@@ -39,7 +39,7 @@ class BabelComics_main_gtk():
                          'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
-                         'click_boton_edit':self.click_boton_edit,
+                         'click_boton_catalogar':self.click_boton_catalogar,
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
                          'search_change':self.search_change,
@@ -71,7 +71,7 @@ class BabelComics_main_gtk():
         self.none_radio = self.builder.get_object("none_radio")
         self.selected_radio = self.builder.get_object("selected_radio")
         self.all_radio = self.builder.get_object("all_radio")
-
+        self.popovermenu = self.builder.get_object("popovermenu")
 
         self.thread_creacion_thumnails = None
 
@@ -138,7 +138,7 @@ class BabelComics_main_gtk():
         if ctrl and event.keyval == Gdk.KEY_w:
             self.click_boton_serie(None)
         if ctrl and event.keyval == Gdk.KEY_e:
-            self.click_boton_edit(None)
+            self.click_boton_catalogar(None)
         if ctrl and event.keyval == Gdk.KEY_a:
             self.click_boton_refresh(None)
         if ctrl and event.keyval == Gdk.KEY_s:
@@ -184,11 +184,13 @@ class BabelComics_main_gtk():
     def click_boton_config(self,widget):
         config = Config_gtk()
         config.window.show()
+        self.popovermenu.popdown()
 
     def click_boton_open_scanear(self,widget):
         scanner = ScannerGtk(funcion_callback=self.loadAndCreateThumbnails)
         # scanner.window.connect("destroy", Gtk.main_quit)
         scanner.window.show()
+        self.popovermenu.popdown()
 
 
     def click_catalogar(self,widget):
@@ -200,16 +202,20 @@ class BabelComics_main_gtk():
         cvs.window.show()
 
     def click_boton_refresh(self,widget):
-
         self.loadAndCreateThumbnails()
+        self.popovermenu.popdown()
 
-    def click_boton_edit(self, widget):
+    def click_boton_catalogar(self, widget):
         comics = []
         for path in self.iconview.get_selected_items():
             indice = path
             comics.append(self.listaComics[indice[0]])
         cvs = Comic_vine_cataloger_gtk(comicbooks=comics,session=self.session)
         cvs.window.show()
+        if self.popovermenu is not None:
+            self.popovermenu.popdown()
+        if self.menu_comic is not None:
+            self.menu_comic.popdown()
 
 
     def click_derecho(self, widget, event):
@@ -246,16 +252,18 @@ class BabelComics_main_gtk():
     def click_boton_serie(self, widget):
         serie = VolumeGuiGtk(self.session)
         serie.window.show()
+        self.popovermenu.popdown()
 
     def click_editorial(self, widget):
-        print("hola")
         editorial = PublisherGtk(self.session)
         editorial.window.show()
+        self.popovermenu.popdown()
 
     def on_click_scanner(self, button):
         # pub = ScannerGtk(self.loadAndCreateThumbnails)
         pub = ScannerGtk()
         pub.window.show()
+        self.popovermenu.popdown()
 
     def on_click_me_clicked(self, button):
         self.popover.set_relative_to(self.opciones)

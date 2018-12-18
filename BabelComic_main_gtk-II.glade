@@ -51,7 +51,7 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="popovermenu1">
+  <object class="GtkPopoverMenu" id="popovermenu">
     <property name="can_focus">False</property>
     <child>
       <object class="GtkGrid">
@@ -164,7 +164,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="popover">popovermenu1</property>
+            <property name="popover">popovermenu</property>
             <child>
               <placeholder/>
             </child>
