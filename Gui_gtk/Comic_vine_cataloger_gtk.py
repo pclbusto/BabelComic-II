@@ -88,6 +88,7 @@ class Comic_vine_cataloger_gtk():
 
     def text_edited(self, widget, path, text):
         self.listore_comics_para_catalogar[path][0] = text
+        self.click_boton_traer_solo_para_catalogar(None)
 
 
     def return_lookup(self,id_volume):
@@ -115,7 +116,7 @@ class Comic_vine_cataloger_gtk():
                         comic[0] = str(int(match.group(1)))
                     else:
                         comic[0] = match.group(1)
-
+        self.click_boton_traer_solo_para_catalogar(None)
         self._load_comic(self.comicbooks[0])
 
     def change_entry_id_volumen_catalogar(self,widget):
@@ -125,6 +126,7 @@ class Comic_vine_cataloger_gtk():
             self.volume = self.session.query(Volume).get(self.entry_id_volumen_catalogar.get_text())
             if self.volume is not None:
                 self.entry_descripcion_volumen_catalogar.set_text(self.volume.nombre)
+                self.click_boton_traer_solo_para_catalogar(None)
 
     def click_boton_lookup_serie(self,widget):
         lookup = Volume_lookup_gtk(self.session, self.return_lookup)
