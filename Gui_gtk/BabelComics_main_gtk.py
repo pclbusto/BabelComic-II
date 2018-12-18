@@ -206,6 +206,7 @@ class BabelComics_main_gtk():
         self.popovermenu.popdown()
 
     def click_boton_catalogar(self, widget):
+        print("dsadsadasd")
         comics = []
         for path in self.iconview.get_selected_items():
             indice = path
