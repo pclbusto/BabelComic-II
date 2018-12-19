@@ -140,6 +140,11 @@ class Volumen_vine_search_Gtk():
             if cbi_db is not None and not cbi_db.actualizado_externamente:
                 self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_Info == comicbook_info.id_comicbook_Info).delete()
                 self.session.commit()
+            elif cbi_db is not None  and cbi_db.actualizado_externamente:
+                cbi_db.numero = comicbook_info.numero
+                cbi_db.fecha_tapa = comicbook_info.fecha_tapa
+                # porque tiene el id de Alquemy entonces se hace update
+                comicbook_info = cbi_db
             self.session.add(comicbook_info)
         lista_arcos = []
         for arco in cv.lista_arcos:
