@@ -67,6 +67,7 @@ class Comic_vine_cataloger_gtk():
         self._load_comic(comicbooks[0])
         # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
         self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
+        self.gui_updating = False
 
     def siguiente_cover(self, widget):
         if len(self.lista_covers)-1>self.index_lista_covers:
@@ -211,27 +212,27 @@ class Comic_vine_cataloger_gtk():
             self.load_cover_comic_info(comicbook_info_de_volumen)
 
     def load_cover_comic_info(self, comicbook_info_de_volumen):
-        comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
-        webImage = comicbook_info_cover_url.thumb_url
-        nombreImagen = webImage[webImage.rindex('/') + 1:]
-        print(webImage)
-        print(nombreImagen)
-
-        path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
-
-        if not (os.path.isfile(path + nombreImagen)):
-            print('no existe')
+        if not self.gui_updating:
+            comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+            webImage = comicbook_info_cover_url.thumb_url
+            nombreImagen = webImage[webImage.rindex('/') + 1:]
+            print(webImage)
             print(nombreImagen)
-            jpg = urllib.request.urlopen(webImage)
-            jpgImage = jpg.read()
-            fImage = open(path + nombreImagen, 'wb')
-            fImage.write(jpgImage)
-            fImage.close()
-        self.comicBookVine = comicbook_info_de_volumen
-        self.comicBookVine.path = path + nombreImagen
-        self._load_comic_vine(self.comicBookVine)
+            path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
+            if not (os.path.isfile(path + nombreImagen)):
+                print('no existe')
+                print(nombreImagen)
+                jpg = urllib.request.urlopen(webImage)
+                jpgImage = jpg.read()
+                fImage = open(path + nombreImagen, 'wb')
+                fImage.write(jpgImage)
+                fImage.close()
+            self.comicBookVine = comicbook_info_de_volumen
+            self.comicBookVine.path = path + nombreImagen
+            self._load_comic_vine(self.comicBookVine)
 
     def click_boton_traer_solo_para_catalogar(self, widget):
+        self.gui_updating = True
         lista_numeros = []
         print(self.listore_comics_para_catalogar)
         for comic in self.listore_comics_para_catalogar:
@@ -245,7 +246,7 @@ class Comic_vine_cataloger_gtk():
         self.liststore_comics_in_volumen.clear()
         for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
             self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_Info), index])
-
+        self.gui_updating = False
 
 if __name__ == '__main__':
 
