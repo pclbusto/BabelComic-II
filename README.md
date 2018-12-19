@@ -13,12 +13,17 @@ Actualmente BabelComics no tiene versión 1.0 porque considero que falta mucho p
 * Búqueda 
   * Las entidades implementadas lo tienen 
   * Las no implementadas no lo tienen
-* Proceso de catalogación
-  * implementado pero pendiente proceso de refactoring para no hacerlo dependiente de una GUI
 * visor o lector de comics (falta implementar completamente).
   * Hay mucho software que ya hace esto pero quiero agregar algo que no he visto en otros y dio orignen al nombre del programa.
+
+# Funcionalidades deseadas a futuro
+* Proceso de catalogación
+  * implementado pero pendiente proceso de refactoring para no hacerlo dependiente de una GUI
 * Ventana de estadisticas para poder ver cuanto tengo completo de arcos argumentales y volumenes. También poder ver los comics que se tienen repetidos y ese tipo de cosas.
 * armado de procesos de formateo o normalización de nombres para poder organizar los comics a nivel de archivo.
+
+# capturas
+
 
 
   
