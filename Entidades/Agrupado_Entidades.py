@@ -296,7 +296,7 @@ class Comicbook_Info(Entidades.Init.Base):
         self.lista_ids_arcos_para_procesar = []
 
     def __repr__(self):
-        cadena = "titulo={}-comic vine id={}\n  actualizado_externamente:{}\n".format(self.titulo, self.id_comicbook_Info,self.actualizado_externamente)
+        cadena = "titulo={}-comic vine id={}\n actualizado_externamente:{}\nfecha:{}\n".format(self.titulo, self.id_comicbook_Info,self.actualizado_externamente,self.fecha_tapa)
         lista = ""
         # for url in self.thumbs_url:
         #     lista = lista+"      "+url.thumb_url+"\n"

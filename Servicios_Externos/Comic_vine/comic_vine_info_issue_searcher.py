@@ -50,36 +50,39 @@ class Comic_Vine_Info_Searcher():
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_cover_date, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             fecha_tapa_issue = match.group(1)
+            # print(fecha_tapa_issue)
             mes=0
             if fecha_tapa_issue.find("January")!=-1:
                 mes = 1
-            if fecha_tapa_issue.find("February")!=-1:
+            elif fecha_tapa_issue.find("February")!=-1:
                 mes = 2
-            if fecha_tapa_issue.find("March")!=-1:
+            elif fecha_tapa_issue.find("March")!=-1:
                 mes = 3
-            if fecha_tapa_issue.find("April")!=-1:
+            elif fecha_tapa_issue.find("April")!=-1:
                 mes = 4
-            if fecha_tapa_issue.find("May")!=-1:
+            elif fecha_tapa_issue.find("May")!=-1:
                 mes = 5
-            if fecha_tapa_issue.find("June")!=-1:
+            elif fecha_tapa_issue.find("June")!=-1:
                 mes = 6
-            if fecha_tapa_issue.find("July")!=-1:
+            elif fecha_tapa_issue.find("July")!=-1:
                 mes = 7
-            if fecha_tapa_issue.find("August")!=-1:
+            elif fecha_tapa_issue.find("August")!=-1:
                 mes = 8
-            if fecha_tapa_issue.find("September")!=-1:
+            elif fecha_tapa_issue.find("September")!=-1:
                 mes = 9
-            if fecha_tapa_issue.find("October")!=-1:
+            elif fecha_tapa_issue.find("October")!=-1:
                 mes = 10
-            if fecha_tapa_issue.find("November")!=-1:
+            elif fecha_tapa_issue.find("November")!=-1:
                 mes = 11
-            if fecha_tapa_issue.find("December")!=-1:
+            elif fecha_tapa_issue.find("December")!=-1:
                 mes = 12
             else:
                 mes = 12
 
             anio = int(fecha_tapa_issue[-4:])
-            comicbook_info.fechaTapa = date(anio, mes,1)
+            print("Datos para la fecha del comicbookinfo: {}".format(date(anio, mes,1)))
+            comicbook_info.fecha_tapa = date(anio, mes,1)
+            print("Datos COMIC SCRAPER \n{}".format(comicbook_info))
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
         # guardamos los arcos si es que tiene
         for matchNum, match in enumerate(matches):
@@ -119,5 +122,6 @@ class Comic_Vine_Info_Searcher():
 if __name__ == "__main__":
 
     comcis_org_searcher = Comic_Vine_Info_Searcher()
-    lista = comcis_org_searcher.search_issues_in_arc('https://comicvine.gamespot.com/faces-of-evil/4045-55781/issues/')
-    print(lista)
+    comcis_org_searcher.search_issue("https://comicvine.gamespot.com/witchblade-9-good-intentions-part-three/4000-691312/")
+    # lista = comcis_org_searcher.search_issues_in_arc('https://comicvine.gamespot.com/faces-of-evil/4045-55781/issues/')
+    # print(lista)
