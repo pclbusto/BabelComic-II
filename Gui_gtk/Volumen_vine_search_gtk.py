@@ -146,8 +146,8 @@ class Volumen_vine_search_Gtk():
                 cbi_db.numero = comicbook_info.numero
                 cbi_db.fecha_tapa = comicbook_info.fecha_tapa
                 print(cbi_db)
-                # porque tiene el id de Alquemy entonces se hace update
-                # comicbook_info = cbi_db
+            else:
+                self.session.add(comicbook_info)
             self.session.commit()
         lista_arcos = []
         for arco in cv.lista_arcos:
@@ -173,10 +173,9 @@ class Volumen_vine_search_Gtk():
                     if comicbook_info.id_comicbook_Info == arco_comicbook_info:
 
                         comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_Info)
-                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get(comicbook_info.id_comicbook_Info, arco.id_arco_argumental)
+                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get((comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
                         if rel is None:
                             print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
-
                             arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
                             arco_argumental_comicsbook_reference.orden = pos
                             arco_argumental_comicsbook_reference.ids_arco_argumental=arco
@@ -202,7 +201,7 @@ class Volumen_vine_search_Gtk():
 
 
     def click_aceptar(self, widget):
-        # threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
+        threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
         # 86343 - 5868-106705-18216-
         # 32561 - Brightest Day
         # 32562 - The flash vol3
@@ -218,7 +217,7 @@ class Volumen_vine_search_Gtk():
         # threading.Thread(target=self.hilo_cargar_volume, args=['18058']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['7300']).start()
         #threading.Thread(target=self.hilo_cargar_volume, args=['4740']).start()
-        threading.Thread(target=self.hilo_cargar_volume, args=['106705']).start()
+        # threading.Thread(target=self.hilo_cargar_volume, args=['106705']).start()
 #4740
 
         # 25543
@@ -304,7 +303,7 @@ if __name__ == "__main__":
     # volumen.session.query(Entidades.Agrupado_Entidades.Comics_In_Volume).delete()
     # volumen.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).delete()
     # volumen.session.commit()
-    volumen.click_aceptar(None)
+    # volumen.click_aceptar(None)
     # volumen.click_aceptar2(None)
     Gtk.main()
 
