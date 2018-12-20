@@ -171,18 +171,24 @@ class Volumen_vine_search_Gtk():
             for comicbook_info in cv.lista_comicbooks_info:
                 for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
                     if comicbook_info.id_comicbook_Info == arco_comicbook_info:
-                        comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_Info)
-                        print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
-                        arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
-                        arco_argumental_comicsbook_reference.orden = pos
-                        arco_argumental_comicsbook_reference.ids_arco_argumental=arco
-                        print("COMIC A RELACIONAR")
-                        type(comicbook_info)
-                        type(comicbook_info_db)
-                        arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info_db
 
-                        self.session.add(arco_argumental_comicsbook_reference)
-                        self.session.commit()
+                        comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_Info)
+                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get(comicbook_info.id_comicbook_Info, arco.id_arco_argumental)
+                        if rel is None:
+                            print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
+
+                            arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
+                            arco_argumental_comicsbook_reference.orden = pos
+                            arco_argumental_comicsbook_reference.ids_arco_argumental=arco
+                            print("COMIC A RELACIONAR")
+                            print(type(comicbook_info))
+                            print(type(comicbook_info_db))
+                            if comicbook_info_db is not None:
+                                arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info_db
+                            else:
+                                arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info
+                            self.session.add(arco_argumental_comicsbook_reference)
+                            self.session.commit()
 
         # print(lista)
 
