@@ -29,13 +29,12 @@ class Setup(Entidades.Init.Base):
     ultimoNumeroConsultadoHasta = Column(Integer,default=0)
     anchoArbol = Column(Integer,default=100)
     '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
-    expresionRegularNumero= Column(String,default='',nullable=False)
+    expresionRegularNumero= Column(String,default='', nullable=False)
     '''Manejo las sucuencias de forma manual porque la idea es usar el id externo como clave
     para esto los id externos son positivos y los internos son negativos. con esto espero que no haya coliciones'''
 
-    id_publisher = Column(Integer,default=0)
-    id_arco_argumental = Column(Integer,default=0)
-    id_volume = Column(Integer,default=0)
+    last_id_volume_used = Column(String, default=".* (\d*) \(")
+
     def __repr__(self):
         return "<Setup(setupkey = '%s'\n" \
                "Cantidad Comics PorPagina = '%s'\n" \

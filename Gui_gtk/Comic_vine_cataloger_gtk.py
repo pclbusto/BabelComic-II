@@ -33,7 +33,8 @@ class Comic_vine_cataloger_gtk():
                          'text_edited':self.text_edited,
                          'borrar_linea':self.borrar_linea,
                          'siguiente_cover':self.siguiente_cover,
-                         'anterior_cover':self.anterior_cover}
+                         'anterior_cover':self.anterior_cover,
+                         'cerrar_ventana':self.cerrar_ventana}
 
 
 
@@ -65,8 +66,7 @@ class Comic_vine_cataloger_gtk():
             self.listore_comics_para_catalogar.append(['', comic.path, index, 0])
 
         self._load_comic(comicbooks[0])
-        # self.entry_expresion_regular_numeracion.set_text(".*\#(\d*)")
-        self.entry_expresion_regular_numeracion.set_text(".* (\d*) \(")
+        self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
         self.gui_updating = False
 
     def siguiente_cover(self, widget):
@@ -197,7 +197,7 @@ class Comic_vine_cataloger_gtk():
     def check_fila_treeview_comics_para_catalogar(self, index):
         self.treeview_comics_para_catalogar.get_model()[index][3] = True
 
-    def save_estado_catalogo(self):
+    def cerrar_ventana(self, widget, args):
         self.setup.ultimoVolumeIdUtilizado = self.entry_id_volumen_catalogar.get_text()
         self.setup.expresionRegularNumero = self.entry_expresion_regular_numeracion.get_text()
         print(self.setup)
