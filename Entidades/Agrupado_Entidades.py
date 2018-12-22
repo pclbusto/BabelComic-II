@@ -36,14 +36,10 @@ class Setup(Entidades.Init.Base):
         return "<Setup(setupkey = '%s'\n" \
                "Cantidad Comics PorPagina = '%s'\n" \
                "Ultimo VolumeId Utilizado = '%s'\n" \
-               "Ultimo Numero Consultado Desde= '%s'\n" \
-               "Ultimo Numero Consultado Hasta= '%s'\n" \
                "Expresion Regular Numero= '%s'\n" \
                "Directorio Base Imagene='%s'\n)>" %(self.setupkey,
                                                   self.cantidadComicsPorPagina,
                                                   self.ultimoVolumeIdUtilizado,
-                                                  self.ultimoNumeroConsultadoDesde,
-                                                  self.ultimoNumeroConsultadoHasta,
                                                   self.expresionRegularNumero,
                                                   self.directorioBase)
 
