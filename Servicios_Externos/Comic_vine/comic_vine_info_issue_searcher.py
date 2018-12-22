@@ -81,7 +81,7 @@ class Comic_Vine_Info_Searcher():
 
             anio = int(fecha_tapa_issue[-4:])
             print("Datos para la fecha del comicbookinfo: {}".format(date(anio, mes,1)))
-            comicbook_info.fecha_tapa = date(anio, mes,1)
+            comicbook_info.fecha_tapa = date(anio, mes,1).toordinal()
             print("Datos COMIC SCRAPER \n{}".format(comicbook_info))
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
         # guardamos los arcos si es que tiene
