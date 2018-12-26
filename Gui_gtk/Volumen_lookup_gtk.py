@@ -54,7 +54,7 @@ class Volume_lookup_gtk():
         if self.search_entry_volumen.get_text()=='' and not self.publisher:
             self.volumens = self.session.query(Volume).all()
         elif self.search_entry_volumen.get_text()=='' and self.publisher:
-            self.volumens = self.session.query(Volume).filter(Volume.publisherId==self.publisher.id_publisher)
+            self.volumens = self.session.query(Volume).filter(Volume.id_publisher == self.publisher.id_publisher)
         elif self.search_entry_volumen.get_text() != '' and not self.publisher:
             self.volumens = self.session.query(Volume).filter(Volume.nombre.like('%{}%'.format(self.search_entry_volumen.get_text())))
         else:
@@ -72,7 +72,7 @@ class Volume_lookup_gtk():
         self.search_volumen(widget)
 
     def click_lookup_editorial(self, widget):
-        lookup = Publisher_lookup_gtk(self.session,self.search_entry_editorial)
+        lookup = Publisher_lookup_gtk(self.session,self.return_lookup_editorial)
         lookup.window.show()
 
     def _load_data(self):
@@ -98,6 +98,11 @@ class Volume_lookup_gtk():
                 height=250,
                 preserve_aspect_ratio=True)
             self.imagen_cover_volumen.set_from_pixbuf(pixbuf)
+
+    def return_lookup_editorial(self,id_editorial):
+        if id_editorial!='':
+            self.search_entry_editorial.set_text(str(id_editorial))
+
 
     def click_boton_aceptar(self,widget):
         self.campo_retorno(self.volume.id_volume)

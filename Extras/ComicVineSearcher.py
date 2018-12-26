@@ -142,21 +142,21 @@ class ComicVineSearcher:
                 volume.id_volume = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
-                volume.AnioInicio =volumeVine.find('start_year').text
+                volume.anio_inicio =volumeVine.find('start_year').text
                 volume.descripcion = volumeVine.find('description').text
-                volume.cantidadNumeros = volumeVine.find('count_of_issues').text
+                volume.cantidad_numeros = volumeVine.find('count_of_issues').text
                 if volumeVine.find('image').find('super_url') is not None:
                     volume.image_url = volumeVine.find('image').find('super_url').text
                 if volumeVine.find('publisher').find('id') is not None:
                     print("Recuperando Editorial")
-                    volume.id_publisher_externo = volumeVine.find('publisher').find('id').text
+                    volume.id_publisher = volumeVine.find('publisher').find('id').text
                     volume.publisher_name = volumeVine.find('publisher').find('name').text
                 if volumeVine.find('issues'):
                     '''
                     La cantidad de numeros esta mal en el xml al menos para linterna verde vol2 
                     estaba mal. Por esto se decide contar los issues
                     '''
-                    volume.cantidadNumeros = len(volumeVine.find('issues').findall('issue'))
+                    volume.cantidad_numeros = len(volumeVine.find('issues').findall('issue'))
                     '''se cargan los issues que trae el xml. no toda la info solo los numeros.
                     esto se usa para poder calcular los offset correctos en la busqueda de issues
                     '''
@@ -404,7 +404,7 @@ class ComicVineSearcher:
                     l_serie = Entidades.Agrupado_Entidades.Volume(id_volume=int(item.find('id').text), nombre=item.find('name').text)
 
                     l_serie.descripcion = item.find('description').text
-                    l_serie.cantidadNumeros = item.find('count_of_issues').text
+                    l_serie.cantidad_numeros = item.find('count_of_issues').text
                     if item.find('image').find('thumb_url') != None:
                         l_serie.image_url = item.find('image').find('super_url').text
                     else:
@@ -415,7 +415,7 @@ class ComicVineSearcher:
                         l_serie.publisher_name = item.find('publisher').find('name').text
                     else:
                         l_serie.id_publisher_externo = "-1"
-                    l_serie.AnioInicio = item.find('start_year').text
+                    l_serie.anio_inicio = item.find('start_year').text
                     self.listaBusquedaVine.append(l_serie)
 
             elif self.entidad == 'publishers':

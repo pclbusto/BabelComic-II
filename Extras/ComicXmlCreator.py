@@ -57,8 +57,8 @@ class XmlManager:
             SubElement(volume_node, "image_url").text = volume.image_url
             SubElement(volume_node, "publisherId").text = volume.publisherId
             SubElement(volume_node, "publisher_name").text = volume.publisher_name
-            SubElement(volume_node, "AnioInicio").text = str(volume.AnioInicio)
-            SubElement(volume_node, "cantidadNumeros").text = str(volume.cantidadNumeros)
+            SubElement(volume_node, "AnioInicio").text = str(volume.anio_inicio)
+            SubElement(volume_node, "cantidadNumeros").text = str(volume.cantidad_numeros)
 
         if comic.arcoArgumentalId != '0':
             print("ARCO ARGUMENTAL : {}".format(comic.arcoArgumentalId))

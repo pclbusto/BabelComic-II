@@ -127,7 +127,8 @@ class Volumen_vine_search_Gtk():
         volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volumen.id_volume).first()
         if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
-            volumen_in_db.cantidadNumeros = volumen.cantidadNumeros
+            volumen_in_db.actualizar_con(volumen)
+            # volumen_in_db.cantidadNumeros = volumen.cantidadNumeros
             volumen = volumen_in_db
         self.session.add(volumen)
         self.session.commit()
@@ -266,12 +267,12 @@ class Volumen_vine_search_Gtk():
             publisher_name=""
             if volume.nombre is not None:
                 nombre = volume.nombre
-            if volume.AnioInicio is not None:
-                if str.isdigit(volume.AnioInicio):
-                    anio = int(volume.AnioInicio)
+            if volume.anio_inicio is not None:
+                if str.isdigit(volume.anio_inicio):
+                    anio = int(volume.anio_inicio)
 
-            if str.isdigit(volume.cantidadNumeros):
-                cantidad_numeros=int(volume.cantidadNumeros)
+            if str.isdigit(volume.cantidad_numeros):
+                cantidad_numeros=int(volume.cantidad_numeros)
 
             if volume.publisher_name is not None:
                 publisher_name = volume.publisher_name

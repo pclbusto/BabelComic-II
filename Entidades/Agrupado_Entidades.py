@@ -429,11 +429,20 @@ class Volume(Entidades.Init.Base):
     image_url = Column(String,nullable=False,default='')  # la mas grande. Las chicas las hacemos locales.
     id_publisher = Column(String,nullable=False,default='')
     publisher_name=Column(String,nullable=False,default='')
-    AnioInicio = Column(Integer,nullable=False,default=0)
-    cantidadNumeros = Column(Integer,nullable=False,default=0)
+    anio_inicio = Column(Integer,nullable=False,default=0)
+    cantidad_numeros = Column(Integer,nullable=False,default=0)
 
 
 
+    def actualizar_con(self, volume):
+        self.nombre = volume.nombre
+        self.deck = volume.deck
+        self.descripcion = volume.descripcion
+        self.image_url = volume.image_url
+        self.id_publisher = volume.id_publisher
+        self.publisher_name = volume.publisher_name
+        self.anio_inicio = volume.anio_inicio
+        self.cantidad_numeros = volume.cantidad_numeros
     def hasPublisher(self):
         return (self.publisherId!='0')
 
@@ -451,7 +460,7 @@ class Volume(Entidades.Init.Base):
 
     def __repr__(self):
         return "<Volume(name={}, id_volume={}, cantidad nros={}, publisher_name={}, Año inicio={} )>". \
-            format(self.nombre, self.id_volume, self.cantidadNumeros, self.publisher_name, self.AnioInicio)
+            format(self.nombre, self.id_volume, self.cantidad_numeros, self.publisher_name, self.anio_inicio)
 
     def hasLocalCover(self):
         if self.image_url:

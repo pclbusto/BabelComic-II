@@ -4,6 +4,8 @@ import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
+import asyncio
+
 
 class Publisher_lookup_gtk():
     # todo implementar seleccion por doble click
@@ -14,7 +16,8 @@ class Publisher_lookup_gtk():
         else:
             self.session = Entidades.Init.Session()
         self.handlers = {'clicked_aceptar': self.clicked_aceptar, 'buscar':self.buscarPublisher,
-                         'seleccion':self.seleccion_publisher, 'combobox_change':self.combobox_change}
+                         'seleccion':self.seleccion_publisher, 'combobox_change':self.combobox_change,
+                         'gtk_tree_view_editorial_double_click':self.gtk_tree_view_editorial_double_click}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Publisher_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
@@ -22,6 +25,7 @@ class Publisher_lookup_gtk():
         self.window = self.builder.get_object("Publisher_lookup_gtk")
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.combobox_orden = self.builder.get_object('combobox_orden')
+
         self.gtk_tree_view_editorial =  self.builder.get_object('gtk_tree_view_editorial')
         self.listmodel_publishers = Gtk.ListStore(int, str)
         self.publishers_manager = Publishers(session=self.session)
@@ -57,6 +61,12 @@ class Publisher_lookup_gtk():
         (model, iter) = selection.get_selected()
         if iter:
             self.publisher = self.publishers_manager.get(model[iter][0])
+
+    def gtk_tree_view_editorial_double_click(self,widget, event):
+        print("un click")
+        if event.get_click_count()[1]==2:
+            print("Dos clicks")
+            self.clicked_aceptar(widget)
 
     def clicked_aceptar(self,widget):
         self.campo_retorno(self.publisher.id_publisher)

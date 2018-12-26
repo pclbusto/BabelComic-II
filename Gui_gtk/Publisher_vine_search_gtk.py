@@ -2,11 +2,12 @@ from  Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 import Entidades.Init
 from gi.repository import GLib
-from Entidades.Agrupado_Entidades import Publisher
+import threading
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
+import asyncio
 
 class Publisher_vine_search_gtk():
     # todo implementar icono de progreso
@@ -57,7 +58,7 @@ class Publisher_vine_search_gtk():
 
     def _start(self):
         print("iniciando")
-        self.spinner.start()
+
 
     def _buscar(self):
         if self.entry_nombre.get_text()!='':
@@ -67,10 +68,15 @@ class Publisher_vine_search_gtk():
             self.cargarResultado(self.comicVineSearcher.listaBusquedaVine)
         self.spinner.stop()
 
+    def start(self):
+        GLib.idle_add(self.spinner.start)
+
     def click_boton_buscar(self,widget):
 
-        GLib.idle_add(self._start)
-        GLib.idle_add(self._buscar)
+        t = threading.Thread(target=self.start)
+        t.run()
+        # GLib.idle_add(self._start)
+        # GLib.idle_add(self._buscar)
 
 
     def agregarEditorial(self):
