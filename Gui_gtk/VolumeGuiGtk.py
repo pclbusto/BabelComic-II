@@ -71,7 +71,7 @@ class VolumeGuiGtk():
 
         volumeUpdated = volumenAndComics[0]
 
-        self.volume.cantidadNumeros = volumeUpdated.cantidadNumeros
+        self.volume.cantidad_numeros = volumeUpdated.cantidad_numeros
         self.volume.nombre = volumeUpdated.nombre
         print(volumeUpdated.image_url)
         self.volume.image_url = volumeUpdated.image_url
