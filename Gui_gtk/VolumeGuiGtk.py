@@ -154,8 +154,8 @@ class VolumeGuiGtk():
         self.volume.image_url = self.entradaUrlImagen.get()
         if self.editorial is not None:
             self.volume.publisherId = self.editorial.id_publisher
-        self.volume.AnioInicio = self.entradaAnioInicio.get()
-        self.volume.cantidadNumeros = self.entradaCantidadNumeros.get()
+        self.volume.anio_inicio = self.entradaAnioInicio.get()
+        self.volume.cantidad_numeros = self.entradaCantidadNumeros.get()
 
     def keyOrd(self,t):
         return(int(t.comicOrder))

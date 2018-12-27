@@ -128,14 +128,10 @@ class Volumen_vine_search_Gtk():
         if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
             volumen_in_db.actualizar_con(volumen)
-            # volumen_in_db.cantidadNumeros = volumen.cantidadNumeros
             volumen = volumen_in_db
         self.session.add(volumen)
         self.session.commit()
         print(volumen)
-        # self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == volumen.id_volume).delete()
-        # self.session.commit()
-        # time.sleep(30)
         for comicbook_info in cv.lista_comicbooks_info:
             cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_Info)
             if cbi_db is not None and not cbi_db.actualizado_externamente:

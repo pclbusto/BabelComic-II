@@ -11,7 +11,7 @@ class VolumesLookupData():
     ATRIBUTO_ID = 'id'
     ATRIBUTO_NOMBRE = 'nombre'
     ATRIBUTO_DESCRIPCION = 'descripcion'
-    ATRIBUTO_ANIO = 'AnioInicio'
+    ATRIBUTO_ANIO = 'anio_inicio'
 
     def __init__(self):
         self.atributoBusqueda = VolumesLookupData.ATRIBUTO_NOMBRE
@@ -137,57 +137,7 @@ class VolumesLookupGui(Frame):
         tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
 
 
-    #
-    # def __ChangedFilter__(self, *args):  # recordar siempre que son 4 paramentros sino da errores raros
-    #     print('__ChangedFilter__ current: ', str(self.opcionesBusqueda.current()))
-    #     if (self.opcionesBusqueda.current() == 0):
-    #         print('limpiando filtro nombre')
-    #         del self.filtros['nombre']
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         self.filtros['nombre'] = [cadena]
-    #         print('filtro cargado: ' + str(self.filtros['nombre']))
-    #     if (self.opcionesBusqueda.current() == 1):
-    #         del self.filtros['cantidadNumeros']
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         print('cantidadNumeros: ' + str(self.filtros))
-    #         print(len(cadena))
-    #         if len(cadena) > 0:
-    #             self.filtros['cantidadNumeros'] = [self.varaiblePatronBusqueda.get()]
-    #
-    #     if (self.opcionesBusqueda.current() == 2):
-    #         del self.filtros['name']
-    #         self.filtros['name'] = [self.varaiblePatronBusqueda.get()]
-    #     if (self.opcionesBusqueda.current() == 3):
-    #         del self.filtros['AnioInicio']
-    #         print('AnioInicio: ' + str(self.filtros))
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         if len(cadena) > 0:
-    #             self.filtros['AnioInicio'] = [self.varaiblePatronBusqueda.get()]
-    #
-    # def __ChangedComboboxFilter__(self, *args):
-    #     lista = []
-    #     if (self.opcionesBusqueda.current() == 0):
-    #         if ('nombre' in self.filtros):
-    #             lista = self.filtros['nombre']
-    #     elif (self.opcionesBusqueda.current() == 1):
-    #         if ('cantidadNumeros' in self.filtros):
-    #             lista = self.filtros['cantidadNumeros']
-    #     elif (self.opcionesBusqueda.current() == 2):
-    #         if ('name' in self.filtros):
-    #             lista = self.filtros['name']
-    #     elif (self.opcionesBusqueda.current() == 3):
-    #         if ('AnioInicio' in self.filtros):
-    #             lista = self.filtros['AnioInicio']
-    #
-    #     self.entryFiltro.delete(0, END)
-    #     cadena = ''
-    #     if lista:
-    #         print('lista de palabras: ' + str(lista))
-    #     for palabra in lista:
-    #         print('palabra: ' + palabra)
-    #         cadena += palabra + " "
-    #     self.entryFiltro.insert(END, cadena[:-1])
-    #
+
 
     def getSerie(self):
         print('retornando serie: ' + self.serie.nombre)
@@ -210,25 +160,6 @@ class VolumesLookupGui(Frame):
     def seleccionarVolume(self):
         self.padre.destroy()
 
-    # def sortby(self, col):
-    #     print('sort: ' + str(self.opcionesBusqueda.current()))
-    #
-    #     if col == 'nombre':
-    #         self.opcionesBusqueda.current(0)
-    #     elif col == 'cantidadNumeros':
-    #         self.opcionesBusqueda.current(1)
-    #     elif col == 'name':
-    #         self.opcionesBusqueda.current(2)
-    #     elif col == 'AnioInicio':
-    #         print('antes de cambiar sort:')
-    #         self.opcionesBusqueda.current(3)
-    #         print('despues de cambiar sort: ' + str(self.opcionesBusqueda.current()))
-    #
-    #     if (not self.desc):
-    #         self.buscarVolume('order by ' + col + ' desc')
-    #     else:
-    #         self.buscarVolume(('order by ' + col + ' asc')
-
     def buscarVolume(self, orderBy=None):
 
         for item in self.grillaVolumes.get_children():
@@ -250,7 +181,7 @@ class VolumesLookupGui(Frame):
                                                                  volume.id,
                                                                  volume.image_url,
                                                                  volume.publisher_name,
-                                                                 volume.AnioInicio))
+                                                                 volume.anio_inicio))
 
 
 if (__name__ == '__main__'):

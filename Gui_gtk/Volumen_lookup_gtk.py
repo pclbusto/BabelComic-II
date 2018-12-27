@@ -79,9 +79,7 @@ class Volume_lookup_gtk():
         self.listmodel_volumens.clear()
         for index,volume in enumerate(self.volumens):
             self.listmodel_volumens.append(
-                [volume.nombre, volume.cantidadNumeros, volume.publisher_name, volume.AnioInicio, index, volume.id_volume])
-            # self.listmodel_volumens.append(
-            #     [volume.id, volume.nombre, volume.cantidadNumeros, volume.publisher_name, volume.AnioInicio])
+                [volume.nombre, volume.cantidad_numeros, volume.publisher_name, volume.anio_inicio, index, volume.id_volume])
         self.gtk_tree_view_volumen.set_model(self.listmodel_volumens)
 
     def getSerie(self):

@@ -169,21 +169,10 @@ class VolumeVineGui(Frame):
                     self.listaFiltrada.append(volume)
             else:
                 self.listaFiltrada.append(volume)
-        # for i in range(1,10):
-        #     volume= Volume()
-        #     volume.id=str(i)
-        #     volume.nombre = str(i)
-        #     volume.cantidadNumeros = str(i)
-        #     volume.descripcion = str(i)
-        #     volume.image_url = str(i)
-        #     volume.publisher_name = str(i)
-        #     volume.AnioInicio = i
-        #
-        #     self.listaFiltrada.append(volume)
         for idx, volume in enumerate(self.listaFiltrada):
             print(volume)
             self.grillaVolumes.insert('', 'end', str(idx), text='', values=(volume.nombre,
-                                                                      volume.cantidadNumeros,
+                                                                      volume.cantidad_numeros,
                                                                       volume.descripcion,
                                                                       volume.id,
                                                                       volume.image_url,

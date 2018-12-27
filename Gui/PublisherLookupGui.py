@@ -89,57 +89,7 @@ class PublisherLookupGui(Frame):
         self.pilImageCoverGenerica = Iconos().pilImageLogo
         self.cover = ImageTk.PhotoImage(self.pilImageCoverGenerica.resize(self.coverSize))
         self.labelImagen['image'] = self.cover
-    #
-    # def __ChangedFilter__(self, *args):  # recordar siempre que son 4 paramentros sino da errores raros
-    #     print('__ChangedFilter__ current: ', str(self.opcionesBusqueda.current()))
-    #     if (self.opcionesBusqueda.current() == 0):
-    #         print('limpiando filtro nombre')
-    #         del self.filtros['nombre']
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         self.filtros['nombre'] = [cadena]
-    #         print('filtro cargado: ' + str(self.filtros['nombre']))
-    #     if (self.opcionesBusqueda.current() == 1):
-    #         del self.filtros['cantidadNumeros']
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         print('cantidadNumeros: ' + str(self.filtros))
-    #         print(len(cadena))
-    #         if len(cadena) > 0:
-    #             self.filtros['cantidadNumeros'] = [self.varaiblePatronBusqueda.get()]
-    #
-    #     if (self.opcionesBusqueda.current() == 2):
-    #         del self.filtros['name']
-    #         self.filtros['name'] = [self.varaiblePatronBusqueda.get()]
-    #     if (self.opcionesBusqueda.current() == 3):
-    #         del self.filtros['AnioInicio']
-    #         print('AnioInicio: ' + str(self.filtros))
-    #         cadena = self.varaiblePatronBusqueda.get()
-    #         if len(cadena) > 0:
-    #             self.filtros['AnioInicio'] = [self.varaiblePatronBusqueda.get()]
-    #
-    # def __ChangedComboboxFilter__(self, *args):
-    #     lista = []
-    #     if (self.opcionesBusqueda.current() == 0):
-    #         if ('nombre' in self.filtros):
-    #             lista = self.filtros['nombre']
-    #     elif (self.opcionesBusqueda.current() == 1):
-    #         if ('cantidadNumeros' in self.filtros):
-    #             lista = self.filtros['cantidadNumeros']
-    #     elif (self.opcionesBusqueda.current() == 2):
-    #         if ('name' in self.filtros):
-    #             lista = self.filtros['name']
-    #     elif (self.opcionesBusqueda.current() == 3):
-    #         if ('AnioInicio' in self.filtros):
-    #             lista = self.filtros['AnioInicio']
-    #
-    #     self.entryFiltro.delete(0, END)
-    #     cadena = ''
-    #     if lista:
-    #         print('lista de palabras: ' + str(lista))
-    #     for palabra in lista:
-    #         print('palabra: ' + palabra)
-    #         cadena += palabra + " "
-    #     self.entryFiltro.insert(END, cadena[:-1])
-    #
+
 
     def getPublisher(self):
         print('retornando serie: ' + self.publisher.name)
