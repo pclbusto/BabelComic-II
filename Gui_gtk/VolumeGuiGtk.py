@@ -108,8 +108,8 @@ class VolumeGuiGtk():
             self.entry_url_cover.set_text(volumen.image_url)
             self.entry_id_editorial.set_text(volumen.id_publisher)
             self.label_nombre_editorial.set_text(volumen.publisher_name)
-            self.entry_anio_inicio.set_text(str(volumen.AnioInicio))
-            self.entry_cantidad_numeros.set_text(str(volumen.cantidadNumeros))
+            self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
+            self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=volumen.getImagePath(),
                 width=250,
