@@ -51,7 +51,7 @@ class VolumeGuiGtk():
         self.combobox_orden = self.builder.get_object("combobox_orden")
         self.offset = 0
         self.cantidadRegistros = self.volumens_manager.get_count()
-
+        self.pagina_actual = 0
         # inicializamos el modelo con rotulos del manager
         self.liststore_combobox.clear()
         for clave in self.volumens_manager.lista_opciones.keys():
@@ -60,6 +60,7 @@ class VolumeGuiGtk():
         self.getFirst("")
 
     def selecion_pagina(self, widget, page, page_num):
+        self.pagina_actual = page_num
         if page_num == 1:
             comicbooks_in_volumen = self.volumens_manager.get_comicbook_info_by_volume()
             self.liststore_comics_in_volume.clear()
@@ -134,6 +135,8 @@ class VolumeGuiGtk():
 
             # print(self.volumen_logo_image)
             self.volumen_logo_image.set_from_pixbuf(pixbuf)
+            if self.pagina_actual == 1:
+                self.selecion_pagina(None, None, 1)
 
     def getFirst(self,widget):
         volume = self.volumens_manager.getFirst()
