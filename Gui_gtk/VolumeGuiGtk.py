@@ -1,10 +1,10 @@
-import Entidades.Init
-from Entidades.Entitiy_managers import Publishers, Volumens
-from Entidades.Agrupado_Entidades import Setup
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
+import Entidades.Init
+from Entidades.Entitiy_managers import Volumens
 
 from Entidades.Agrupado_Entidades import Volume , Publisher
 import Entidades.Init
@@ -12,7 +12,7 @@ from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Agrupado_Entidades import Comics_In_Volume
+
 from Extras.Config import Config
 
 class VolumeGuiGtk():
@@ -24,9 +24,10 @@ class VolumeGuiGtk():
         else:
             self.session = Entidades.Init.Session()
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'boton_cargar_desde_web_click':self.boton_cargar_desde_web_click,
-                         'click_lookup_volume':self.click_lookup_volume,'change_id_volume':self.change_id_volume,
-                         'click_limpiar': self.click_limpiar,'combobox_change':self.combobox_change}
+                         'getLast': self.getLast, 'boton_cargar_desde_web_click': self.boton_cargar_desde_web_click,
+                         'click_lookup_volume': self.click_lookup_volume,'change_id_volume': self.change_id_volume,
+                         'click_limpiar': self.click_limpiar, 'combobox_change': self.combobox_change,
+                         'selecion_pagina': self.selecion_pagina}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
@@ -42,6 +43,10 @@ class VolumeGuiGtk():
         self.entry_cantidad_numeros = self.builder.get_object("entry_cantidad_numeros")
         self.volumen_logo_image = self.builder.get_object("volumen_logo_image")
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
+        self.resumen_volumen = self.builder.get_object("resumen_volumen")
+        self.liststore_comics_in_volume = self.builder.get_object("liststore_comics_in_volume")
+
+
         self.volumens_manager = Volumens(session=self.session)
         self.combobox_orden = self.builder.get_object("combobox_orden")
         self.offset = 0
@@ -54,6 +59,15 @@ class VolumeGuiGtk():
         self.combobox_orden.set_active(0)
         self.getFirst("")
 
+    def selecion_pagina(self, widget, page, page_num):
+        if page_num == 1:
+            comicbooks_in_volumen = self.volumens_manager.get_comicbook_info_by_volume()
+            self.liststore_comics_in_volume.clear()
+            for comicbook in comicbooks_in_volumen:
+                cantidad = self.volumens_manager.get_comicbook_info_status(comicbook.id_comicbook_Info)
+                self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, cantidad, cantidad])
+
+
     def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(
@@ -64,6 +78,7 @@ class VolumeGuiGtk():
         volumen_vine_search.window.show()
 
     def updateVolume(self):
+         
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'),session=self.session)
         cv.entidad='volume'
@@ -110,6 +125,7 @@ class VolumeGuiGtk():
             self.label_nombre_editorial.set_text(volumen.publisher_name)
             self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
             self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
+            self.resumen_volumen.set_text(volumen.descripcion)
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=volumen.getImagePath(),
                 width=250,

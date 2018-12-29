@@ -1,6 +1,6 @@
 from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference
-from Entidades.Agrupado_Entidades import Publisher, Volume
+from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook
 from Entidades import Init
 
 class ArcosArgumentales(Entity_manager):
@@ -61,6 +61,13 @@ class Volumens(Entity_manager):
         self.filtro = None
         self.set_order(Volume.id_volume)
         self.direccion = 0
+
+    def get_comicbook_info_by_volume(self):
+        return self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
+
+    def get_comicbook_info_status(self, id_comicbook_info):
+        return self.session.query(Comicbook).filter(Comicbook.id_comicbook_info==id_comicbook_info).count()
+
 
 if (__name__=='__main__'):
     ArcosArgumentales().rm(55691)
