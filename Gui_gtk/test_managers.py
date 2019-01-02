@@ -1,6 +1,7 @@
 from Entidades.Entity_manager import Entity_manager
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Agrupado_Entidades import Publisher
+from Entidades.Agrupado_Entidades import Publisher, Comicbook_Info,Comicbook
+from sqlalchemy import func, join
 import Entidades.Init
 
 
@@ -10,7 +11,8 @@ def retrieve_name(var):
 
 if __name__ == "__main__":
     session = Entidades.Init.Session()
-    comics = session.query(Entidades.Agrupado_Entidades.Comicbook).filter(Entidades.Agrupado_Entidades.Comicbook.id_comicbook>=19887).order_by(Entidades.Agrupado_Entidades.Comicbook.id_comicbook).limit(5).all()
+    subquuery = session.query(Comicbook.id_comicbook_info, func.count(1)).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).alias("subquery")
+    comics     = session.query(Comicbook_Info.id_comicbook_info, count_1).join(subquery, subquery.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
     print(comics)
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()

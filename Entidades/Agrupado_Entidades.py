@@ -258,7 +258,7 @@ class Comicbook_Info(Entidades.Init.Base):
     '''
     __tablename__='comicbooks_info'
 
-    id_comicbook_Info = Column(Integer, primary_key=True)
+    id_comicbook_info = Column(Integer, primary_key=True)
     titulo = Column(String,nullable=False,default='')
     id_volume = Column(String, nullable=False, default='')
     nombre_volumen = Column(String,nullable=False,default='')
@@ -443,6 +443,7 @@ class Volume(Entidades.Init.Base):
         self.publisher_name = volume.publisher_name
         self.anio_inicio = volume.anio_inicio
         self.cantidad_numeros = volume.cantidad_numeros
+
     def hasPublisher(self):
         return (self.publisherId!='0')
 
