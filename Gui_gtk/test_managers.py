@@ -11,8 +11,8 @@ def retrieve_name(var):
 
 if __name__ == "__main__":
     session = Entidades.Init.Session()
-    subquuery = session.query(Comicbook.id_comicbook_info, func.count(1)).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).alias("subquery")
-    comics     = session.query(Comicbook_Info.id_comicbook_info, count_1).join(subquery, subquery.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
+    sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
     print(comics)
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()

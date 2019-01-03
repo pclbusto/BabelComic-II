@@ -2,6 +2,7 @@ from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference
 from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook
 from Entidades import Init
+from sqlalchemy import func, join
 
 class ArcosArgumentales(Entity_manager):
     def __init__(self, session = None):
@@ -63,8 +64,14 @@ class Volumens(Entity_manager):
         self.direccion = 0
 
     def get_comicbook_info_by_volume(self):
-        return self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
+        sq = self.session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info,
+                                                                                              Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).group_by(
+            Comicbook.id_comicbook_info).subquery("sq")
+        comics = self.session.query(Comicbook_Info.id_comicbook_info, Comicbook_Info.numero,Comicbook_Info.titulo, sq.c.cantidad).outerjoin(sq,
+                                                                                     sq.c.id_comicbook_info == Comicbook_Info.id_comicbook_info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
 
+        # return self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
+        return comics
     def get_comicbook_info_status(self, id_comicbook_info):
         return self.session.query(Comicbook).filter(Comicbook.id_comicbook_info==id_comicbook_info).count()
 

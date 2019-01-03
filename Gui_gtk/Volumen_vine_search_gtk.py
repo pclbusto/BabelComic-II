@@ -133,9 +133,9 @@ class Volumen_vine_search_Gtk():
         self.session.commit()
         print(volumen)
         for comicbook_info in cv.lista_comicbooks_info:
-            cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_Info)
+            cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_info)
             if cbi_db is not None and not cbi_db.actualizado_externamente:
-                self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_Info == comicbook_info.id_comicbook_Info).delete()
+                self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_info == comicbook_info.id_comicbook_info).delete()
                 self.session.commit()
                 self.session.add(comicbook_info)
             elif cbi_db is not None  and cbi_db.actualizado_externamente:
@@ -167,12 +167,12 @@ class Volumen_vine_search_Gtk():
                 raise
             for comicbook_info in cv.lista_comicbooks_info:
                 for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
-                    if comicbook_info.id_comicbook_Info == arco_comicbook_info:
+                    if comicbook_info.id_comicbook_info == arco_comicbook_info:
 
-                        comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_Info)
-                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get((comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
+                        comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_info)
+                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get((comicbook_info.id_comicbook_info, arco.id_arco_argumental))
                         if rel is None:
-                            print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_Info, arco.id_arco_argumental))
+                            print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_info, arco.id_arco_argumental))
                             arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
                             arco_argumental_comicsbook_reference.orden = pos
                             arco_argumental_comicsbook_reference.ids_arco_argumental=arco

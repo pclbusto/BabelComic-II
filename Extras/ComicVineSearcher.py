@@ -165,7 +165,7 @@ class ComicVineSearcher:
                     for index, issue in enumerate(volumeVine.find('issues').findall('issue')):
                         comicInVolumes = Comics_In_Volume()
                         comicInVolumes.id_volume = volume.id_volume
-                        comicInVolumes.id_comicbook_Info = int(issue.find("id").text)
+                        comicInVolumes.id_comicbook_info = int(issue.find("id").text)
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
                         comicInVolumes.site_detail_url= issue.find("site_detail_url").text
@@ -193,7 +193,7 @@ class ComicVineSearcher:
     def hilo_procesar_comic_in_volume(self,comic_in_volume,volumen):
         comics_searcher = Comic_Vine_Info_Searcher(self.session)
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
-        comicbook_info.id_comicbook_Info = comic_in_volume.id_comicbook_Info
+        comicbook_info.id_comicbook_info = comic_in_volume.id_comicbook_info
         comicbook_info.id_volume = volumen.id_volume
         comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
@@ -274,7 +274,7 @@ class ComicVineSearcher:
             existe = False
             for issue in self.lista_comicbooks_info:
                 # print("COMICBOOKID:{} CBI del ARCO:{}".format(issue.id_comicbook_Info, arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info))
-                if int(arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info) == int(issue.id_comicbook_Info):
+                if int(arco_comic_referencia.ids_comicbooks_info.id_comicbook_info) == int(issue.id_comicbook_info):
                     # relacionamos el iise de la lista a arco porque es el que vamso a guarda en la bs
                     arco_comic_referencia.ids_comicbooks_Info = issue
                     existe= True
@@ -283,7 +283,7 @@ class ComicVineSearcher:
             if not existe:
                 # No esta en los issues por agrgar, puede estar en la base de datos o no exisistir.
                 # print("buscando en la base de datos")
-                comicbook_info_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info)
+                comicbook_info_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(arco_comic_referencia.ids_comicbooks_info.id_comicbook_info)
                 if comicbook_info_db  is None:
                   # no esta en la base lo agregamos para que quede
                     self.lista_comicbooks_info.append(arco_comic_referencia.ids_comicbooks_Info)

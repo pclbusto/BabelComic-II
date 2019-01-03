@@ -51,14 +51,14 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
     '''
     __tablename__='arcos_argumentales_comics_reference'
 
-    id_comicbook_Info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'), primary_key=True)
+    id_comicbook_info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_info'), primary_key=True)
     id_arco_argumental = Column(Integer, ForeignKey('arcos_argumentales.id_arco_argumental'), primary_key=True)
-    ids_comicbooks_Info= relationship("Comicbook_Info", back_populates="ids_arco_argumental")
+    ids_comicbooks_info= relationship("Comicbook_Info", back_populates="ids_arco_argumental")
     ids_arco_argumental = relationship("Arco_Argumental", back_populates="ids_comicbooks_Info")
     orden = Column(Integer, nullable=False, default=0)
 
     def __repr__(self):
-        return "orden={}-id_comicbook_Info={} id_arco_argumental={}".format(self.orden, self.ids_comicbooks_Info.id_comicbook_Info,self.ids_arco_argumental.id_arco_argumental)
+        return "orden={}-id_comicbook_Info={} id_arco_argumental={}".format(self.orden, self.ids_comicbooks_info,self.ids_arco_argumental.id_arco_argumental)
 
 class Arco_Argumental(Entidades.Init.Base):
     # todo implementar gui para ver y administar
@@ -74,7 +74,7 @@ class Arco_Argumental(Entidades.Init.Base):
 
     def getIssueOrder(self,idComic):
         session = Entidades.Init.Session()
-        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.id_arco_argumental == self.id_arco_argumental, Arcos_Argumentales_Comics_Reference.id_comicbook_Info==idComic)).first()
+        orden = session.query(Arcos_Argumentales_Comics_Reference).filter(and_(Arcos_Argumentales_Comics_Reference.id_arco_argumental == self.id_arco_argumental, Arcos_Argumentales_Comics_Reference.ids_comicbooks_info==idComic)).first()
         if orden is not None:
             return orden.orden
         return -1
@@ -288,7 +288,7 @@ class Comicbook_Info(Entidades.Init.Base):
         self.lista_ids_arcos_para_procesar = []
 
     def __repr__(self):
-        cadena = "titulo={}-comic vine id={}\n actualizado_externamente:{}\nfecha:{}\n".format(self.titulo, self.id_comicbook_Info,self.actualizado_externamente,self.fecha_tapa)
+        cadena = "titulo={}-comic vine id={}\n actualizado_externamente:{}\nfecha:{}\n".format(self.titulo, self.id_comicbook_info, self.actualizado_externamente,self.fecha_tapa)
         lista = ""
         # for url in self.thumbs_url:
         #     lista = lista+"      "+url.thumb_url+"\n"
@@ -301,7 +301,7 @@ class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     no trae'''
     __tablename__ = 'comicbooks_info_cover_url'
 
-    id_comicbook_Info= Column(Integer, ForeignKey('comicbooks_info.id_comicbook_Info'))
+    id_comicbook_info= Column(Integer, ForeignKey('comicbooks_info.id_comicbook_info'))
     thumb_url = Column(String, primary_key=True)
 
     def __repr__(self):
@@ -314,12 +314,12 @@ class Comics_In_Volume(Entidades.Init.Base):
 
     id_volume = Column(Integer, primary_key=True, default='')
     numero = Column(String, primary_key=True)
-    id_comicbook_Info = Column(String, nullable=False, default='')
+    id_comicbook_info = Column(String, nullable=False, default='')
     titulo = Column(String, nullable=False, default='')
     site_detail_url = Column(String, nullable=False, default='')
 
     def __repr__(self):
-        return "numero={} - id_comicbook_externo={} - id_volume={} - titulo={}".format(self.numero, self.id_comicbook_Info, self.id_volume, self.titulo)
+        return "numero={} - id_comicbook_externo={} - id_volume={} - titulo={}".format(self.numero, self.id_comicbook_info, self.id_volume, self.titulo)
 
 class Comicbook_Detail(Entidades.Init.Base):
     '''Clase que va a mantener la info del archivo, cantidad de paginas, para cada imagen dentro del archivo asignarle

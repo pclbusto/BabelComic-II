@@ -188,7 +188,7 @@ class Comic_vine_cataloger_gtk():
             for comicbook_info in self.lista_comicbook_info_por_volumen:
                 print(nro,type(nro),comicbook_info.numero, type(comicbook_info.numero))
                 if nro==comicbook_info.numero:
-                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_info
                     numero[3]=True
                     break
 
@@ -209,7 +209,7 @@ class Comic_vine_cataloger_gtk():
         if iter:
             comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
             self.index_lista_covers = 0
-            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_Info==comicbook_info_de_volumen.id_comicbook_Info).all()
+            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
             self.load_cover_comic_info(comicbook_info_de_volumen)
 
     def load_cover_comic_info(self, comicbook_info_de_volumen):
@@ -246,7 +246,7 @@ class Comic_vine_cataloger_gtk():
         self.listaAMostrar.clear()
         self.liststore_comics_in_volumen.clear()
         for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
-            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_Info), index])
+            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_info), index])
         self.gui_updating = False
 
 if __name__ == '__main__':

@@ -65,8 +65,8 @@ class VolumeGuiGtk():
             comicbooks_in_volumen = self.volumens_manager.get_comicbook_info_by_volume()
             self.liststore_comics_in_volume.clear()
             for comicbook in comicbooks_in_volumen:
-                cantidad = self.volumens_manager.get_comicbook_info_status(comicbook.id_comicbook_Info)
-                self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, cantidad, cantidad])
+                # cantidad = self.volumens_manager.get_comicbook_info_status(comicbook.id_comicbook_info)
+                self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, comicbook.cantidad, comicbook.cantidad])
 
 
     def combobox_change(self, widget):

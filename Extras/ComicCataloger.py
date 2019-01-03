@@ -31,7 +31,7 @@ class Catalogador():
         for comicbook, numero in lista_comicbooks_info:
             for comicbook_info in lista_comicbooks_info:
                 if numero == comicbook_info:
-                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_Info
+                    comicbook.id_comicbook_info = comicbook_info.id_comicbook_info
                     self.session.add(comicbook)
         self.session.commit()
 
