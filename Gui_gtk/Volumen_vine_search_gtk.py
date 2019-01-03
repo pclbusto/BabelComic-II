@@ -180,21 +180,11 @@ class Volumen_vine_search_Gtk():
                             print(type(comicbook_info))
                             print(type(comicbook_info_db))
                             if comicbook_info_db is not None:
-                                arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info_db
+                                arco_argumental_comicsbook_reference.ids_comicbooks_info=comicbook_info_db
                             else:
-                                arco_argumental_comicsbook_reference.ids_comicbooks_Info=comicbook_info
+                                arco_argumental_comicsbook_reference.ids_comicbooks_info=comicbook_info
                             self.session.add(arco_argumental_comicsbook_reference)
                             self.session.commit()
-
-        # print(lista)
-
-        # for arco_comicbook_reference in cv.lista_arco_argumental_comic_reference:
-            # print("Comic {} por guardar".format(comicbook_info.id_comicbook_Info))
-            # print(arco_comicbook_reference)
-            # comicbook_info.id_volume = volume.id_volume
-            # comicbook_info.nombre_volumen = volume.nombre
-            # self.session.add(arco_comicbook_reference)
-            # self.session.commit()
 
 
     def click_aceptar(self, widget):

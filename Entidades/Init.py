@@ -9,7 +9,7 @@ y que no de error despues al usuarlo poque no se creo en el mismo thread.
 pathdb = os.path.abspath("..")
 pathdb = os.path.join(pathdb,"BabelComic.db")
 # print(pathdb )
-engine = create_engine('sqlite:///'+pathdb, echo=True, connect_args={'check_same_thread':False})
+engine = create_engine('sqlite:///'+pathdb, echo=False, connect_args={'check_same_thread':False})
 Base = declarative_base()
 Session = sessionmaker(bind = engine)
 
