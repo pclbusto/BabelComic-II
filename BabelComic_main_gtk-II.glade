@@ -253,6 +253,16 @@
             <property name="position">1</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkLabel" id="label_contadores">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
       </object>
     </child>
     <child>
@@ -397,6 +407,7 @@
                     <property name="margin">6</property>
                     <property name="selection_mode">multiple</property>
                     <signal name="button-release-event" handler="click_derecho" swapped="no"/>
+                    <signal name="selection-changed" handler="seleccion_item_view" swapped="no"/>
                   </object>
                 </child>
               </object>

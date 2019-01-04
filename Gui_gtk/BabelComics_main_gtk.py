@@ -49,7 +49,8 @@ class BabelComics_main_gtk():
                          'click_anterior':self.click_anterior,
                          'click_siguiente':self.click_siguiente,
                          'click_ultimo':self.click_ultimo,
-                         'cambio_pagina':self.cambio_pagina}
+                         'cambio_pagina':self.cambio_pagina,
+                         'seleccion_item_view':self.seleccion_item_view}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
@@ -72,6 +73,8 @@ class BabelComics_main_gtk():
         self.selected_radio = self.builder.get_object("selected_radio")
         self.all_radio = self.builder.get_object("all_radio")
         self.popovermenu = self.builder.get_object("popovermenu")
+        self.label_contadores = self.builder.get_object("label_contadores")
+
 
         self.thread_creacion_thumnails = None
 
@@ -100,6 +103,10 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
 
+
+    def seleccion_item_view(self, event):
+
+        self.label_contadores.set_text("{}/{}".format(len(self.iconview.get_selected_items()), len(self.listaComics)))
     def cambio_pagina(self,event):
         index = self.cbx_text_paginas.get_active()
         self.offset = index*self.limit
@@ -250,6 +257,8 @@ class BabelComics_main_gtk():
             print(self.listaComics[indice[0]])
 
 
+
+
     def click_boton_serie(self, widget):
         serie = VolumeGuiGtk(self.session)
         serie.window.show()
@@ -339,6 +348,7 @@ class BabelComics_main_gtk():
             self.iconview.set_text_column(1)
             self.cantidadThumnailsAGenerar = len(self.listaComics)
             self.cantidadThumnailsGenerados = 0
+            self.label_contadores.set_text("0/{}".format(len(self.listaComics)))
             for index, comic in enumerate(self.listaComics):
                 self.cantidadThumnailsGenerados += 1
                 try:
