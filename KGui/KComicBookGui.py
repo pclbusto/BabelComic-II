@@ -10,22 +10,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.carousel import Carousel
 from kivy.uix.button import Button,Label
 from kivy.uix.scrollview import ScrollView
-from kivy.graphics import Color, Rectangle
+from KGui.test import ScrollableLabel
 
 import os
-
-class MyLabel(ScrollView):
-    def __init__(self, comic=None, **kwargs):
-        super(MyLabel, self).__init__(**kwargs)
-        self.label = Label()
-        self.label.size_hint_y=None
-        self.size_hint=(1,1)
-        self.label.size_hint_x=1
-        self.add_widget(self.label)
-
-        self.label.text_size = (1000,None)
-        self.label.text = 'Esto es una prueba sobre el texto y el label que se tiene que adaptar al largo'*100
-
 
 class Comic(Screen):
 
@@ -39,7 +26,7 @@ class Comic(Screen):
         self.image_cover.pos_hint = {'top': 1, 'left': 1}
 
         self.layout.add_widget(self.image_cover)
-        self.labelDescripcion = MyLabel()
+        self.labelDescripcion = TextInput()
         self.labelDescripcion.size_hint = (.8, 0.5)
         self.labelDescripcion.pos_hint = {'top': 1, 'right': 1}
         self.labelDescripcion.readonly = True
@@ -76,8 +63,7 @@ class Comic(Screen):
 
 class ComicManager(Carousel):
     CANTIDAD_SLIDES = 2
-    def __init__(self, session=None, **kwargs):
-
+    def __init__(self, session=None, **kwargs)
         super(ComicManager, self).__init__(**kwargs)
         if session is not None:
             self.session = session
@@ -93,9 +79,6 @@ class ComicManager(Carousel):
             screen_comic = Comic(comic)
             self.add_widget(screen_comic)
         print(self.procesing)
-
-    # def on_index(self, *args):
-    #     a = 1
 
     def on_next_slide(self, *args):
         if not self.procesing:
@@ -204,9 +187,10 @@ class ComicManager(Carousel):
     #             self.indice -= 1
     #             self.switch_to(self.comic_screens[self.indice], direction='right')
 class KComicBookGuiapp(App):
+
     def build(self):
         #return ComicManager()
-        return MyLabel()
+        return ComicManager()
 
 if __name__ == '__main__':
     session = Entidades.Init.Session()
