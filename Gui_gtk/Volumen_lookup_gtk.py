@@ -23,6 +23,7 @@ class Volume_lookup_gtk():
         self.builder.add_from_file("../Volumen_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volumen_lookup_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.search_entry_editorial = self.builder.get_object("search_entry_editorial")
         self.imagen_cover_volumen = self.builder.get_object("imagen_cover_volumen")
         self.gtk_tree_view_volumen = self.builder.get_object('gtk_tree_view_volumen')

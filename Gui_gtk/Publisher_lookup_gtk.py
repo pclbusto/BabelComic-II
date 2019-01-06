@@ -23,6 +23,7 @@ class Publisher_lookup_gtk():
         self.builder.connect_signals(self.handlers)
 
         self.window = self.builder.get_object("Publisher_lookup_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.combobox_orden = self.builder.get_object('combobox_orden')
 

@@ -42,6 +42,7 @@ class Comic_vine_cataloger_gtk():
         self.builder.add_from_file("../Comic_vine_cataloger_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Comic_vine_cataloger_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.image_cover_comic_local = self.builder.get_object("image_cover_comic_local")
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")

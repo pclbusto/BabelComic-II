@@ -50,7 +50,8 @@ class BabelComics_main_gtk():
                          'click_siguiente':self.click_siguiente,
                          'click_ultimo':self.click_ultimo,
                          'cambio_pagina':self.cambio_pagina,
-                         'seleccion_item_view':self.seleccion_item_view}
+                         'seleccion_item_view':self.seleccion_item_view,
+                         'click_boton_comic_info':self.click_boton_comic_info}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
 
@@ -58,6 +59,7 @@ class BabelComics_main_gtk():
         self.builder.add_from_file("../BabelComic_main_gtk-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
         self.search_entry_filtro_comics = self.builder.get_object('search_entry_filtro_comics')
@@ -103,7 +105,8 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
 
-
+    def click_boton_comic_info(self, widget):
+        pass
     def seleccion_item_view(self, event):
 
         self.label_contadores.set_text("{}/{}".format(len(self.iconview.get_selected_items()), len(self.listaComics)))

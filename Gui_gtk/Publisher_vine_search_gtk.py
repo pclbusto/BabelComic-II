@@ -27,6 +27,7 @@ class Publisher_vine_search_gtk():
         self.builder.add_from_file("../Publisher_vine_search_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Publisher_vine_search_Gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.entry_nombre = self.builder.get_object('entry_nombre')
         self.spinner = self.builder.get_object('spinner')
         self.publisher_logo_image = self.builder.get_object('publisher_logo_image')

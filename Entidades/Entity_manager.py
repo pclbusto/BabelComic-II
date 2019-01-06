@@ -57,7 +57,7 @@ class Entity_manager:
         self.session.commit()
         self.new_record()
 
-    def get(self,Id):
+    def get(self, Id):
         if not self.hay_cambios_pendientes():
             print("ID: {}".format(Id))
             self.entidad = self.session.query(self.clase).get(Id)
@@ -73,7 +73,7 @@ class Entity_manager:
 
     def new_record(self):
         if not self.hay_cambios_pendientes():
-            self.entidad=self.clase()
+            self.entidad = self.clase()
 
 
     def get_count(self):
@@ -85,7 +85,7 @@ class Entity_manager:
         self.campo_str = param[param.index(".")+1:]
         self.direccion=direccion
 
-    def set_filtro(self,filtro):
+    def set_filtro(self, filtro):
         self.filtro = filtro
 
     def getList(self):
@@ -111,10 +111,9 @@ class Entity_manager:
             if self.entidad is None:
                 self.entidad = self.getLast()
             else:
-                self.offset += 1
+                if self.offset<self.get_count()-1:
+                    self.offset += 1
                 consulta = self._get_consulta()
-                # entidad = consulta.filter(
-                #     self.order>getattr(self.entidad,self.campo_str)).first()
                 entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad=entidad
@@ -128,11 +127,9 @@ class Entity_manager:
             if self.entidad is None:
                 self.entidad = self.getFirst()
             else:
-                self.offset -= 1
-                # entidad = self.session.query(self.clase).filter(
-                #     self.order < getattr(self.entidad, self.campo_str)).order_by(self.order).first()
+                if self.offset>0:
+                    self.offset -= 1
                 consulta = self._get_consulta()
-                # print(consulta)
                 entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad = entidad

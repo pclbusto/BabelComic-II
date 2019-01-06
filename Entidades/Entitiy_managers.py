@@ -4,6 +4,30 @@ from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comi
 from Entidades import Init
 from sqlalchemy import func, join
 
+
+class Comicbooks_Info(Entity_manager):
+
+
+    def __init__(self, session=None):
+        Entity_manager.__init__(self, session=session, clase=Comicbook_Info)
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
+
+        self.set_order(Comicbook_Info.titulo, 0)
+        self.lista_opciones = {'Número': Comicbook_Info.numero, 'Título': Comicbook_Info.titulo}
+
+        self.status = 1
+        self.entidad = Comicbook_Info()
+        self.filtro = None
+        self.set_order(Comicbook_Info.numero)
+        self.direccion = 0
+
+    def set_volume(self, id_volume):
+        filtro = Comicbook_Info.id_volume == id_volume
+        self.set_filtro(filtro)
+
 class ArcosArgumentales(Entity_manager):
     def __init__(self, session = None):
         Entity_manager.__init__(self, session=session, clase=Arco_Argumental, id_externo=Arco_Argumental.id_arco_argumental_externo)

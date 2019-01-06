@@ -190,14 +190,15 @@ class ComicVineSearcher:
         elif self.statusCode == 105:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
-    def hilo_procesar_comic_in_volume(self,comic_in_volume,volumen):
+    def hilo_procesar_comic_in_volume(self, comic_in_volume, volumen, index):
         comics_searcher = Comic_Vine_Info_Searcher(self.session)
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_info = comic_in_volume.id_comicbook_info
         comicbook_info.id_volume = volumen.id_volume
+        comicbook_info.orden = index
         comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
-        self.cantidad_hilos-=1
+        self.cantidad_hilos -= 1
 
     def hilo_procesar_arco(self, id_arco):
         # arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental == id_arco).first()
@@ -216,9 +217,9 @@ class ComicVineSearcher:
         while index < cantidad_elementos :
         # while index < 12  :
             if self.cantidad_hilos<20:
-                # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
-                threading.Thread(target=self.hilo_procesar_comic_in_volume, name = str(index), args=[self.comicIds[index], volumen]).start()
-                index+=1
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
+                                 args=[self.comicIds[index], volumen, index]).start()
+                index += 1
                 self.cantidad_hilos += 1
                 '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
                 en el peor de los casos tenemos un arco por issue por eso es el 2'''

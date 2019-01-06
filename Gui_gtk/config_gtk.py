@@ -28,6 +28,7 @@ class Config_gtk():
         self.builder.add_from_file("../Config_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Config_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.liststore_directorios_comics = self.builder.get_object("liststore_directorios_comics")
         self.liststore_directorios_comics.clear()
         self.entry_clave_servico_comicvine = self.builder.get_object("entry_clave_servico_comicvine")

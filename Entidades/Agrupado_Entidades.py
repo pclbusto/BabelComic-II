@@ -264,31 +264,35 @@ class Comicbook_Info(Entidades.Init.Base):
     nombre_volumen = Column(String,nullable=False,default='')
     numero = Column(String,nullable=False,default='0')
     fecha_tapa = Column(Integer,nullable=False,default=0)  # como no hay date en sql lite esto es la cantidad de dias desde 01-01-01
-
     ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
-
-
-    arco_argumental_numero = Column(Integer, nullable=False, default=0) #numero dentro del arco
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
     rating = Column(Float,nullable=False,default=0.0)
-    ratingExterno = Column(Float,nullable=False,default=0.0)
-
-    id_publisher = Column(String,nullable=False,default='')
-    api_detail_url = Column(String,nullable=False,default='')
+    api_detail_url = Column(String, nullable=False, default='')
+    url = Column(String, nullable=False, default='')
     thumbs_url  = relationship("Comicbook_Info_Cover_Url")
-
     '''Este campo se crea para ordenar los comics.
     Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
     El tema es que por ser string pierdo el orden entonces despues del 1 no viene el 2 si no 10.'''
-    orden = Column(Integer,nullable=False,default=0 )
+    orden = Column(Integer, nullable=False, default=0 )
     actualizado_externamente = Column(Boolean, nullable=False, default=False)
 
     def __init__(self):
         self.lista_ids_arcos_para_procesar = []
 
     def __repr__(self):
-        cadena = "titulo={}-comic vine id={}\n actualizado_externamente:{}\nfecha:{}\n".format(self.titulo, self.id_comicbook_info, self.actualizado_externamente,self.fecha_tapa)
+        cadena = "Volumen={}\n" \
+                 "Numero={}\n"\
+                 "Titulo={}\n" \
+                 "Id={}\n" \
+                 "Actualizado_externamente:{}\n" \
+                 "Fecha Tapa:{}\n".\
+            format(self.nombre_volumen,
+                   self.numero,
+                   self.titulo,
+                   self.id_comicbook_info,
+                   self.actualizado_externamente,
+                   self.fecha_tapa)
         lista = ""
         # for url in self.thumbs_url:
         #     lista = lista+"      "+url.thumb_url+"\n"

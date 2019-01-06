@@ -33,6 +33,7 @@ class VolumeGuiGtk():
         self.builder.add_from_file("../Volumen.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volume_gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.entry_id = self.builder.get_object("entry_id")
         self.entry_nombre = self.builder.get_object("entry_nombre")
         self.entry_url = self.builder.get_object("entry_url")

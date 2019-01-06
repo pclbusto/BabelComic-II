@@ -1,15 +1,16 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Publishers
+from Entidades.Entitiy_managers import Comicbooks_Info
 from Entidades.Agrupado_Entidades import  Setup
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
+import datetime
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
-class PublisherGtk():
+class Comicbook_Info_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
 
     def __init__(self,  session=None,):
@@ -18,34 +19,36 @@ class PublisherGtk():
         else:
             self.session = Entidades.Init.Session()
 
+        self.comicbooks_manager = Comicbooks_Info(session=self.session)
+
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
-                         'click_cargar_desde_web':self.click_cargar_desde_web, 'boton_guardar':self.boton_guardar,
-                         'combobox_change':self.combobox_change, 'click_limpiar':self.click_limpiar}
+                         'getLast': self.getLast, 'seleccion_fecha': self.seleccion_fecha,
+                         'boton_guardar': self.boton_guardar, 'click_limpiar':self.click_limpiar,
+                         'click_cargar_desde_web': self.click_cargar_desde_web, 'combobox_change':self.combobox_change}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Publisher.glade")
+        self.builder.add_from_file("../Comicbook_info_gtk.glade")
         self.builder.connect_signals(self.handlers)
-        self.window = self.builder.get_object("PublisherGtk")
+        self.window = self.builder.get_object("Comicbook_info_gtk")
+        self.linkbutton_volume = self.builder.get_object("linkbutton_volume")
+        self.linkbutton_volume.set_label("Volumen")
+        self.popover = self.builder.get_object("popover")
+
         self.window.set_icon_from_file('../iconos/BabelComic.png')
-        self.liststore_combobox = self.builder.get_object("liststore_combobox")
-        self.publishers_manager = Publishers(session=self.session)
-
-        self.entry_id  = self.builder.get_object('entry_id')
-        self.entry_nombre =  self.builder.get_object('entry_nombre')
-        self.entry_id_externo = self.builder.get_object('entry_id_externo')
-        self.entry_url =  self.builder.get_object('entry_url')
-        self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
-        self.label_resumen = self.builder.get_object('label_resumen')
-        self.combobox_orden = self.builder.get_object('combobox_orden')
-        self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
-
+        self.label_nombre_volumen = self.builder.get_object("label_nombre_volumen")
+        self.entry_orden= self.builder.get_object("entry_orden")
+        self.entry_numero= self.builder.get_object("entry_numero")
+        self.entry_titulo= self.builder.get_object("entry_titulo")
+        self.label_fecha_tapa = self.builder.get_object("label_fecha_tapa")
         # inicializamos el modelo con rotulos del manager
-        self.liststore_combobox.clear()
-        for clave in self.publishers_manager.lista_opciones.keys():
-            self.liststore_combobox.append([clave])
-        self.combobox_orden.set_active(0)
 
+    def set_volume(self, id_volume):
+        self.comicbooks_manager.set_volume(id_volume=id_volume)
+
+    def seleccion_fecha(self, widget):
+        print(widget.get_date().year)
+        self.label_fecha_tapa.set_text(datetime.date(year=widget.get_date().year, month=widget.get_date().month+1, day=widget.get_date().day).strftime("%d/%m/%Y"))
+        self.popover.popdown()
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
             self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
@@ -73,24 +76,25 @@ class PublisherGtk():
         lookup.window.show()
 
     def getFirst(self, widget):
-        publisher = self.publishers_manager.getFirst()
-        self._copy_to_window(publisher)
+        comicbook_info = self.comicbooks_manager.getFirst()
+        self._copy_to_window(comicbook_info)
 
     def getPrev(self, widget):
-        publisher = self.publishers_manager.getPrev()
-        self._copy_to_window(publisher)
+        comicbook_info = self.comicbooks_manager.getPrev()
+        self._copy_to_window(comicbook_info)
 
     def getNext(self, widget):
-        publisher = self.publishers_manager.getNext()
-        self._copy_to_window(publisher)
+        comicbook_info = self.comicbooks_manager.getNext()
+        self._copy_to_window(comicbook_info)
 
     def getLast(self, widget):
-        publisher = self.publishers_manager.getLast()
+        publisher = self.comicbooks_manager.getLast()
         self._copy_to_window(publisher)
 
-    def _copy_to_window(self,publisher):
-        # self.clearWindow()
-        if publisher is not None:
+    def _copy_to_window(self, comicbook_info):
+        print(comicbook_info)
+        #self.clearWindow()
+        if comicbook_info is not None:
             self.entry_id.set_text(str(publisher.id_publisher))
             self.entry_nombre.set_text(publisher.name)
             # self.entry_id_externo.set_text(publisher.id_publisher_externo)
@@ -127,7 +131,8 @@ class PublisherGtk():
 
 if __name__ == "__main__":
 
-    pub = PublisherGtk()
-    pub.window.show_all()
-    pub.window.connect("destroy", Gtk.main_quit)
+    cbi = Comicbook_Info_Gtk()
+    cbi.set_volume('18058')
+    cbi.window.show_all()
+    cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

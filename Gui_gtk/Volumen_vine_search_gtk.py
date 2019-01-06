@@ -39,6 +39,7 @@ class Volumen_vine_search_Gtk():
         self.builder.add_from_file("../Volumen_vine_search_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volumen_vine_search_Gtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.entry_serie_nombre = self.builder.get_object("entry_serie_nombre")
         self.label_descripcion_editorial = self.builder.get_object("label_descripcion_editorial")
         self.entry_id_editorial = self.builder.get_object("entry_id_editorial")
@@ -142,6 +143,7 @@ class Volumen_vine_search_Gtk():
                 print("Actualizando info de comicbook_info DATOS A ACTUALIZAR")
                 cbi_db.numero = comicbook_info.numero
                 cbi_db.fecha_tapa = comicbook_info.fecha_tapa
+                cbi_db.orden = comicbook_info.orden
                 print(cbi_db)
             else:
                 self.session.add(comicbook_info)

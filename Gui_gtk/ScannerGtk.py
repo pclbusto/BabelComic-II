@@ -19,6 +19,7 @@ class ScannerGtk():
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Scanner.glade")
         self.window = self.builder.get_object("ScannerGtk")
+        self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.builder.connect_signals(self.handlers)
         self.window.set_destroy_with_parent(True)
         self.progerss_bar = self.builder.get_object('progress_bar')
