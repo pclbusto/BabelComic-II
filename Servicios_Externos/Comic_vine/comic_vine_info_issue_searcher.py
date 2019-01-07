@@ -50,10 +50,7 @@ class Comic_Vine_Info_Searcher():
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.numero = match.group(1)
-            if self.is_number(comicbook_info.numero):
-                comicbook_info.orden = float(comicbook_info.numero)
-            else:
-                comicbook_info.orden = 0
+            comicbook_info.orden = ('0000000'+comicbook_info.numero)[-7:]
 
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):

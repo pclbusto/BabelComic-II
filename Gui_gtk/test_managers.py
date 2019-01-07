@@ -27,7 +27,9 @@ if __name__ == "__main__":
     # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
     #
     # print(url[url.rfind("-")+1:-1])
-    print(is_number("1312,3"))
+    numero = '1dsada'
+
+    print(('0000000'+numero)[-7:])
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
     # session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()

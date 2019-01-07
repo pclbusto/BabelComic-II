@@ -274,7 +274,7 @@ class Comicbook_Info(Entidades.Init.Base):
     '''Este campo se crea para ordenar los comics.
     Se cambia el numero que es de tipo int a string porque hay numeraciones comoc 616a de batman.
     El tema es que por ser string pierdo el orden entonces despues del 1 no viene el 2 si no 10.'''
-    orden = Column(Float, nullable=False, default=0 )
+    orden = Column(String, nullable=False, default=0 )
     actualizado_externamente = Column(Boolean, nullable=False, default=False)
 
     def __init__(self):

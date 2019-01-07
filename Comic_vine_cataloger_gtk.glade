@@ -38,7 +38,7 @@
       <!-- column-name procesado -->
       <column type="gboolean"/>
       <!-- column-name orden -->
-      <column type="gfloat"/>
+      <column type="gchararray"/>
     </columns>
     <data>
       <row>
@@ -46,14 +46,14 @@
         <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
         <col id="2">0</col>
         <col id="3">False</col>
-        <col id="4">0</col>
+        <col id="4" translatable="yes"/>
       </row>
       <row>
         <col id="0" translatable="yes"/>
         <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
         <col id="2">1</col>
         <col id="3">True</col>
-        <col id="4">0</col>
+        <col id="4" translatable="yes"/>
       </row>
     </data>
   </object>
@@ -68,7 +68,7 @@
       <!-- column-name index -->
       <column type="gint"/>
       <!-- column-name orden -->
-      <column type="gfloat"/>
+      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkWindow" id="Comic_vine_cataloger_gtk">
