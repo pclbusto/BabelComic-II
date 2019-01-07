@@ -64,7 +64,7 @@ class Comic_vine_cataloger_gtk():
         # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append(['', comic.path, index, 0])
+            self.listore_comics_para_catalogar.append(['', comic.path, index, 0, 0])
 
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
@@ -91,6 +91,7 @@ class Comic_vine_cataloger_gtk():
 
     def text_edited(self, widget, path, text):
         self.listore_comics_para_catalogar[path][0] = text
+        self.listore_comics_para_catalogar[path][4] = float(text)
         self.click_boton_traer_solo_para_catalogar(None)
 
 
@@ -247,7 +248,7 @@ class Comic_vine_cataloger_gtk():
         self.listaAMostrar.clear()
         self.liststore_comics_in_volumen.clear()
         for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
-            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_info), index])
+            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_info), index, comicbook_info.orden])
         self.gui_updating = False
 
 if __name__ == '__main__':

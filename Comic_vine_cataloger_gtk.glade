@@ -37,6 +37,8 @@
       <column type="gint"/>
       <!-- column-name procesado -->
       <column type="gboolean"/>
+      <!-- column-name orden -->
+      <column type="gfloat"/>
     </columns>
     <data>
       <row>
@@ -44,12 +46,14 @@
         <col id="1" translatable="yes">zInvincible Issue #05.cbz</col>
         <col id="2">0</col>
         <col id="3">False</col>
+        <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes"/>
         <col id="1" translatable="yes">Invincible Issue #17.cbz</col>
         <col id="2">1</col>
         <col id="3">True</col>
+        <col id="4">0</col>
       </row>
     </data>
   </object>
@@ -63,6 +67,8 @@
       <column type="gint"/>
       <!-- column-name index -->
       <column type="gint"/>
+      <!-- column-name orden -->
+      <column type="gfloat"/>
     </columns>
   </object>
   <object class="GtkWindow" id="Comic_vine_cataloger_gtk">
@@ -584,7 +590,7 @@
                           <object class="GtkTreeViewColumn">
                             <property name="title" translatable="yes">Número</property>
                             <property name="clickable">True</property>
-                            <property name="sort_column_id">0</property>
+                            <property name="sort_column_id">4</property>
                             <child>
                               <object class="GtkCellRendererText" id="seleccionado">
                                 <property name="editable">True</property>
@@ -643,7 +649,7 @@
                             <property name="clickable">True</property>
                             <property name="reorderable">True</property>
                             <property name="sort_indicator">True</property>
-                            <property name="sort_column_id">0</property>
+                            <property name="sort_column_id">4</property>
                             <child>
                               <object class="GtkCellRendererText"/>
                               <attributes>
