@@ -46,9 +46,9 @@
     <columns>
       <!-- column-name Nombre -->
       <column type="gchararray"/>
-      <!-- column-name Id Arco -->
+      <!-- column-name Id -->
       <column type="gchararray"/>
-      <!-- column-name Posición dentro del arco -->
+      <!-- column-name Posición -->
       <column type="gint"/>
     </columns>
   </object>
@@ -118,7 +118,7 @@
             <property name="row_spacing">6</property>
             <property name="column_spacing">6</property>
             <child>
-              <object class="GtkEntry" id="entry_url">
+              <object class="GtkEntry" id="entry_api_url">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -268,7 +268,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScale">
+              <object class="GtkScale" id="scale_raiting">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adjustment1</property>
@@ -292,7 +292,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="entry_url">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -517,7 +517,7 @@
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <child>
-                      <object class="GtkTextView">
+                      <object class="GtkTextView" id="text_resumen">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -543,6 +543,28 @@
                 <property name="model">liststore_arcos_argumentales</property>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection"/>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">column</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title" translatable="yes">column</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">2</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
               </object>
               <packing>

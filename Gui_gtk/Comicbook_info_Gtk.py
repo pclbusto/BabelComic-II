@@ -1,6 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Comicbooks_Info
+from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
 from Entidades.Agrupado_Entidades import  Setup
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
@@ -40,10 +40,19 @@ class Comicbook_Info_Gtk():
         self.entry_numero= self.builder.get_object("entry_numero")
         self.entry_titulo= self.builder.get_object("entry_titulo")
         self.label_fecha_tapa = self.builder.get_object("label_fecha_tapa")
+        self.entry_api_url = self.builder.get_object("entry_api_url")
+        self.entry_url = self.builder.get_object("entry_url")
+        self.scale_raiting = self.builder.get_object("scale_raiting")
+        self.text_resumen = self.builder.get_object("text_resumen")
+        self.textbuffer = self.text_resumen.get_buffer()
+
         # inicializamos el modelo con rotulos del manager
 
     def set_volume(self, id_volume):
         self.comicbooks_manager.set_volume(id_volume=id_volume)
+        volume_mamange = Volumens(session = self.session)
+        volume = volume_mamange.get(id_volume)
+        self.label_nombre_volumen.set_text(volume.nombre)
 
     def seleccion_fecha(self, widget):
         print(widget.get_date().year)
@@ -95,31 +104,35 @@ class Comicbook_Info_Gtk():
         print(comicbook_info)
         #self.clearWindow()
         if comicbook_info is not None:
-            self.entry_id.set_text(str(publisher.id_publisher))
-            self.entry_nombre.set_text(publisher.name)
-            # self.entry_id_externo.set_text(publisher.id_publisher_externo)
-            self.entry_url.set_text(publisher.siteDetailUrl)
+            self.entry_orden.set_text(str(comicbook_info.orden))
+            self.entry_numero.set_text(str(comicbook_info.numero))
+            self.entry_titulo.set_text(comicbook_info.titulo)
+            self.label_fecha_tapa.set_text(datetime.date.fromordinal(comicbook_info.fecha_tapa).strftime("%d/%m/%Y"))
+            self.entry_api_url.set_text(comicbook_info.api_detail_url)
+            self.entry_url.set_text(comicbook_info.url)
+            self.scale_raiting.set_value_pos(comicbook_info.rating)
+            self.textbuffer.set_text("comicbook_info.resumen")
 
-            if publisher.hasImageCover():
-                publisher.localLogoImagePath = publisher.getImageCoverPath()
-                if publisher.localLogoImagePath[-3].lower()=='gif':
-                    gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
-                    self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
-                else:
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                        filename=publisher.getImageCoverPath(),
-                        width=250,
-                        height=250,
-                        preserve_aspect_ratio=True)
-                    self.publisher_logo_image.set_from_pixbuf(pixbuf)
-            else:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                    filename=self.publishers_manager.pahThumnails + "sin_caratula_publisher.jpg",
-                    width=250,
-                    height=250,
-                    preserve_aspect_ratio=True)
-                self.publisher_logo_image.set_from_pixbuf(pixbuf)
-            self.label_resumen.set_text(publisher.deck)
+            # if publisher.hasImageCover():
+            #     publisher.localLogoImagePath = publisher.getImageCoverPath()
+            #     if publisher.localLogoImagePath[-3].lower()=='gif':
+            #         gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
+            #         self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
+            #     else:
+            #         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            #             filename=publisher.getImageCoverPath(),
+            #             width=250,
+            #             height=250,
+            #             preserve_aspect_ratio=True)
+            #         self.publisher_logo_image.set_from_pixbuf(pixbuf)
+            # else:
+            #     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            #         filename=self.publishers_manager.pahThumnails + "sin_caratula_publisher.jpg",
+            #         width=250,
+            #         height=250,
+            #         preserve_aspect_ratio=True)
+            #     self.publisher_logo_image.set_from_pixbuf(pixbuf)
+            # self.label_resumen.set_text(publisher.deck)
 
     def click_limpiar(self, widget):
         print("dsldsa")
@@ -132,7 +145,7 @@ class Comicbook_Info_Gtk():
 if __name__ == "__main__":
 
     cbi = Comicbook_Info_Gtk()
-    cbi.set_volume('18058')
+    cbi.set_volume('2050')
     cbi.window.show_all()
     cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

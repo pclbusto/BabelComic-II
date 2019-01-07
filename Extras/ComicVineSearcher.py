@@ -195,7 +195,6 @@ class ComicVineSearcher:
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_info = comic_in_volume.id_comicbook_info
         comicbook_info.id_volume = volumen.id_volume
-        comicbook_info.orden = index
         comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
         self.cantidad_hilos -= 1

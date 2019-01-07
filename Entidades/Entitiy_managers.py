@@ -94,7 +94,6 @@ class Volumens(Entity_manager):
         comics = self.session.query(Comicbook_Info.id_comicbook_info, Comicbook_Info.numero,Comicbook_Info.titulo, sq.c.cantidad).outerjoin(sq,
                                                                                      sq.c.id_comicbook_info == Comicbook_Info.id_comicbook_info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
 
-        # return self.session.query(Comicbook_Info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
         return comics
     def get_comicbook_info_status(self, id_comicbook_info):
         return self.session.query(Comicbook).filter(Comicbook.id_comicbook_info==id_comicbook_info).count()

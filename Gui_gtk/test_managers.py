@@ -9,11 +9,25 @@ def retrieve_name(var):
     callers_local_vars = inspect.currentframe().f_back.f_locals.items()
     return [var_name for var_name, var_val in callers_local_vars if var_val is var]
 
+def is_number(s):
+    try:
+        float(s) # for int, long and float
+    except ValueError:
+        try:
+            complex(s) # for complex
+        except ValueError:
+            return False
+
+    return True
+
 if __name__ == "__main__":
-    session = Entidades.Init.Session()
-    sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
-    comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
-    print(comics)
+    # session = Entidades.Init.Session()
+    # sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
+    # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
+    #
+    # print(url[url.rfind("-")+1:-1])
+    print(is_number("1312,3"))
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
     # session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()

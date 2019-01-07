@@ -1,14 +1,10 @@
 import re
-# esta clase ya hace referencia a esta clase
-import Extras.ComicVineSearcher
-import Extras.Config
 
 from urllib.request import urlopen
 from Entidades.Agrupado_Entidades import  Comicbook_Info,Comicbook_Info_Cover_Url, Arco_Argumental
 from datetime import date
 from Entidades import Init
 import Entidades
-import threading
 
 class Comic_Vine_Info_Searcher():
 
@@ -33,14 +29,32 @@ class Comic_Vine_Info_Searcher():
         else:
             self.session = session
 
+    def is_number(self, s):
+        try:
+            float(s)  # for int, long and float
+        except ValueError:
+            try:
+                complex(s)  # for complex
+            except ValueError:
+                return False
+
+        return True
+
     def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
         # print(html)
-        print(url)
+        # print(url)
         comicbook_info = Comicbook_Info()
+        comicbook_info.url = url
+        comicbook_info.api_detail_url = "https://comicvine.gamespot.com/api/issue/4000-"+url[url.rfind("-")+1:-1]
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_number, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.numero = match.group(1)
+            if self.is_number(comicbook_info.numero):
+                comicbook_info.orden = float(comicbook_info.numero)
+            else:
+                comicbook_info.orden = 0
+
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.titulo = match.group(1)

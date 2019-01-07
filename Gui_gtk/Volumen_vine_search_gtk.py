@@ -144,8 +144,12 @@ class Volumen_vine_search_Gtk():
                 cbi_db.numero = comicbook_info.numero
                 cbi_db.fecha_tapa = comicbook_info.fecha_tapa
                 cbi_db.orden = comicbook_info.orden
+                cbi_db.url = comicbook_info.url
+                cbi_db.api_detail_url = comicbook_info.api_detail_url
                 print(cbi_db)
             else:
+                print("agregando comic por primera vez")
+                print(cbi_db)
                 self.session.add(comicbook_info)
             self.session.commit()
         lista_arcos = []
@@ -196,7 +200,7 @@ class Volumen_vine_search_Gtk():
         # 32562 - The flash vol3
         # 18127 - Justice League of America
         # 4363 - green lantern vol 3
-        # 18058 - detective comics
+        # 18058 - detective comics106705
         # 18216 - green lantern vol 4
         # 6498 - birdth of prey
         # threading.Thread(target=self.hilo_cargar_volume, args=['6498']).start()
