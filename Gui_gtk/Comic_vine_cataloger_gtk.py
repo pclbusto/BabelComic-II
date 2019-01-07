@@ -64,7 +64,7 @@ class Comic_vine_cataloger_gtk():
         # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
         for index,comic in enumerate(comicbooks):
-            self.listore_comics_para_catalogar.append(['', comic.path, index, 0, '0000000'])
+            self.listore_comics_para_catalogar.append(['', comic.path, index, 0, 0])
 
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
@@ -92,7 +92,7 @@ class Comic_vine_cataloger_gtk():
     def text_edited(self, widget, path, text):
         self.listore_comics_para_catalogar[path][0] = text
 
-        self.listore_comics_para_catalogar[path][4] = ('0000000'+text)[-7:]
+        self.listore_comics_para_catalogar[path][4] = float(text)
         self.click_boton_traer_solo_para_catalogar(None)
 
 

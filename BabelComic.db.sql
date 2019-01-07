@@ -39,7 +39,7 @@ CREATE TABLE "comicbooks_info_new" (
 	rating FLOAT NOT NULL,
 	api_detail_url VARCHAR NOT NULL,
 	url VARCHAR NOT NULL,
-	orden VARCHAR NOT NULL,
+	orden FLOAT NOT NULL,
 	actualizado_externamente BOOLEAN NOT NULL,
 	PRIMARY KEY ("id_comicbook_Info"),
 	CHECK (actualizado_externamente IN (0, 1))
