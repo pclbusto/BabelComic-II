@@ -108,7 +108,16 @@ class Comic_vine_cataloger_gtk():
             self._load_comic(self.comicbooks[model[iter][2]])
             # print(self.c model[iter][2])
 
+    def is_number(self, s):
+        try:
+            float(s)  # for int, long and float
+        except ValueError:
+            try:
+                complex(s)  # for complex
+            except ValueError:
+                return False
 
+        return True
 
     def click_boton_calcular_numeracion (self,widget):
 
@@ -116,10 +125,14 @@ class Comic_vine_cataloger_gtk():
             expresion = self.entry_expresion_regular_numeracion.get_text()
             for index, comic in enumerate(self.listore_comics_para_catalogar):
                 match = re.search(expresion, comic[1])
+
                 if match is not None:
-                    if match.group(1).isdigit():
+
+                    if self.is_number(match.group(1)):
                         comic[0] = str(int(match.group(1)))
+                        comic[4] = float(match.group(1))
                     else:
+                        comic[4] = 0
                         comic[0] = match.group(1)
         self.click_boton_traer_solo_para_catalogar(None)
         self._load_comic(self.comicbooks[0])
