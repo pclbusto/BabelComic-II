@@ -444,6 +444,7 @@ class Volume(Entidades.Init.Base):
         self.nombre = volume.nombre
         self.deck = volume.deck
         self.descripcion = volume.descripcion
+        self.url = volume.url
         self.image_url = volume.image_url
         self.id_publisher = volume.id_publisher
         self.publisher_name = volume.publisher_name
@@ -466,8 +467,8 @@ class Volume(Entidades.Init.Base):
         return("http://comicvine/volume/4050-"+str(self.id_volume))
 
     def __repr__(self):
-        return "<Volume(name={}, id_volume={}, cantidad nros={}, publisher_name={}, Año inicio={} )>". \
-            format(self.nombre, self.id_volume, self.cantidad_numeros, self.publisher_name, self.anio_inicio)
+        return "<Volume(name={}\nid_volume={}\ncantidad nros={}\npublisher_name={}\nAño inicio={}\ndeck={})>". \
+            format(self.nombre, self.id_volume, self.cantidad_numeros, self.publisher_name, self.anio_inicio, self.deck)
 
     def hasLocalCover(self):
         if self.image_url:

@@ -142,6 +142,8 @@ class ComicVineSearcher:
                 volume.id_volume = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
+                if volume.deck is None:
+                    volume.deck=''
                 volume.anio_inicio =volumeVine.find('start_year').text
                 volume.descripcion = volumeVine.find('description').text
                 volume.cantidad_numeros = volumeVine.find('count_of_issues').text

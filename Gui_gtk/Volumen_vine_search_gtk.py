@@ -121,13 +121,13 @@ class Volumen_vine_search_Gtk():
         volumen = cv.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
         cv.cargar_comicbook_info(volumen)
-        # volumenAndIssues = cv.getVineEntity(106705)
         while cv.porcentaje_procesado!=100:
             time.sleep(2)
             GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
         volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volumen.id_volume).first()
         if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
+            print(volumen)
             volumen_in_db.actualizar_con(volumen)
             volumen = volumen_in_db
         self.session.add(volumen)

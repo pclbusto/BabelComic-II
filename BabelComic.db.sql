@@ -1,4 +1,4 @@
-insert into comicbooks_info_new(
+insert into comicbooks_info_aux(
 actualizado_externamente,
 api_detail_url,
 fecha_tapa,
