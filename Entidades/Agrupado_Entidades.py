@@ -10,6 +10,7 @@ from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
 from io import BytesIO
 from sqlalchemy import Sequence
+import iconos.Iconos
 import urllib
 
 class Setup(Entidades.Init.Base):
@@ -430,7 +431,8 @@ class Volume(Entidades.Init.Base):
     nombre = Column(String,nullable=False,default='')
     deck = Column(String,nullable=False,default='')
     descripcion = Column(String,nullable=False,default='')
-    image_url = Column(String,nullable=False,default='')  # la mas grande. Las chicas las hacemos locales.
+    url = Column(String, nullable=False, default='')
+    image_url = Column(String, nullable=False, default='')  # la mas grande. Las chicas las hacemos locales.
     id_publisher = Column(String,nullable=False,default='')
     publisher_name=Column(String,nullable=False,default='')
     anio_inicio = Column(Integer,nullable=False,default=0)
@@ -460,8 +462,8 @@ class Volume(Entidades.Init.Base):
         '''
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
-    def get_url(self):
-        return("http://comicvine/"+str(self.id_volume))
+    def get_api_url(self):
+        return("http://comicvine/volume/4050-"+str(self.id_volume))
 
     def __repr__(self):
         return "<Volume(name={}, id_volume={}, cantidad nros={}, publisher_name={}, Año inicio={} )>". \
@@ -511,7 +513,8 @@ class Volume(Entidades.Init.Base):
 
     def getImagePath(self):
         if not self.hasImageCover():
-            self.getImageCover()
+            return ('../sin_caratula.jpg')
+            #self.getImageCover()
 
         session = Entidades.Init.Session()
         setup = session.query(Entidades.Agrupado_Entidades.Setup).first()
@@ -522,7 +525,7 @@ class Volume(Entidades.Init.Base):
     def getImageCover(self):
 
         if not self.hasImageCover():
-            return (Iconos.pilImageCoverGenerica)
+            return ('//sin_caratula.jpg')
         '''Asumo que se llamo antes al has cover'''
         nombreImagen = self.image_url[self.image_url.rindex('/') + 1:]
         session = Entidades.Init.Session()

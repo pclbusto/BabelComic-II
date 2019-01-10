@@ -145,6 +145,7 @@ class ComicVineSearcher:
                 volume.anio_inicio =volumeVine.find('start_year').text
                 volume.descripcion = volumeVine.find('description').text
                 volume.cantidad_numeros = volumeVine.find('count_of_issues').text
+                volume.url = volumeVine.find('site_detail_url').text
                 if volumeVine.find('image').find('super_url') is not None:
                     volume.image_url = volumeVine.find('image').find('super_url').text
                 if volumeVine.find('publisher').find('id') is not None:

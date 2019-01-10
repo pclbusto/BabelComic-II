@@ -44,3 +44,26 @@ CREATE TABLE "comicbooks_info_new" (
 	PRIMARY KEY ("id_comicbook_Info"),
 	CHECK (actualizado_externamente IN (0, 1))
 );
+
+CREATE TABLE `volumens_aux` (
+	`id_volume`	INTEGER NOT NULL,
+	`nombre`	VARCHAR NOT NULL,
+	`deck`	VARCHAR NOT NULL,
+	`descripcion`	VARCHAR NOT NULL,
+	`url`	VARCHAR NOT NULL,
+	`image_url`	VARCHAR NOT NULL,
+	`id_publisher`	VARCHAR NOT NULL,
+	`publisher_name`	VARCHAR NOT NULL,
+	`anio_inicio`	INTEGER NOT NULL,
+	`cantidad_numeros`	INTEGER NOT NULL,
+	PRIMARY KEY(`id_volume`)
+);
+
+
+INSERT INTO volumens_aux
+(id_volume, nombre, deck, descripcion, url, image_url, id_publisher, publisher_name, anio_inicio, cantidad_numeros)
+
+SELECT id_volume, nombre, deck, descripcion, '',image_url, id_publisher, publisher_name, anio_inicio, cantidad_numeros
+FROM volumens;
+
+

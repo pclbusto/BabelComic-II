@@ -1,5 +1,5 @@
 from Entidades.Entity_manager import Entity_manager
-from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference
+from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup
 from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook
 from Entidades import Init
 from sqlalchemy import func, join
@@ -27,6 +27,9 @@ class Comicbooks_Info(Entity_manager):
     def set_volume(self, id_volume):
         filtro = Comicbook_Info.id_volume == id_volume
         self.set_filtro(filtro)
+
+
+
 
 class ArcosArgumentales(Entity_manager):
     def __init__(self, session = None):
@@ -98,6 +101,22 @@ class Volumens(Entity_manager):
     def get_comicbook_info_status(self, id_comicbook_info):
         return self.session.query(Comicbook).filter(Comicbook.id_comicbook_info==id_comicbook_info).count()
 
+    def new_record(self):
+        super().new_record()
+        setup = self.session.query(Setup).first()
+        id_volume = setup.ultimoVolumeIdUtilizado
+        setup.ultimoVolumeIdUtilizado = str(int(id_volume)+1)
+        self.session.add(setup)
+        self.session.commit()
+        self.entidad.id_volume = -1*int(id_volume)
+        self.entidad.cantidad_numeros = 0
+        self.entidad.anio_inicio = 0
+        self.entidad.deck= ''
+        self.entidad.descripcion = ''
+        self.entidad.id_publisher = ''
+        self.entidad.image_url = ''
+        self.entidad.nombre= ''
+        self.entidad.publisher_name = ''
 
 if (__name__=='__main__'):
     ArcosArgumentales().rm(55691)

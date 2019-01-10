@@ -48,6 +48,7 @@ class Entity_manager:
             self.session.delete(self.entidad)
             self.session.commit()
             self.status = Entity_manager.CTE_OK
+            print("Eliinado")
         else:
             self.status = Entity_manager.CTE_ENTIDAD_NULA
 

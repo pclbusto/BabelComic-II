@@ -26,8 +26,9 @@ class VolumeGuiGtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'boton_cargar_desde_web_click': self.boton_cargar_desde_web_click,
                          'click_lookup_volume': self.click_lookup_volume,'change_id_volume': self.change_id_volume,
-                         'click_limpiar': self.click_limpiar, 'combobox_change': self.combobox_change,
-                         'selecion_pagina': self.selecion_pagina}
+                         'click_nuevo': self.click_nuevo, 'combobox_change': self.combobox_change,
+                         'selecion_pagina': self.selecion_pagina, 'click_guardar': self.click_guardar,
+                         'click_eliminar': self.click_eliminar}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
@@ -36,8 +37,9 @@ class VolumeGuiGtk():
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.entry_id = self.builder.get_object("entry_id")
         self.entry_nombre = self.builder.get_object("entry_nombre")
-        self.entry_url = self.builder.get_object("entry_url")
-        self.entry_url_cover = self.builder.get_object("entry_url_cover")
+        self.label_url = self.builder.get_object("label_url")
+        self.label_api_url = self.builder.get_object("label_api_url")
+        self.label_cover_url = self.builder.get_object("label_cover_url")
         self.entry_id_editorial = self.builder.get_object("entry_id_editorial")
         self.label_nombre_editorial = self.builder.get_object("label_nombre_editorial")
         self.entry_anio_inicio = self.builder.get_object("entry_anio_inicio")
@@ -69,7 +71,6 @@ class VolumeGuiGtk():
                 # cantidad = self.volumens_manager.get_comicbook_info_status(comicbook.id_comicbook_info)
                 self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, comicbook.cantidad, comicbook.cantidad])
 
-
     def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(
@@ -79,27 +80,7 @@ class VolumeGuiGtk():
         volumen_vine_search = Volumen_vine_search_Gtk(self.session)
         volumen_vine_search.window.show()
 
-    def updateVolume(self):
-         
-        cnf = Config(self.session)
-        cv = ComicVineSearcher(cnf.getClave('volume'),session=self.session)
-        cv.entidad='volume'
-        volumenAndComics = cv.getVineEntity(self.volume.id)
-
-        volumeUpdated = volumenAndComics[0]
-
-        self.volume.cantidad_numeros = volumeUpdated.cantidad_numeros
-        self.volume.nombre = volumeUpdated.nombre
-        print(volumeUpdated.image_url)
-        self.volume.image_url = volumeUpdated.image_url
-        self.volume.publisher_name = volumeUpdated.publisher_name
-        self.volume.publisherId = volumeUpdated.publisherId
-        self.setVolume(self.volume)
-        self.loadVolume()
-        self.numerosPorVolumen = volumenAndComics[1]
-        self.guardar()
-
-    def click_lookup_volume(self,widget):
+    def click_lookup_volume(self, widget):
         lookup = Volume_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
@@ -109,9 +90,10 @@ class VolumeGuiGtk():
             volume = self.volumens_manager.get(self.entry_id.get_text())
             self.loadVolume(volume)
 
-    def return_lookup(self,id_volume):
+    def return_lookup(self, id_volume):
         if id_volume!='':
             self.entry_id.set_text(str(id_volume))
+            print("Recuperando info: {}".format(id_volume))
             volume = self.volumens_manager.get(self.entry_id.get_text())
             self.loadVolume(volume)
 
@@ -121,8 +103,13 @@ class VolumeGuiGtk():
             #print("Volumen {}".format(self.volume))
             self.entry_id.set_text(str(volumen.id_volume))
             self.entry_nombre.set_text(volumen.nombre)
-            self.entry_url.set_text(volumen.get_url())
-            self.entry_url_cover.set_text(volumen.image_url)
+            self.label_api_url.set_uri(volumen.get_api_url())
+            self.label_api_url.set_label(volumen.get_api_url())
+            self.label_url.set_uri(volumen.url)
+            self.label_url.set_label(volumen.url)
+            self.label_cover_url.set_uri(volumen.image_url)
+            self.label_cover_url.set_label(volumen.image_url)
+
             self.entry_id_editorial.set_text(volumen.id_publisher)
             self.label_nombre_editorial.set_text(volumen.publisher_name)
             self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
@@ -145,16 +132,14 @@ class VolumeGuiGtk():
         if volume is not None:
             self.loadVolume(volume)
 
-    def borrar(self):
-        super().borrar()
-        volume = Volume(publisherId='0')
-        self.setVolume(volume)
-        self.clear()
+    def click_eliminar(self, widget):
+        self.volumens_manager.rm()
 
     def clear(self):
         self.entry_nombre.set_text('')
-        self.entry_url.set_text('')
-        self.entry_url_cover.set_text('')
+        self.label_url.set_uri('')
+        self.label_api_url.set_uri('')
+        self.label_cover_url.set_uri('')
         self.entry_id_editorial.set_text('')
         self.label_nombre_editorial.set_text('')
         self.entry_anio_inicio.set_text('')
@@ -167,28 +152,17 @@ class VolumeGuiGtk():
         self.loadVolume(volume)
 
     def copyFromWindowsToEntity(self):
-        self.volume.id = self.entradaId.get()
-        self.volume.nombre = self.entradaNombre.get()
-        # self.volume.deck = self..get()
-        # self.volume.descripcion = self.entradaId.get()
-        self.volume.image_url = self.entradaUrlImagen.get()
-        if self.editorial is not None:
-            self.volume.publisherId = self.editorial.id_publisher
-        self.volume.anio_inicio = self.entradaAnioInicio.get()
-        self.volume.cantidad_numeros = self.entradaCantidadNumeros.get()
+        self.volumens_manager.entidad.nombre = self.entry_nombre.get_text()
+        #self.volume.deck = self..get()
+        # self.volumens_manager.entidad.descripcion = self.entradaId.get()
+        self.volumens_manager.entidad.url = self.entry_url.get_text()
+        self.volumens_manager.entidad.image_url = self.entry_url_cover.get_text()
+        self.volumens_manager.entidad.anio_inicio = self.entry_anio_inicio.get_text()
+        self.volumens_manager.entidad.cantidad_numeros = self.entry_cantidad_numeros.get_text()
 
-    def keyOrd(self,t):
-        return(int(t.comicOrder))
-
-    def guardar(self):
-        super().guardar()
+    def click_guardar(self, widget):
         self.copyFromWindowsToEntity()
-        if self.newRecord:
-            self.session.add(self.volume)
-        self.session.query(ComicInVolumes).filter(ComicInVolumes.volumeId==self.volume.id).delete()
-        #self.numerosPorVolumen.sort(reverse=False, key=self.keyOrd)
-        for index, numeroComic in enumerate(self.numerosPorVolumen, start=0):
-            self.session.add(numeroComic)
+        self.session.add(self.volumens_manager.entidad)
         self.session.commit()
 
     def getPrev(self,widget):
@@ -199,21 +173,10 @@ class VolumeGuiGtk():
         volume = self.volumens_manager.getLast()
         self.loadVolume(volume)
 
-    def click_limpiar(self, widget):
-        self.entry_url.set_text("")
-        self.entry_id_editorial.set_text("")
-        self.entry_id.set_text("")
-        self.entry_cantidad_numeros.set_text("")
-        self.entry_nombre.set_text("")
-        self.entry_anio_inicio.set_text("")
-        self.entry_url_cover.set_text("")
-        self.label_nombre_editorial.set_text("")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename='../images/coverIssuesThumbnails/sin_caratula.jpg',
-            width=250,
-            height=250,
-            preserve_aspect_ratio=True)
-        self.volumen_logo_image.set_from_pixbuf(pixbuf)
+    def click_nuevo(self, widget):
+        self.volumens_manager.new_record()
+        print(self.volumens_manager.entidad)
+        self.loadVolume(self.volumens_manager.entidad)
 
 if __name__ == '__main__':
 

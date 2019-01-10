@@ -23,6 +23,7 @@ class Iconos():
         self.pilCalidadDigital = PIL.Image.open(path + "05-Scan Excelente Calidad.png")
         self.pilRedOrb = PIL.Image.open(path + "RedOrb.png")
         self.pilGreenOrb = PIL.Image.open(path + "GreenOrb.png")
+        self.pilImageCoverGenerica = PIL.Image.open(path + "sin_caratula.jpg")
 
 
 
