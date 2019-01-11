@@ -36,7 +36,7 @@ class BabelComics_main_gtk():
                             "coverIssuesThumbnails" + os.path.sep
 
         self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
-                         'item_seleccionado': self.item_seleccionado,'click_derecho':self.click_derecho,
+                         'item_seleccionado': self.item_seleccionado,'click_derecho': self.click_derecho,
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_catalogar':self.click_boton_catalogar,

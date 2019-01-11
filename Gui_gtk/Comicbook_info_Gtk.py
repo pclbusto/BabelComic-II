@@ -1,7 +1,7 @@
 import os
 import Entidades.Init
 from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
-from Entidades.Agrupado_Entidades import  Setup
+from Entidades.Agrupado_Entidades import  Comicbook_Info
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
 import datetime
@@ -53,6 +53,12 @@ class Comicbook_Info_Gtk():
         volume_mamange = Volumens(session = self.session)
         volume = volume_mamange.get(id_volume)
         self.label_nombre_volumen.set_text(volume.nombre)
+
+    def set_comicbook_number(self, numero):
+        #todo validar volumn seteado
+        self.comicbooks_manager.set_filtro(Comicbook_Info.numero == numero)
+
+        self.comicbooks_manager.getFirst()
 
     def seleccion_fecha(self, widget):
         print(widget.get_date().year)
@@ -146,6 +152,7 @@ if __name__ == "__main__":
 
     cbi = Comicbook_Info_Gtk()
     cbi.set_volume('2050')
+    cbi.set_comicbook_number(1)
     cbi.window.show_all()
     cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

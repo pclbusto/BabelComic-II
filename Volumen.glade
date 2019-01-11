@@ -451,6 +451,7 @@
                     <property name="can_focus">True</property>
                     <property name="model">liststore_comics_in_volume</property>
                     <property name="search_column">0</property>
+                    <signal name="button-press-event" handler="click_derecho" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -489,11 +490,10 @@
                     <child>
                       <object class="GtkTreeViewColumn">
                         <property name="title" translatable="yes">Catalogado</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">2</property>
                         <child>
                           <object class="GtkCellRendererToggle"/>
-                          <attributes>
-                            <attribute name="active">2</attribute>
-                          </attributes>
                         </child>
                       </object>
                     </child>

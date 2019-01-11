@@ -5,15 +5,10 @@ from gi.repository import Gtk, GdkPixbuf
 
 import Entidades.Init
 from Entidades.Entitiy_managers import Volumens
-
-from Entidades.Agrupado_Entidades import Volume , Publisher
 import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
-
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
-from Extras.ComicVineSearcher import ComicVineSearcher
-
-from Extras.Config import Config
+from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
 
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -28,7 +23,7 @@ class VolumeGuiGtk():
                          'click_lookup_volume': self.click_lookup_volume,'change_id_volume': self.change_id_volume,
                          'click_nuevo': self.click_nuevo, 'combobox_change': self.combobox_change,
                          'selecion_pagina': self.selecion_pagina, 'click_guardar': self.click_guardar,
-                         'click_eliminar': self.click_eliminar}
+                         'click_eliminar': self.click_eliminar, 'click_derecho':self.click_derecho}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Volumen.glade")
@@ -61,6 +56,14 @@ class VolumeGuiGtk():
             self.liststore_combobox.append([clave])
         self.combobox_orden.set_active(0)
         self.getFirst("")
+
+    def click_derecho(self,widget, event):
+        print("ACA ESTAMOS {}".format(event.get_click_count()))
+        if event.get_click_count()[1]==2:
+            cbi = Comicbook_Info_Gtk()
+            cbi.set_volume(self.volumens_manager.entidad.id_volume)
+#            cbi.set_comicbook_number(, self.liststore_comics_in_volume.get_selection[0])
+            cbi.window.show_all()
 
     def selecion_pagina(self, widget, page, page_num):
         self.pagina_actual = page_num

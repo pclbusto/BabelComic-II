@@ -2,7 +2,7 @@ from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup
 from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook
 from Entidades import Init
-from sqlalchemy import func, join
+from sqlalchemy import func, join, and_
 
 
 class Comicbooks_Info(Entity_manager):
@@ -21,14 +21,19 @@ class Comicbooks_Info(Entity_manager):
         self.status = 1
         self.entidad = Comicbook_Info()
         self.filtro = None
+        self.id_volume = None
         self.set_order(Comicbook_Info.numero)
         self.direccion = 0
 
     def set_volume(self, id_volume):
+        self.id_volume = id_volume
         filtro = Comicbook_Info.id_volume == id_volume
         self.set_filtro(filtro)
 
-
+    def set_number(self, number):
+        self.id_volume = id_volume
+        filtro = Comicbook_Info.id_volume == id_volume
+        self.set_filtro(filtro)
 
 
 class ArcosArgumentales(Entity_manager):
