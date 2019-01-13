@@ -31,8 +31,7 @@ class Comicbooks_Info(Entity_manager):
         self.set_filtro(filtro)
 
     def set_number(self, number):
-        self.id_volume = id_volume
-        filtro = Comicbook_Info.id_volume == id_volume
+        filtro = and_(Comicbook_Info.id_volume == self.id_volume, Comicbook_Info.numero==number)
         self.set_filtro(filtro)
 
 

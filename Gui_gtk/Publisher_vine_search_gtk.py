@@ -73,11 +73,10 @@ class Publisher_vine_search_gtk():
         GLib.idle_add(self.spinner.start)
 
     def click_boton_buscar(self,widget):
-
-        t = threading.Thread(target=self.start)
-        t.run()
-        # GLib.idle_add(self._start)
-        # GLib.idle_add(self._buscar)
+        self.spinner.start()
+        t = threading.Thread(target=self._buscar)
+        t.start()
+        #GLib.idle_add(self._buscar)
 
 
     def agregarEditorial(self):

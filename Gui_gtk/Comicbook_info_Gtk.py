@@ -56,9 +56,10 @@ class Comicbook_Info_Gtk():
 
     def set_comicbook_number(self, numero):
         #todo validar volumn seteado
-        self.comicbooks_manager.set_filtro(Comicbook_Info.numero == numero)
 
+        self.comicbooks_manager.set_number(numero)
         self.comicbooks_manager.getFirst()
+        self._copy_to_window(self.comicbooks_manager.entidad)
 
     def seleccion_fecha(self, widget):
         print(widget.get_date().year)
@@ -113,7 +114,11 @@ class Comicbook_Info_Gtk():
             self.entry_orden.set_text(str(comicbook_info.orden))
             self.entry_numero.set_text(str(comicbook_info.numero))
             self.entry_titulo.set_text(comicbook_info.titulo)
-            self.label_fecha_tapa.set_text(datetime.date.fromordinal(comicbook_info.fecha_tapa).strftime("%d/%m/%Y"))
+            if comicbook_info.fecha_tapa>0:
+                self.label_fecha_tapa.set_text(datetime.date.fromordinal(comicbook_info.fecha_tapa).strftime("%d/%m/%Y"))
+            else:
+                self.label_fecha_tapa.set_text(
+                    datetime.date.fromordinal(1).strftime("%d/%m/%Y"))
             self.entry_api_url.set_text(comicbook_info.api_detail_url)
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.set_value_pos(comicbook_info.rating)

@@ -43,7 +43,7 @@ class VolumeGuiGtk():
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.resumen_volumen = self.builder.get_object("resumen_volumen")
         self.liststore_comics_in_volume = self.builder.get_object("liststore_comics_in_volume")
-
+        self.treeview_comics_in_volumen = self.builder.get_object("treeview_comics_in_volumen")
 
         self.volumens_manager = Volumens(session=self.session)
         self.combobox_orden = self.builder.get_object("combobox_orden")
@@ -62,7 +62,8 @@ class VolumeGuiGtk():
         if event.get_click_count()[1]==2:
             cbi = Comicbook_Info_Gtk()
             cbi.set_volume(self.volumens_manager.entidad.id_volume)
-#            cbi.set_comicbook_number(, self.liststore_comics_in_volume.get_selection[0])
+            model, treeiter = self.treeview_comics_in_volumen.get_selection().get_selected()
+            cbi.set_comicbook_number(model[treeiter][0])
             cbi.window.show_all()
 
     def selecion_pagina(self, widget, page, page_num):
