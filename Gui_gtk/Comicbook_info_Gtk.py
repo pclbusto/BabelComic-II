@@ -54,11 +54,10 @@ class Comicbook_Info_Gtk():
         volume = volume_mamange.get(id_volume)
         self.label_nombre_volumen.set_text(volume.nombre)
 
-    def set_comicbook_number(self, numero):
+    def set_comicbook(self, id):
         #todo validar volumn seteado
 
-        self.comicbooks_manager.set_number(numero)
-        self.comicbooks_manager.getFirst()
+        self.comicbooks_manager.get(id)
         self._copy_to_window(self.comicbooks_manager.entidad)
 
     def seleccion_fecha(self, widget):

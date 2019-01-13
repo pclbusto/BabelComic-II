@@ -59,11 +59,12 @@ class VolumeGuiGtk():
 
     def click_derecho(self,widget, event):
         print("ACA ESTAMOS {}".format(event.get_click_count()))
-        if event.get_click_count()[1]==2:
+        if event.get_click_count()[1] == 2:
             cbi = Comicbook_Info_Gtk()
+            #seteamos el volumen para poder navegar entre los comicbooks info
             cbi.set_volume(self.volumens_manager.entidad.id_volume)
             model, treeiter = self.treeview_comics_in_volumen.get_selection().get_selected()
-            cbi.set_comicbook_number(model[treeiter][0])
+            cbi.set_comicbook(model[treeiter][4])
             cbi.window.show_all()
 
     def selecion_pagina(self, widget, page, page_num):
@@ -72,8 +73,8 @@ class VolumeGuiGtk():
             comicbooks_in_volumen = self.volumens_manager.get_comicbook_info_by_volume()
             self.liststore_comics_in_volume.clear()
             for comicbook in comicbooks_in_volumen:
-                # cantidad = self.volumens_manager.get_comicbook_info_status(comicbook.id_comicbook_info)
-                self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, comicbook.cantidad, comicbook.cantidad])
+                #print(comicbook.id_comicbook_info, type(comicbook.id_comicbook_info))
+                self.liststore_comics_in_volume.append([comicbook.numero, comicbook.titulo, comicbook.cantidad, comicbook.cantidad, comicbook.id_comicbook_info, comicbook.orden])
 
     def combobox_change(self, widget):
         if widget.get_active_iter() is not None:

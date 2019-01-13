@@ -51,6 +51,10 @@
       <column type="gboolean"/>
       <!-- column-name cantidad -->
       <column type="gint"/>
+      <!-- column-name id -->
+      <column type="gint"/>
+      <!-- column-name orden -->
+      <column type="gfloat"/>
     </columns>
   </object>
   <object class="GtkImage" id="lookup">
@@ -461,7 +465,7 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">0</property>
+                        <property name="sort_column_id">5</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>

@@ -98,7 +98,7 @@ class Volumens(Entity_manager):
         sq = self.session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info,
                                                                                               Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).group_by(
             Comicbook.id_comicbook_info).subquery("sq")
-        comics = self.session.query(Comicbook_Info.id_comicbook_info, Comicbook_Info.numero,Comicbook_Info.titulo, sq.c.cantidad).outerjoin(sq,
+        comics = self.session.query(Comicbook_Info.id_comicbook_info, Comicbook_Info.numero,Comicbook_Info.titulo, sq.c.cantidad, Comicbook_Info.orden).outerjoin(sq,
                                                                                      sq.c.id_comicbook_info == Comicbook_Info.id_comicbook_info).filter(Comicbook_Info.id_volume == self.entidad.id_volume).all()
 
         return comics
