@@ -95,7 +95,7 @@
     <property name="title" translatable="yes">Comicbook Info</property>
     <property name="window_position">center</property>
     <property name="default_width">440</property>
-    <property name="default_height">250</property>
+    <property name="default_height">700</property>
     <child>
       <placeholder/>
     </child>
@@ -520,6 +520,7 @@
                       <object class="GtkTextView" id="text_resumen">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="wrap_mode">word</property>
                       </object>
                     </child>
                   </object>

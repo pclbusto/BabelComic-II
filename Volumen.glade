@@ -463,12 +463,13 @@
                       <object class="GtkTreeViewColumn">
                         <property name="title" translatable="yes">Número</property>
                         <property name="clickable">True</property>
-                        <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
+                        <property name="sort_order">descending</property>
                         <property name="sort_column_id">5</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
+                            <attribute name="markup">0</attribute>
                             <attribute name="text">0</attribute>
                           </attributes>
                         </child>

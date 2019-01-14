@@ -12,7 +12,7 @@ class Comic_Vine_Info_Searcher():
     regex_search_serie = r"<td class=\"listing_publisher\"> <a href=\"/publisher/(\d*)/\">([^<]*)</a></td>[^<]*<td>" \
                          r" <a href=\"/series/(\d*)/\">([^<|]*)</a> (\[m\])*(\[b\])*</td>[^<]*<td> (\d*) </td>[^<]*<t" \
                          r"d style=\"text-align: right\"> (\d+) issues"
-    regex_get_issue_number = r"Issue Number<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>(\d+\.*\d*)<\/span>"
+    regex_get_issue_number = r"Issue Number<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)<\/span>"
     regex_get_issue_name = r"<th>Name<\/th>[^<]*<td>[^<][^>]*[^<]*<span>[^>]*>([^<]*)"
     regex_get_issue_description = r'<div class="wiki-item-display js-toc-content">[^<]*(.*)<\/div>[^<]*<div class="wiki-item-edit">[^<]*<div    id='
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
@@ -54,7 +54,6 @@ class Comic_Vine_Info_Searcher():
                 comicbook_info.orden = float(comicbook_info.numero)
             else:
                 comicbook_info.orden = 0
-
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_name, html, re.DOTALL)
         for matchNum, match in enumerate(matches):
             comicbook_info.titulo = match.group(1)
