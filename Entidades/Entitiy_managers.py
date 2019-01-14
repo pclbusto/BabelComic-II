@@ -1,9 +1,10 @@
 from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup
-from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook
+from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook, Comicbook_Info_Cover_Url
 from Entidades import Init
 from sqlalchemy import func, join, and_
-
+import os
+import urllib.request
 
 class Comicbooks_Info(Entity_manager):
 
@@ -14,7 +15,7 @@ class Comicbooks_Info(Entity_manager):
             self.session = session
         else:
             self.session = Init.Session()
-
+        self.setup = self.session.query(Setup).first()
         self.set_order(Comicbook_Info.titulo, 0)
         self.lista_opciones = {'Número': Comicbook_Info.numero, 'Título': Comicbook_Info.titulo}
 
@@ -24,15 +25,70 @@ class Comicbooks_Info(Entity_manager):
         self.id_volume = None
         self.set_order(Comicbook_Info.numero)
         self.direccion = 0
+        self.index_lista_covers = 0
+        self.lista_covers = []
+
+    def load_cover_list(self):
+        self.index_lista_covers = 0
+        self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
+            Comicbook_Info_Cover_Url.id_comicbook_info == self.entidad.id_comicbook_info).all()
+
+    def _get_cover_complete_path(self):
+        comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+        webImage = comicbook_info_cover_url.thumb_url
+        nombreImagen = webImage[webImage.rindex('/') + 1:]
+        print(webImage)
+        print(nombreImagen)
+        path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
+        if not (os.path.isfile(path + nombreImagen)):
+            print('no existe')
+            print(nombreImagen)
+            jpg = urllib.request.urlopen(webImage)
+            jpgImage = jpg.read()
+            fImage = open(path + nombreImagen, 'wb')
+            fImage.write(jpgImage)
+            fImage.close()
+        return path + nombreImagen
+
+    def get_next_cover_complete_path(self):
+        if len(self.lista_covers) - 1 > self.index_lista_covers:
+            self.index_lista_covers += 1
+        return self._get_cover_complete_path()
+
+    def get_prev_cover_complete_path(self):
+        if self.index_lista_covers > 0:
+            self.index_lista_covers -= 1
+        return self._get_cover_complete_path()
 
     def set_volume(self, id_volume):
         self.id_volume = id_volume
         filtro = Comicbook_Info.id_volume == id_volume
         self.set_filtro(filtro)
 
-    def set_number(self, number):
-        filtro = and_(Comicbook_Info.id_volume == self.id_volume, Comicbook_Info.numero==number)
-        self.set_filtro(filtro)
+    def getFirst(self):
+        entidad = super().getFirst()
+        self.load_cover_list()
+        return entidad
+
+    def getLast(self):
+        entidad = super().getLast()
+        self.load_cover_list()
+        return entidad
+
+    def get(self, id_comicbook_info):
+        entidad = super().get(id_comicbook_info)
+        self.load_cover_list()
+        return entidad
+
+    def getNext(self):
+        entidad = super().getNext()
+        self.load_cover_list()
+        return entidad
+
+    def getPrev(self):
+        entidad = super().getPrev()
+        self.load_cover_list()
+        return entidad
 
 
 class ArcosArgumentales(Entity_manager):

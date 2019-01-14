@@ -91,6 +91,7 @@ class Volumen_vine_search_Gtk():
         # print(self.comicVineSearcher.listaBusquedaVine)
 
     def click_buscar_mas_serie(self, widget):
+
         self.spinner.start()
         for i in range(self.comicVineSearcher.cantidadPaginas-4):
             print("buscando mas")

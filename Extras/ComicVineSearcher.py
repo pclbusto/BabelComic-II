@@ -315,6 +315,7 @@ class ComicVineSearcher:
 
     def vine_Search_all(self):
         # este llamado no da info de cuantas paginas tiene la consulta en total
+
         self.vineSearch()
         if self.cantidadPaginas>150:
             return 1
@@ -330,7 +331,6 @@ class ComicVineSearcher:
         return 0
 
     def vineSearch(self, io_offset=0):
-
         if self.entidad == '':
             self.statusMessage = 'falta ingresar la entidad'
             print("Status: {}".format(self.statusMessage))

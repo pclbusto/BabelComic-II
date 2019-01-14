@@ -550,11 +550,13 @@
             <property name="can_focus">False</property>
             <property name="valign">end</property>
             <property name="margin_top">6</property>
+            <property name="spacing">6</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">end</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkButton" id="boton_primero">
                     <property name="visible">True</property>
@@ -659,6 +661,7 @@
                 <property name="can_focus">False</property>
                 <property name="halign">end</property>
                 <property name="valign">end</property>
+                <property name="spacing">6</property>
                 <property name="baseline_position">bottom</property>
                 <child>
                   <object class="GtkButton">

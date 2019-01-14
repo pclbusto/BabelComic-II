@@ -24,7 +24,11 @@ class Comicbook_Info_Gtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'seleccion_fecha': self.seleccion_fecha,
                          'boton_guardar': self.boton_guardar, 'click_limpiar':self.click_limpiar,
-                         'click_cargar_desde_web': self.click_cargar_desde_web, 'combobox_change':self.combobox_change}
+                         'click_cargar_desde_web': self.click_cargar_desde_web, 'combobox_change':self.combobox_change,
+                         'menu_desplegado':self.menu_desplegado,'click_eliminar':self.click_eliminar,
+                         'click_cover_anterior': self.click_cover_anterior,
+                         'click_cover_siguiente':self.click_cover_siguiente,
+                         'change_cover':self.change_cover}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Comicbook_info_gtk.glade")
@@ -45,8 +49,34 @@ class Comicbook_Info_Gtk():
         self.scale_raiting = self.builder.get_object("scale_raiting")
         self.text_resumen = self.builder.get_object("text_resumen")
         self.textbuffer = self.text_resumen.get_buffer()
-        self.fecha_tapa=0
+        self.calendario = self.builder.get_object("calendario")
+        self.cover_comic = self.builder.get_object("cover_comic")
+        self.combo_paginas = self.builder.get_object("combo_paginas")
+
         # inicializamos el modelo con rotulos del manager
+
+    def change_cover(self, widget):
+        tree_iter = widget.get_active_iter()
+        if tree_iter is not None:
+            model = widget.get_model()
+            index = model[tree_iter][0]
+            self.comicbooks_manager.index_lista_covers = index
+            self._copy_to_window(self.comicbooks_manager.entidad)
+        else:
+            entry = combo.get_child()
+            print("Entered: %s" % entry.get_text())
+
+    def click_eliminar(self,widget):
+        print(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_day(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.month = datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).month + 1
+        self.calendario.year = datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).year
+
+    def menu_desplegado(self, widget):
+        print(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_day(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_month(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).month-1,
+                                     datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).year)
 
     def set_volume(self, id_volume):
         self.comicbooks_manager.set_volume(id_volume=id_volume)
@@ -56,15 +86,25 @@ class Comicbook_Info_Gtk():
 
     def set_comicbook(self, id):
         #todo validar volumn seteado
-
         self.comicbooks_manager.get(id)
         self._copy_to_window(self.comicbooks_manager.entidad)
 
     def seleccion_fecha(self, widget):
         print(widget.get_date().year)
         self.label_fecha_tapa.set_text(datetime.date(year=widget.get_date().year, month=widget.get_date().month+1, day=widget.get_date().day).strftime("%d/%m/%Y"))
-        self.fecha_tapa = widget.get_date().to
+        self.comicbooks_manager.entidad.fecha_tapa = datetime.date(year=widget.get_date().year, month=widget.get_date().month+1, day=widget.get_date().day).toordinal()
         self.popover.popdown()
+
+    def click_cover_anterior(self, widget):
+        print("click_cover_anterior")
+        self.comicbooks_manager.get_prev_cover_complete_path()
+        self._copy_to_window(self.comicbooks_manager.entidad)
+
+    def click_cover_siguiente(self, widget):
+        print("click_cover_siguiente")
+        self.comicbooks_manager.get_next_cover_complete_path()
+        self._copy_to_window(self.comicbooks_manager.entidad)
+
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
             self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
@@ -122,14 +162,27 @@ class Comicbook_Info_Gtk():
                     datetime.date.fromordinal(1).strftime("%d/%m/%Y"))
             self.entry_api_url.set_text(comicbook_info.api_detail_url)
             self.entry_url.set_text(comicbook_info.url)
-            self.scale_raiting.set_value_pos(comicbook_info.rating)
+            self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
             self.textbuffer.set_text(comicbook_info.resumen)
+            nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombreThumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
+            self.cover_comic.set_from_pixbuf(pixbuf)
+            listore = Gtk.ListStore(int)
+            for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):
+                listore.append([index])
+            self.combo_paginas.set_model(listore)
 
     def copy_from_window_to_entity(self):
         self.comicbooks_manager.entidad.orden = self.entry_orden.get_text()
         self.comicbooks_manager.entidad.numero = self.entry_numero.get_text()
         self.comicbooks_manager.entidad.titulo = self.entry_titulo.get_text()
-
+        # este campo lo tenemos actualizaco cada vez que se selecciona un valor de calendario
+        # self.comicbooks_manager.entidad.fecha_tapa
+        self.comicbooks_manager.entidad.rating = self.scale_raiting.get_adjustment().get_value()
         #self.volumens_manager.entidad.image_url = self.entry_url_cover.get_text()
         #self.volumens_manager.entidad.anio_inicio = self.entry_anio_inicio.get_text()
         #self.volumens_manager.entidad.cantidad_numeros = self.entry_cantidad_numeros.get_text()
@@ -145,8 +198,8 @@ class Comicbook_Info_Gtk():
 if __name__ == "__main__":
 
     cbi = Comicbook_Info_Gtk()
-    cbi.set_volume('2050')
-    cbi.set_comicbook_number(1)
+    cbi.set_volume('796')
+    cbi.set_comicbook(542921)
     cbi.window.show_all()
     cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

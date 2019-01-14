@@ -40,7 +40,7 @@ class Entity_manager:
         if self.entidad is not None:
             self.session.add(self.entidad)
             self.session.commit()
-            self.entidad = self.clase()
+            # self.entidad = self.clase()
             self.status = Entity_manager.CTE_OK
 
     def rm(self):
