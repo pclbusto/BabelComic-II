@@ -61,9 +61,9 @@ class Comicbook_Info_Gtk():
             model = widget.get_model()
             index = model[tree_iter][0]
             self.comicbooks_manager.index_lista_covers = index
-            self._copy_to_window(self.comicbooks_manager.entidad)
+            self._load_cover()
         else:
-            entry = combo.get_child()
+            entry = widget.get_child()
             print("Entered: %s" % entry.get_text())
 
     def click_eliminar(self,widget):
@@ -96,14 +96,12 @@ class Comicbook_Info_Gtk():
         self.popover.popdown()
 
     def click_cover_anterior(self, widget):
-        print("click_cover_anterior")
         self.comicbooks_manager.get_prev_cover_complete_path()
-        self._copy_to_window(self.comicbooks_manager.entidad)
+        self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
 
     def click_cover_siguiente(self, widget):
-        print("click_cover_siguiente")
         self.comicbooks_manager.get_next_cover_complete_path()
-        self._copy_to_window(self.comicbooks_manager.entidad)
+        self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
 
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
@@ -164,17 +162,25 @@ class Comicbook_Info_Gtk():
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
             self.textbuffer.set_text(comicbook_info.resumen)
-            nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=nombreThumnail,
-                width=150,
-                height=250,
-                preserve_aspect_ratio=True)
-            self.cover_comic.set_from_pixbuf(pixbuf)
+            self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
+            self._load_cover()
             listore = Gtk.ListStore(int)
             for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):
                 listore.append([index])
             self.combo_paginas.set_model(listore)
+
+    def _load_cover_background(self):
+        nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=nombreThumnail,
+            width=150,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.cover_comic.set_from_pixbuf(pixbuf)
+
+    def _load_cover(self):
+
+        self._load_cover_background()
 
     def copy_from_window_to_entity(self):
         self.comicbooks_manager.entidad.orden = self.entry_orden.get_text()
