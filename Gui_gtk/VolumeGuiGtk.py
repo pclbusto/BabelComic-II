@@ -44,7 +44,7 @@ class VolumeGuiGtk():
         self.resumen_volumen = self.builder.get_object("resumen_volumen")
         self.liststore_comics_in_volume = self.builder.get_object("liststore_comics_in_volume")
         self.treeview_comics_in_volumen = self.builder.get_object("treeview_comics_in_volumen")
-        self.levelbar_porcentaje_completado = self.builder.get_object("levelbar_porcentaje_completado")
+        self.progressbar_procentaje_completado = self.builder.get_object("progressbar_procentaje_completado")
         self.label_cantidad_comics_asociados = self.builder.get_object("label_cantidad_comics_asociados")
 
 
@@ -112,11 +112,21 @@ class VolumeGuiGtk():
             self.entry_id.set_text(str(volumen.id_volume))
             self.entry_nombre.set_text(volumen.nombre)
             self.label_api_url.set_uri(volumen.get_api_url())
-            self.label_api_url.set_label(volumen.get_api_url())
+            if len(volumen.get_api_url()) >= 50:
+                self.label_api_url.set_label(volumen.get_api_url()[:50]+"...")
+            else:
+                self.label_api_url.set_label(volumen.get_api_url())
+
             self.label_url.set_uri(volumen.url)
-            self.label_url.set_label(volumen.url)
+            if len(volumen.url) >= 50:
+                self.label_url.set_label(volumen.url[:50]+"...")
+            else:
+                self.label_url.set_label(volumen.url)
             self.label_cover_url.set_uri(volumen.image_url)
-            self.label_cover_url.set_label(volumen.image_url)
+            if len(volumen.image_url) >= 50:
+                self.label_cover_url.set_label(volumen.image_url[:50]+"...")
+            else:
+                self.label_cover_url.set_label(volumen.image_url)
 
             self.entry_id_editorial.set_text(volumen.id_publisher)
             self.label_nombre_editorial.set_text(volumen.publisher_name)
@@ -124,7 +134,8 @@ class VolumeGuiGtk():
             self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
             self.resumen_volumen.set_text(volumen.descripcion)
             # print(self.volumens_manager.get_voulume_status())
-            self.levelbar_porcentaje_completado.set_value(self.volumens_manager.get_voulume_status()/volumen.cantidad_numeros)
+            self.progressbar_procentaje_completado.set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
+            self.label_cantidad_comics_asociados.set_text(str(self.volumens_manager.get_cantidad_comics_asociados_al_volumen()))
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=volumen.getImagePath(),
                 width=250,

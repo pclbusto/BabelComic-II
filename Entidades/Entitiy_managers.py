@@ -162,7 +162,7 @@ class Volumens(Entity_manager):
     def get_comicbook_info_status(self, id_comicbook_info):
         return self.session.query(Comicbook).filter(Comicbook.id_comicbook_info==id_comicbook_info).count()
 
-    def get_voulume_status(self):
+    def get_volume_status(self):
         sq = self.session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
                                                              Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(
             Comicbook_Info.id_volume == self.entidad.id_volume).group_by(Comicbook.id_comicbook_info).subquery("sq")
@@ -170,6 +170,16 @@ class Volumens(Entity_manager):
                                                                       sq.c.id_comicbook_info == Comicbook_Info.id_comicbook_info).count()
 
         return cantidad
+
+    def get_cantidad_comics_asociados_al_volumen(self):
+        sq = self.session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
+                                                             Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(
+            Comicbook_Info.id_volume == self.entidad.id_volume).subquery("sq")
+        cantidad = self.session.query(Comicbook_Info.id_comicbook_info).join(sq,
+                                                                      sq.c.id_comicbook_info == Comicbook_Info.id_comicbook_info).count()
+
+        return cantidad
+
     def new_record(self):
         super().new_record()
         setup = self.session.query(Setup).first()
