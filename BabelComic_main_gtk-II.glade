@@ -332,6 +332,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="image">image1</property>
+                    <signal name="clicked" handler="click_next_view" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
