@@ -168,14 +168,17 @@ class Volumen_vine_search_Gtk():
         # construimos la relacion para cada arco con la lista de comics.
         for arco in cv.lista_arcos:
             try:
-                print(arco.lista_ids_comicbook_info_para_procesar)
+                print("Lista de arcos de cv {}".format(arco.lista_ids_comicbook_info_para_procesar))
             except Exception:
                 print("Arco con error {}".format(arco))
                 raise
             for comicbook_info in cv.lista_comicbooks_info:
                 for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
-                    if comicbook_info.id_comicbook_info == arco_comicbook_info:
-
+                    # print("Comic Info {} tipo {} comic info arco {} tipo {}".format(comicbook_info.id_comicbook_info,
+                    #                                                                 type(comicbook_info.id_comicbook_info),
+                    #                                                                 arco_comicbook_info,
+                    #                                                                 type(arco_comicbook_info)))
+                    if int(comicbook_info.id_comicbook_info) == arco_comicbook_info:
                         comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_info)
                         rel = self.session.query(Arcos_Argumentales_Comics_Reference).get((comicbook_info.id_comicbook_info, arco.id_arco_argumental))
                         if rel is None:
@@ -204,7 +207,7 @@ class Volumen_vine_search_Gtk():
         # 18058 - detective comics106705
         # 18216 - green lantern vol 4
         # 6498 - birdth of prey
-        # threading.Thread(target=self.hilo_cargar_volume, args=['6498']).start()
+        # threading.Thread(target=self.hilo_cargar_volume, args=['796']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['25372']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['25543']).start()

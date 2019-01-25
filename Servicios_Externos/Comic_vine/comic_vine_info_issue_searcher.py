@@ -42,8 +42,8 @@ class Comic_Vine_Info_Searcher():
 
     def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
-        # print(html)
-        # print(url)
+        print(html)
+        print(url)
         comicbook_info = Comicbook_Info()
         comicbook_info.url = url
         comicbook_info.api_detail_url = "https://comicvine.gamespot.com/api/issue/4000-"+url[url.rfind("-")+1:-1]
@@ -112,8 +112,8 @@ class Comic_Vine_Info_Searcher():
 
     def search_issues_in_arc(self, url):
         html = urlopen(url).read().decode('utf-8')
-        print(url)
-        lista_ids_arcos_para_procesar = []
+        # print(url)
+        lista_ids_issues_para_procesar = []
         cantidad_paginas = 0
 
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_pages_count, html, re.DOTALL)
@@ -125,13 +125,13 @@ class Comic_Vine_Info_Searcher():
                 html = urlopen(url+"?page={}".format(i)).read().decode('utf-8')
                 matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_issues, html, re.DOTALL)
                 for matchNum, match in enumerate(matches):
-                    lista_ids_arcos_para_procesar.append(int(match.group(1)))
+                    lista_ids_issues_para_procesar.append(int(match.group(1)))
         else:
             matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_arcs_issues, html, re.DOTALL)
             for matchNum, match in enumerate(matches):
-                lista_ids_arcos_para_procesar.append(int(match.group(1)))
+                lista_ids_issues_para_procesar.append(int(match.group(1)))
 
-        return  lista_ids_arcos_para_procesar
+        return  lista_ids_issues_para_procesar
 if __name__ == "__main__":
 
     comcis_org_searcher = Comic_Vine_Info_Searcher()
