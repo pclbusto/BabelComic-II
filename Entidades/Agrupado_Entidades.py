@@ -66,10 +66,10 @@ class Arco_Argumental(Entidades.Init.Base):
     __tablename__ = 'arcos_argumentales'
 
     id_arco_argumental = Column(Integer, primary_key=True)
-    nombre = Column(String,nullable=False,default='')
-    deck = Column(String,nullable=False,default='')
-    descripcion = Column(String,nullable=False,default='')
-    ultimaFechaActualizacion =  Column(Integer,nullable=False,default='')
+    nombre = Column(String, nullable=False,default='')
+    deck = Column(String, nullable=False,default='')
+    descripcion = Column(String, nullable=False,default='')
+    ultimaFechaActualizacion =  Column(Integer, nullable=False,default='')
     ids_comicbooks_Info = relationship("Arcos_Argumentales_Comics_Reference", back_populates="ids_arco_argumental")
     cantidad_comicbooks = Column(Integer, nullable=False, default='')
 
