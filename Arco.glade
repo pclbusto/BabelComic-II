@@ -7,6 +7,65 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-save</property>
   </object>
+  <object class="GtkImage" id="anterior">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-back</property>
+  </object>
+  <object class="GtkImage" id="eliminar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-remove</property>
+  </object>
+  <object class="GtkImage" id="limpiar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-new</property>
+  </object>
+  <object class="GtkListStore" id="liststore_combobox">
+    <columns>
+      <!-- column-name Columna -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_comics_in_arc">
+    <columns>
+      <!-- column-name numero_en_arco -->
+      <column type="gint"/>
+      <!-- column-name id_volumen -->
+      <column type="gchararray"/>
+      <!-- column-name nombre_volumen -->
+      <column type="gchararray"/>
+      <!-- column-name titulo -->
+      <column type="gchararray"/>
+      <!-- column-name id_comicbook_info -->
+      <column type="gchararray"/>
+      <!-- column-name numero_en_volumen -->
+      <column type="gchararray"/>
+      <!-- column-name orden_volumen -->
+      <column type="gfloat"/>
+    </columns>
+  </object>
+  <object class="GtkImage" id="lookup">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-find</property>
+  </object>
+  <object class="GtkImage" id="primero">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-first</property>
+  </object>
+  <object class="GtkImage" id="siguiente">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-forward</property>
+  </object>
+  <object class="GtkImage" id="ultimo">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-last</property>
+  </object>
   <object class="GtkWindow" id="PublisherGtk">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Editorial</property>
@@ -86,6 +145,32 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="halign">end</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkViewport">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label label </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left_attach">3</property>
+                <property name="top_attach">0</property>
+                <property name="height">2</property>
               </packing>
             </child>
             <child>
@@ -438,64 +523,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="anterior">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-go-back</property>
-  </object>
-  <object class="GtkImage" id="eliminar">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-remove</property>
-  </object>
-  <object class="GtkImage" id="limpiar">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-new</property>
-  </object>
-  <object class="GtkListStore" id="liststore_combobox">
-    <columns>
-      <!-- column-name Columna -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
-  <object class="GtkListStore" id="liststore_comics_in_arc">
-    <columns>
-      <!-- column-name numero_en_arco -->
-      <column type="gint"/>
-      <!-- column-name id_volumen -->
-      <column type="gchararray"/>
-      <!-- column-name nombre_volumen -->
-      <column type="gchararray"/>
-      <!-- column-name titulo -->
-      <column type="gchararray"/>
-      <!-- column-name id_comicbook_info -->
-      <column type="gchararray"/>
-      <!-- column-name numero_en_volumen -->
-      <column type="gchararray"/>
-      <!-- column-name orden_volumen -->
-      <column type="gfloat"/>
-    </columns>
-  </object>
-  <object class="GtkImage" id="lookup">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-find</property>
-  </object>
-  <object class="GtkImage" id="primero">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-goto-first</property>
-  </object>
-  <object class="GtkImage" id="siguiente">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-go-forward</property>
-  </object>
-  <object class="GtkImage" id="ultimo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-goto-last</property>
   </object>
 </interface>

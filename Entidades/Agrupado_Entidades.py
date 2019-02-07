@@ -268,7 +268,7 @@ class Comicbook_Info(Entidades.Init.Base):
     ids_arco_argumental = relationship("Arcos_Argumentales_Comics_Reference")
     resumen = Column(String,nullable=False,default='')
     nota = Column(String,nullable=False,default='')
-    rating = Column(Float,nullable=False,default=0.0)
+    rating = Column(Float,nullable=False, default=0.0)
     api_detail_url = Column(String, nullable=False, default='')
     url = Column(String, nullable=False, default='')
     thumbs_url  = relationship("Comicbook_Info_Cover_Url")

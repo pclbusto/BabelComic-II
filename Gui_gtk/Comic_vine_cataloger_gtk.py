@@ -156,12 +156,22 @@ class Comic_vine_cataloger_gtk():
             self.entry_serie_local.set_text(comic_info.nombre_volumen)
         self.entry_nombre_archivo_local.set_text(comic.getNombreArchivo())
         comic.openCbFile()
+
         nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=nombreThumnail,
-            width=150,
-            height=250,
-            preserve_aspect_ratio=True)
+
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombreThumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
+        except:
+            nombreThumnail = self.pahThumnails + "error_caratula.png"
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombreThumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
         self.image_cover_comic_local.set_from_pixbuf(pixbuf)
         self.comicbook = comic
 

@@ -363,7 +363,10 @@ class BabelComics_main_gtk():
                     nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
                     cover = None
                     if os.path.isfile(nombreThumnail):
-                        cover = Pixbuf.new_from_file(nombreThumnail)
+                        try:
+                            cover = Pixbuf.new_from_file(nombreThumnail)
+                        except:
+                            cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
 
                         #cover = Pixbuf.new_from_file(self.pahThumnails + "sin_caratula.jpg")
                         if comic.id_comicbook_info != '':

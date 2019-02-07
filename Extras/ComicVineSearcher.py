@@ -254,7 +254,7 @@ class ComicVineSearcher:
         while index < cantidad_elementos:
             if self.cantidad_hilos<20:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
-                threading.Thread(target=self.hilo_procesar_arco, name = str(index), args=[list_ids_arcos[index]]).start()
+                threading.Thread(target=self.hilo_procesar_arco, name=str(index), args=[list_ids_arcos[index]]).start()
                 index+=1
                 self.cantidad_hilos += 1
                 self.porcentaje_procesado = 50 + int(100 * (index-1) / (2*cantidad_elementos))

@@ -116,6 +116,7 @@ class Volumen_vine_search_Gtk():
         self.label_status.set_text(mensaje)
 
     def hilo_cargar_volume(self, id_volume_externo):
+
         cnf = Config(self.session)
         cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
         cv.entidad = 'volume'
