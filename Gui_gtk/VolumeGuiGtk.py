@@ -133,8 +133,10 @@ class VolumeGuiGtk():
             self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
             self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
             self.resumen_volumen.set_text(volumen.descripcion)
-            # print(self.volumens_manager.get_voulume_status())
-            self.progressbar_procentaje_completado.set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
+            if volumen.cantidad_numeros>0:
+                self.progressbar_procentaje_completado.set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
+            else:
+                self.progressbar_procentaje_completado.set_fraction(0)
             self.label_cantidad_comics_asociados.set_text(str(self.volumens_manager.get_cantidad_comics_asociados_al_volumen()))
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=volumen.getImagePath(),
