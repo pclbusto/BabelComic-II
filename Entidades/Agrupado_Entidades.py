@@ -152,9 +152,11 @@ class Comicbook(Entidades.Init.Base):
             return -1
         self.paginas.sort()
         self.indicePaginaActual = 0
+        return 1
 
     def closeCbFile(self):
         self.cbFile.close()
+
     def has_xml(self):
         self.openCbFile()
         xmls = [x for x in self.cbFile.namelist() if (x[-3:].lower() in ["xml"])]
@@ -203,8 +205,8 @@ class Comicbook(Entidades.Init.Base):
 
 
     def getImagePage(self):
-
         pagina = self.getPage()
+        print("LA PAGINA: {}".format(type(pagina)))
         if pagina is None:
             return None
         else:

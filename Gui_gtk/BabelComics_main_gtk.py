@@ -324,14 +324,17 @@ class BabelComics_main_gtk():
         for iter, comic in self.lista_pendientes:
             cover = None
             print("CARGANDO THUMNAIL {}".format(self.cantidad_thumnails_pendiente))
-            if comic.openCbFile()==-1:
+            if comic.openCbFile() == -1:
                 cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
             else:
                 nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
                 if not os.path.isfile(nombreThumnail):
+                    print("size y: {}".format(comic.getImagePage()))
+                    size_y = comic.getImagePage().size[1]
+
                     imagen_height_percent = 350 / comic.getImagePage().size[1]
                     self.size = (int(imagen_height_percent * comic.getImagePage().size[0]), int(350))
-                    cover = comic.getImagePage().resize(self.size, Image.LANCZOS)
+                    cover = comic.getImagePage().resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
                     cover.convert('RGB').save(nombreThumnail)
                 cover = Pixbuf.new_from_file(nombreThumnail)
                 comic.closeCbFile()

@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import Tk, ttk
 from Extras.Config import Config
 from Extras.Scanner import BabelComicBookScanner
-from Entidades.ComicBooks.ComicBook import ComicBook
+from Entidades.Agrupado_Entidades import Comicbook
 import Entidades.Init
 import threading
 

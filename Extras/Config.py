@@ -220,7 +220,7 @@ class Config:
 
 
     def __getClaveMenosUsadaPorRecurso__(self, recurso):
-        statusVineStatus = self.session.query(Setup_Vinekey_Status).filter(Setup_Vinekey_Status.recursoId==recurso).order_by(
+        statusVineStatus = self.session.query(Setup_Vinekey_Status).filter(Setup_Vinekey_Status.recursoId == recurso).order_by(
             Setup_Vinekey_Status.cantidadConsultas.desc()).first()
         if statusVineStatus is not None:
             self.__updateStatus__(statusVineStatus.key,recurso)

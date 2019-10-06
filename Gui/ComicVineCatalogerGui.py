@@ -1,13 +1,11 @@
 from tkinter import *
 from tkinter import *
 from tkinter import Tk, ttk
-from Entidades.ComicBooks.ComicBook import ComicBook
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import Comicbook,Volume,Setup,Comics_In_Volume
 from datetime import date
 from iconos.Iconos import Iconos
 from Gui.VolumeLookupGui import VolumesLookupGui
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Setups.Setup import Setup
 
 from Extras.ComicCataloger import Catalogador
 from PIL import Image, ImageTk
@@ -15,7 +13,6 @@ import urllib.request
 import os
 from  Extras.Config import Config
 import Entidades.Init
-from Entidades.Volumens.ComicsInVolume import ComicInVolumes
 import re
 import threading
 

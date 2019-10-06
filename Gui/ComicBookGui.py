@@ -3,11 +3,10 @@ from tkinter import Tk, ttk
 from Gui.FrameMaestro import FrameMaestro
 from PIL import Image, ImageTk
 from datetime import date
-from Entidades.ComicBooks import ComicBook
-from Entidades.Volumens.Volume import Volume
+from Entidades.Agrupado_Entidades import Comicbook
+from Entidades.Agrupado_Entidades import Volume,Arco_Argumental
 import Entidades.Init
 from Gui.ComicVineCatalogerGui import ComicCatalogerGui
-from Entidades.ArcosArgumentales.ArcoArgumental import ArcoArgumental
 from Gui.ComicVisorGui import ComicVisorGui
 
 

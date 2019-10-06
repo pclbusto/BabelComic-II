@@ -23,7 +23,8 @@ class Volumen_vine_search_Gtk():
             self.session = Entidades.Init.Session()
         else:
             self.session = session
-        self.comicVineSearcher = ComicVineSearcher(config.getClave('volumes'),session=self.session)
+
+        self.comicVineSearcher = ComicVineSearcher(config.getClave('volumes'), session=self.session)
         self.comicVineSearcher.setEntidad("volumes")
         self.publishers_manager = Publishers()
 

@@ -12,6 +12,7 @@ import math
 import threading
 import time
 import random
+import requests
 
 class ComicVineSearcher:
     # todo hacer mas robusta la busqueda y tratar de tener toda la logica de la ventana en esta clase para poder
@@ -80,10 +81,15 @@ class ComicVineSearcher:
             print('la entidad:' + entidad + ' es invalida.')
 
     def addFilter(self, filtro):
+        lista_palabras = filtro.split(' ')
+        filtro_sin_epacios = lista_palabras[0]
+        for palabra in lista_palabras[1:]:
+            filtro_sin_epacios += "+"+palabra
+
         if len(self.filter) == 0:
-            self.filter = '&filter=' + filtro
+            self.filter = '&filter=' + filtro_sin_epacios
         else:
-            self.filter = self.filter + ',' + filtro
+            self.filter = self.filter + ',' + filtro_sin_epacios
             ##        print('http://www.comicvine.com/api/'+self.entidad+'/?api_key='+self.vinekey+self.filter+'&offset='+str(0)+'&sort=id:asc')
 
     def getVineEntity(self, id):
@@ -353,7 +359,9 @@ class ComicVineSearcher:
 
         url = 'http://www.comicvine.com/api/' + self.entidad + '/?api_key=' + self.vinekey + self.filter + '&offset=' + str(
                     self.offset)
-        print("Clave: {}\noffset:{}\nurl:{}".format(self.vinekey, self.offset,url))
+        print("Clave: {}\noffset:{}\nurl:{}".format(self.vinekey, self.offset, url))
+
+
         response = urllib.request.urlopen(url)
         '''
         if self.entidad == 'issues':
