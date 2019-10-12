@@ -161,7 +161,7 @@ class Volumen_vine_search_Gtk():
                         cbi_db.thumbs_url.append(url_cover)
 
 
-                    #cbi_db.thumbs_url = comicbook_info.thumbs_url
+                    # cbi_db.thumbs_url = comicbook_info.thumbs_url
                 print(cbi_db)
             else:
                 print("agregando comic por primera vez")

@@ -18,7 +18,7 @@ class Comic_Vine_Info_Searcher():
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
     regex_get_issue_story_arc = r"4045-(\d*)/\">"
     regex_get_issue_id_volume = r"4050-(\d*)"
-    #regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
+    #regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*) "
     regex_get_issue_url_cover = r"img src=\"(.*\/uploads\/scale_large[^\"]*)"
 
     regex_get_arcs_issues = r"/4000-(\d+)/\">[^\w|^\d^<]"
