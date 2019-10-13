@@ -149,6 +149,19 @@ class Volumen_vine_search_Gtk():
                 cbi_db.orden = comicbook_info.orden
                 cbi_db.url = comicbook_info.url
                 cbi_db.api_detail_url = comicbook_info.api_detail_url
+
+                for url_cover in comicbook_info.thumbs_url:
+                    copiar_cover = True;
+                    for url_cover_cbi in cbi_db.thumbs_url:
+                        if url_cover.thumb_url == url_cover_cbi.thumb_url:
+                            copiar_cover = False
+                            break;
+
+                    if copiar_cover:
+                        cbi_db.thumbs_url.append(url_cover)
+
+
+                    #cbi_db.thumbs_url = comicbook_info.thumbs_url
                 print(cbi_db)
             else:
                 print("agregando comic por primera vez")

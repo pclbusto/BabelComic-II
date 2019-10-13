@@ -238,7 +238,7 @@ class Comic_vine_cataloger_gtk():
             print("-----------------------")
             print(comicbook_info_de_volumen.id_comicbook_info)
 
-            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen).all()
+            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
             self.load_cover_comic_info(comicbook_info_de_volumen)
 
     def load_cover_comic_info(self, comicbook_info_de_volumen):

@@ -18,7 +18,8 @@ class Comic_Vine_Info_Searcher():
     regex_get_issue_cover_date= r'<th>Cover Date<\/th>[^<]*<td>[^<]*[^>]*[^<]*<span>([^<]*)'
     regex_get_issue_story_arc = r"4045-(\d*)/\">"
     regex_get_issue_id_volume = r"4050-(\d*)"
-    regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
+    #regex_get_issue_url_cover = r"img src=\"(https:\/\/static\.comicvine\.com\/uploads\/scale_large[^\"]*)"
+    regex_get_issue_url_cover = r"img src=\"(.*\/uploads\/scale_large[^\"]*)"
 
     regex_get_arcs_issues = r"/4000-(\d+)/\">[^\w|^\d^<]"
     regex_get_arcs_pages_count = r"\/issues\/\?page=\d+\">"
@@ -42,7 +43,7 @@ class Comic_Vine_Info_Searcher():
 
     def search_issue(self, url):
         html = urlopen(url).read().decode('utf-8')
-        print(html)
+        #print(html)
         print(url)
         comicbook_info = Comicbook_Info()
         comicbook_info.url = url
@@ -93,19 +94,26 @@ class Comic_Vine_Info_Searcher():
                 mes = 12
 
             anio = int(fecha_tapa_issue[-4:])
-            print("Datos para la fecha del comicbookinfo: {}".format(date(anio, mes,1)))
-            comicbook_info.fecha_tapa = date(anio, mes,1).toordinal()
+            print("Datos para la fecha del comicbookinfo: {}".format(date(anio, mes, 1)))
+            comicbook_info.fecha_tapa = date(anio, mes, 1).toordinal()
             print("Datos COMIC SCRAPER \n{}".format(comicbook_info))
+            print("HASTA ACA")
         matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_story_arc, html, re.DOTALL)
         # guardamos los arcos si es que tiene
         for matchNum, match in enumerate(matches):
             arco_argumental = Arco_Argumental()
             arco_argumental.id_arco_argumental = int(match.group(1))
             comicbook_info.lista_ids_arcos_para_procesar.append(arco_argumental)
-        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_url_cover, html, re.DOTALL)
+        matches = re.finditer(Comic_Vine_Info_Searcher.regex_get_issue_url_cover, html)
+        print("URL Imagenes covers")
+        counter = 0
         for matchNum, match in enumerate(matches):
             comic_url =Comicbook_Info_Cover_Url(thumb_url=match.group(1))
+            print("URL:{}".format(comic_url.thumb_url))
             comicbook_info.thumbs_url.append(comic_url)
+            counter +=1
+        print("URL Imagenes covers {}".format(counter))
+
         comicbook_info.actualizado_externamente = True
         # retornamos un comic info con un id de arco. Que puede o no estar en la base eso lo resolvemos mas adelante
         return comicbook_info
