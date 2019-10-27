@@ -28,12 +28,12 @@ class Volumen_vine_search_Gtk():
         self.comicVineSearcher.setEntidad("volumes")
         self.publishers_manager = Publishers()
 
-        self.handlers = {'click_lookup_editorial':self.click_lookup_editorial,
-                         'click_buscar_serie':self.click_buscar_serie,
-                         'click_buscar_mas_serie':self.click_buscar_mas_serie,
-                         'click_aceptar':self.click_aceptar,
-                         'entry_id_editorial_change':self.entry_id_editorial_change,
-                         'seleccion':self.seleccion
+        self.handlers = {'click_lookup_editorial': self.click_lookup_editorial,
+                         'click_buscar_serie': self.click_buscar_serie,
+                         'click_buscar_mas_serie': self.click_buscar_mas_serie,
+                         'click_aceptar': self.click_aceptar,
+                         'entry_id_editorial_change': self.entry_id_editorial_change,
+                         'seleccion': self.seleccion
                          }
 
         self.builder = Gtk.Builder()
@@ -251,6 +251,7 @@ class Volumen_vine_search_Gtk():
 
     def seleccion(self, selection):
         self.spinner.start()
+        GLib.idle_add(self.cargar_mensaje_status, "")
         (model, iter) = selection.get_selected()
         if iter:
             self.volume = self.listaFiltrada[int(model[iter][0])]

@@ -17,3 +17,7 @@ claves
 
 Para hacerlos funcionar en window por ahora no tengo manera el mayor avance si hizo con linux y se va mantener asi. mediante samba mounte
 la carpeta de comics en mi linux y desde ahi catalogo todos los comics que tngo.
+
+para que desde linux tome una carpeta de window en el fstab configurar
+UID=<UID>				<PATH DONDE MONTAR EL DEV>	ntfs		rw,user,noauto,umask=000
+En linux usa unrar para leer los archivo cbr. no basta con el rarfile de python sino tambien este programa.

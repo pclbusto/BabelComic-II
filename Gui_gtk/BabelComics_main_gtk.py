@@ -1,6 +1,7 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
@@ -54,13 +55,19 @@ class BabelComics_main_gtk():
                          'click_boton_comic_info':self.click_boton_comic_info,
                          'click_next_view': self.click_next_view}
 
-        self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png',32,32)
+        self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
+        #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
+
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../BabelComic_main_gtk-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
+        self.app_icon = Pixbuf.new_from_file_at_size('../iconos/BabelComic.png', 32, 32)
+        #Gtk.Windowset_default_icon_list([self.app_icon])
         self.window.set_icon_from_file('../iconos/BabelComic.png')
+        #self.window.set_icon_from_file('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/BabelComic.png')
+        self.window.set_default_icon_list([self.app_icon])
         self.boton_refresh= self.builder.get_object('boton_refresh')
         self.iconview = self.builder.get_object('iconview')
         self.search_entry_filtro_comics = self.builder.get_object('search_entry_filtro_comics')
@@ -321,12 +328,14 @@ class BabelComics_main_gtk():
         self.cantidad_thumnails_pendiente = len(self.lista_pendientes)
         print(self.cantidad_thumnails_pendiente)
         self.salir_thread=False
+        print("CARGANDO THUMNAIL {}".format(self.cantidad_thumnails_pendiente))
         for iter, comic in self.lista_pendientes:
             cover = None
-            print("CARGANDO THUMNAIL {}".format(self.cantidad_thumnails_pendiente))
+            print(comic)
             if comic.openCbFile() == -1:
                 cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
             else:
+                print("No tiene thumnail vamos a crearlo")
                 nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
                 if not os.path.isfile(nombreThumnail):
                     print("size y: {}".format(comic.getImagePage()))
@@ -398,6 +407,7 @@ class BabelComics_main_gtk():
             self.thread_creacion_thumnails.start()
 
 if __name__ == "__main__":
+    GLib.set_prgname('Babelcomics')
     bc = BabelComics_main_gtk()
     bc.window.connect("destroy", Gtk.main_quit)
     bc.window.show()
