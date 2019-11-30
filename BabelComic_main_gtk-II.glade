@@ -63,11 +63,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_editorial" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
+            <property name="top_attach">5</property>
           </packing>
         </child>
         <child>
@@ -76,11 +77,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_serie" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">6</property>
           </packing>
         </child>
         <child>
@@ -89,11 +91,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_catalogar" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">2</property>
-            <property name="top_attach">0</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">2</property>
           </packing>
         </child>
         <child>
@@ -102,10 +105,11 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_open_scanear" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">1</property>
+            <property name="left_attach">0</property>
             <property name="top_attach">1</property>
           </packing>
         </child>
@@ -115,11 +119,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_refresh" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
+            <property name="top_attach">3</property>
           </packing>
         </child>
         <child>
@@ -128,11 +133,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_config" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">2</property>
-            <property name="top_attach">1</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
         <child>
@@ -141,18 +147,47 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="relief">none</property>
             <signal name="clicked" handler="click_boton_comic_info" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
+            <property name="top_attach">7</property>
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">4</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">8</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Acerca de</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">none</property>
+            <signal name="clicked" handler="click_boton_acerca_de" swapped="no"/>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">9</property>
+          </packing>
         </child>
       </object>
       <packing>

@@ -9,6 +9,7 @@ import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
+from bs4 import BeautifulSoup
 
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -132,7 +133,7 @@ class VolumeGuiGtk():
             self.label_nombre_editorial.set_text(volumen.publisher_name)
             self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
             self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
-            self.resumen_volumen.set_text(volumen.descripcion)
+            self.resumen_volumen.set_text(BeautifulSoup(volumen.descripcion).get_text("\n"))
             if volumen.cantidad_numeros>0:
                 self.progressbar_procentaje_completado.set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
             else:

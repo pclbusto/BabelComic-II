@@ -89,6 +89,7 @@
     <property name="title" translatable="yes">Volumen</property>
     <property name="window_position">center</property>
     <property name="default_width">1000</property>
+    <property name="default_height">850</property>
     <signal name="focus-out-event" handler="change_id_volume" swapped="no"/>
     <child>
       <placeholder/>
@@ -582,6 +583,8 @@
                     <child>
                       <object class="GtkTreeViewColumn">
                         <property name="title" translatable="yes">Cantidad</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">3</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>

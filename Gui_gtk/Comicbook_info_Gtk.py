@@ -9,6 +9,7 @@ import datetime
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
+from bs4 import BeautifulSoup
 
 class Comicbook_Info_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -28,7 +29,7 @@ class Comicbook_Info_Gtk():
                          'menu_desplegado':self.menu_desplegado,'click_eliminar':self.click_eliminar,
                          'click_cover_anterior': self.click_cover_anterior,
                          'click_cover_siguiente':self.click_cover_siguiente,
-                         'change_cover':self.change_cover}
+                         'change_cover': self.change_cover}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Comicbook_info_gtk.glade")
@@ -53,13 +54,16 @@ class Comicbook_Info_Gtk():
         self.cover_comic = self.builder.get_object("cover_comic")
         self.combo_paginas = self.builder.get_object("combo_paginas")
 
+        print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
 
     def change_cover(self, widget):
+        print("change_cover")
         tree_iter = widget.get_active_iter()
         if tree_iter is not None:
             model = widget.get_model()
-            index = model[tree_iter][0]
+            index = widget.get_active()
+            print("change_cover INDEX {}".format(widget.get_active()))
             self.comicbooks_manager.index_lista_covers = index
             self._load_cover()
         else:
@@ -87,6 +91,7 @@ class Comicbook_Info_Gtk():
     def set_comicbook(self, id):
         #todo validar volumn seteado
         self.comicbooks_manager.get(id)
+        print("Cargamos el voumen {}".format(id))
         self._copy_to_window(self.comicbooks_manager.entidad)
 
     def seleccion_fecha(self, widget):
@@ -161,8 +166,10 @@ class Comicbook_Info_Gtk():
             self.entry_api_url.set_text(comicbook_info.api_detail_url)
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
-            self.textbuffer.set_text(comicbook_info.resumen)
+            self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
+            print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
             self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
+            print("Dsadasdas")
             self._load_cover()
             listore = Gtk.ListStore(int)
             for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):

@@ -14,9 +14,10 @@ from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
+from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
 import os.path
 import math
-from PIL import Image
+from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
 import time
 import threading
@@ -28,7 +29,7 @@ class BabelComics_main_gtk():
     # todo que tengan iconos las ventanas.
     # todo implementar ventana de datos comics
     def __init__(self):
-
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
         self.session = Entidades.Init.Session()
 
         self.listaEditoriales = self.session.query(Publisher).all()
@@ -53,6 +54,7 @@ class BabelComics_main_gtk():
                          'cambio_pagina':self.cambio_pagina,
                          'seleccion_item_view':self.seleccion_item_view,
                          'click_boton_comic_info':self.click_boton_comic_info,
+                         'click_boton_acerca_de':self.click_boton_acerca_de,
                          'click_next_view': self.click_next_view}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
@@ -145,7 +147,7 @@ class BabelComics_main_gtk():
     def evento_cierre(self,event):
         print("hola")
 
-    def atajos_teclado(self,widget, event):
+    def atajos_teclado(self, widget, event):
         ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
         if ctrl and event.keyval == Gdk.KEY_f:
             self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
@@ -180,6 +182,7 @@ class BabelComics_main_gtk():
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
                 Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path)
+
         else:
             self.query = self.session.query(Comicbook).order_by(Comicbook.path)
         # cantidad = self.session.query(Comicbook).filter(Comicbook.path.like("%Green lantern%")).count()
@@ -208,9 +211,12 @@ class BabelComics_main_gtk():
         config.window.show()
         self.popovermenu.popdown()
 
+    def click_boton_acerca_de(self, widget):
+        acerca_de = Acerca_de_gtk()
+        acerca_de.window.show()
+
     def click_boton_open_scanear(self,widget):
         scanner = ScannerGtk(funcion_callback=self.loadAndCreateThumbnails)
-        # scanner.window.connect("destroy", Gtk.main_quit)
         scanner.window.show()
         self.popovermenu.popdown()
 
@@ -343,7 +349,8 @@ class BabelComics_main_gtk():
 
                     imagen_height_percent = 350 / comic.getImagePage().size[1]
                     self.size = (int(imagen_height_percent * comic.getImagePage().size[0]), int(350))
-                    cover = comic.getImagePage().resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
+                    cover = comic.getImagePage()
+                    cover = cover.resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
                     cover.convert('RGB').save(nombreThumnail)
                 cover = Pixbuf.new_from_file(nombreThumnail)
                 comic.closeCbFile()

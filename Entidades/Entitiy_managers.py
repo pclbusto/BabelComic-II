@@ -34,8 +34,12 @@ class Comicbooks_Info(Entity_manager):
             Comicbook_Info_Cover_Url.id_comicbook_info == self.entidad.id_comicbook_info).all()
 
     def _get_cover_complete_path(self):
+        print("Comicbooks_Info._get_cover_complete_path")
         print(self.lista_covers)
+        print("self.index_lista_covers {}".format(self.index_lista_covers))
+        print("self.lista_covers count {}".format(len(self.lista_covers)))
         comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+        #comicbook_info_cover_url = self.lista_covers[0]
         webImage = comicbook_info_cover_url.thumb_url
         nombreImagen = webImage[webImage.rindex('/') + 1:]
         print(webImage)
@@ -52,6 +56,7 @@ class Comicbooks_Info(Entity_manager):
         return path + nombreImagen
 
     def get_next_cover_complete_path(self):
+        print("get_next_cover_complete_path");
         if len(self.lista_covers) - 1 > self.index_lista_covers:
             self.index_lista_covers += 1
         return self._get_cover_complete_path()

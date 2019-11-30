@@ -1,10 +1,8 @@
-from Entidades.Publishers.Publisher import Publisher
-import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 from gi.repository.GdkPixbuf import Pixbuf
-
+from PIL import Image, ImageFile
 
 class test_pixbuf():
     def __init__(self):
@@ -25,7 +23,7 @@ class test_pixbuf():
 
 
 if (__name__ == '__main__'):
-    test = test_pixbuf()
-    test.window.show_all()
-    test.window.connect("destroy", Gtk.main_quit)
-    Gtk.main()
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    imagen = Image.open("/home/pclbusto/Imágenes/test/action047-med.gif")
+    imagen.show()
+    #open("/home/pclbusto/Imágenes/test/action047-med.gif")
