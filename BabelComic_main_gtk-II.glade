@@ -36,7 +36,23 @@
     <columns>
       <!-- column-name Nodo -->
       <column type="gchararray"/>
+      <!-- column-name seleccionado -->
+      <column type="gboolean"/>
+      <!-- column-name id -->
+      <column type="gint64"/>
     </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">DC comics</col>
+        <col id="1">True</col>
+        <col id="2">0</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Marvel</col>
+        <col id="1">False</col>
+        <col id="2">0</col>
+      </row>
+    </data>
   </object>
   <object class="GtkPopover" id="menu_comic">
     <property name="can_focus">False</property>
@@ -340,6 +356,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkButton">
                     <property name="visible">True</property>
@@ -354,7 +371,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="label_pagina_filtros">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Editoriales</property>
@@ -380,6 +397,20 @@
                     <property name="position">2</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkCheckButton">
+                    <property name="label" translatable="yes">Todos</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -403,10 +434,25 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn">
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">0</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>
                             <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn">
+                        <child>
+                          <object class="GtkCellRendererToggle">
+                            <signal name="toggled" handler="marca_filtro" swapped="yes"/>
+                          </object>
+                          <attributes>
+                            <attribute name="active">1</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -433,6 +479,7 @@
                     <property name="primary_icon_name">edit-find-symbolic</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="primary_icon_sensitive">False</property>
+                    <signal name="search-changed" handler="search_change_panel_filtro" swapped="no"/>
                   </object>
                 </child>
               </object>

@@ -15,6 +15,7 @@ from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
 from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
+from Extras import BabelComics_Manager
 import os.path
 import math
 from PIL import Image, ImageFile
@@ -45,6 +46,7 @@ class BabelComics_main_gtk():
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
                          'search_change':self.search_change,
+                         'search_change_panel_filtro':self.search_change_panel_filtro,
                          'atajos_teclado':self.atajos_teclado,
                          'evento_cierre':self.evento_cierre,
                          'click_primero':self.click_primero,
@@ -55,7 +57,8 @@ class BabelComics_main_gtk():
                          'seleccion_item_view':self.seleccion_item_view,
                          'click_boton_comic_info':self.click_boton_comic_info,
                          'click_boton_acerca_de':self.click_boton_acerca_de,
-                         'click_next_view': self.click_next_view}
+                         'click_next_view': self.click_next_view,
+                         'marca_filtro': self.marca_filtro}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -86,18 +89,19 @@ class BabelComics_main_gtk():
         self.all_radio = self.builder.get_object("all_radio")
         self.popovermenu = self.builder.get_object("popovermenu")
         self.label_contadores = self.builder.get_object("label_contadores")
+        self.label_pagina_filtros = self.builder.get_object("label_pagina_filtros")
+        self.list_navegacion = self.builder.get_object("list_navegacion")
 
 
         self.thread_creacion_thumnails = None
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
-        self.list_navegacion.append("")
         self.lista_comics_esperando_por_thumnail=[]
         self.updating_gui = False
         self.salir_thread = False
-        for editorial in self.listaEditoriales:
-            self.list_navegacion.append([editorial.name])
+        #for editorial in self.listaEditoriales:
+         #   self.list_navegacion.append([editorial.name, 0])
 
         self.liststore = Gtk.ListStore(Pixbuf, str, int)
         self.lista_pendientes = []
@@ -114,12 +118,36 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
+        self.manager = BabelComics_Manager.BabelComics_Manager()
+
+
+    def marca_filtro(self,widget, args):
+        print("Hola")
+        print(widget)
+        print(args)
+        print(self.list_navegacion[args][0])
+        if self.list_navegacion[args][1] == 1:
+            self.list_navegacion[args][1] = 0
+        else:
+            self.list_navegacion[args][1] = 1
+
+        pass
 
     def click_next_view(self, widget):
-        pass
+        self.manager.next_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+        self.update_panel_filtros()
 
     def click_boton_comic_info(self, widget):
-        pass
+        self.manager.prev_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+
+
+    def update_panel_filtros(self):
+        lista = self.manager.get_lista_actual()
+        self.list_navegacion.clear()
+        for entidad in lista:
+            self.list_navegacion.append([entidad[0], entidad[1], entidad[2]])
 
     def seleccion_item_view(self, event):
 
@@ -175,6 +203,11 @@ class BabelComics_main_gtk():
         self.search_bar.set_search_mode(not self.search_bar.get_search_mode())
         if self.search_bar.get_search_mode():
             self.search_entry_filtro_comics.grab_focus()
+
+    def search_change_panel_filtro(self, widget):
+        print("Cambiando filtro")
+        self.manager.set_filtro(self.search_entry_filtro_general.get_text())
+        self.update_panel_filtros()
 
     def search_change(self, widget):
 
