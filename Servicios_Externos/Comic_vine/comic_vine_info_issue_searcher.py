@@ -92,8 +92,10 @@ class Comic_Vine_Info_Searcher():
                 mes = 12
             else:
                 mes = 12
-
-            anio = int(fecha_tapa_issue[-4:])
+            anio_str = fecha_tapa_issue[-4:]
+            anio = 1900
+            if anio_str.isdigit():
+                anio = int(fecha_tapa_issue[-4:])
             print("Datos para la fecha del comicbookinfo: {}".format(date(anio, mes, 1)))
             comicbook_info.fecha_tapa = date(anio, mes, 1).toordinal()
             print("Datos COMIC SCRAPER \n{}".format(comicbook_info))

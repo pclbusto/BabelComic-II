@@ -12,6 +12,7 @@ from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
 from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
@@ -43,6 +44,7 @@ class BabelComics_main_gtk():
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_catalogar':self.click_boton_catalogar,
+                         'click_boton_configurar_comicbook':self.click_boton_configurar_comicbook,
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
                          'search_change':self.search_change,
@@ -58,6 +60,7 @@ class BabelComics_main_gtk():
                          'click_boton_comic_info':self.click_boton_comic_info,
                          'click_boton_acerca_de':self.click_boton_acerca_de,
                          'click_next_view': self.click_next_view,
+                         'click_prev_view':self.click_prev_view,
                          'marca_filtro': self.marca_filtro}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
@@ -119,22 +122,22 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
         self.manager = BabelComics_Manager.BabelComics_Manager()
-
+        self.update_panel_filtros()
 
     def marca_filtro(self,widget, args):
-        print("Hola")
-        print(widget)
-        print(args)
-        print(self.list_navegacion[args][0])
+        self.manager.marcar_para_filtrar(self.list_navegacion[args][2])
         if self.list_navegacion[args][1] == 1:
             self.list_navegacion[args][1] = 0
         else:
             self.list_navegacion[args][1] = 1
 
-        pass
-
     def click_next_view(self, widget):
         self.manager.next_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+        self.update_panel_filtros()
+
+    def click_prev_view(self, widget):
+        self.manager.prev_seccion()
         self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
         self.update_panel_filtros()
 
@@ -148,6 +151,7 @@ class BabelComics_main_gtk():
         self.list_navegacion.clear()
         for entidad in lista:
             self.list_navegacion.append([entidad[0], entidad[1], entidad[2]])
+
 
     def seleccion_item_view(self, event):
 
@@ -265,6 +269,25 @@ class BabelComics_main_gtk():
     def click_boton_refresh(self,widget):
         self.loadAndCreateThumbnails()
         self.popovermenu.popdown()
+
+    def click_boton_configurar_comicbook(self, widget):
+        print("AAAAAAAAAAAAAAAAAAAAAAA")
+        for path in self.iconview.get_selected_items():
+            indice = path
+            print(self.listaComics[indice[0]].id_comicbook)
+        #
+        cbi = Comicbook_Detail_Gtk()
+        cbi.set_comicbook(self.listaComics[indice[0]].id_comicbook)
+        cbi.window.show()
+        #
+        #
+        #
+        # cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
+        # cvs.window.show()
+        # if self.popovermenu is not None:
+        #     self.popovermenu.popdown()
+        # if self.menu_comic is not None:
+        #     self.menu_comic.popdown()
 
     def click_boton_catalogar(self, widget):
         print("dsadsadasd")

@@ -1,0 +1,224 @@
+import os
+import Entidades.Init
+from Entidades.Entitiy_managers import Commicbooks, Volumens
+from Entidades.Agrupado_Entidades import  Comicbook_Info
+from Gui_gtk import Publisher_lookup_gtk
+from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
+import datetime
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf
+from bs4 import BeautifulSoup
+
+class Comicbook_Detail_Gtk():
+    # todo implementar los botones de limpiar, guardar y borrar
+
+    def __init__(self,  session=None):
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Entidades.Init.Session()
+
+        self.comicbooks_manager = Commicbooks(session=self.session)
+
+        self.handlers = {"seleccion_fila":self.seleccion_fila}
+
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file("../Comicbook_Detail_gtk.glade")
+        self.builder.connect_signals(self.handlers)
+        self.window = self.builder.get_object("Comicbook_Detail")
+
+        self.imagen_pagina = self.builder.get_object("imagen_pagina")
+        self.liststore_comicbook = self.builder.get_object("liststore_comicbook")
+        self.comicbook = None
+        print("Creacion de formulario exitosa")
+        # inicializamos el modelo con rotulos del manager
+
+    def seleccion_fila(self, widget):
+        print(widget)
+        model, treeiter = widget.get_selection().get_selected()
+        if treeiter is not None:
+            self.comicbook.goto(model[treeiter][0])
+            print("You selected", model[treeiter][0])
+
+        stream = self.comicbook.get_image_page_gtk()
+        print(stream)
+        self.imagen_pagina.set_from_pixbuf(
+            stream.scale_simple(int(stream.get_width() * 0.3), int(stream.get_height() * 0.3), 0))
+
+    def set_comicbook(self, comicbook_id):
+        self.comicbook = self.comicbooks_manager.get(comicbook_id)
+        self.comicbook.openCbFile()
+        stream = self.comicbook.get_image_page_gtk()
+        print(stream)
+        self.imagen_pagina.set_from_pixbuf(stream.scale_simple(int(stream.get_width()*0.3), int(stream.get_height()*0.3), 0))
+        cantidad_paginas = self.comicbook.getCantidadPaginas()
+        self.liststore_comicbook.clear()
+        for elemento in range(0, cantidad_paginas):
+            self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0])
+
+
+        # cb.getImagePage().show()
+
+
+    def change_cover(self, widget):
+        print("change_cover")
+        tree_iter = widget.get_active_iter()
+        if tree_iter is not None:
+            model = widget.get_model()
+            index = widget.get_active()
+            print("change_cover INDEX {}".format(widget.get_active()))
+            self.comicbooks_manager.index_lista_covers = index
+            self._load_cover()
+        else:
+            entry = widget.get_child()
+            print("Entered: %s" % entry.get_text())
+
+    def click_eliminar(self,widget):
+        print(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_day(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.month = datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).month + 1
+        self.calendario.year = datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).year
+
+    def menu_desplegado(self, widget):
+        print(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_day(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
+        self.calendario.select_month(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).month-1,
+                                     datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).year)
+
+    def set_volume(self, id_volume):
+        self.comicbooks_manager.set_volume(id_volume=id_volume)
+        volume_mamange = Volumens(session = self.session)
+        volume = volume_mamange.get(id_volume)
+        self.label_nombre_volumen.set_text(volume.nombre)
+    #
+    # def set_comicbook(self, id):
+    #     #todo validar volumn seteado
+    #     self.comicbooks_manager.get(id)
+    #     print("Cargamos el voumen {}".format(id))
+    #     self._copy_to_window(self.comicbooks_manager.entidad)
+
+    def seleccion_fecha(self, widget):
+        print(widget.get_date().year)
+        self.label_fecha_tapa.set_text(datetime.date(year=widget.get_date().year, month=widget.get_date().month+1, day=widget.get_date().day).strftime("%d/%m/%Y"))
+        self.comicbooks_manager.entidad.fecha_tapa = datetime.date(year=widget.get_date().year, month=widget.get_date().month+1, day=widget.get_date().day).toordinal()
+        self.popover.popdown()
+
+    def click_cover_anterior(self, widget):
+        self.comicbooks_manager.get_prev_cover_complete_path()
+        self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
+
+    def click_cover_siguiente(self, widget):
+        self.comicbooks_manager.get_next_cover_complete_path()
+        self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
+
+    def combobox_change(self,widget):
+        if widget.get_active_iter() is not None:
+            self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
+
+    def boton_guardar(self,widget):
+        self.copy_from_window_to_entity()
+        self.comicbooks_manager.save()
+
+    def click_cargar_desde_web(self, widget):
+        publisher_vine_search = Publisher_vine_search_gtk(self.session)
+        publisher_vine_search.window.show()
+
+    def id_changed(self,widget, test):
+        if self.entry_id.get_text()!='':
+            publisher = self.publishers_manager.get(self.entry_id.get_text())
+            self._copy_to_window(publisher)
+
+    def return_lookup(self, id_publisher):
+        if id_publisher  !='':
+            self.entry_id.set_text(str(id_publisher))
+            publisher = self.publishers_manager.get(self.entry_id.get_text())
+            self._copy_to_window(publisher)
+
+    def open_lookup(self, widget):
+        lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.return_lookup)
+        lookup.window.show()
+
+    def getFirst(self, widget):
+        comicbook_info = self.comicbooks_manager.getFirst()
+        self._copy_to_window(comicbook_info)
+
+    def getPrev(self, widget):
+        comicbook_info = self.comicbooks_manager.getPrev()
+        self._copy_to_window(comicbook_info)
+
+    def getNext(self, widget):
+        comicbook_info = self.comicbooks_manager.getNext()
+        self._copy_to_window(comicbook_info)
+
+    def getLast(self, widget):
+        publisher = self.comicbooks_manager.getLast()
+        self._copy_to_window(publisher)
+
+    def _copy_to_window(self, comicbook_info):
+        print(comicbook_info)
+        #self.clearWindow()
+        if comicbook_info is not None:
+            self.entry_orden.set_text(str(comicbook_info.orden))
+            self.entry_numero.set_text(str(comicbook_info.numero))
+            self.entry_titulo.set_text(comicbook_info.titulo)
+            if comicbook_info.fecha_tapa>0:
+                self.label_fecha_tapa.set_text(datetime.date.fromordinal(comicbook_info.fecha_tapa).strftime("%d/%m/%Y"))
+            else:
+                self.label_fecha_tapa.set_text(
+                    datetime.date.fromordinal(1).strftime("%d/%m/%Y"))
+            self.entry_api_url.set_text(comicbook_info.api_detail_url)
+            self.entry_url.set_text(comicbook_info.url)
+            self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
+            self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
+            print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
+            self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
+            print("Dsadasdas")
+            self._load_cover()
+            listore = Gtk.ListStore(int)
+            for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):
+                listore.append([index])
+            self.combo_paginas.set_model(listore)
+
+    def _load_cover_background(self):
+        nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=nombreThumnail,
+            width=150,
+            height=250,
+            preserve_aspect_ratio=True)
+        self.cover_comic.set_from_pixbuf(pixbuf)
+
+    def _load_cover(self):
+
+        self._load_cover_background()
+
+    def copy_from_window_to_entity(self):
+        self.comicbooks_manager.entidad.orden = self.entry_orden.get_text()
+        self.comicbooks_manager.entidad.numero = self.entry_numero.get_text()
+        self.comicbooks_manager.entidad.titulo = self.entry_titulo.get_text()
+        # este campo lo tenemos actualizaco cada vez que se selecciona un valor de calendario
+        # self.comicbooks_manager.entidad.fecha_tapa
+        self.comicbooks_manager.entidad.rating = self.scale_raiting.get_adjustment().get_value()
+        #self.volumens_manager.entidad.image_url = self.entry_url_cover.get_text()
+        #self.volumens_manager.entidad.anio_inicio = self.entry_anio_inicio.get_text()
+        #self.volumens_manager.entidad.cantidad_numeros = self.entry_cantidad_numeros.get_text()
+
+    def click_limpiar(self, widget):
+        print("dsldsa")
+        self.entry_url.clear()
+        # self.entradaNombre.delete(0, END)
+        # self.entradaUrl.delete(0, END)
+        # self.textoDescripcion.config(text='')
+
+
+if __name__ == "__main__":
+    id = "20106"
+
+    cbi = Comicbook_Detail_Gtk()
+    cbi.window.connect("destroy", Gtk.main_quit)
+    cbi.set_comicbook(id)
+    cbi.window.show()
+
+    Gtk.main()

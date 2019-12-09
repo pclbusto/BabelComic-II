@@ -1,6 +1,6 @@
 from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup
-from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Info, Comicbook, Comicbook_Info_Cover_Url
+from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Detail, Comicbook_Info, Comicbook, Comicbook_Info_Cover_Url
 from Entidades import Init
 from sqlalchemy import func, join, and_
 import os
@@ -203,7 +203,59 @@ class Volumens(Entity_manager):
         self.entidad.nombre= ''
         self.entidad.publisher_name = ''
 
+class Comicbooks_Detail(Entity_manager):
+
+    def __init__(self, session = None):
+        Entity_manager.__init__(self, session=session, clase=Comicbook_Detail)
+
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
+
+        self.set_order(Comicbook_Detail.comicbook_id,0)
+        self.lista_opciones = {'Id': Comicbook_Detail.comicbook_id}
+
+        self.status = 1
+        self.entidad=Comicbook_Detail()
+        self.filtro = None
+        self.set_order(Comicbook_Detail.comicbook_id)
+        self.direccion = 0
+
+class Commicbooks(Entity_manager):
+    def __init__(self, session = None):
+        Entity_manager.__init__(self, session=session, clase=Comicbook)
+
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
+
+        self.set_order(Comicbook.path,0)
+        self.lista_opciones = {'Path': Comicbook.path}
+
+        self.status = 1
+        self.entidad = Comicbook()
+        self.filtro = None
+        self.set_order(Comicbook.path)
+        self.direccion = 0
+
+
+
 if (__name__=='__main__'):
-    ArcosArgumentales().rm(55691)
+    # cbdm = Comicbooks_Detail()
+    # cbd = cbdm.entidad
+    # cbd.comicbook_id = 1
+    # cbd.indicePagina = 1
+    # cbd.ordenPagina = 1
+    # cbd.tipoPagina = Comicbook_Detail.COVER
+    # cbdm.save()
+    cbm = Commicbooks()
+    cbm.getFirst()
+    cb = cbm.entidad
+    cb.openCbFile()
+    cb.getImagePage().show()
+    print(cb)
+
 
     #print(arco.getCantidadTitulos())
