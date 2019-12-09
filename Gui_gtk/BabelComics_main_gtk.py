@@ -12,11 +12,14 @@ from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
+from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
+from Extras import BabelComics_Manager
 import os.path
 import math
-from PIL import Image
+from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
 import time
 import threading
@@ -28,7 +31,7 @@ class BabelComics_main_gtk():
     # todo que tengan iconos las ventanas.
     # todo implementar ventana de datos comics
     def __init__(self):
-
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
         self.session = Entidades.Init.Session()
 
         self.listaEditoriales = self.session.query(Publisher).all()
@@ -41,9 +44,11 @@ class BabelComics_main_gtk():
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_catalogar':self.click_boton_catalogar,
+                         'click_boton_configurar_comicbook':self.click_boton_configurar_comicbook,
                          'click_boton_config':self.click_boton_config,
                          'click_boton_buscar':self.click_boton_buscar,
                          'search_change':self.search_change,
+                         'search_change_panel_filtro':self.search_change_panel_filtro,
                          'atajos_teclado':self.atajos_teclado,
                          'evento_cierre':self.evento_cierre,
                          'click_primero':self.click_primero,
@@ -53,7 +58,10 @@ class BabelComics_main_gtk():
                          'cambio_pagina':self.cambio_pagina,
                          'seleccion_item_view':self.seleccion_item_view,
                          'click_boton_comic_info':self.click_boton_comic_info,
-                         'click_next_view': self.click_next_view}
+                         'click_boton_acerca_de':self.click_boton_acerca_de,
+                         'click_next_view': self.click_next_view,
+                         'click_prev_view':self.click_prev_view,
+                         'marca_filtro': self.marca_filtro}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -84,18 +92,19 @@ class BabelComics_main_gtk():
         self.all_radio = self.builder.get_object("all_radio")
         self.popovermenu = self.builder.get_object("popovermenu")
         self.label_contadores = self.builder.get_object("label_contadores")
+        self.label_pagina_filtros = self.builder.get_object("label_pagina_filtros")
+        self.list_navegacion = self.builder.get_object("list_navegacion")
 
 
         self.thread_creacion_thumnails = None
 
         self.list_navegacion = self.builder.get_object('list_navegacion')
         self.list_navegacion.clear()
-        self.list_navegacion.append("")
         self.lista_comics_esperando_por_thumnail=[]
         self.updating_gui = False
         self.salir_thread = False
-        for editorial in self.listaEditoriales:
-            self.list_navegacion.append([editorial.name])
+        #for editorial in self.listaEditoriales:
+         #   self.list_navegacion.append([editorial.name, 0])
 
         self.liststore = Gtk.ListStore(Pixbuf, str, int)
         self.lista_pendientes = []
@@ -112,12 +121,37 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
+        self.manager = BabelComics_Manager.BabelComics_Manager()
+        self.update_panel_filtros()
+
+    def marca_filtro(self,widget, args):
+        self.manager.marcar_para_filtrar(self.list_navegacion[args][2])
+        if self.list_navegacion[args][1] == 1:
+            self.list_navegacion[args][1] = 0
+        else:
+            self.list_navegacion[args][1] = 1
 
     def click_next_view(self, widget):
-        pass
+        self.manager.next_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+        self.update_panel_filtros()
+
+    def click_prev_view(self, widget):
+        self.manager.prev_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+        self.update_panel_filtros()
 
     def click_boton_comic_info(self, widget):
-        pass
+        self.manager.prev_seccion()
+        self.label_pagina_filtros.set_text(self.manager.get_titulo_actual())
+
+
+    def update_panel_filtros(self):
+        lista = self.manager.get_lista_actual()
+        self.list_navegacion.clear()
+        for entidad in lista:
+            self.list_navegacion.append([entidad[0], entidad[1], entidad[2]])
+
 
     def seleccion_item_view(self, event):
 
@@ -145,7 +179,7 @@ class BabelComics_main_gtk():
     def evento_cierre(self,event):
         print("hola")
 
-    def atajos_teclado(self,widget, event):
+    def atajos_teclado(self, widget, event):
         ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
         if ctrl and event.keyval == Gdk.KEY_f:
             self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
@@ -174,12 +208,18 @@ class BabelComics_main_gtk():
         if self.search_bar.get_search_mode():
             self.search_entry_filtro_comics.grab_focus()
 
+    def search_change_panel_filtro(self, widget):
+        print("Cambiando filtro")
+        self.manager.set_filtro(self.search_entry_filtro_general.get_text())
+        self.update_panel_filtros()
+
     def search_change(self, widget):
 
         self.filtro = self.search_entry_filtro_comics.get_text()
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
                 Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path)
+
         else:
             self.query = self.session.query(Comicbook).order_by(Comicbook.path)
         # cantidad = self.session.query(Comicbook).filter(Comicbook.path.like("%Green lantern%")).count()
@@ -208,9 +248,12 @@ class BabelComics_main_gtk():
         config.window.show()
         self.popovermenu.popdown()
 
+    def click_boton_acerca_de(self, widget):
+        acerca_de = Acerca_de_gtk()
+        acerca_de.window.show()
+
     def click_boton_open_scanear(self,widget):
         scanner = ScannerGtk(funcion_callback=self.loadAndCreateThumbnails)
-        # scanner.window.connect("destroy", Gtk.main_quit)
         scanner.window.show()
         self.popovermenu.popdown()
 
@@ -226,6 +269,25 @@ class BabelComics_main_gtk():
     def click_boton_refresh(self,widget):
         self.loadAndCreateThumbnails()
         self.popovermenu.popdown()
+
+    def click_boton_configurar_comicbook(self, widget):
+        print("AAAAAAAAAAAAAAAAAAAAAAA")
+        for path in self.iconview.get_selected_items():
+            indice = path
+            print(self.listaComics[indice[0]].id_comicbook)
+        #
+        cbi = Comicbook_Detail_Gtk()
+        cbi.set_comicbook(self.listaComics[indice[0]].id_comicbook)
+        cbi.window.show()
+        #
+        #
+        #
+        # cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
+        # cvs.window.show()
+        # if self.popovermenu is not None:
+        #     self.popovermenu.popdown()
+        # if self.menu_comic is not None:
+        #     self.menu_comic.popdown()
 
     def click_boton_catalogar(self, widget):
         print("dsadsadasd")
@@ -343,7 +405,8 @@ class BabelComics_main_gtk():
 
                     imagen_height_percent = 350 / comic.getImagePage().size[1]
                     self.size = (int(imagen_height_percent * comic.getImagePage().size[0]), int(350))
-                    cover = comic.getImagePage().resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
+                    cover = comic.getImagePage()
+                    cover = cover.resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
                     cover.convert('RGB').save(nombreThumnail)
                 cover = Pixbuf.new_from_file(nombreThumnail)
                 comic.closeCbFile()

@@ -10,7 +10,10 @@ from rarfile import NotRarFile, BadRarFile
 from zipfile import BadZipFile
 from io import BytesIO
 from sqlalchemy import Sequence
-import iconos.Iconos
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf, GLib
+
 import urllib
 
 class Setup(Entidades.Init.Base):
@@ -104,8 +107,8 @@ class Comicbook(Entidades.Init.Base):
 
     path = Column(String,unique=True)
     id_comicbook = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
-    id_comicbook_info = Column(String,nullable=False,default='')
-    calidad = Column(Integer,nullable=False,default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
+    id_comicbook_info = Column(String, nullable=False, default='')
+    calidad = Column(Integer, nullable=False, default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
 
     def __repr__(self):
         return "\nid ={}\npath={}\ncomic_info_id:*{}*".format(self.id_comicbook, self.getPath(), self.id_comicbook_info)
@@ -211,6 +214,23 @@ class Comicbook(Entidades.Init.Base):
             return None
         else:
             return (Image.open(pagina))
+
+    def get_image_page_gtk(self):
+        pagina = self.getPage()
+        print("LA PAGINA: {}".format(type(pagina)))
+        if pagina is None:
+            return None
+        else:
+            return (self.image2pixbuf(Image.open(pagina)))
+
+    def image2pixbuf(self, im):
+        """Convert Pillow image to GdkPixbuf"""
+        data = im.tobytes()
+        w, h = im.size
+        data = GLib.Bytes.new(data)
+        pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+                                              False, 8, w, h, w * 3)
+        return pix
 
     def getCantidadPaginas(self):
         return (len(self.paginas))

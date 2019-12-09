@@ -1,6 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
+from Entidades.Entitiy_managers import Commicbooks, Volumens
 from Entidades.Agrupado_Entidades import  Comicbook_Info
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
@@ -11,51 +11,56 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 from bs4 import BeautifulSoup
 
-class Comicbook_Info_Gtk():
+class Comicbook_Detail_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
 
-    def __init__(self,  session=None,):
+    def __init__(self,  session=None):
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
 
-        self.comicbooks_manager = Comicbooks_Info(session=self.session)
+        self.comicbooks_manager = Commicbooks(session=self.session)
 
-        self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'seleccion_fecha': self.seleccion_fecha,
-                         'boton_guardar': self.boton_guardar, 'click_limpiar':self.click_limpiar,
-                         'click_cargar_desde_web': self.click_cargar_desde_web, 'combobox_change':self.combobox_change,
-                         'menu_desplegado':self.menu_desplegado,'click_eliminar':self.click_eliminar,
-                         'click_cover_anterior': self.click_cover_anterior,
-                         'click_cover_siguiente':self.click_cover_siguiente,
-                         'change_cover': self.change_cover}
+        self.handlers = {"seleccion_fila":self.seleccion_fila}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Comicbook_info_gtk.glade")
+        self.builder.add_from_file("../Comicbook_Detail_gtk.glade")
         self.builder.connect_signals(self.handlers)
-        self.window = self.builder.get_object("Comicbook_info_gtk")
-        self.linkbutton_volume = self.builder.get_object("linkbutton_volume")
-        self.linkbutton_volume.set_label("Volumen")
-        self.popover = self.builder.get_object("popover")
+        self.window = self.builder.get_object("Comicbook_Detail")
 
-        self.window.set_icon_from_file('../iconos/BabelComic.png')
-        self.label_nombre_volumen = self.builder.get_object("label_nombre_volumen")
-        self.entry_orden= self.builder.get_object("entry_orden")
-        self.entry_numero= self.builder.get_object("entry_numero")
-        self.entry_titulo= self.builder.get_object("entry_titulo")
-        self.label_fecha_tapa = self.builder.get_object("label_fecha_tapa")
-        self.entry_api_url = self.builder.get_object("entry_api_url")
-        self.entry_url = self.builder.get_object("entry_url")
-        self.scale_raiting = self.builder.get_object("scale_raiting")
-        self.text_resumen = self.builder.get_object("text_resumen")
-        self.textbuffer = self.text_resumen.get_buffer()
-        self.calendario = self.builder.get_object("calendario")
-        self.cover_comic = self.builder.get_object("cover_comic")
-        self.combo_paginas = self.builder.get_object("combo_paginas")
-
+        self.imagen_pagina = self.builder.get_object("imagen_pagina")
+        self.liststore_comicbook = self.builder.get_object("liststore_comicbook")
+        self.comicbook = None
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
+
+    def seleccion_fila(self, widget):
+        print(widget)
+        model, treeiter = widget.get_selection().get_selected()
+        if treeiter is not None:
+            self.comicbook.goto(model[treeiter][0])
+            print("You selected", model[treeiter][0])
+
+        stream = self.comicbook.get_image_page_gtk()
+        print(stream)
+        self.imagen_pagina.set_from_pixbuf(
+            stream.scale_simple(int(stream.get_width() * 0.3), int(stream.get_height() * 0.3), 0))
+
+    def set_comicbook(self, comicbook_id):
+        self.comicbook = self.comicbooks_manager.get(comicbook_id)
+        self.comicbook.openCbFile()
+        stream = self.comicbook.get_image_page_gtk()
+        print(stream)
+        self.imagen_pagina.set_from_pixbuf(stream.scale_simple(int(stream.get_width()*0.3), int(stream.get_height()*0.3), 0))
+        cantidad_paginas = self.comicbook.getCantidadPaginas()
+        self.liststore_comicbook.clear()
+        for elemento in range(0, cantidad_paginas):
+            self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0])
+
+
+        # cb.getImagePage().show()
+
 
     def change_cover(self, widget):
         print("change_cover")
@@ -87,12 +92,12 @@ class Comicbook_Info_Gtk():
         volume_mamange = Volumens(session = self.session)
         volume = volume_mamange.get(id_volume)
         self.label_nombre_volumen.set_text(volume.nombre)
-
-    def set_comicbook(self, id):
-        #todo validar volumn seteado
-        self.comicbooks_manager.get(id)
-        print("Cargamos el voumen {}".format(id))
-        self._copy_to_window(self.comicbooks_manager.entidad)
+    #
+    # def set_comicbook(self, id):
+    #     #todo validar volumn seteado
+    #     self.comicbooks_manager.get(id)
+    #     print("Cargamos el voumen {}".format(id))
+    #     self._copy_to_window(self.comicbooks_manager.entidad)
 
     def seleccion_fecha(self, widget):
         print(widget.get_date().year)
@@ -209,10 +214,11 @@ class Comicbook_Info_Gtk():
 
 
 if __name__ == "__main__":
+    id = "20106"
 
-    cbi = Comicbook_Info_Gtk()
-    cbi.set_volume('796')
-    cbi.set_comicbook(542921)
-    cbi.window.show_all()
+    cbi = Comicbook_Detail_Gtk()
     cbi.window.connect("destroy", Gtk.main_quit)
+    cbi.set_comicbook(id)
+    cbi.window.show()
+
     Gtk.main()
