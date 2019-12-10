@@ -221,7 +221,7 @@ class Comicbook(Entidades.Init.Base):
         if pagina is None:
             return None
         else:
-            return (self.image2pixbuf(Image.open(pagina)))
+            return (self.image2pixbuf(Image.open(pagina).convert("RGB")))
 
     def image2pixbuf(self, im):
         """Convert Pillow image to GdkPixbuf"""
