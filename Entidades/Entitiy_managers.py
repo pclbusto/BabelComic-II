@@ -222,7 +222,7 @@ class Comicbooks_Detail(Entity_manager):
         self.set_order(Comicbook_Detail.comicbook_id)
         self.direccion = 0
 
-class Commicbooks(Entity_manager):
+class Commicbooks_detail(Entity_manager):
     def __init__(self, session = None):
         Entity_manager.__init__(self, session=session, clase=Comicbook)
 
@@ -231,14 +231,24 @@ class Commicbooks(Entity_manager):
         else:
             self.session = Init.Session()
 
-        self.set_order(Comicbook.path,0)
-        self.lista_opciones = {'Path': Comicbook.path}
+        self.set_order(Comicbook_Detail.comicbook_id,0)
+        self.lista_opciones = {'Id': Comicbook_Detail.comicbook_id}
 
         self.status = 1
-        self.entidad = Comicbook()
+        self.entidad = Comicbook_Detail()
         self.filtro = None
-        self.set_order(Comicbook.path)
+        self.set_order(Comicbook_Detail.comicbook_id)
         self.direccion = 0
+
+    def tiene_detalle(self):
+        print("IIIIIID {}".format(self.entidad.id_comicbook))
+        cantidad_registros = self.session.query(Comicbook_Detail.indicePagina).filter(Comicbook_Detail.comicbook_id == self.entidad.id_comicbook).count()
+        print("Cantidad {}".format(cantidad_registros))
+        return cantidad_registros>0
+
+    def save_page_datail(self, id_page):
+        self.new_record()
+        self.entidad.
 
 
 

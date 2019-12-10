@@ -81,12 +81,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">button</property>
+              <object class="GtkButton" id="boton_marcar_como_cover">
+                <property name="label" translatable="yes">Marcar como Cover</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
+                <signal name="clicked" handler="click_marcar_como_cover" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
