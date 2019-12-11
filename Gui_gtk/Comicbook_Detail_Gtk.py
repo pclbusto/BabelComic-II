@@ -29,6 +29,9 @@ class Comicbook_Detail_Gtk():
 
         self.imagen_pagina = self.builder.get_object("imagen_pagina")
         self.liststore_comicbook = self.builder.get_object("liststore_comicbook")
+        self.entry_id_comicbook = self.builder.get_object("entry_id_comicbook")
+        self.entry_id_comicbook_info = self.builder.get_object("entry_id_comicbook_info")
+        self.entry_path = self.builder.get_object("entry_path")
         self.comicbook = None
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
@@ -37,20 +40,26 @@ class Comicbook_Detail_Gtk():
         print("GOLA")
 
     def seleccion_fila(self, widget):
-        print(widget)
+        #print(widget)
         model, treeiter = widget.get_selection().get_selected()
         if treeiter is not None:
             self.comicbook.goto(model[treeiter][0])
-            print("You selected", model[treeiter][0])
+            #print("You selected", model[treeiter][0])
 
         stream = self.comicbook.get_image_page_gtk()
-        print(stream)
+        #print(stream)
+        ancho = (500.0 / stream.get_width())
         self.imagen_pagina.set_from_pixbuf(
-            stream.scale_simple(int(stream.get_width() * 0.3), int(stream.get_height() * 0.3), 0))
+            #vamos a mostrar las paginas en el mismo tamaño
+            stream.scale_simple(int(stream.get_width() * ancho), int(stream.get_height() * ancho), 1))
 
     def set_comicbook(self, comicbook_id):
 
         self.comicbook = self.comicbooks_manager.get(comicbook_id)
+        self.entry_id_comicbook.set_text(str(self.comicbook.id_comicbook))
+        self.entry_id_comicbook_info.set_text(self.comicbook.id_comicbook_info)
+        self.entry_path.set_text(self.comicbook.path)
+
         tiene_detalle = self.comicbooks_manager.tiene_detalle()
         lista_paginas = []
         if tiene_detalle:
@@ -109,9 +118,8 @@ class Comicbook_Detail_Gtk():
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
             self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
-            print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
+            #print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
             self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
-            print("Dsadasdas")
             self._load_cover()
             listore = Gtk.ListStore(int)
             for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):
@@ -151,7 +159,7 @@ class Comicbook_Detail_Gtk():
 
 
 if __name__ == "__main__":
-    id = "40961"
+    id = "6645"
 
     cbi = Comicbook_Detail_Gtk()
     cbi.window.connect("destroy", Gtk.main_quit)
