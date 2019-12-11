@@ -1,9 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Commicbooks_detail, Volumens
-from Entidades.Agrupado_Entidades import  Comicbook_Info
-from Gui_gtk import Publisher_lookup_gtk
-from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
+from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Commicbooks
 import datetime
 
 import gi
@@ -21,6 +18,7 @@ class Comicbook_Detail_Gtk():
             self.session = Entidades.Init.Session()
 
         self.comicbooks_detail_manager = Commicbooks_detail(session=self.session)
+        self.comicbooks_manager = Commicbooks(session=self.session)
 
         self.handlers = {"seleccion_fila": self.seleccion_fila, "click_marcar_como_cover": self.click_marcar_como_cover}
 
@@ -52,21 +50,31 @@ class Comicbook_Detail_Gtk():
 
     def set_comicbook(self, comicbook_id):
 
-        self.comicbook = self.comicbooks_detail_manager_manager.get(comicbook_id)
-        tiene_detalle = self.comicbooks_detail_manager_manager.tiene_detalle()
-        print("tiene detalle: {}".format(tiene_detalle))
-
+        self.comicbook = self.comicbooks_manager.get(comicbook_id)
+        tiene_detalle = self.comicbooks_manager.tiene_detalle()
+        lista_paginas = []
+        if tiene_detalle:
+            self.comicbooks_detail_manager.set_filtro(Comicbook_Detail.comicbook_id == comicbook_id)
+            lista_paginas = self.comicbooks_detail_manager.getList()
         self.comicbook.openCbFile()
         stream = self.comicbook.get_image_page_gtk()
-        print(stream)
         self.imagen_pagina.set_from_pixbuf(stream.scale_simple(int(stream.get_width()*0.3), int(stream.get_height()*0.3), 0))
         cantidad_paginas = self.comicbook.getCantidadPaginas()
         self.liststore_comicbook.clear()
-        for elemento in range(0, cantidad_paginas):
-            if not tiene_detalle:
-                self.comicbooks_detail_manager_manager
-            self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0])
-
+        if not tiene_detalle:
+            cbdtl = Commicbooks_detail()
+            for elemento in range(0, cantidad_paginas):
+                print("insertando registro {}".format(elemento))
+                cbdtl.new_record()
+                cbdtl.entidad.comicbook_id = comicbook_id
+                cbdtl.entidad.indicePagina = elemento
+                cbdtl.entidad.ordenPagina = elemento
+                cbdtl.entidad.tipoPagina = 0
+                cbdtl.save()
+                self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0, 'Página'])
+        else:
+            for elemento in lista_paginas:
+                self.liststore_comicbook.append([elemento.ordenPagina, "pagina {}".format(elemento.ordenPagina), 0, 'Página'])
 
         # cb.getImagePage().show()
 
@@ -143,7 +151,7 @@ class Comicbook_Detail_Gtk():
 
 
 if __name__ == "__main__":
-    id = "20106"
+    id = "40961"
 
     cbi = Comicbook_Detail_Gtk()
     cbi.window.connect("destroy", Gtk.main_quit)

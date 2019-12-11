@@ -224,14 +224,14 @@ class Comicbooks_Detail(Entity_manager):
 
 class Commicbooks_detail(Entity_manager):
     def __init__(self, session = None):
-        Entity_manager.__init__(self, session=session, clase=Comicbook)
+        Entity_manager.__init__(self, session=session, clase=Comicbook_Detail)
 
         if session is not None:
             self.session = session
         else:
             self.session = Init.Session()
 
-        self.set_order(Comicbook_Detail.comicbook_id,0)
+        self.set_order(Comicbook_Detail.comicbook_id, 0)
         self.lista_opciones = {'Id': Comicbook_Detail.comicbook_id}
 
         self.status = 1
@@ -240,17 +240,33 @@ class Commicbooks_detail(Entity_manager):
         self.set_order(Comicbook_Detail.comicbook_id)
         self.direccion = 0
 
+    def save_page_datail(self, id_page):
+        self.new_record()
+
+
+class Commicbooks(Entity_manager):
+    def __init__(self, session = None):
+        Entity_manager.__init__(self, session=session, clase=Comicbook)
+
+        if session is not None:
+            self.session = session
+        else:
+            self.session = Init.Session()
+
+        self.set_order(Comicbook.id_comicbook, 0)
+        self.lista_opciones = {'Id': Comicbook.id_comicbook, 'Path':Comicbook.path}
+
+        self.status = 1
+        self.entidad = Comicbook()
+        self.filtro = None
+        self.set_order(Comicbook.path)
+        self.direccion = 0
+
     def tiene_detalle(self):
         print("IIIIIID {}".format(self.entidad.id_comicbook))
         cantidad_registros = self.session.query(Comicbook_Detail.indicePagina).filter(Comicbook_Detail.comicbook_id == self.entidad.id_comicbook).count()
         print("Cantidad {}".format(cantidad_registros))
         return cantidad_registros>0
-
-    def save_page_datail(self, id_page):
-        self.new_record()
-        self.entidad.
-
-
 
 if (__name__=='__main__'):
     # cbdm = Comicbooks_Detail()
@@ -260,7 +276,7 @@ if (__name__=='__main__'):
     # cbd.ordenPagina = 1
     # cbd.tipoPagina = Comicbook_Detail.COVER
     # cbdm.save()
-    cbm = Commicbooks()
+    cbm = Commicbooks_detail()
     cbm.getFirst()
     cb = cbm.entidad
     cb.openCbFile()
