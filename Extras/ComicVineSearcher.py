@@ -231,6 +231,7 @@ class ComicVineSearcher:
                     self.porcentaje_procesado = int(100 * (index-1) / (2*cantidad_elementos))
                 else:
                     time.sleep(2)
+                print("Procesado {} de {}".format(index, cantidad_elementos))
             # else:
             #     index += 1
         # Aca iteramos hasta que todos los hilos terminen  de ejecutar.

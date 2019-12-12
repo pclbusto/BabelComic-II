@@ -15,7 +15,7 @@
   <object class="GtkImage" id="eliminar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-delete</property>
+    <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
@@ -25,7 +25,7 @@
   <object class="GtkImage" id="limpiar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-new</property>
+    <property name="stock">gtk-add</property>
   </object>
   <object class="GtkListStore" id="liststore_combobox">
     <columns>
