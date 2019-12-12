@@ -133,7 +133,7 @@ class VolumeGuiGtk():
             self.label_nombre_editorial.set_text(volumen.publisher_name)
             self.entry_anio_inicio.set_text(str(volumen.anio_inicio))
             self.entry_cantidad_numeros.set_text(str(volumen.cantidad_numeros))
-            self.resumen_volumen.set_text(BeautifulSoup(volumen.descripcion).get_text("\n"))
+            self.resumen_volumen.set_text(BeautifulSoup(volumen.descripcion, features="lxml").get_text("\n"))
             if volumen.cantidad_numeros>0:
                 self.progressbar_procentaje_completado.set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
             else:

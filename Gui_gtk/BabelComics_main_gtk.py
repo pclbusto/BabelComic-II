@@ -40,7 +40,7 @@ class BabelComics_main_gtk():
                             "coverIssuesThumbnails" + os.path.sep
 
         self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
-                         'item_seleccionado': self.item_seleccionado,'click_derecho': self.click_derecho,
+                         'item_seleccionado': self.item_seleccionado, 'click_derecho': self.click_derecho,
                          'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_catalogar':self.click_boton_catalogar,
@@ -279,15 +279,11 @@ class BabelComics_main_gtk():
         cbi = Comicbook_Detail_Gtk()
         cbi.set_comicbook(self.listaComics[indice[0]].id_comicbook)
         cbi.window.show()
-        #
-        #
-        #
-        # cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
-        # cvs.window.show()
-        # if self.popovermenu is not None:
-        #     self.popovermenu.popdown()
-        # if self.menu_comic is not None:
-        #     self.menu_comic.popdown()
+
+        if self.popovermenu is not None:
+            self.popovermenu.popdown()
+        if self.menu_comic is not None:
+            self.menu_comic.popdown()
 
     def click_boton_catalogar(self, widget):
         print("dsadsadasd")
