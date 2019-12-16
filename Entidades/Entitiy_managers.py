@@ -1,10 +1,11 @@
 from Entidades.Entity_manager import Entity_manager
-from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup
+from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup, Comicbook_Detail
 from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Detail, Comicbook_Info, Comicbook, Comicbook_Info_Cover_Url
 from Entidades import Init
 from sqlalchemy import func, join, and_
 import os
 import urllib.request
+from PIL import Image
 
 class Comicbooks_Info(Entity_manager):
 
@@ -239,9 +240,48 @@ class Commicbooks_detail(Entity_manager):
         self.filtro = None
         self.set_order(Comicbook_Detail.comicbook_id)
         self.direccion = 0
+        self.comicbook_id = None
 
     def save_page_datail(self, id_page):
         self.new_record()
+
+    def set_comicbook(self, comicbookid):
+        self.comicbook_id = comicbookid
+
+    def set_page_type(self, nro_pagina, tipo):
+        #recuperamos una instancia de comick_detail que representa la pagina que le vamos a cambiar el tipo
+        self.get((self.comicbook_id, nro_pagina))
+        self.entidad.tipoPagina = tipo
+        self.save()
+
+    def crear_thumnail_cover(self, recrear=False):
+        try:
+            pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
+                               "coverIssuesThumbnails" + os.path.sep
+
+            comicbooks = Commicbooks(self.session)
+            comicbooks.get(self.comicbook_id)
+            nombreThumnail = pahThumnails + str(comicbooks.entidad.id_comicbook) + '.jpg'
+            print("Generando thumnail {}".format(nombreThumnail))
+            cover = None
+            if not os.path.isfile(nombreThumnail) or recrear:
+                if comicbooks.entidad.openCbFile() == -1:
+                    raise Exception("Error añ abrir el archuivo {}".format(comicbooks.entidad.id_comicbook))
+                else:
+                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                    #vampos a buscar que nro de page es la cover
+                    self.set_filtro(and_(Comicbook_Detail.comicbook_id == self.comicbook_id, Comicbook_Detail.tipoPagina == Comicbook_Detail.PAGE_TYPE_COVER))
+                    get_nro_pagina_cover_nro_uno = self.getFirst()
+                    print("NUMERO PAGINA COVER: {}".format(get_nro_pagina_cover_nro_uno.ordenPagina))
+                    comicbooks.entidad.goto(get_nro_pagina_cover_nro_uno.ordenPagina)
+                    imagen_height_percent = 350 / comicbooks.entidad.getImagePage().size[1]
+                    self.size = (int(imagen_height_percent * comicbooks.entidad.getImagePage().size[0]), int(350))
+                    cover = comicbooks.entidad.getImagePage().resize(self.size, Image.LANCZOS)
+                    cover.save(nombreThumnail)
+                    comicbooks.entidad.closeCbFile()
+        except Exception :
+            print('error en el archivo ' + self.entidad.path)
+        print('termiando crear_thumnails_background')
 
 
 class Commicbooks(Entity_manager):
@@ -266,7 +306,7 @@ class Commicbooks(Entity_manager):
         print("IIIIIID {}".format(self.entidad.id_comicbook))
         cantidad_registros = self.session.query(Comicbook_Detail.indicePagina).filter(Comicbook_Detail.comicbook_id == self.entidad.id_comicbook).count()
         print("Cantidad {}".format(cantidad_registros))
-        return cantidad_registros>0
+        return cantidad_registros > 0
 
 if (__name__=='__main__'):
     # cbdm = Comicbooks_Detail()

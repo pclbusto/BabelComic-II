@@ -352,9 +352,10 @@ class Comicbook_Detail(Entidades.Init.Base):
     '''Clase que va a mantener la info del archivo, cantidad de paginas, para cada imagen dentro del archivo asignarle
     un numero y una tipificacion por ejemplo, pagina, tapa, contra tapa, etc'''
     __tablename__ = 'comicbooks_detail'
-    COVER = 1
+    PAGE_TYPE_COMMON_PAGE = 0
+    PAGE_TYPE_COVER = 1
     comicbook_id = Column(Integer, primary_key=True)
-    indicePagina = Column(Integer,default=0,primary_key=True)
+    indicePagina = Column(Integer, default=0, primary_key=True)
     ordenPagina = Column(Integer, nullable=False, default=0)
     #portada = 1, pagina = 2
     tipoPagina = Column(Integer, nullable=False, default=2)
