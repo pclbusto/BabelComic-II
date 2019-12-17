@@ -93,12 +93,15 @@ class VolumeGuiGtk():
         lookup = Volume_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
-    def change_id_volume(self,widget,event):
+    def change_id_volume(self, widget, event):
         self.editorial = None
-        if (self.entry_id.get_text() != ''):
-            volume = self.volumens_manager.get(self.entry_id.get_text())
-            self.loadVolume(volume)
+        self.set_volumen_id(self.entry_id.get_text())
 
+    def set_volumen_id(self, volumen_id):
+        print(volumen_id)
+        if (self.entry_id.get_text() != ''):
+            volume = self.volumens_manager.get(volumen_id)
+            self.loadVolume(volume)
     def return_lookup(self, id_volume):
         if id_volume!='':
             self.entry_id.set_text(str(id_volume))

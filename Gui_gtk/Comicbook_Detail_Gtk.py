@@ -22,6 +22,7 @@ class Comicbook_Detail_Gtk():
 
         self.handlers = {"seleccion_fila": self.seleccion_fila,
                          "click_marcar_como_cover": self.click_marcar_como_cover,
+                         "click_marcar_como_page": self.click_marcar_como_page,
                          'click_derecho': self.click_derecho}
 
         self.builder = Gtk.Builder()
@@ -34,12 +35,27 @@ class Comicbook_Detail_Gtk():
         self.entry_id_comicbook_info = self.builder.get_object("entry_id_comicbook_info")
         self.entry_path = self.builder.get_object("entry_path")
         self.menu_comic = self.builder.get_object("menu_comic")
+        self.tree_view_paginas = self.builder.get_object("tree_view_paginas")
+
         self.comicbook = None
+        self.labels = ["Página", "Cover"]
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
 
     def click_marcar_como_cover(self, widget):
-        print("GOLA")
+        self._marcar_como(widget, Comicbook_Detail.PAGE_TYPE_COVER)
+
+    def click_marcar_como_page(self, widget):
+        self._marcar_como(widget, Comicbook_Detail.PAGE_TYPE_COMMON_PAGE)
+
+    def _marcar_como(self, widget, tipo):
+        model, treeiter = self.tree_view_paginas.get_selection().get_selected()
+        if treeiter is not None:
+            self.comicbooks_detail_manager.set_page_type(model[treeiter][0], tipo)
+            self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
+            if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
+                self.comicbooks_detail_manager.crear_thumnail_cover(True)
+        self.menu_comic.popdown()
 
     def seleccion_fila(self, widget):
         #print(widget)
@@ -67,6 +83,7 @@ class Comicbook_Detail_Gtk():
         tiene_detalle = self.comicbooks_manager.tiene_detalle()
         lista_paginas = []
         if tiene_detalle:
+            self.comicbooks_detail_manager.set_comicbook(comicbook_id)
             self.comicbooks_detail_manager.set_filtro(Comicbook_Detail.comicbook_id == comicbook_id)
             lista_paginas = self.comicbooks_detail_manager.getList()
         self.comicbook.openCbFile()
@@ -85,8 +102,9 @@ class Comicbook_Detail_Gtk():
                 cbdtl.save()
                 self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0, 'Página'])
         else:
+
             for elemento in lista_paginas:
-                self.liststore_comicbook.append([elemento.ordenPagina, "pagina {}".format(elemento.ordenPagina), 0, 'Página'])
+                self.liststore_comicbook.append([elemento.ordenPagina, "pagina {}".format(elemento.ordenPagina), 0, self.labels[elemento.tipoPagina]])
 
         # cb.getImagePage().show()
 

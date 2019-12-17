@@ -221,7 +221,7 @@ class ComicVineSearcher:
         #     print(self.comicIds[index].id_comicbook_info)
         #     if self.comicIds[index].id_comicbook_info == '37566':
         #         print("ENTRAMOS")
-                if self.cantidad_hilos<20:
+                if self.cantidad_hilos<30:
                     threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
                                      args=[self.comicIds[index], volumen, index]).start()
                     index += 1
@@ -236,8 +236,9 @@ class ComicVineSearcher:
             #     index += 1
         # Aca iteramos hasta que todos los hilos terminen  de ejecutar.
         while self.cantidad_hilos>0:
-            time.sleep(2)
-
+            print("ESPERANDO A TERMINAR")
+            time.sleep(5)
+        print("TERMINAMOSSSSSSSSSSSSSSSSSSSSSs")
         # si los calculos salieron bien aca deberíamos estar en el 50%
         self.porcentaje_procesado = 50
 

@@ -114,6 +114,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
+                <signal name="clicked" handler="click_marcar_como_cover" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -128,6 +129,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
+                <signal name="clicked" handler="click_marcar_como_page" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -199,6 +201,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
+                <signal name="clicked" handler="click_marcar_como_page" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -219,6 +222,21 @@
         <property name="position">1</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkImage" id="primero">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-first</property>
+  </object>
+  <object class="GtkImage" id="siguiente">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-forward</property>
+  </object>
+  <object class="GtkImage" id="ultimo">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-last</property>
   </object>
   <object class="GtkWindow" id="Comicbook_Detail">
     <property name="width_request">1200</property>
@@ -550,7 +568,7 @@
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkTreeView">
+                  <object class="GtkTreeView" id="tree_view_paginas">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="model">liststore_comicbook</property>
@@ -646,20 +664,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="primero">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-goto-first</property>
-  </object>
-  <object class="GtkImage" id="siguiente">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-go-forward</property>
-  </object>
-  <object class="GtkImage" id="ultimo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-goto-last</property>
   </object>
 </interface>

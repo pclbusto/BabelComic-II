@@ -4,6 +4,7 @@ from gi.repository import Gtk, GdkPixbuf, GLib
 
 from Entidades.Agrupado_Entidades import Comicbook, Volume,Comicbook_Info_Cover_Url, Setup, Comicbook_Info
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
+from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 import urllib.request
 import os
 from gi.repository import Gdk
@@ -34,7 +35,8 @@ class Comic_vine_cataloger_gtk():
                          'borrar_linea':self.borrar_linea,
                          'siguiente_cover':self.siguiente_cover,
                          'anterior_cover':self.anterior_cover,
-                         'cerrar_ventana':self.cerrar_ventana}
+                         'cerrar_ventana':self.cerrar_ventana,
+                         'click_boton_label_volumen_id': self.click_boton_label_volumen_id}
 
 
 
@@ -70,6 +72,11 @@ class Comic_vine_cataloger_gtk():
         self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
         self.entry_id_volumen_catalogar.set_text(self.setup.ultimoVolumeIdUtilizado)
         self.gui_updating = False
+
+    def click_boton_label_volumen_id(self,widget):
+        serie = VolumeGuiGtk(self.session)
+        serie.set_volumen_id(self.entry_id_volumen_catalogar.get_text())
+        serie.window.show()
 
     def siguiente_cover(self, widget):
         if len(self.lista_covers)-1>self.index_lista_covers:
@@ -289,7 +296,8 @@ if __name__ == '__main__':
     #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
     #  '''
     # comics= []
-    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Batman (2016%')).all()
+    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Batman%')).all()
+    print(comics_query)
     # for comic in comics_query:
     #     comics.append(comic)
 

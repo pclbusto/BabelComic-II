@@ -57,6 +57,7 @@ class Volumen_vine_search_Gtk():
         # self.entry_id_editorial.set_text('2707')
         # self.entry_serie_nombre.set_text('iron man')
 
+
     def _copy_to_window(self):
         if self.publisher:
             self.entry_id_editorial.set_text(str(self.publisher.id_publisher))
@@ -222,7 +223,8 @@ class Volumen_vine_search_Gtk():
         # 18058 - detective comics106705
         # 18216 - green lantern vol 4
         # 6498 - birdth of prey
-        # threading.Thread(target=self.hilo_cargar_volume, args=['796']).start()
+        # 773 - superman Vol2
+        # threading.Thread(target=self.hilo_cargar_volume, args=['3816']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['18216']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['25372']).start()
         # threading.Thread(target=self.hilo_cargar_volume, args=['25543']).start()
