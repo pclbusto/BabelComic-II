@@ -26,7 +26,7 @@ class Comicbook_Detail_Gtk():
                          'click_derecho': self.click_derecho}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Comicbook_Detail_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Comicbook_Detail_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Comicbook_Detail")
         self.imagen_pagina = self.builder.get_object("imagen_pagina")

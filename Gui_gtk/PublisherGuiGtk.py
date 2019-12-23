@@ -24,7 +24,7 @@ class PublisherGtk():
                          'combobox_change':self.combobox_change, 'click_limpiar':self.click_limpiar}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Publisher.glade")
+        self.builder.add_from_file("../Glade_files/Publisher.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
         self.window.set_icon_from_file('../iconos/BabelComic.png')

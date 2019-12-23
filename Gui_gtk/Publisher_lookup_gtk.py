@@ -19,7 +19,7 @@ class Publisher_lookup_gtk():
                          'seleccion':self.seleccion_publisher, 'combobox_change':self.combobox_change,
                          'gtk_tree_view_editorial_double_click':self.gtk_tree_view_editorial_double_click}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Publisher_lookup_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Publisher_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
 
         self.window = self.builder.get_object("Publisher_lookup_gtk")

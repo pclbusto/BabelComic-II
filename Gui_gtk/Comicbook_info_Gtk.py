@@ -32,7 +32,7 @@ class Comicbook_Info_Gtk():
                          'change_cover': self.change_cover}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Comicbook_info_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Comicbook_info_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Comicbook_info_gtk")
         self.linkbutton_volume = self.builder.get_object("linkbutton_volume")

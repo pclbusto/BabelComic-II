@@ -24,7 +24,7 @@ class Publisher_vine_search_gtk():
         self.handlers = {'click_boton_buscar_mas': self.click_boton_buscar_mas,'selection':self.selection,
                          'click_boton_aceptar': self.click_boton_aceptar, 'click_boton_buscar':self.click_boton_buscar}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Publisher_vine_search_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Publisher_vine_search_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Publisher_vine_search_Gtk")
         self.window.set_icon_from_file('../iconos/BabelComic.png')

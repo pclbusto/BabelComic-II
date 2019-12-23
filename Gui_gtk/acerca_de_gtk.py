@@ -18,7 +18,7 @@ class Acerca_de_gtk():
         #                  'click_boton_directorio_base':self.click_boton_directorio_base}
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Acercade.glade")
+        self.builder.add_from_file("../Glade_files/Acercade.glade")
         #self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Acerca_de")
         self.window.set_icon_from_file('../iconos/BabelComic.png')

@@ -17,7 +17,7 @@ class ScannerGtk():
             self.session = Entidades.Init.Session()
         self.handlers = {'borrarComics': self.borrarComics,'scannearDirectorio':self.scannearDirectorio}
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Scanner.glade")
+        self.builder.add_from_file("../Glade_files/Scanner.glade")
         self.window = self.builder.get_object("ScannerGtk")
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.builder.connect_signals(self.handlers)
