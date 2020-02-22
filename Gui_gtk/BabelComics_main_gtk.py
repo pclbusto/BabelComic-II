@@ -68,7 +68,7 @@ class BabelComics_main_gtk():
 
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../BabelComic_main_gtk-II.glade")
+        self.builder.add_from_file("../Glade_files/BabelComic_main_gtk-II.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("BabelComics_main_gtk")
         self.app_icon = Pixbuf.new_from_file_at_size('../iconos/BabelComic.png', 32, 32)

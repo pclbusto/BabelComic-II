@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkAboutDialog" id="Acerca_de">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">Acerca de</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="icon">iconos/BabelComic.png</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Babel Comics</property>
+    <property name="version">1.0.0</property>
+    <property name="comments" translatable="yes">Catalogador y visor de comics</property>
+    <property name="website">https://github.com/pclbusto/BabelComic-II</property>
+    <property name="website_label" translatable="yes">Link del proyecto en github</property>
+    <property name="authors">Pedro Busto</property>
+    <property name="documenters">Pedro Busto</property>
+    <property name="artists">Pedro Busto</property>
+    <property name="logo">iconos/BabelComic.png</property>
+    <property name="license_type">gpl-3-0</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

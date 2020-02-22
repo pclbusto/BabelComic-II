@@ -41,7 +41,7 @@ class Comic_vine_cataloger_gtk():
 
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Comic_vine_cataloger_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Comic_vine_cataloger_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Comic_vine_cataloger_gtk")
         self.window.set_icon_from_file('../iconos/BabelComic.png')

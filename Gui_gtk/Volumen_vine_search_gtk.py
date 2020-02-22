@@ -37,7 +37,7 @@ class Volumen_vine_search_Gtk():
                          }
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Volumen_vine_search_gtk.glade")
+        self.builder.add_from_file("../Glade_files/Volumen_vine_search_gtk.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volumen_vine_search_Gtk")
         self.window.set_icon_from_file('../iconos/BabelComic.png')
