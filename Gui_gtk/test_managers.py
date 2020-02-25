@@ -22,20 +22,25 @@ def is_number(s):
 
 if __name__ == "__main__":
     session = Entidades.Init.Session()
-    sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
-                                                         Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(Comicbook_Info.id_volume=='91273').group_by(Comicbook.id_comicbook_info).subquery("sq")
-    comics = session.query(Comicbook_Info.id_comicbook_info).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).count()
-
-    # cantidad = cbi.join(sq, sq.c.id_comicbook_info == cbi.c.id_comicbook_info).all()
-    # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
-    # sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
-    # comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
-    # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
+    for comic in session.query(Comicbook).all():
+        comic.path = comic.path.replace('/home/pclbusto/unidad_f/', '/run/media/pedro/Green/')
+    session.commit()
+        # print(comic)
     #
-    # print(url[url.rfind("-")+1:-1])
-    numero = '1dsada'
-
-    print(comics)
+    # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
+    #                                                      Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(Comicbook_Info.id_volume=='91273').group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # comics = session.query(Comicbook_Info.id_comicbook_info).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).count()
+    #
+    # # cantidad = cbi.join(sq, sq.c.id_comicbook_info == cbi.c.id_comicbook_info).all()
+    # # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # # sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # # comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
+    # # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
+    # #
+    # # print(url[url.rfind("-")+1:-1])
+    # numero = '1dsada'
+    #
+    # print(comics)
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
     # session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()

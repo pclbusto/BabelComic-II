@@ -124,12 +124,14 @@ class BabelComics_main_gtk():
         self.manager = BabelComics_Manager.BabelComics_Manager()
         self.update_panel_filtros()
 
-    def marca_filtro(self,widget, args):
+    def marca_filtro(self, widget, args):
         self.manager.marcar_para_filtrar(self.list_navegacion[args][2])
         if self.list_navegacion[args][1] == 1:
             self.list_navegacion[args][1] = 0
         else:
             self.list_navegacion[args][1] = 1
+
+        for elemento in self.manager
 
     def click_next_view(self, widget):
         self.manager.next_seccion()
