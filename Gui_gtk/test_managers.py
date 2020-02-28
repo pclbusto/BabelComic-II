@@ -1,6 +1,6 @@
 from Entidades.Entity_manager import Entity_manager
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Agrupado_Entidades import Publisher, Comicbook_Info,Comicbook
+from Entidades.Agrupado_Entidades import Publisher, Comicbook_Info,Comicbook, Volume
 from sqlalchemy import func, join
 import Entidades.Init
 
@@ -21,26 +21,24 @@ def is_number(s):
     return True
 
 if __name__ == "__main__":
+    filters = [Comicbook_Info.id_volume == '111428', Comicbook_Info.id_volume == '93948']
     session = Entidades.Init.Session()
-    for comic in session.query(Comicbook).all():
-        comic.path = comic.path.replace('/home/pclbusto/unidad_f/', '/run/media/pedro/Green/')
-    session.commit()
-        # print(comic)
+    sq = session.query(Comicbook).join(Comicbook_Info, Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).\
+        join(Volume, Comicbook_Info.id_volume == Volume.id_volume).join(Publisher, Volume.id_publisher == Publisher.id_publisher).\
+        filter(Publisher.id_publisher == '31')
+
+    for comic in sq.all():
+        print(comic)
+    # cantidad = cbi.join(sq, sq.c.id_comicbook_info == cbi.c.id_comicbook_info).all()
+    # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
+    # comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
+    # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
     #
-    # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
-    #                                                      Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(Comicbook_Info.id_volume=='91273').group_by(Comicbook.id_comicbook_info).subquery("sq")
-    # comics = session.query(Comicbook_Info.id_comicbook_info).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).count()
-    #
-    # # cantidad = cbi.join(sq, sq.c.id_comicbook_info == cbi.c.id_comicbook_info).all()
-    # # sq = session.query(Comicbook.id_comicbook_info).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
-    # # sq = session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info, Comicbook_Info.id_comicbook_info==Comicbook.id_comicbook_info).group_by(Comicbook.id_comicbook_info).subquery("sq")
-    # # comics = session.query(Comicbook_Info.id_comicbook_info, sq.c.cantidad).join(sq, sq.c.id_comicbook_info==Comicbook_Info.id_comicbook_info).all()
-    # # url = "https://comicvine.gamespot.com/aquaman-11-doom-from-dimension-aqua/4000-6657/"
-    # #
-    # # print(url[url.rfind("-")+1:-1])
+    # print(url[url.rfind("-")+1:-1])
     # numero = '1dsada'
-    #
-    # print(comics)
+
+    # rint(comics)
     #
     # session.query(Entidades.Agrupado_Entidades.Arcos_Argumentales_Comics_Reference).delete()
     # session.query(Entidades.Agrupado_Entidades.Arco_Argumental).delete()
