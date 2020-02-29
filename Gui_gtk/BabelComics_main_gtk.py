@@ -7,7 +7,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
 from gi.repository import Gdk
 import Entidades.Init
-from Entidades.Agrupado_Entidades import Comicbook, Publisher
+from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook_Info
 from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
@@ -112,6 +112,8 @@ class BabelComics_main_gtk():
         self.limit = 500
         self.offset = 0
         self.query = None
+        self.manager = BabelComics_Manager.BabelComics_Manager()
+
         self.cantidad_thumnails_pendiente=0
         self.search_change(None)
 
@@ -121,7 +123,6 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
-        self.manager = BabelComics_Manager.BabelComics_Manager()
         self.update_panel_filtros()
 
     def marca_filtro(self, widget, args):
@@ -131,7 +132,7 @@ class BabelComics_main_gtk():
         else:
             self.list_navegacion[args][1] = 1
 
-        for elemento in self.manager
+        self.search_change(None)
 
     def click_next_view(self, widget):
         self.manager.next_seccion()
@@ -216,19 +217,42 @@ class BabelComics_main_gtk():
         self.update_panel_filtros()
 
     def search_change(self, widget):
-
         self.filtro = self.search_entry_filtro_comics.get_text()
+
+        lista_editoriales = [editorial[2] for editorial in self.manager.lista_editoriales if editorial[1] == 1]
+        lista_volumen = [volumen[2] for volumen in self.manager.lista_volumenes if volumen[1] == 1]
+        lista_arcos = [arcos[2] for arcos in self.manager.lista_arcos_argumentales if arcos[1] == 1]
+
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro))).order_by(Comicbook.path)
-
+                Comicbook.path.like("%{}%".format(self.filtro)))
         else:
-            self.query = self.session.query(Comicbook).order_by(Comicbook.path)
-        # cantidad = self.session.query(Comicbook).filter(Comicbook.path.like("%Green lantern%")).count()
-        # print("Cantidad de registros {}".format(cantidad))
-        # #
+            self.query = self.session.query(Comicbook)
+
+        if len(lista_editoriales) > 0 or len(lista_volumen) > 0:
+            self.query = self.query.join(Comicbook_Info,
+                                         Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info)
+
+            if len(lista_editoriales) > 0 and len(lista_volumen) == 0:
+                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
+                self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
+            if len(lista_volumen) > 0 and len(lista_editoriales) == 0:
+                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
+            if len(lista_editoriales) > 0 and len(lista_volumen) > 0:
+                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
+                self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
+                self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
+            if len(lista_arcos) > 0:
+                self.query = self.query.filter(Comicbook_Info.ids_arco_argumental)
+
+        print(lista_editoriales)
+        self.query.order_by(Comicbook.path)
+        # chequamos si mostramos todos o solo los catalogado o los no catalogados
         if self.none_radio.get_active():
-             self.query = self.query.filter(Comicbook.id_comicbook_info=='')
+            self.query = self.query.filter(Comicbook.id_comicbook_info == '')
         if self.all_radio.get_active():
             pass
         if self.selected_radio.get_active():

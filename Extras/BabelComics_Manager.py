@@ -71,6 +71,9 @@ class BabelComics_Manager():
         for idx, elemento in enumerate(self.lista_paneles[self.seccion_activa]):
             if elemento[2] == clave:
                 self.lista_paneles[self.seccion_activa][idx][1] = (self.lista_paneles[self.seccion_activa][idx][1]+1) % 2
+        # for elemento in self.lista_editoriales:
+        #     if elemento[1] == 1:
+        #         print(elemento)
         #self.recargar_seccion()
 
     def recargar_seccion(self):

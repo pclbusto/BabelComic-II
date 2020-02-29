@@ -25,7 +25,7 @@ if __name__ == "__main__":
     session = Entidades.Init.Session()
     sq = session.query(Comicbook).join(Comicbook_Info, Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).\
         join(Volume, Comicbook_Info.id_volume == Volume.id_volume).join(Publisher, Volume.id_publisher == Publisher.id_publisher).\
-        filter(Publisher.id_publisher == '32')
+        filter(Publisher.id_publisher.in_(['31', '10']))
 
     for comic in sq.all():
         print(comic)
