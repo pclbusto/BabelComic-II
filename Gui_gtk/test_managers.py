@@ -1,6 +1,6 @@
 from Entidades.Entity_manager import Entity_manager
 from Extras.ComicVineSearcher import ComicVineSearcher
-from Entidades.Agrupado_Entidades import Publisher, Comicbook_Info,Comicbook, Volume
+from Entidades.Agrupado_Entidades import Publisher, Comicbook_Info,Comicbook, Volume, Arco_Argumental, Arcos_Argumentales_Comics_Reference
 from sqlalchemy import func, join
 import Entidades.Init
 
@@ -22,11 +22,14 @@ def is_number(s):
 
 if __name__ == "__main__":
     filters = [Comicbook_Info.id_volume == '111428', Comicbook_Info.id_volume == '93948']
+    lista_arcos = ['60278']
+    
     session = Entidades.Init.Session()
     sq = session.query(Comicbook).join(Comicbook_Info, Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).\
-        join(Volume, Comicbook_Info.id_volume == Volume.id_volume).join(Publisher, Volume.id_publisher == Publisher.id_publisher).\
-        filter(Publisher.id_publisher.in_(['31', '10']))
+        join(Arcos_Argumentales_Comics_Reference, Arcos_Argumentales_Comics_Reference.id_comicbook_info == Comicbook_Info.id_comicbook_info).\
+        filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental.in_(lista_arcos))
 
+    # 60278
     for comic in sq.all():
         print(comic)
     # cantidad = cbi.join(sq, sq.c.id_comicbook_info == cbi.c.id_comicbook_info).all()

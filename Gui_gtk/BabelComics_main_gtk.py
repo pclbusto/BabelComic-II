@@ -7,7 +7,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
 from gi.repository import Gdk
 import Entidades.Init
-from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook_Info
+from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook_Info, Arcos_Argumentales_Comics_Reference
 from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
@@ -222,6 +222,9 @@ class BabelComics_main_gtk():
         lista_editoriales = [editorial[2] for editorial in self.manager.lista_editoriales if editorial[1] == 1]
         lista_volumen = [volumen[2] for volumen in self.manager.lista_volumenes if volumen[1] == 1]
         lista_arcos = [arcos[2] for arcos in self.manager.lista_arcos_argumentales if arcos[1] == 1]
+        print('AAARCCCOOOOSS')
+
+        print(lista_arcos)
 
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
@@ -229,24 +232,26 @@ class BabelComics_main_gtk():
         else:
             self.query = self.session.query(Comicbook)
 
-        if len(lista_editoriales) > 0 or len(lista_volumen) > 0:
+        if len(lista_editoriales) > 0 or len(lista_volumen) > 0 or len(lista_arcos) > 0:
             self.query = self.query.join(Comicbook_Info,
                                          Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info)
 
-            if len(lista_editoriales) > 0 and len(lista_volumen) == 0:
-                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
-                self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
-                self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
-            if len(lista_volumen) > 0 and len(lista_editoriales) == 0:
-                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
-                self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
-            if len(lista_editoriales) > 0 and len(lista_volumen) > 0:
-                self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
-                self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
-                self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
-                self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
             if len(lista_arcos) > 0:
-                self.query = self.query.filter(Comicbook_Info.ids_arco_argumental)
+                self.query = self.query.join(Arcos_Argumentales_Comics_Reference, Arcos_Argumentales_Comics_Reference.id_comicbook_info == Comicbook_Info.id_comicbook_info). \
+                    filter(Arcos_Argumentales_Comics_Reference.id_arco_argumental.in_(lista_arcos))
+            else:
+                if len(lista_editoriales) > 0 and len(lista_volumen) == 0:
+                    self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                    self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
+                    self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
+                if len(lista_volumen) > 0 and len(lista_editoriales) == 0:
+                    self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                    self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
+                if len(lista_editoriales) > 0 and len(lista_volumen) > 0:
+                    self.query = self.query.join(Volume, Volume.id_volume == Comicbook_Info.id_volume)
+                    self.query = self.query.join(Publisher, Publisher.id_publisher == Volume.id_publisher)
+                    self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
+                    self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
 
         print(lista_editoriales)
         self.query.order_by(Comicbook.path)
