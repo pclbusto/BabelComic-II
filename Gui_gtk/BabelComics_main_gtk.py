@@ -253,8 +253,12 @@ class BabelComics_main_gtk():
                     self.query = self.query.filter(Publisher.id_publisher.in_(lista_editoriales))
                     self.query = self.query.filter(Volume.id_volume.in_(lista_volumen))
 
+        if len(lista_editoriales) > 0 or len(lista_volumen) > 0 or len(lista_arcos) > 0:
+            self.query = self.query.order_by(Comicbook_Info.orden)
+        else:
+            self.query = self.query.order_by(Comicbook.path)
+
         print(lista_editoriales)
-        self.query.order_by(Comicbook.path)
         # chequamos si mostramos todos o solo los catalogado o los no catalogados
         if self.none_radio.get_active():
             self.query = self.query.filter(Comicbook.id_comicbook_info == '')
