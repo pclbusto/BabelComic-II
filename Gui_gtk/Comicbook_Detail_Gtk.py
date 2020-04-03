@@ -82,8 +82,8 @@ class Comicbook_Detail_Gtk():
 
         tiene_detalle = self.comicbooks_manager.tiene_detalle()
         lista_paginas = []
+        self.comicbooks_detail_manager.set_comicbook(comicbook_id)
         if tiene_detalle:
-            self.comicbooks_detail_manager.set_comicbook(comicbook_id)
             self.comicbooks_detail_manager.set_filtro(Comicbook_Detail.comicbook_id == comicbook_id)
             lista_paginas = self.comicbooks_detail_manager.getList()
         self.comicbook.openCbFile()
@@ -102,7 +102,6 @@ class Comicbook_Detail_Gtk():
                 cbdtl.save()
                 self.liststore_comicbook.append([elemento, "pagina {}".format(elemento), 0, 'Página'])
         else:
-
             for elemento in lista_paginas:
                 self.liststore_comicbook.append([elemento.ordenPagina, "pagina {}".format(elemento.ordenPagina), 0, self.labels[elemento.tipoPagina]])
 

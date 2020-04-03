@@ -249,7 +249,8 @@ class Commicbooks_detail(Entity_manager):
         self.comicbook_id = comicbookid
 
     def set_page_type(self, nro_pagina, tipo):
-        #recuperamos una instancia de comick_detail que representa la pagina que le vamos a cambiar el tipo
+        print("set_page_type nro_pagina{}".format(nro_pagina))
+        #recuperamos una instancia de comic_detail que representa la pagina que le vamos a cambiar el tipo
         self.get((self.comicbook_id, nro_pagina))
         self.entidad.tipoPagina = tipo
         self.save()
