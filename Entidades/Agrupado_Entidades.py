@@ -487,7 +487,10 @@ class Volume(Entidades.Init.Base):
         return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
 
     def get_api_url(self):
-        return("http://comicvine/volume/4050-"+str(self.id_volume))
+        if self.id_volume<0:
+            return ("No tiene api porque es local")
+        else:
+            return("http://comicvine/volume/4050-"+str(self.id_volume))
 
     def __repr__(self):
         return "<Volume(name={}\nid_volume={}\ncantidad nros={}\npublisher_name={}\nAño inicio={}\ndeck={})>". \

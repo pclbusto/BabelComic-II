@@ -2,7 +2,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-
+from gi.repository import Gdk
 import Entidades.Init
 from Entidades.Entitiy_managers import Volumens
 import Entidades.Init
@@ -24,6 +24,7 @@ class VolumeGuiGtk():
                          'click_lookup_volume': self.click_lookup_volume,'change_id_volume': self.change_id_volume,
                          'click_nuevo': self.click_nuevo, 'combobox_change': self.combobox_change,
                          'selecion_pagina': self.selecion_pagina, 'click_guardar': self.click_guardar,
+                         'evento': self.evento,
                          'click_eliminar': self.click_eliminar, 'click_derecho':self.click_derecho}
 
         self.builder = Gtk.Builder()
@@ -60,6 +61,11 @@ class VolumeGuiGtk():
             self.liststore_combobox.append([clave])
         self.combobox_orden.set_active(0)
         self.getFirst("")
+
+    def evento(self, widget, args):
+        print(args.keyval)
+        if args.keyval == Gdk.KEY_Escape:
+            self.window.close()
 
     def click_derecho(self,widget, event):
         print("ACA ESTAMOS {}".format(event.get_click_count()))
@@ -183,8 +189,8 @@ class VolumeGuiGtk():
         self.volumens_manager.entidad.nombre = self.entry_nombre.get_text()
         #self.volume.deck = self..get()
         # self.volumens_manager.entidad.descripcion = self.entradaId.get()
-        self.volumens_manager.entidad.url = self.entry_url.get_text()
-        self.volumens_manager.entidad.image_url = self.entry_url_cover.get_text()
+        self.volumens_manager.entidad.url = self.label_url.get_uri()
+        self.volumens_manager.entidad.image_url = self.label_cover_url.get_uri()
         self.volumens_manager.entidad.anio_inicio = self.entry_anio_inicio.get_text()
         self.volumens_manager.entidad.cantidad_numeros = self.entry_cantidad_numeros.get_text()
 

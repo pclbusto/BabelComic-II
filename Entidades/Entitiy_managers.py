@@ -203,6 +203,8 @@ class Volumens(Entity_manager):
         self.entidad.image_url = ''
         self.entidad.nombre= ''
         self.entidad.publisher_name = ''
+        self.entidad.url = ''
+
 
 class Comicbooks_Detail(Entity_manager):
 

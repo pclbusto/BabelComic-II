@@ -16,6 +16,7 @@ from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
 from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
+from Gui_gtk.function_launcher_Gtk import Function_launcher_gtk
 from Extras import BabelComics_Manager
 import os.path
 import math
@@ -61,7 +62,8 @@ class BabelComics_main_gtk():
                          'click_boton_acerca_de':self.click_boton_acerca_de,
                          'click_next_view': self.click_next_view,
                          'click_prev_view':self.click_prev_view,
-                         'marca_filtro': self.marca_filtro}
+                         'marca_filtro': self.marca_filtro,
+                         'lanzador_funciones': self.lanzador_funciones}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -125,6 +127,9 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails.start()
         self.update_panel_filtros()
 
+    def lanzador_funciones(self, widget, args):
+        print("lanzador de funciones")
+
     def marca_filtro(self, widget, args):
         self.manager.marcar_para_filtrar(self.list_navegacion[args][2])
         if self.list_navegacion[args][1] == 1:
@@ -183,6 +188,7 @@ class BabelComics_main_gtk():
         print("hola")
 
     def atajos_teclado(self, widget, event):
+
         ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
         if ctrl and event.keyval == Gdk.KEY_f:
             self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
@@ -198,13 +204,15 @@ class BabelComics_main_gtk():
             self.click_boton_serie(None)
         if ctrl and event.keyval == Gdk.KEY_e:
             self.click_boton_catalogar(None)
-        if ctrl and event.keyval == Gdk.KEY_a:
+        if event.keyval == Gdk.KEY_F5:
             self.click_boton_refresh(None)
         if ctrl and event.keyval == Gdk.KEY_s:
             self.click_boton_open_scanear(None)
         if ctrl and event.keyval == Gdk.KEY_d:
             self.click_boton_config(None)
-
+        if event.keyval == Gdk.KEY_F1:
+            fl = Function_launcher_gtk(self)
+            fl.window.show()
 
     def click_boton_buscar(self, event):
         self.search_bar.set_search_mode(not self.search_bar.get_search_mode())
