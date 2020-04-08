@@ -21,7 +21,8 @@ class PublisherGtk():
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
                          'click_cargar_desde_web':self.click_cargar_desde_web, 'boton_guardar':self.boton_guardar,
-                         'combobox_change':self.combobox_change, 'click_limpiar':self.click_limpiar}
+                         'combobox_change':self.combobox_change, 'click_limpiar':self.click_limpiar,
+                         'pop_up_menu': self.pop_up_menu}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Publisher.glade")
@@ -32,6 +33,7 @@ class PublisherGtk():
         self.publishers_manager = Publishers(session=self.session)
         self.stack = self.builder.get_object('stack')
         self.index = 0
+        self.menu = self.builder.get_object("menu")
         self.lista_items = [self.builder.get_object("item_0"), self.builder.get_object("item_1")]
         self.list_entry_id = [self.builder.get_object('entry_id'), self.builder.get_object('entry_id1')]
         self.list_entry_nombre = [self.builder.get_object('entry_nombre'), self.builder.get_object('entry_nombre1')]
@@ -47,6 +49,10 @@ class PublisherGtk():
         for clave in self.publishers_manager.lista_opciones.keys():
             self.liststore_combobox.append([clave])
         # self.combobox_orden.set_active(0)
+    def pop_up_menu(self,widget):
+        # self.popover.set_relative_to(button)
+        self.menu.show_all()
+        self.menu.popup()
 
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:

@@ -62,6 +62,11 @@ class VolumeGuiGtk():
         self.combobox_orden.set_active(0)
         self.getFirst("")
 
+    def pop_up_menu(self,widget):
+        # self.popover.set_relative_to(button)
+        self.menu.show_all()
+        self.menu.popup()
+
     def evento(self, widget, args):
         print(args.keyval)
         if args.keyval == Gdk.KEY_Escape:
