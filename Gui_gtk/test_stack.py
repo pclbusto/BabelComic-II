@@ -187,7 +187,7 @@ class VolumeGuiGtk():
                 self.list_label_url[self.index].set_label(volumen.url)
             self.list_label_url[self.index].set_uri(volumen.url)
 
-            self.stack.set_visible_child(self.lista_items[self.index])
+
 
             if len(volumen.get_api_url()) >= 50:
                 self.list_label_api_url[self.index].set_label(volumen.get_api_url()[:50]+"...")
@@ -229,7 +229,7 @@ class VolumeGuiGtk():
                 self.list_liststore_comics_in_volume[0].append(
                     [comicbook.numero, comicbook.titulo, comicbook.cantidad, comicbook.cantidad,
                      comicbook.id_comicbook_info, comicbook.orden])
-
+            self.stack.set_visible_child(self.lista_items[self.index])
             # if self.pagina_actual == 1:
             #     self.selecion_pagina(None, None, 1)
 

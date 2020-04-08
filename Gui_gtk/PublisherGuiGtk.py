@@ -30,8 +30,10 @@ class PublisherGtk():
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.publishers_manager = Publishers(session=self.session)
-
-        self.entry_id  = self.builder.get_object('entry_id')
+        self.stack = self.builder.get_object('stack')
+        self.lista_items = [self.builder.get_object("item_0"), self.builder.get_object("item_1")]
+        self.index = 0
+        self.list_entry_id = [self.builder.get_object('entry_id'), self.builder.get_object('entry_id1')]
         self.entry_nombre =  self.builder.get_object('entry_nombre')
         self.entry_id_externo = self.builder.get_object('entry_id_externo')
         self.entry_url =  self.builder.get_object('entry_url')
@@ -44,7 +46,7 @@ class PublisherGtk():
         self.liststore_combobox.clear()
         for clave in self.publishers_manager.lista_opciones.keys():
             self.liststore_combobox.append([clave])
-        self.combobox_orden.set_active(0)
+        # self.combobox_orden.set_active(0)
 
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
@@ -58,13 +60,13 @@ class PublisherGtk():
         publisher_vine_search.window.show()
 
     def id_changed(self,widget, test):
-        if self.entry_id.get_text()!='':
-            publisher = self.publishers_manager.get(self.entry_id.get_text())
+        if self.list_entry_id[self.index].get_text()!='':
+            publisher = self.publishers_manager.get(self.list_entry_id[self.index].get_text())
             self._copy_to_window(publisher)
 
     def return_lookup(self, id_publisher):
         if id_publisher  !='':
-            self.entry_id.set_text(str(id_publisher))
+            self.list_entry_id[self.index].set_text(str(id_publisher))
             publisher = self.publishers_manager.get(self.entry_id.get_text())
             self._copy_to_window(publisher)
 
@@ -74,24 +76,35 @@ class PublisherGtk():
 
     def getFirst(self, widget):
         publisher = self.publishers_manager.getFirst()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
+        print(publisher)
         self._copy_to_window(publisher)
 
     def getPrev(self, widget):
         publisher = self.publishers_manager.getPrev()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
+        print(publisher)
         self._copy_to_window(publisher)
 
     def getNext(self, widget):
         publisher = self.publishers_manager.getNext()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
+        print(publisher)
         self._copy_to_window(publisher)
 
     def getLast(self, widget):
         publisher = self.publishers_manager.getLast()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
+        print(publisher)
         self._copy_to_window(publisher)
 
     def _copy_to_window(self,publisher):
         # self.clearWindow()
         if publisher is not None:
-            self.entry_id.set_text(str(publisher.id_publisher))
+            self.index += 1
+            self.index %= 2
+            self.list_entry_id[self.index].set_text(str(publisher.id_publisher))
+            # self.entry_id.set_text(str(publisher.id_publisher))
             self.entry_nombre.set_text(publisher.name)
             # self.entry_id_externo.set_text(publisher.id_publisher_externo)
             self.entry_url.set_text(publisher.siteDetailUrl)
@@ -116,6 +129,7 @@ class PublisherGtk():
                     preserve_aspect_ratio=True)
                 self.publisher_logo_image.set_from_pixbuf(pixbuf)
             self.label_resumen.set_text(publisher.deck)
+            self.stack.set_visible_child(self.lista_items[self.index])
 
     def click_limpiar(self, widget):
         print("dsldsa")
