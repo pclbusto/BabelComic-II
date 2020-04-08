@@ -31,15 +31,15 @@ class PublisherGtk():
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.publishers_manager = Publishers(session=self.session)
         self.stack = self.builder.get_object('stack')
-        self.lista_items = [self.builder.get_object("item_0"), self.builder.get_object("item_1")]
         self.index = 0
+        self.lista_items = [self.builder.get_object("item_0"), self.builder.get_object("item_1")]
         self.list_entry_id = [self.builder.get_object('entry_id'), self.builder.get_object('entry_id1')]
-        self.entry_nombre =  self.builder.get_object('entry_nombre')
-        self.entry_id_externo = self.builder.get_object('entry_id_externo')
-        self.entry_url =  self.builder.get_object('entry_url')
-        self.publisher_logo_image = self.builder.get_object('publisher_logo_image')
-        self.label_resumen = self.builder.get_object('label_resumen')
-        self.combobox_orden = self.builder.get_object('combobox_orden')
+        self.list_entry_nombre = [self.builder.get_object('entry_nombre'), self.builder.get_object('entry_nombre1')]
+        self.list_entry_id_externo = [self.builder.get_object('entry_id_externo'), self.builder.get_object('entry_id_externo1')]
+        self.list_entry_url = [self.builder.get_object('entry_url'), self.builder.get_object('entry_url1')]
+        self.list_publisher_logo_image = [self.builder.get_object('publisher_logo_image'), self.builder.get_object('publisher_logo_image1')]
+        self.list_label_resumen = [self.builder.get_object('label_resumen'), self.builder.get_object('label_resumen1')]
+        # self.list_combobox_orden = self.builder.get_object('combobox_orden')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
 
         # inicializamos el modelo con rotulos del manager
@@ -104,31 +104,31 @@ class PublisherGtk():
             self.index += 1
             self.index %= 2
             self.list_entry_id[self.index].set_text(str(publisher.id_publisher))
-            # self.entry_id.set_text(str(publisher.id_publisher))
-            self.entry_nombre.set_text(publisher.name)
+            self.list_entry_nombre[self.index].set_text(publisher.name)
             # self.entry_id_externo.set_text(publisher.id_publisher_externo)
-            self.entry_url.set_text(publisher.siteDetailUrl)
+            self.list_entry_url[self.index].set_text(publisher.siteDetailUrl)
 
             if publisher.hasImageCover():
                 publisher.localLogoImagePath = publisher.getImageCoverPath()
                 if publisher.localLogoImagePath[-3].lower()=='gif':
                     gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
-                    self.publisher_logo_image.set_from_pixbuf(gif.scale_simple(250, 250, 3))
+                    self.list_publisher_logo_image[self.index].set_from_pixbuf(gif.scale_simple(250, 250, 3))
                 else:
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                         filename=publisher.getImageCoverPath(),
                         width=250,
                         height=250,
                         preserve_aspect_ratio=True)
-                    self.publisher_logo_image.set_from_pixbuf(pixbuf)
+                    self.list_publisher_logo_image[self.index].set_from_pixbuf(pixbuf)
             else:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                     filename=self.publishers_manager.pahThumnails + "sin_caratula_publisher.jpg",
                     width=250,
                     height=250,
                     preserve_aspect_ratio=True)
-                self.publisher_logo_image.set_from_pixbuf(pixbuf)
-            self.label_resumen.set_text(publisher.deck)
+                self.list_publisher_logo_image[self.index].set_from_pixbuf(pixbuf)
+            self.list_label_resumen[self.index].set_text(publisher.deck)
+
             self.stack.set_visible_child(self.lista_items[self.index])
 
     def click_limpiar(self, widget):
