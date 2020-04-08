@@ -179,7 +179,7 @@ class VolumeGuiGtk():
         self.entry_anio_inicio.set_text('')
         self.entry_cantidad_numeros.set_text('')
 
-    def getNext(self,widget):
+    def getNext(self, widget):
         volume = self.volumens_manager.getNext()
         print('volume')
         print(volume)

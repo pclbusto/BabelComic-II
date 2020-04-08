@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>91</x>
+      <y>210</y>
+      <w>147</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Comicbook
+--
+-id: Long
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>798</x>
+      <y>196</y>
+      <w>147</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>Arco_Argumental
+--
+-id: Long
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>441</x>
+      <y>196</y>
+      <w>147</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>Comicbook_Info
+--
+-id: Long
+--
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>777</x>
+      <y>427</y>
+      <w>147</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Publisher
+--
+-id: Long
+--
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>448</x>
+      <y>427</y>
+      <w>147</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Volume
+--
+-id: Long
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>231</x>
+      <y>238</y>
+      <w>224</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0..1
+m2=0..n</panel_attributes>
+    <additional_attributes>300.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>511</x>
+      <y>266</y>
+      <w>77</w>
+      <h>175</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..n
+m2=0..1
+pertenece &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;230.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>588</x>
+      <y>448</y>
+      <w>203</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..n
+m2=0..1
+editorial &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;270.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>581</x>
+      <y>217</y>
+      <w>231</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..n
+m2=0..m
+forma parte de &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;310.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>609</x>
+      <y>126</y>
+      <w>161</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>Note..
+No es lo comun pero se a dado el caso que un comicbook_info ofmra parte de mas de un arco.Por esto es una relacion de muchos a muchos
+bg=blue
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>210</x>
+      <y>280</y>
+      <w>224</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>Note..
+Un comicbook puede tener un id de info de comic. Es su metadata. Con este enfoque la info del comic no esta en el comic en si sino fuera lo que permite asignar la misma info a varios comics. Esto es util cuando se tienen duplicados
+style=wordwrap
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
