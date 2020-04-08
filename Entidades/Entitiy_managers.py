@@ -130,12 +130,13 @@ class Publishers(Entity_manager):
         else:
             self.session = Init.Session()
 
-        self.set_order(Publisher.id_publisher,0)
+        self.set_order(Publisher.id_publisher, 0)
         self.lista_opciones = {'Id': Publisher.id_publisher, 'Editorial': Publisher.name}
 
         self.status = 1
+        self.entidad = Publisher()
         self.filtro = None
-        self.order = None
+        self.set_order(Publisher.id_publisher)
         self.direccion = 0
 
 class Volumens(Entity_manager):
@@ -148,7 +149,7 @@ class Volumens(Entity_manager):
         else:
             self.session = Init.Session()
 
-        self.set_order(Volume.nombre,0)
+        self.set_order(Volume.nombre, 0)
         self.lista_opciones = {'Id': Volume.id_volume, 'Volumen': Volume.nombre}
 
         self.status = 1

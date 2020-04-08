@@ -80,7 +80,7 @@ class Entity_manager:
     def get_count(self):
         return(self._get_consulta().count())
 
-    def set_order(self,campo, direccion=0):
+    def set_order(self, campo, direccion=0):
         self.order = campo
         param = str(campo)
         self.campo_str = param[param.index(".")+1:]
@@ -101,41 +101,46 @@ class Entity_manager:
         if self.filtro is not None:
             consulta = consulta.filter(self.filtro)
         if self.order is not None:
-            if self.direccion==0:
+            if self.direccion == 0:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
         return consulta
 
     def getNext(self):
+        self.get_count()
         if not self.hay_cambios_pendientes():
             if self.entidad is None:
                 self.entidad = self.getLast()
             else:
-                if self.offset<self.get_count()-1:
+
+                if self.offset < self.get_count()-1:
                     self.offset += 1
                 consulta = self._get_consulta()
                 entidad = consulta.filter().offset(self.offset).first()
+                print( self.offset)
+                print(entidad)
                 if entidad is not None:
-                    self.entidad=entidad
+                    self.entidad = entidad
         else:
             self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
         # print(self.entidad)
         return self.entidad
 
     def getPrev(self):
+        self.get_count()
         if not self.hay_cambios_pendientes():
             if self.entidad is None:
                 self.entidad = self.getFirst()
             else:
-                if self.offset>0:
+                if self.offset > 0:
                     self.offset -= 1
                 consulta = self._get_consulta()
                 entidad = consulta.filter().offset(self.offset).first()
                 if entidad is not None:
                     self.entidad = entidad
         else:
-            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
+            self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
     def getFirst(self):
@@ -143,7 +148,7 @@ class Entity_manager:
             self.offset = 0
             self.entidad = self._get_consulta().first()
         else:
-            self.status=Entity_manager.CTE_CAMBIOS_PENDIENTES
+            self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
 
     def getLast(self):
