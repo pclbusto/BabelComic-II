@@ -172,7 +172,12 @@ class VolumeGuiGtk():
     def loadVolume(self, volumen):
         if self.volume is not None:
             if volumen == self.volume:
+                print("SON IGUALES")
                 return
+            else:
+                print("NO SON IGUALES")
+
+        self.volume = volumen
         self.clear()
         print("dasdasdasdas")
         if self.volumens_manager.entidad is not None:

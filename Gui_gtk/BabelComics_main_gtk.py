@@ -11,7 +11,9 @@ from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook
 from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
-from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+#from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+from Gui_gtk.test_stack import VolumeGuiGtk
+
 from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
 from Gui_gtk.config_gtk import Config_gtk
@@ -380,7 +382,7 @@ class BabelComics_main_gtk():
         serie.window.show()
         self.popovermenu.popdown()
 
-    def click_editorial(self, widget):
+        def click_editorial(self, widget):
         editorial = PublisherGtk(self.session)
         editorial.window.show()
         self.popovermenu.popdown()

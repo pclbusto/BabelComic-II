@@ -68,6 +68,7 @@ class Entity_manager:
 
     def hay_cambios_pendientes(self):
         if self.session.is_modified(self.entidad):
+            print("aca")
             return True
         else:
             return False
@@ -108,8 +109,9 @@ class Entity_manager:
         return consulta
 
     def getNext(self):
-        self.get_count()
+        #self.get_count()
         if not self.hay_cambios_pendientes():
+
             if self.entidad is None:
                 self.entidad = self.getLast()
             else:

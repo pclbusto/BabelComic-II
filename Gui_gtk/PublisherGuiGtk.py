@@ -31,6 +31,7 @@ class PublisherGtk():
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.publishers_manager = Publishers(session=self.session)
+        self.publisher = None
         self.stack = self.builder.get_object('stack')
         self.index = 0
         self.menu = self.builder.get_object("menu")
@@ -43,12 +44,12 @@ class PublisherGtk():
         self.list_label_resumen = [self.builder.get_object('label_resumen'), self.builder.get_object('label_resumen1')]
         # self.list_combobox_orden = self.builder.get_object('combobox_orden')
         self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
-
+        self.publisher = None
         # inicializamos el modelo con rotulos del manager
         self.liststore_combobox.clear()
         for clave in self.publishers_manager.lista_opciones.keys():
             self.liststore_combobox.append([clave])
-        # self.combobox_orden.set_active(0)
+
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
         self.menu.show_all()
@@ -104,20 +105,22 @@ class PublisherGtk():
         print(publisher)
         self._copy_to_window(publisher)
 
-    def _copy_to_window(self,publisher):
-        # self.clearWindow()
+    def _copy_to_window(self, publisher):
+        if self.publisher is not None:
+            if publisher == self.publisher:
+                return
+        self.publisher = publisher
+        self.clear()
         if publisher is not None:
             self.index += 1
             self.index %= 2
             self.list_entry_id[self.index].set_text(str(publisher.id_publisher))
             self.list_entry_nombre[self.index].set_text(publisher.name)
-            # self.entry_id_externo.set_text(publisher.id_publisher_externo)
             self.list_entry_url[self.index].set_text(publisher.siteDetailUrl)
-
             if publisher.hasImageCover():
-                publisher.localLogoImagePath = publisher.getImageCoverPath()
-                if publisher.localLogoImagePath[-3].lower()=='gif':
-                    gif = GdkPixbuf.PixbufAnimation.new_from_file(publisher.localLogoImagePath).get_static_image()
+                localLogoImagePath = publisher.getImageCoverPath()
+                if localLogoImagePath[-3].lower() == 'gif':
+                    gif = GdkPixbuf.PixbufAnimation.new_from_file(localLogoImagePath).get_static_image()
                     self.list_publisher_logo_image[self.index].set_from_pixbuf(gif.scale_simple(250, 250, 3))
                 else:
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -127,6 +130,7 @@ class PublisherGtk():
                         preserve_aspect_ratio=True)
                     self.list_publisher_logo_image[self.index].set_from_pixbuf(pixbuf)
             else:
+                print("NO TIENE COVER")
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                     filename=self.publishers_manager.pahThumnails + "sin_caratula_publisher.jpg",
                     width=250,
@@ -136,6 +140,16 @@ class PublisherGtk():
             self.list_label_resumen[self.index].set_text(publisher.deck)
 
             self.stack.set_visible_child(self.lista_items[self.index])
+
+    def clear(self):
+        self.list_entry_id[self.index].set_text('')
+        self.list_entry_nombre[self.index].set_text('')
+        self.list_entry_id_externo[self.index].set_text('')
+        self.list_entry_url[self.index].set_text('')
+        # self.list_publisher_logo_image = [self.builder.get_object('publisher_logo_image'),
+        #                                   self.builder.get_object('publisher_logo_image1')]
+        self.list_label_resumen[self.index].set_text('')
+
 
     def click_limpiar(self, widget):
         print("dsldsa")
