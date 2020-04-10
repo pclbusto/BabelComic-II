@@ -382,7 +382,7 @@ class BabelComics_main_gtk():
         serie.window.show()
         self.popovermenu.popdown()
 
-        def click_editorial(self, widget):
+    def click_editorial(self, widget):
         editorial = PublisherGtk(self.session)
         editorial.window.show()
         self.popovermenu.popdown()

@@ -32,7 +32,7 @@ class ComicVineSearcher:
         self.listaBusquedaLocal = []
         self.lista_comicbooks_info = []
         self.lista_arco_argumental_comic_reference = []
-
+        self.lock = threading.Lock()
         self.columnas = []
         self.statusMessage = 'Ok'
         # es el techo de cantidad resultados dividido 100
@@ -135,17 +135,18 @@ class ComicVineSearcher:
                 return arco
 
             if self.entidad == 'volume':
-                # todo al cargar un volumen verifgicar si existe el id externo de no existir cargo uno nuevo de existir
+                # todo al cargar un volumen verificar si existe el id externo de no existir cargo uno nuevo de existir
                 # actualizar los datos.
 
                 volumeVine = root.find('results')
+                #creamos un volumen para almacenar la info recuperada del servicio web
                 volume = Entidades.Agrupado_Entidades.Volume()
                 volume.id_volume = volumeVine.find('id').text
                 volume.nombre = volumeVine.find('name').text
                 volume.deck = volumeVine.find('deck').text
                 if volume.deck is None:
-                    volume.deck=''
-                volume.anio_inicio =volumeVine.find('start_year').text
+                    volume.deck = ''
+                volume.anio_inicio = volumeVine.find('start_year').text
                 volume.descripcion = volumeVine.find('description').text
                 volume.cantidad_numeros = volumeVine.find('count_of_issues').text
                 volume.url = volumeVine.find('site_detail_url').text
@@ -172,7 +173,7 @@ class ComicVineSearcher:
                         comicInVolumes.id_comicbook_info = issue.find("id").text
                         comicInVolumes.numero = issue.find("issue_number").text
                         comicInVolumes.titulo = issue.find("name").text
-                        comicInVolumes.site_detail_url= issue.find("site_detail_url").text
+                        comicInVolumes.site_detail_url = issue.find("site_detail_url").text
                         self.comicIds.append(comicInVolumes)
 
                 #     cargamos la info de los comics los arcos que hagan falta este proceso es largo pero
@@ -201,7 +202,9 @@ class ComicVineSearcher:
         comicbook_info.id_volume = volumen.id_volume
         comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
+        self.lock.acquire(True)
         self.cantidad_hilos -= 1
+        self.lock.release()
 
     def hilo_procesar_arco(self, id_arco):
         # arco = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental == id_arco).first()
@@ -211,7 +214,7 @@ class ComicVineSearcher:
         self.lista_arcos.append(arco)
         self.cantidad_hilos -= 1
 
-    def hilo_cargar_comicbook_info(self,volumen):
+    def hilo_cargar_comicbook_info(self, volumen):
 
         index = 0
         self.cantidad_hilos=0
@@ -221,22 +224,24 @@ class ComicVineSearcher:
         #     print(self.comicIds[index].id_comicbook_info)
         #     if self.comicIds[index].id_comicbook_info == '37566':
         #         print("ENTRAMOS")
-                if self.cantidad_hilos<30:
-                    threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
-                                     args=[self.comicIds[index], volumen, index]).start()
-                    index += 1
-                    self.cantidad_hilos += 1
-                    '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
-                    en el peor de los casos tenemos un arco por issue por eso es el 2'''
-                    self.porcentaje_procesado = int(100 * (index-1) / (2*cantidad_elementos))
-                else:
-                    time.sleep(2)
-                print("Procesado {} de {}".format(index, cantidad_elementos))
+            if self.cantidad_hilos < 30:
+                threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
+                                 args=[self.comicIds[index], volumen, index]).start()
+                index += 1
+                self.lock.acquire(True)
+                self.cantidad_hilos += 1
+                self.lock.release()
+                '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
+                en el peor de los casos tenemos un arco por issue por eso es el 2'''
+                self.porcentaje_procesado = int(100 * (index-1) / (2*cantidad_elementos))
+            else:
+                time.sleep(2)
+            print("Procesado {} de {}".format(index, cantidad_elementos))
             # else:
             #     index += 1
         # Aca iteramos hasta que todos los hilos terminen  de ejecutar.
-        while self.cantidad_hilos>0:
-            print("ESPERANDO A TERMINAR")
+        while self.cantidad_hilos > 0:
+            print("ESPERANDO A TERMINAR Hilos: {}".format(self.cantidad_hilos))
             time.sleep(5)
         print("TERMINAMOSSSSSSSSSSSSSSSSSSSSSs")
         # si los calculos salieron bien aca deberíamos estar en el 50%
@@ -313,7 +318,7 @@ class ComicVineSearcher:
         self.porcentaje_procesado = 100
         print("TERMINO")
 
-    def cargar_comicbook_info(self,volumen):
+    def cargar_comicbook_info(self, volumen):
         self.porcentaje_procesado=0
         self.lista_comicbooks_info.clear()
         threading.Thread(target=self.hilo_cargar_comicbook_info, args=[volumen]).start()
