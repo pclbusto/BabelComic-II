@@ -5,17 +5,17 @@
   <object class="GtkImage" id="aceptar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">document-save-symbolic</property>
+    <property name="icon_name">document-save</property>
   </object>
   <object class="GtkImage" id="buscar_volumen">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">system-search-symbolic</property>
+    <property name="icon_name">system-search</property>
   </object>
   <object class="GtkImage" id="imagen_buscar_editorial">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">system-search-symbolic</property>
+    <property name="icon_name">system-search</property>
   </object>
   <object class="GtkListStore" id="listmodel_volumenes">
     <columns>

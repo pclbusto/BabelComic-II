@@ -11,8 +11,8 @@ from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook
 from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
-#from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
-from Gui_gtk.test_stack import VolumeGuiGtk
+from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+
 
 from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
@@ -63,9 +63,10 @@ class BabelComics_main_gtk():
                          'click_boton_comic_info':self.click_boton_comic_info,
                          'click_boton_acerca_de':self.click_boton_acerca_de,
                          'click_next_view': self.click_next_view,
-                         'click_prev_view':self.click_prev_view,
+                         'click_prev_view': self.click_prev_view,
                          'marca_filtro': self.marca_filtro,
-                         'lanzador_funciones': self.lanzador_funciones}
+                         'lanzador_funciones': self.lanzador_funciones,
+                         'pop_up_menu': self.pop_up_menu}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -74,6 +75,7 @@ class BabelComics_main_gtk():
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/BabelComic_main_gtk-II.glade")
         self.builder.connect_signals(self.handlers)
+        self.menu = self.builder.get_object("popovermenu")
         self.window = self.builder.get_object("BabelComics_main_gtk")
         self.app_icon = Pixbuf.new_from_file_at_size('../iconos/BabelComic.png', 32, 32)
         #Gtk.Windowset_default_icon_list([self.app_icon])
@@ -128,6 +130,11 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
         self.update_panel_filtros()
+
+    def pop_up_menu(self,widget):
+        # self.popover.set_relative_to(button)
+        self.menu.show_all()
+        self.menu.popup()
 
     def lanzador_funciones(self, widget, args):
         print("lanzador de funciones")
