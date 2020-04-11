@@ -145,6 +145,6 @@ class Comic_Vine_Info_Searcher():
 if __name__ == "__main__":
 
     comcis_org_searcher = Comic_Vine_Info_Searcher()
-    comcis_org_searcher.search_issue("https://comicvine.gamespot.com/witchblade-9-good-intentions-part-three/4000-691312/")
+    comcis_org_searcher.search_issue("https://comicvine.gamespot.com/batman-1-knife-trick/4000-293259/")
     # lista = comcis_org_searcher.search_issues_in_arc('https://comicvine.gamespot.com/faces-of-evil/4045-55781/issues/')
     # print(lista)

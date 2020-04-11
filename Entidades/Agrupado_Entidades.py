@@ -57,7 +57,7 @@ class Arcos_Argumentales_Comics_Reference(Entidades.Init.Base):
 
     id_comicbook_info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_info'), primary_key=True)
     id_arco_argumental = Column(Integer, ForeignKey('arcos_argumentales.id_arco_argumental'), primary_key=True)
-    ids_comicbooks_info= relationship("Comicbook_Info", back_populates="ids_arco_argumental")
+    ids_comicbooks_info = relationship("Comicbook_Info", back_populates="ids_arco_argumental")
     ids_arco_argumental = relationship("Arco_Argumental", back_populates="ids_comicbooks_Info")
     orden = Column(Integer, nullable=False, default=0)
 

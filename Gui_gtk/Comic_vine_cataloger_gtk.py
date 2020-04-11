@@ -30,9 +30,9 @@ class Comic_vine_cataloger_gtk():
                          'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar,
                          'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
                          'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
-                         'boton_catalogar_grupo':self.boton_catalogar_grupo,
-                         'text_edited':self.text_edited,
-                         'borrar_linea':self.borrar_linea,
+                         'boton_catalogar_grupo': self.boton_catalogar_grupo,
+                         'text_edited': self.text_edited,
+                         'borrar_linea': self.borrar_linea,
                          'siguiente_cover': self.siguiente_cover,
                          'anterior_cover':self.anterior_cover,
                          'cerrar_ventana':self.cerrar_ventana,
@@ -60,7 +60,8 @@ class Comic_vine_cataloger_gtk():
         self.entry_fecha_vine = self.builder.get_object("entry_fecha_vine")
         self.image_cover_comic_vine = self.builder.get_object("image_cover_comic_vine")
         self.boton_cantidad_covers = self.builder.get_object("boton_cantidad_covers")
-
+        self.box_cover_vine = self.builder.get_object("box_cover_vine")
+        self.spinner = Gtk.Spinner()
         self.lista_covers = []
         self.index_lista_covers = 0
         self.listaAMostrar = []
@@ -200,12 +201,27 @@ class Comic_vine_cataloger_gtk():
         nombreThumnail = comic.path
         print("PATH COVER {}".format(nombreThumnail))
         if (os.path.isfile(nombreThumnail)):
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=nombreThumnail,
-                width=150,
-                height=250,
-                preserve_aspect_ratio=True)
-            self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
+            self.mostrar_cover(nombreThumnail)
+        else:
+            print("Elimiando compoennte en spinner")
+            self.box_cover_vine.remove(self.image_cover_comic_vine)
+            self.box_cover_vine.remove(self.spinner)
+            self.box_cover_vine.add(self.spinner)#, 1, 0, 1, 1)
+            self.window.show_all()
+            self.spinner.start()
+
+    def mostrar_cover(self, nombreThumnail):
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=nombreThumnail,
+            width=150,
+            height=250,
+            preserve_aspect_ratio=True)
+        print("Elimiando compoennte en imagen")
+        self.box_cover_vine.remove(self.spinner)
+        self.box_cover_vine.remove(self.image_cover_comic_vine)
+        self.box_cover_vine.add(self.image_cover_comic_vine)  # , 1, 0, 1, 1)
+        self.window.show_all()
+        self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
 
     def boton_catalogar_grupo(self,widget):
         t = threading.Thread(target=self._catalogar_grupo)
@@ -258,6 +274,9 @@ class Comic_vine_cataloger_gtk():
         self.boton_cantidad_covers.set_label("{}/{}".format(self.index_lista_covers + 1, len(self.lista_covers)))
         if not self.gui_updating:
             comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+            for index, item in enumerate(self.lista_covers):
+                print("{}-{}".format(index, item))
+            print("Actual: {}-{}".format(self.index_lista_covers, comicbook_info_cover_url))
             webImage = comicbook_info_cover_url.thumb_url
             nombreImagen = webImage[webImage.rindex('/') + 1:]
             print(webImage)
@@ -277,7 +296,6 @@ class Comic_vine_cataloger_gtk():
             self._load_comic_vine(self.comicBookVine)
 
     def descargar_imagen(self, web_image, path, nombre_imagen):
-        print('holaaaaaaaaaaaaaaaaa')
         threading.Thread(target=self.descargar_imagen_thread, args=[web_image, path, nombre_imagen]).start()
 
 
@@ -297,6 +315,8 @@ class Comic_vine_cataloger_gtk():
             self.lock.acquire(True)
             self.lista_covers_downloading.remove(path + nombre_imagen)
             self.lock.release()
+            self.mostrar_cover(path + nombre_imagen)
+
 
     def click_boton_traer_solo_para_catalogar(self, widget):
         self.gui_updating = True
@@ -317,22 +337,36 @@ class Comic_vine_cataloger_gtk():
 
 if __name__ == '__main__':
 
-    session = Entidades.Init.Session()
-    # pathComics=["/home/pedro/Imágenes/comics/Witchblade (2017) Issue #1.cbz"]
-    # '''
-    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 442.cbr",
-    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 447.cbr",
-    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 470.cbr",
-    #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
-    #  '''
-    # comics= []
-    comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Batman%')).all()
-    print(comics_query)
-    # for comic in comics_query:
-    #     comics.append(comic)
+    #session = Entidades.Init.Session()
+    # # pathComics=["/home/pedro/Imágenes/comics/Witchblade (2017) Issue #1.cbz"]
+    # # '''
+    # #             "E:\\Comics\\DC\\Action Comics\\Action Comics 442.cbr",
+    # #             "E:\\Comics\\DC\\Action Comics\\Action Comics 447.cbr",
+    # #             "E:\\Comics\\DC\\Action Comics\\Action Comics 470.cbr",
+    # #             "E:\\Comics\\DC\\Action Comics\\Action Comics 473.cbr"
+    # #  '''
+    # # comics= []
+    # comics_query = session.query(Comicbook).filter(Comicbook.path.like('%Batman%')).all()
+    # print(comics_query)
+    # # for comic in comics_query:
+    # #     comics.append(comic)
+    #
+    # cvs = Comic_vine_cataloger_gtk(comics_query)
+    # cvs.window.show_all()
+    # cvs.window.connect("destroy", Gtk.main_quit)
+    # cvs.entry_id_volumen_catalogar.set_text('91273')
+    # Gtk.main()
+    web_image = 'https://comicvine1.cbsistatic.com/uploads/scale_large/0/9241/2203280-batman_001__2011___3rd_printing_variant_cover___digital___golgoth_empire_.jpg'
+    nombre_imagen = web_image[web_image.rindex('/') + 1:]
+    print(web_image)
+    print(nombre_imagen)
+    dir_base = '/home/pedro/PycharmProjects/BabelComic-II'
+    path = dir_base + os.sep + "images" + os.sep + "searchCache" + os.sep
 
-    cvs = Comic_vine_cataloger_gtk(comics_query)
-    cvs.window.show_all()
-    cvs.window.connect("destroy", Gtk.main_quit)
-    cvs.entry_id_volumen_catalogar.set_text('91273')
-    Gtk.main()
+    jpg = urllib.request.urlopen(web_image)
+    jpg_image = jpg.read()
+    print('imagen bajada')
+
+    f_image = open(path + nombre_imagen, 'wb')
+    f_image.write(jpg_image)
+    f_image.close()

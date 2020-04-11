@@ -471,13 +471,19 @@ class ComicVineSearcher:
 
 if __name__ == '__main__':
     cv = ComicVineSearcher('7e4368b71c5a66d710a62e996a660024f6a868d4', None)
+    comics_searcher = Comic_Vine_Info_Searcher(cv.session)
     ##    cv = comicVineSearcher('64f7e65686c40cc016b8b8e499f46d6657d26752')
-    cv.setEntidad('volumes')
-    cv.addFilter("name:" + 'batman')
-    cv.vine_Search_all()
-    # volumen = cv.getVineEntity('2839')
-    for comic in cv.listaBusquedaVine:
-        print(comic)
+    # cv.setEntidad('volumes')
+    # cv.addFilter("name:" + 'batman')
+    # cv.vine_Search_all()
+    # # volumen = cv.getVineEntity('2839')
+    # for comic in cv.listaBusquedaVine:
+    #     print(comic)
+    comics_searcher = Comic_Vine_Info_Searcher(self.session)
+    comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
+    comicbook_info.id_comicbook_info = comic_in_volume.id_comicbook_info
+    comicbook_info.id_volume = volumen.id_volume
+    comicbook_info.nombre_volumen = volumen.nombre
 
     # arco = cv.getVineEntity(55691)
     # print(arco.comics)

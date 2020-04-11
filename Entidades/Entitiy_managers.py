@@ -27,12 +27,19 @@ class Comicbooks_Info(Entity_manager):
         self.set_order(Comicbook_Info.numero)
         self.direccion = 0
         self.index_lista_covers = 0
+        self.index_lista_arcs = 0
         self.lista_covers = []
+        self.lista_arcs = []
 
     def load_cover_list(self):
         self.index_lista_covers = 0
         self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
             Comicbook_Info_Cover_Url.id_comicbook_info == self.entidad.id_comicbook_info).all()
+
+    def load_arcs_list(self):
+        self.index_lista_arcs = 0
+        self.lista_arcs = self.session.query(Arcos_Argumentales_Comics_Reference).filter(
+            Arcos_Argumentales_Comics_Reference.id_comicbook_info == self.entidad.id_comicbook_info).all()
 
     def _get_cover_complete_path(self):
         print("Comicbooks_Info._get_cover_complete_path")
@@ -85,6 +92,7 @@ class Comicbooks_Info(Entity_manager):
     def get(self, id_comicbook_info):
         entidad = super().get(id_comicbook_info)
         self.load_cover_list()
+        self.load_arcs_list()
         return entidad
 
     def getNext(self):
@@ -100,7 +108,7 @@ class Comicbooks_Info(Entity_manager):
 
 class ArcosArgumentales(Entity_manager):
     def __init__(self, session = None):
-        Entity_manager.__init__(self, session=session, clase=Arco_Argumental, id_externo=Arco_Argumental.id_arco_argumental_externo)
+        Entity_manager.__init__(self, session=session, clase=Arco_Argumental)
         if session is not None:
             self.session = session
         else:

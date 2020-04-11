@@ -1,10 +1,11 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
-from Entidades.Agrupado_Entidades import  Comicbook_Info
+from Entidades.Entitiy_managers import Comicbooks_Info, Volumens, ArcosArgumentales
+# from Entidades.Agrupado_Entidades import  Comicbook_Info
 from Gui_gtk import Publisher_lookup_gtk
 from Gui_gtk.Publisher_vine_search_gtk import Publisher_vine_search_gtk
 import datetime
+import  threading
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -21,7 +22,7 @@ class Comicbook_Info_Gtk():
             self.session = Entidades.Init.Session()
 
         self.comicbooks_manager = Comicbooks_Info(session=self.session)
-
+        self.arcs_manager = ArcosArgumentales(session=self.session)
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
                          'getLast': self.getLast, 'seleccion_fecha': self.seleccion_fecha,
                          'boton_guardar': self.boton_guardar, 'click_limpiar':self.click_limpiar,
@@ -53,6 +54,9 @@ class Comicbook_Info_Gtk():
         self.calendario = self.builder.get_object("calendario")
         self.cover_comic = self.builder.get_object("cover_comic")
         self.combo_paginas = self.builder.get_object("combo_paginas")
+        self.liststore_covers = self.builder.get_object("liststore_covers")
+        self.liststore_arcos_argumentales = self.builder.get_object("liststore_arcos_argumentales")
+
 
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
@@ -158,7 +162,7 @@ class Comicbook_Info_Gtk():
             self.entry_orden.set_text(str(comicbook_info.orden))
             self.entry_numero.set_text(str(comicbook_info.numero))
             self.entry_titulo.set_text(comicbook_info.titulo)
-            if comicbook_info.fecha_tapa>0:
+            if comicbook_info.fecha_tapa > 0:
                 self.label_fecha_tapa.set_text(datetime.date.fromordinal(comicbook_info.fecha_tapa).strftime("%d/%m/%Y"))
             else:
                 self.label_fecha_tapa.set_text(
@@ -169,12 +173,19 @@ class Comicbook_Info_Gtk():
             self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
             print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
             self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
-            print("Dsadasdas")
             self._load_cover()
             listore = Gtk.ListStore(int)
+            self.liststore_covers.clear()
             for index, cover_nro in enumerate(self.comicbooks_manager.lista_covers):
                 listore.append([index])
+                self.liststore_covers.append([index, cover_nro.thumb_url])
             self.combo_paginas.set_model(listore)
+            self.liststore_arcos_argumentales.clear()
+            for arco in self.comicbooks_manager.lista_arcs:
+                arco = self.arcs_manager.get(arco.id_arco_argumental)
+                print("ARCO {}:".format(arco.nombre))
+                self.liststore_arcos_argumentales.append([arco.id_arco_argumental, arco.nombre])
+            # self.liststore_covers
 
     def _load_cover_background(self):
         nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
@@ -186,8 +197,9 @@ class Comicbook_Info_Gtk():
         self.cover_comic.set_from_pixbuf(pixbuf)
 
     def _load_cover(self):
+        print("INICIANDO THREAD")
+        threading.Thread(target=self._load_cover_background()).start()
 
-        self._load_cover_background()
 
     def copy_from_window_to_entity(self):
         self.comicbooks_manager.entidad.orden = self.entry_orden.get_text()
@@ -211,8 +223,8 @@ class Comicbook_Info_Gtk():
 if __name__ == "__main__":
 
     cbi = Comicbook_Info_Gtk()
-    cbi.set_volume('796')
-    cbi.set_comicbook(542921)
+    cbi.set_volume('42721')
+    cbi.set_comicbook(293259)
     cbi.window.show_all()
     cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()
