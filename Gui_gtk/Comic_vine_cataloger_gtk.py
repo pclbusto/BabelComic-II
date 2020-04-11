@@ -33,7 +33,7 @@ class Comic_vine_cataloger_gtk():
                          'boton_catalogar_grupo':self.boton_catalogar_grupo,
                          'text_edited':self.text_edited,
                          'borrar_linea':self.borrar_linea,
-                         'siguiente_cover':self.siguiente_cover,
+                         'siguiente_cover': self.siguiente_cover,
                          'anterior_cover':self.anterior_cover,
                          'cerrar_ventana':self.cerrar_ventana,
                          'click_boton_label_volumen_id': self.click_boton_label_volumen_id}
@@ -59,9 +59,13 @@ class Comic_vine_cataloger_gtk():
         self.entry_numero_vine = self.builder.get_object("entry_numero_vine")
         self.entry_fecha_vine = self.builder.get_object("entry_fecha_vine")
         self.image_cover_comic_vine = self.builder.get_object("image_cover_comic_vine")
+        self.boton_cantidad_covers = self.builder.get_object("boton_cantidad_covers")
+
         self.lista_covers = []
-        self.index_lista_covers=0
-        self.listaAMostrar =[]
+        self.index_lista_covers = 0
+        self.listaAMostrar = []
+        self.lista_covers_downloading = []
+        self.lock = threading.Lock()
         self.listore_comics_para_catalogar.clear()
         # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
@@ -79,12 +83,12 @@ class Comic_vine_cataloger_gtk():
         serie.window.show()
 
     def siguiente_cover(self, widget):
-        if len(self.lista_covers)-1>self.index_lista_covers:
+        if len(self.lista_covers)-1 > self.index_lista_covers:
             self.index_lista_covers += 1
         self.load_cover_comic_info(self.comicBookVine)
 
     def anterior_cover(self, widget):
-        if self.index_lista_covers>0:
+        if self.index_lista_covers > 0:
             self.index_lista_covers -= 1
         self.load_cover_comic_info(self.comicBookVine)
 
@@ -195,12 +199,13 @@ class Comic_vine_cataloger_gtk():
         # comic.openCbFile()
         nombreThumnail = comic.path
         print("PATH COVER {}".format(nombreThumnail))
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=nombreThumnail,
-            width=150,
-            height=250,
-            preserve_aspect_ratio=True)
-        self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
+        if (os.path.isfile(nombreThumnail)):
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombreThumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
+            self.image_cover_comic_vine.set_from_pixbuf(pixbuf)
 
     def boton_catalogar_grupo(self,widget):
         t = threading.Thread(target=self._catalogar_grupo)
@@ -246,9 +251,11 @@ class Comic_vine_cataloger_gtk():
             print(comicbook_info_de_volumen.id_comicbook_info)
 
             self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
+            self.boton_cantidad_covers.set_label("1/{}".format(str(len(self.lista_covers))))
             self.load_cover_comic_info(comicbook_info_de_volumen)
 
     def load_cover_comic_info(self, comicbook_info_de_volumen):
+        self.boton_cantidad_covers.set_label("{}/{}".format(self.index_lista_covers + 1, len(self.lista_covers)))
         if not self.gui_updating:
             comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
             webImage = comicbook_info_cover_url.thumb_url
@@ -259,14 +266,37 @@ class Comic_vine_cataloger_gtk():
             if not (os.path.isfile(path + nombreImagen)):
                 print('no existe')
                 print(nombreImagen)
-                jpg = urllib.request.urlopen(webImage)
-                jpgImage = jpg.read()
-                fImage = open(path + nombreImagen, 'wb')
-                fImage.write(jpgImage)
-                fImage.close()
+                self.descargar_imagen(webImage, path, nombreImagen)
+                # jpg = urllib.request.urlopen(webImage)
+                # jpgImage = jpg.read()
+                # fImage = open(path + nombreImagen, 'wb')
+                # fImage.write(jpgImage)
+                # fImage.close()
             self.comicBookVine = comicbook_info_de_volumen
             self.comicBookVine.path = path + nombreImagen
             self._load_comic_vine(self.comicBookVine)
+
+    def descargar_imagen(self, web_image, path, nombre_imagen):
+        print('holaaaaaaaaaaaaaaaaa')
+        threading.Thread(target=self.descargar_imagen_thread, args=[web_image, path, nombre_imagen]).start()
+
+
+    def descargar_imagen_thread(self, web_image, path, nombre_imagen):
+        if (path + nombre_imagen) not in self.lista_covers_downloading:
+            self.lock.acquire(True)
+            self.lista_covers_downloading.append(path + nombre_imagen)
+            self.lock.release()
+            print('bajando imagen')
+            jpg = urllib.request.urlopen(web_image)
+            jpg_image = jpg.read()
+            print('imagen bajada')
+
+            f_image = open(path + nombre_imagen, 'wb')
+            f_image.write(jpg_image)
+            f_image.close()
+            self.lock.acquire(True)
+            self.lista_covers_downloading.remove(path + nombre_imagen)
+            self.lock.release()
 
     def click_boton_traer_solo_para_catalogar(self, widget):
         self.gui_updating = True
