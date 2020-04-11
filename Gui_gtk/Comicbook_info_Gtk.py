@@ -9,7 +9,7 @@ import  threading
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, GLib
 from bs4 import BeautifulSoup
 
 class Comicbook_Info_Gtk():
@@ -29,7 +29,7 @@ class Comicbook_Info_Gtk():
                          'click_cargar_desde_web': self.click_cargar_desde_web, 'combobox_change':self.combobox_change,
                          'menu_desplegado':self.menu_desplegado,'click_eliminar':self.click_eliminar,
                          'click_cover_anterior': self.click_cover_anterior,
-                         'click_cover_siguiente':self.click_cover_siguiente,
+                         'click_cover_siguiente': self.click_cover_siguiente,
                          'change_cover': self.change_cover}
 
         self.builder = Gtk.Builder()
@@ -56,7 +56,8 @@ class Comicbook_Info_Gtk():
         self.combo_paginas = self.builder.get_object("combo_paginas")
         self.liststore_covers = self.builder.get_object("liststore_covers")
         self.liststore_arcos_argumentales = self.builder.get_object("liststore_arcos_argumentales")
-
+        self.spinner = Gtk.Spinner()
+        self.box_cover = self.builder.get_object("box_cover")
 
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
@@ -72,7 +73,7 @@ class Comicbook_Info_Gtk():
             self._load_cover()
         else:
             entry = widget.get_child()
-            print("Entered: %s" % entry.get_text())
+            # print("Entered: %s" % entry.get_text())
 
     def click_eliminar(self,widget):
         print(datetime.date.fromordinal(self.comicbooks_manager.entidad.fecha_tapa).day)
@@ -110,9 +111,10 @@ class Comicbook_Info_Gtk():
 
     def click_cover_siguiente(self, widget):
         self.comicbooks_manager.get_next_cover_complete_path()
+        # self.comicbooks_manager.index_lista_covers
         self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
 
-    def combobox_change(self,widget):
+    def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
             self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
@@ -188,17 +190,29 @@ class Comicbook_Info_Gtk():
             # self.liststore_covers
 
     def _load_cover_background(self):
+        # print("YA EN EL HILO")
         nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=nombreThumnail,
-            width=150,
-            height=250,
-            preserve_aspect_ratio=True)
-        self.cover_comic.set_from_pixbuf(pixbuf)
+        if (os.path.isfile(nombreThumnail)):
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombreThumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
+            self.box_cover.remove(self.cover_comic)
+            self.box_cover.remove(self.spinner)
+            self.box_cover.add(self.cover_comic)  # , 1, 0, 1, 1)
+            self.cover_comic.set_from_pixbuf(pixbuf)
+        else:
+            self.box_cover.remove(self.cover_comic)
+            self.box_cover.remove(self.spinner)
+            self.box_cover.add(self.spinner)  # , 1, 0, 1, 1)
+            self.spinner.start()
+        GLib.idle_add(self.window.show_all)
 
     def _load_cover(self):
         print("INICIANDO THREAD")
-        threading.Thread(target=self._load_cover_background()).start()
+
+        threading.Thread(target=self._load_cover_background).start()
 
 
     def copy_from_window_to_entity(self):
@@ -224,7 +238,7 @@ if __name__ == "__main__":
 
     cbi = Comicbook_Info_Gtk()
     cbi.set_volume('42721')
-    cbi.set_comicbook(293259)
+    cbi.set_comicbook(340148)
     cbi.window.show_all()
     cbi.window.connect("destroy", Gtk.main_quit)
     Gtk.main()

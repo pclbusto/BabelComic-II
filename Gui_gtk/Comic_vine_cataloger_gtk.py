@@ -274,9 +274,6 @@ class Comic_vine_cataloger_gtk():
         self.boton_cantidad_covers.set_label("{}/{}".format(self.index_lista_covers + 1, len(self.lista_covers)))
         if not self.gui_updating:
             comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
-            for index, item in enumerate(self.lista_covers):
-                print("{}-{}".format(index, item))
-            print("Actual: {}-{}".format(self.index_lista_covers, comicbook_info_cover_url))
             webImage = comicbook_info_cover_url.thumb_url
             nombreImagen = webImage[webImage.rindex('/') + 1:]
             print(webImage)
