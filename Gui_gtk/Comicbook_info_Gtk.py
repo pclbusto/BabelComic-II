@@ -191,6 +191,7 @@ class Comicbook_Info_Gtk():
 
     def _load_cover_background(self):
         # print("YA EN EL HILO")
+
         nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
         if (os.path.isfile(nombreThumnail)):
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -212,8 +213,8 @@ class Comicbook_Info_Gtk():
     def _load_cover(self):
         print("INICIANDO THREAD")
 
-        threading.Thread(target=self._load_cover_background).start()
-
+        # threading.Thread(target=self._load_cover_background).start()
+        self._load_cover_background()
 
     def copy_from_window_to_entity(self):
         self.comicbooks_manager.entidad.orden = self.entry_orden.get_text()

@@ -47,25 +47,32 @@ class Comicbooks_Info(Entity_manager):
     def _get_cover_complete_path(self):
         comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
         #comicbook_info_cover_url = self.lista_covers[0]
-        webImage = comicbook_info_cover_url.thumb_url
-        nombreImagen = webImage[webImage.rindex('/') + 1:]
+        web_image = comicbook_info_cover_url.thumb_url
+        nombreImagen = web_image[web_image.rindex('/') + 1:]
         path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
         if not (os.path.isfile(path + nombreImagen)):
-            if path + nombreImagen not in self.lista_covers_downloading:
-                self.lock.acquire(True)
-                self.lista_covers_downloading.append(path + nombreImagen)
-                self.lock.release()
-                print('no existe')
-                print(nombreImagen)
-                jpg = urllib.request.urlopen(webImage)
-                jpgImage = jpg.read()
-                fImage = open(path + nombreImagen, 'wb')
-                fImage.write(jpgImage)
-                fImage.close()
-                self.lock.acquire(True)
-                self.lista_covers_downloading.remove(path + nombreImagen)
-                self.lock.release()
+            self.descargar_imagen(web_image, path + nombreImagen)
         return path + nombreImagen
+
+    def descargar_imagen(self, web_image, nombre_imagen):
+        threading.Thread(target=self.descargar_imagen_thread, args=[web_image, nombre_imagen]).start()
+
+
+    def descargar_imagen_thread(self, web_image, nombre_imagen):
+        if nombre_imagen not in self.lista_covers_downloading:
+            self.lock.acquire(True)
+            self.lista_covers_downloading.append(nombre_imagen)
+            self.lock.release()
+            print('no existe')
+            print(nombre_imagen)
+            jpg = urllib.request.urlopen(web_image)
+            jpgImage = jpg.read()
+            fImage = open(nombre_imagen, 'wb')
+            fImage.write(jpgImage)
+            fImage.close()
+            self.lock.acquire(True)
+            self.lista_covers_downloading.remove(nombre_imagen)
+            self.lock.release()
 
     def get_next_cover_complete_path(self):
         if self.index_lista_covers < len(self.lista_covers)-1:

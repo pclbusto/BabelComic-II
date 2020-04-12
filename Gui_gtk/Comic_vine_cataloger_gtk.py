@@ -29,7 +29,7 @@ class Comic_vine_cataloger_gtk():
                          'tree_view_archivos_para_catalogar_selection_change':self.tree_view_archivos_para_catalogar_selection_change,
                          'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar,
                          'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
-                         'click_boton_traer_solo_para_catalogar':self.click_boton_traer_solo_para_catalogar,
+                         'click_boton_traer_solo_para_catalogar': self.click_boton_traer_solo_para_catalogar,
                          'boton_catalogar_grupo': self.boton_catalogar_grupo,
                          'text_edited': self.text_edited,
                          'borrar_linea': self.borrar_linea,

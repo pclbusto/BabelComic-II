@@ -1208,6 +1208,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="model">liststore_comics_in_volume</property>
                                 <property name="search_column">0</property>
+                                <signal name="button-press-event" handler="click_derecho" swapped="no"/>
                                 <child internal-child="selection">
                                   <object class="GtkTreeSelection"/>
                                 </child>
