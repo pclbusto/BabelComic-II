@@ -192,7 +192,7 @@ class Comicbook_Info_Gtk():
     def _load_cover_background(self):
         # print("YA EN EL HILO")
 
-        nombreThumnail = self.comicbooks_manager._get_cover_complete_path()
+        nombreThumnail = self.comicbooks_manager._get_cover_complete_path(self.update_cover_image_call_back)
         if (os.path.isfile(nombreThumnail)):
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=nombreThumnail,
@@ -209,6 +209,18 @@ class Comicbook_Info_Gtk():
             self.box_cover.add(self.spinner)  # , 1, 0, 1, 1)
             self.spinner.start()
         GLib.idle_add(self.window.show_all)
+
+    def update_cover_image_call_back(self, nombre_thumnail):
+        if (os.path.isfile(nombre_thumnail)):
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                filename=nombre_thumnail,
+                width=150,
+                height=250,
+                preserve_aspect_ratio=True)
+            self.box_cover.remove(self.cover_comic)
+            self.box_cover.remove(self.spinner)
+            self.box_cover.add(self.cover_comic)  # , 1, 0, 1, 1)
+            self.cover_comic.set_from_pixbuf(pixbuf)
 
     def _load_cover(self):
         print("INICIANDO THREAD")

@@ -34,13 +34,18 @@ class BabelComics_Manager():
         self.cargar_editoriales()
         self.cargar_volumenes()
         self.comicbook_manager = Comicbooks(self.session)
+        self.papelera_con_datos = self.comicbook_manager.hay_comics_en_papelera
+        self.mostrar_registros_papelera = False
+
+    def hay_comics_en_papelera(self):
+        return self.comicbook_manager.hay_comics_en_papelera()
 
     def enviar_papelera(self, lista_comics):
         for comicbook_id in lista_comics:
             comicbook = self.comicbook_manager.get(int(comicbook_id.id_comicbook))
             comicbook.en_papelera = True
             self.comicbook_manager.session.commit()
-
+        self.papelera_con_datos = self.comicbook_manager.hay_comics_en_papelera()
 
     def get_titulo_actual(self):
         return self.titulos[self.seccion_activa]

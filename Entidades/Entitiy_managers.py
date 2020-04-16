@@ -33,7 +33,7 @@ class Comicbooks_Info(Entity_manager):
         self.lista_arcs = []
         self.lock = threading.Lock()
         self.lista_covers_downloading = []
-
+        self.callback = None
     def load_cover_list(self):
         self.index_lista_covers = 0
         self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
@@ -44,7 +44,8 @@ class Comicbooks_Info(Entity_manager):
         self.lista_arcs = self.session.query(Arcos_Argumentales_Comics_Reference).filter(
             Arcos_Argumentales_Comics_Reference.id_comicbook_info == self.entidad.id_comicbook_info).all()
 
-    def _get_cover_complete_path(self):
+    def _get_cover_complete_path(self, callback):
+        self.callback = callback
         comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
         #comicbook_info_cover_url = self.lista_covers[0]
         web_image = comicbook_info_cover_url.thumb_url
@@ -325,6 +326,12 @@ class Comicbooks(Entity_manager):
         self.filtro = None
         self.set_order(Comicbook.path)
         self.direccion = 0
+
+    def hay_comics_en_papelera(self):
+        print("CALCULANDO CANTIDAD DE REGISTROS EN PAPELERA")
+        retorno = self.session.query(Comicbook).filter(Comicbook.en_papelera == True).count() > 0
+        print(retorno)
+        return(retorno)
 
     def tiene_detalle(self):
         print("IIIIIID {}".format(self.entidad.id_comicbook))

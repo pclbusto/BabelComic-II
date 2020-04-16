@@ -101,6 +101,7 @@ class BabelComics_main_gtk():
         self.label_contadores = self.builder.get_object("label_contadores")
         self.label_pagina_filtros = self.builder.get_object("label_pagina_filtros")
         self.list_navegacion = self.builder.get_object("list_navegacion")
+        self.imagen_papelera = self.builder.get_object("imagen_papelera")
 
 
         self.thread_creacion_thumnails = None
@@ -131,11 +132,21 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
         self.update_panel_filtros()
+        self.update_imagen_papelera()
+
+    def update_imagen_papelera(self):
+        if self.manager.papelera_con_datos():
+            self.imagen_papelera.set_from_file("../iconos/Trash-Full-icon.png")
+        else:
+            self.imagen_papelera.set_from_file("../iconos/Trash-Empty-icon.png")
+
+
 
     def enviar_papelera(self, widget):
         comics = self.get_id_comics_from_selection()
         self.manager.enviar_papelera(comics)
         self.menu_comic.popdown()
+        self.update_imagen_papelera()
 
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
@@ -251,9 +262,9 @@ class BabelComics_main_gtk():
 
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == False)
+                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == self.manager.mostrar_registros_papelera)
         else:
-            self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == False)
+            self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == self.manager.mostrar_registros_papelera)
 
         if len(lista_editoriales) > 0 or len(lista_volumen) > 0 or len(lista_arcos) > 0:
             self.query = self.query.join(Comicbook_Info,
