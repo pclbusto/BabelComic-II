@@ -58,10 +58,10 @@ class Entity_manager:
         self.session.commit()
         self.new_record()
 
-    def get(self, Id):
+    def get(self, id_entidad):
         if not self.hay_cambios_pendientes():
-            print("ID: {}".format(Id))
-            self.entidad = self.session.query(self.clase).get(Id)
+            #print("ID: {}".format(id_entidad))
+            self.entidad = self.session.query(self.clase).get(id_entidad)
         else:
             self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad

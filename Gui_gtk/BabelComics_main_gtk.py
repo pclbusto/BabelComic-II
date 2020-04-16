@@ -42,9 +42,9 @@ class BabelComics_main_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
 
-        self.handlers = {'click_editorial': self.click_editorial,'click_boton_serie':self.click_boton_serie,
+        self.handlers = {'click_editorial': self.click_editorial, 'click_boton_serie':self.click_boton_serie,
                          'item_seleccionado': self.item_seleccionado, 'click_derecho': self.click_derecho,
-                         'click_boton_refresh':self.click_boton_refresh,'click_catalogar':self.click_catalogar,
+                         'click_boton_refresh':self.click_boton_refresh, 'click_catalogar':self.click_catalogar,
                          'click_boton_open_scanear':self.click_boton_open_scanear,
                          'click_boton_catalogar':self.click_boton_catalogar,
                          'click_boton_configurar_comicbook':self.click_boton_configurar_comicbook,
@@ -66,7 +66,8 @@ class BabelComics_main_gtk():
                          'click_prev_view': self.click_prev_view,
                          'marca_filtro': self.marca_filtro,
                          'lanzador_funciones': self.lanzador_funciones,
-                         'pop_up_menu': self.pop_up_menu}
+                         'pop_up_menu': self.pop_up_menu,
+                         'enviar_papelera': self.enviar_papelera}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -130,6 +131,11 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
         self.update_panel_filtros()
+
+    def enviar_papelera(self, widget):
+        comics = self.get_id_comics_from_selection()
+        self.manager.enviar_papelera(comics)
+        self.menu_comic.popdown()
 
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
@@ -245,9 +251,9 @@ class BabelComics_main_gtk():
 
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro)))
+                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == False)
         else:
-            self.query = self.session.query(Comicbook)
+            self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == False)
 
         if len(lista_editoriales) > 0 or len(lista_volumen) > 0 or len(lista_arcos) > 0:
             self.query = self.query.join(Comicbook_Info,
@@ -295,7 +301,7 @@ class BabelComics_main_gtk():
         self.updating_gui = False
         self.cbx_text_paginas.set_active(0)
 
-    def click_boton_config(self,widget):
+    def click_boton_config(self, widget):
         config = Config_gtk()
         config.window.show()
         self.popovermenu.popdown()
@@ -310,11 +316,18 @@ class BabelComics_main_gtk():
         self.popovermenu.popdown()
 
 
-    def click_catalogar(self,widget):
+    def get_id_comics_from_selection(self):
         comics = []
         for path in self.iconview.get_selected_items():
             indice = path
             comics.append(self.listaComics[indice[0]])
+        return comics
+
+    def click_catalogar(self,widget):
+        comics = self.get_id_comics_from_selection()
+        # for path in self.iconview.get_selected_items():
+        #     indice = path
+        #     comics.append(self.listaComics[indice[0]])
         cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
         cvs.window.show()
 
@@ -338,12 +351,11 @@ class BabelComics_main_gtk():
             self.menu_comic.popdown()
 
     def click_boton_catalogar(self, widget):
-        print("dsadsadasd")
         comics = []
         for path in self.iconview.get_selected_items():
             indice = path
             comics.append(self.listaComics[indice[0]])
-        cvs = Comic_vine_cataloger_gtk(comicbooks=comics,session=self.session)
+        cvs = Comic_vine_cataloger_gtk(comicbooks=comics, session=self.session)
         cvs.window.show()
         if self.popovermenu is not None:
             self.popovermenu.popdown()

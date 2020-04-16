@@ -1,6 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Commicbooks
+from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Comicbooks
 import datetime
 
 import gi
@@ -18,7 +18,7 @@ class Comicbook_Detail_Gtk():
             self.session = Entidades.Init.Session()
 
         self.comicbooks_detail_manager = Commicbooks_detail(session=self.session)
-        self.comicbooks_manager = Commicbooks(session=self.session)
+        self.comicbooks_manager = Comicbooks(session=self.session)
 
         self.handlers = {"seleccion_fila": self.seleccion_fila,
                          "click_marcar_como_cover": self.click_marcar_como_cover,

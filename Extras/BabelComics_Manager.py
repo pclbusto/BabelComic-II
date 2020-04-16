@@ -1,5 +1,6 @@
 from enum import Enum
 from Entidades.Agrupado_Entidades import Publisher, Volume, Arco_Argumental
+from Entidades.Entitiy_managers import Comicbooks
 from Entidades import Init
 from sqlalchemy import and_
 
@@ -32,6 +33,13 @@ class BabelComics_Manager():
         self.cargar_arcos_argumentales()
         self.cargar_editoriales()
         self.cargar_volumenes()
+        self.comicbook_manager = Comicbooks(self.session)
+
+    def enviar_papelera(self, lista_comics):
+        for comicbook_id in lista_comics:
+            comicbook = self.comicbook_manager.get(int(comicbook_id.id_comicbook))
+            comicbook.en_papelera = True
+            self.comicbook_manager.session.commit()
 
 
     def get_titulo_actual(self):

@@ -212,7 +212,11 @@ class ComicVineSearcher:
         self.entidad = 'story_arc_credits'
         arco = self.getVineEntity(id_arco)
         self.lista_arcos.append(arco)
+        self.lock.acquire(True)
         self.cantidad_hilos -= 1
+        self.lock.release()
+
+
 
     def hilo_cargar_comicbook_info(self, volumen):
 
@@ -264,7 +268,9 @@ class ComicVineSearcher:
                 # print("Numero {} url:{}".format(index, lista_comics_in_volumen[index].site_detail_url))
                 threading.Thread(target=self.hilo_procesar_arco, name=str(index), args=[list_ids_arcos[index]]).start()
                 index+=1
+                self.lock.acquire(True)
                 self.cantidad_hilos += 1
+                self.lock.release()
                 self.porcentaje_procesado = 50 + int(100 * (index-1) / (2*cantidad_elementos))
             else:
                 time.sleep(2)

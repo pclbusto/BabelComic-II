@@ -283,7 +283,7 @@ class Commicbooks_detail(Entity_manager):
             pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                                "coverIssuesThumbnails" + os.path.sep
 
-            comicbooks = Commicbooks(self.session)
+            comicbooks = Comicbooks(self.session)
             comicbooks.get(self.comicbook_id)
             nombreThumnail = pahThumnails + str(comicbooks.entidad.id_comicbook) + '.jpg'
             print("Generando thumnail {}".format(nombreThumnail))
@@ -308,7 +308,7 @@ class Commicbooks_detail(Entity_manager):
         print('termiando crear_thumnails_background')
 
 
-class Commicbooks(Entity_manager):
+class Comicbooks(Entity_manager):
     def __init__(self, session = None):
         Entity_manager.__init__(self, session=session, clase=Comicbook)
 

@@ -109,9 +109,10 @@ class Comicbook(Entidades.Init.Base):
     id_comicbook = Column(Integer, Sequence('comicbook_id_seq'), primary_key=True)
     id_comicbook_info = Column(String, nullable=False, default='')
     calidad = Column(Integer, nullable=False, default=0)#Sin calificar = 0 Scan malo = 1, Scan Medio=2, scan bueno=3, digital=4
+    en_papelera = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return "\nid ={}\npath={}\ncomic_info_id:*{}*".format(self.id_comicbook, self.getPath(), self.id_comicbook_info)
+        return "\nid ={}\npath={}\ncomic_info_id:*{}*\nEn Papelera*{}*".format(self.id_comicbook, self.getPath(), self.id_comicbook_info, self.en_papelera)
 
     def tieneArcoAlterno(self):
         return self.arcoArgumentalId != '0'

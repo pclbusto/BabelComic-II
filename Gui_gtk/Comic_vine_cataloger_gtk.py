@@ -109,8 +109,9 @@ class Comic_vine_cataloger_gtk():
 
 
     def return_lookup(self,id_volume):
-        if id_volume!='':
+        if id_volume != '':
             self.entry_id_volumen_catalogar.set_text(str(id_volume))
+        self.click_boton_calcular_numeracion(None)
 
     def tree_view_archivos_para_catalogar_selection_change(self,selection):
         (model, iter) = selection.get_selected()
@@ -131,7 +132,7 @@ class Comic_vine_cataloger_gtk():
 
         return True
 
-    def click_boton_calcular_numeracion (self,widget):
+    def click_boton_calcular_numeracion (self, widget):
 
         if self.entry_expresion_regular_numeracion.get_text() != '':
             expresion = self.entry_expresion_regular_numeracion.get_text()

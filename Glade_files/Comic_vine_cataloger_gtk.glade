@@ -740,6 +740,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
+                    <signal name="changed" handler="click_boton_calcular_numeracion" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
