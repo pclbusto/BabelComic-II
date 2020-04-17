@@ -101,7 +101,7 @@ class BabelComics_main_gtk():
         self.label_contadores = self.builder.get_object("label_contadores")
         self.label_pagina_filtros = self.builder.get_object("label_pagina_filtros")
         self.list_navegacion = self.builder.get_object("list_navegacion")
-        self.imagen_papelera = self.builder.get_object("imagen_papelera")
+        self.mostrar_papelera = self.builder.get_object("mostrar_papelera")
 
 
         self.thread_creacion_thumnails = None
@@ -132,13 +132,14 @@ class BabelComics_main_gtk():
         # thread_creacion_thumnails = threading.Thread(target=self.crear_todo_thumnails_background)
         # thread_creacion_thumnails.start()
         self.update_panel_filtros()
-        self.update_imagen_papelera()
+        # self.update_imagen_papelera()
 
     def update_imagen_papelera(self):
-        if self.manager.papelera_con_datos():
-            self.imagen_papelera.set_from_file("../iconos/Trash-Full-icon.png")
-        else:
-            self.imagen_papelera.set_from_file("../iconos/Trash-Empty-icon.png")
+        pass
+        # if self.manager.hay_comics_en_papelera():
+        #     self.imagen_papelera.set_from_file("../iconos/Trash-Full-icon.png")
+        # else:
+        #     self.imagen_papelera.set_from_file("../iconos/Trash-Empty-icon.png")
 
 
 
@@ -256,15 +257,20 @@ class BabelComics_main_gtk():
         lista_editoriales = [editorial[2] for editorial in self.manager.lista_editoriales if editorial[1] == 1]
         lista_volumen = [volumen[2] for volumen in self.manager.lista_volumenes if volumen[1] == 1]
         lista_arcos = [arcos[2] for arcos in self.manager.lista_arcos_argumentales if arcos[1] == 1]
-        print('AAARCCCOOOOSS')
+        # print('AAARCCCOOOOSS')
 
-        print(lista_arcos)
+        # print(lista_arcos)
+        print("MOSTRAMOS: {}".format(self.mostrar_papelera.get_active()))
+        check = 0
+        if self.mostrar_papelera.get_active():
+            check = 1
+            print("MOSTRAMOS LOS QUE TIENE LA PAPELERA")
 
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == self.manager.mostrar_registros_papelera)
+                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == check)
         else:
-            self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == self.manager.mostrar_registros_papelera)
+            self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == check)
 
         if len(lista_editoriales) > 0 or len(lista_volumen) > 0 or len(lista_arcos) > 0:
             self.query = self.query.join(Comicbook_Info,
@@ -302,6 +308,7 @@ class BabelComics_main_gtk():
             self.query = self.query.filter(Comicbook.id_comicbook_info != '')
 
         cantidad_total_registros = self.query.count()
+        # self.update_imagen_papelera()
         self.updating_gui = True
         self.cbx_text_paginas.remove_all()
         # calculamos la cantidad de paginas para la consulta que tenemos
@@ -539,6 +546,7 @@ class BabelComics_main_gtk():
 
             self.thread_creacion_thumnails = threading.Thread(target=self.crear_thumnail_de_pagina_background)
             self.thread_creacion_thumnails.start()
+            self.update_imagen_papelera()
 
 if __name__ == "__main__":
     GLib.set_prgname('Babelcomics')
