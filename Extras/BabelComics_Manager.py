@@ -40,10 +40,10 @@ class BabelComics_Manager():
     def hay_comics_en_papelera(self):
         return self.comicbook_manager.hay_comics_en_papelera()
 
-    def enviar_papelera(self, lista_comics):
+    def enviar_quitar_papelera(self, lista_comics, accion):
         for comicbook_id in lista_comics:
             comicbook = self.comicbook_manager.get(int(comicbook_id.id_comicbook))
-            comicbook.en_papelera = True
+            comicbook.en_papelera = accion
             self.comicbook_manager.session.commit()
         self.papelera_con_datos = self.comicbook_manager.hay_comics_en_papelera()
 

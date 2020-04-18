@@ -67,7 +67,8 @@ class BabelComics_main_gtk():
                          'marca_filtro': self.marca_filtro,
                          'lanzador_funciones': self.lanzador_funciones,
                          'pop_up_menu': self.pop_up_menu,
-                         'enviar_papelera': self.enviar_papelera}
+                         'enviar_papelera': self.enviar_papelera,
+                         'quitar_de_papelera': self.quitar_de_papelera}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -145,7 +146,13 @@ class BabelComics_main_gtk():
 
     def enviar_papelera(self, widget):
         comics = self.get_id_comics_from_selection()
-        self.manager.enviar_papelera(comics)
+        self.manager.enviar_quitar_papelera(comics, True)
+        self.menu_comic.popdown()
+        self.update_imagen_papelera()
+
+    def quitar_de_papelera(self, widget):
+        comics = self.get_id_comics_from_selection()
+        self.manager.enviar_quitar_papelera(comics, False)
         self.menu_comic.popdown()
         self.update_imagen_papelera()
 
@@ -252,6 +259,8 @@ class BabelComics_main_gtk():
         self.update_panel_filtros()
 
     def search_change(self, widget):
+
+        self.menu_comic = self.builder.get_object("menu_comic")
         self.filtro = self.search_entry_filtro_comics.get_text()
 
         lista_editoriales = [editorial[2] for editorial in self.manager.lista_editoriales if editorial[1] == 1]
@@ -264,7 +273,9 @@ class BabelComics_main_gtk():
         check = 0
         if self.mostrar_papelera.get_active():
             check = 1
-            print("MOSTRAMOS LOS QUE TIENE LA PAPELERA")
+            self.menu_comic = self.builder.get_object("menu_comic_2")
+        else:
+            self.menu_comic = self.builder.get_object("menu_comic")
 
         if self.filtro != '':
             self.query = self.session.query(Comicbook).filter(
