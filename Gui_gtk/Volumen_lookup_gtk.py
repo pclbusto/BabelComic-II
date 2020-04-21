@@ -16,9 +16,10 @@ class Volume_lookup_gtk():
 
         self.handlers = {'search_volumen': self.search_volumen, 'search_editorial': self.search_editorial,
                          'click_lookup_editorial': self.click_lookup_editorial,
-                         'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar':self.click_boton_aceptar,
-                         'gtk_tree_view_volumen_double_click':self.gtk_tree_view_volumen_double_click,
-                         'combobox_change':self.combobox_change}
+                         'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar': self.click_boton_aceptar,
+                         'gtk_tree_view_volumen_double_click': self.gtk_tree_view_volumen_double_click,
+                         'combobox_change':self.combobox_change,
+                         'foco_busquedas': self.foco_busquedas}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Volumen_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
@@ -42,6 +43,9 @@ class Volume_lookup_gtk():
         self.publisher=None
         self.volume = None
 
+    def foco_busquedas(self, widget):
+        print("foco ganado")
+
     def combobox_change(self,widget):
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
@@ -52,7 +56,9 @@ class Volume_lookup_gtk():
             self.click_boton_aceptar(widget)
 
     def search_volumen(self, widget):
-        if self.search_entry_volumen.get_text()=='' and not self.publisher:
+        self.gtk_tree_view_volumen.get_selection().unselect_all()
+        self.gtk_tree_view_volumen.get_selection().set_mode(0)
+        if self.search_entry_volumen.get_text() == '' and not self.publisher:
             self.volumens = self.session.query(Volume).all()
         elif self.search_entry_volumen.get_text()=='' and self.publisher:
             self.volumens = self.session.query(Volume).filter(Volume.id_publisher == self.publisher.id_publisher)
@@ -62,23 +68,25 @@ class Volume_lookup_gtk():
             self.volumens = self.session.query(Volume).filter(Volume.nombre.like(
                 '%{}%'.format(self.search_entry_volumen.get_text())),Volume.publisherId==self.publisher.id_publisher)
         self._load_data()
+        self.gtk_tree_view_volumen.get_selection().set_mode(1)
 
     def search_editorial(self, widget):
-        if self.search_entry_editorial.get_text()=='':
+        self.gtk_tree_view_volumen.get_selection().unselect_all()
+        if self.search_entry_editorial.get_text() == '':
             self.publisher = None
         else:
-            self.publisher = self.session.query(Publisher).filter(Publisher.id_publisher==self.search_entry_editorial.get_text()).first()
+            self.publisher = self.session.query(Publisher).filter(Publisher.id_publisher == self.search_entry_editorial.get_text()).first()
             if self.publisher:
                 self.label_nombre_editorial.set_text(self.publisher.name)
         self.search_volumen(widget)
 
     def click_lookup_editorial(self, widget):
-        lookup = Publisher_lookup_gtk(self.session,self.return_lookup_editorial)
+        lookup = Publisher_lookup_gtk(self.session, self.return_lookup_editorial)
         lookup.window.show()
 
     def _load_data(self):
         self.listmodel_volumens.clear()
-        for index,volume in enumerate(self.volumens):
+        for index, volume in enumerate(self.volumens):
             self.listmodel_volumens.append(
                 [volume.nombre, volume.cantidad_numeros, volume.publisher_name, volume.anio_inicio, index, volume.id_volume])
         self.gtk_tree_view_volumen.set_model(self.listmodel_volumens)
@@ -89,8 +97,8 @@ class Volume_lookup_gtk():
 
     def seleccion_volumen(self, selection):
         (model, iter) = selection.get_selected()
-        if iter:
-            self.volume = self.volumens[model[iter][4]]
+        if iter is not None:
+            self.volume = self.volumens[self.listmodel_volumens[iter][4]]
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=self.volume.getImagePath(),
                 width=250,
@@ -98,14 +106,16 @@ class Volume_lookup_gtk():
                 preserve_aspect_ratio=True)
             self.imagen_cover_volumen.set_from_pixbuf(pixbuf)
 
+
     def return_lookup_editorial(self,id_editorial):
         if id_editorial!='':
             self.search_entry_editorial.set_text(str(id_editorial))
 
 
     def click_boton_aceptar(self,widget):
-        self.campo_retorno(self.volume.id_volume)
-        self.window.close()
+        self.gtk_tree_view_volumen.get_selection().unselect_all()
+        # self.campo_retorno(self.volume.id_volume)
+        # self.window.close()
 
 
 if (__name__ == '__main__'):

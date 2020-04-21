@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="image_lookup_editorial">
@@ -7,12 +7,42 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-find</property>
   </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name Id -->
+      <column type="gchararray"/>
+      <!-- column-name Nombre -->
+      <column type="gchararray"/>
+      <!-- column-name Números -->
+      <column type="gint"/>
+      <!-- column-name Editorial -->
+      <column type="gchararray"/>
+      <!-- column-name Año -->
+      <column type="gint"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">21321</col>
+        <col id="1" translatable="yes">Green Lantern</col>
+        <col id="2">254</col>
+        <col id="3" translatable="yes">dc</col>
+        <col id="4">1979</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">213</col>
+        <col id="1" translatable="yes">Green Lantern</col>
+        <col id="2">39</col>
+        <col id="3" translatable="yes">dc</col>
+        <col id="4">1972</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkWindow" id="Volume_vine_search_Gtk">
     <property name="name">volumen_vine_seach_gtk</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Volumen lookup</property>
     <property name="window_position">center</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child>
@@ -91,25 +121,12 @@
                 <property name="primary_icon_name">edit-find-symbolic</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
+                <signal name="focus" handler="foco_busquedas" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
                 <property name="width">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSearchEntry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="primary_icon_name">edit-find-symbolic</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="primary_icon_sensitive">False</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -134,6 +151,21 @@
               </object>
               <packing>
                 <property name="left_attach">4</property>
+                <property name="top_attach">1</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSearchEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="primary_icon_name">edit-find-symbolic</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">False</property>
+                <signal name="focus" handler="foco_busquedas" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
                 <property name="width">2</property>
               </packing>
@@ -232,35 +264,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="liststore1">
-    <columns>
-      <!-- column-name Id -->
-      <column type="gchararray"/>
-      <!-- column-name Nombre -->
-      <column type="gchararray"/>
-      <!-- column-name Números -->
-      <column type="gint"/>
-      <!-- column-name Editorial -->
-      <column type="gchararray"/>
-      <!-- column-name Año -->
-      <column type="gint"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">21321</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">254</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1979</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">213</col>
-        <col id="1" translatable="yes">Green Lantern</col>
-        <col id="2">39</col>
-        <col id="3" translatable="yes">dc</col>
-        <col id="4">1972</col>
-      </row>
-    </data>
   </object>
 </interface>

@@ -79,9 +79,9 @@ class BabelComics_main_gtk():
         self.builder.connect_signals(self.handlers)
         self.menu = self.builder.get_object("popovermenu")
         self.window = self.builder.get_object("BabelComics_main_gtk")
-        self.app_icon = Pixbuf.new_from_file_at_size('../iconos/BabelComic.png', 32, 32)
+        self.app_icon = Pixbuf.new_from_file_at_size('../iconos/iconoBabelComics-buuf.png', 32, 32)
         #Gtk.Windowset_default_icon_list([self.app_icon])
-        self.window.set_icon_from_file('../iconos/BabelComic.png')
+        self.window.set_icon_from_file('../iconos/iconoBabelComics-buuf.png')
         #self.window.set_icon_from_file('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/BabelComic.png')
         self.window.set_default_icon_list([self.app_icon])
         self.boton_refresh= self.builder.get_object('boton_refresh')
@@ -149,12 +149,14 @@ class BabelComics_main_gtk():
         self.manager.enviar_quitar_papelera(comics, True)
         self.menu_comic.popdown()
         self.update_imagen_papelera()
+        self.click_boton_refresh(None)
 
     def quitar_de_papelera(self, widget):
         comics = self.get_id_comics_from_selection()
         self.manager.enviar_quitar_papelera(comics, False)
         self.menu_comic.popdown()
         self.update_imagen_papelera()
+        self.click_boton_refresh(None)
 
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
