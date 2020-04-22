@@ -33,7 +33,8 @@ class Volumen_vine_search_Gtk():
                          'click_buscar_mas_serie': self.click_buscar_mas_serie,
                          'click_aceptar': self.click_aceptar,
                          'entry_id_editorial_change': self.entry_id_editorial_change,
-                         'seleccion': self.seleccion
+                         'seleccion': self.seleccion,
+                         'click_detener': self.click_detener
                          }
 
         self.builder = Gtk.Builder()
@@ -56,6 +57,15 @@ class Volumen_vine_search_Gtk():
         self.cargarResultado(self.listmodel_volumenes)
         # self.entry_id_editorial.set_text('2707')
         # self.entry_serie_nombre.set_text('iron man')
+
+    def click_detener(self, widget):
+        self.comicVineSearcher.detener = True
+        for hilo in self.comicVineSearcher.lista_hilos_ejecucion.items():
+            print(hilo)
+            hilo[1].join(1)
+            self.comicVineSearcher.lock.acquire(True)
+            self.comicVineSearcher.cantidad_hilos -= 1
+            self.comicVineSearcher.lock.release()
 
 
     def _copy_to_window(self):
@@ -104,6 +114,7 @@ class Volumen_vine_search_Gtk():
     def _buscar(self):
         self.offset = 0
         self.comicVineSearcher.clearFilter()
+        self.comicVineSearcher.setEntidad("volumes")
         self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
         self.comicVineSearcher.vine_Search_all()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
@@ -119,15 +130,21 @@ class Volumen_vine_search_Gtk():
 
     def hilo_cargar_volume(self, id_volume_externo):
 
-        cnf = Config(self.session)
-        cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
-        cv.entidad = 'volume'
-        volumen = cv.getVineEntity(id_volume_externo)
+        #cnf = Config(self.session)
+        #cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
+        #cv.entidad = 'volume'
+        self.comicVineSearcher.entidad = 'volume'
+        volumen = self.comicVineSearcher.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
-        cv.cargar_comicbook_info(volumen)
-        while cv.porcentaje_procesado != 100:
+        self.comicVineSearcher.cargar_comicbook_info(volumen)
+        while self.comicVineSearcher.porcentaje_procesado != 100 and not self.comicVineSearcher.detener:
             time.sleep(2)
-            GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(cv.porcentaje_procesado))
+            GLib.idle_add(self.cargar_mensaje_status, "Porcentaje completado {}%".format(self.comicVineSearcher.porcentaje_procesado))
+        if self.comicVineSearcher.detener:
+            GLib.idle_add(self.cargar_mensaje_status, "Proceso de descarga detenido")
+            print("Proceso de descarga detenido")
+            return
+
         volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volumen.id_volume).first()
         if volumen_in_db is not None:
             # actualizo la cantidad de ejemplares nada mas
@@ -137,7 +154,7 @@ class Volumen_vine_search_Gtk():
         self.session.add(volumen)
         self.session.commit()
         #print(volumen)
-        for comicbook_info in cv.lista_comicbooks_info:
+        for comicbook_info in self.comicVineSearcher.lista_comicbooks_info:
             cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(comicbook_info.id_comicbook_info)
             if cbi_db is not None and not cbi_db.actualizado_externamente:
                 self.session.query(Comicbook_Info).filter(Comicbook_Info.id_comicbook_info == comicbook_info.id_comicbook_info).delete()
@@ -170,7 +187,7 @@ class Volumen_vine_search_Gtk():
                 self.session.add(comicbook_info)
             self.session.commit()
         lista_arcos = []
-        for arco in cv.lista_arcos:
+        for arco in self.comicVineSearcher.lista_arcos:
             arco_db = self.session.query(Arco_Argumental).filter(Arco_Argumental.id_arco_argumental==arco.id_arco_argumental).first()
             if arco_db is not None:
                 lista_arcos.append(arco_db)
@@ -180,15 +197,15 @@ class Volumen_vine_search_Gtk():
                 lista_arcos.append(arco)
         self.session.commit()
         # reemplazo todos los arcos por los que estan la base o los que acabo de guardar
-        cv.lista_arcos = lista_arcos
+        self.comicVineSearcher.lista_arcos = lista_arcos
         # construimos la relacion para cada arco con la lista de comics.
-        for arco in cv.lista_arcos:
+        for arco in self.comicVineSearcher.lista_arcos:
             try:
                 print("Lista de arcos de cv {}".format(arco.lista_ids_comicbook_info_para_procesar))
             except Exception:
                 print("Arco con error {}".format(arco))
                 raise
-            for comicbook_info in cv.lista_comicbooks_info:
+            for comicbook_info in self.comicVineSearcher.lista_comicbooks_info:
                 for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
                     # print("Comic Info {} tipo {} comic info arco {} tipo {}".format(comicbook_info.id_comicbook_info,
                     #                                                                 type(comicbook_info.id_comicbook_info),
@@ -214,6 +231,7 @@ class Volumen_vine_search_Gtk():
 
 
     def click_aceptar(self, widget):
+        self.comicVineSearcher.detener = False
         threading.Thread(target=self.hilo_cargar_volume, args=[self.volume.id_volume]).start()
         # 86343 - 5868-106705-18216-
         # 32561 - Brightest Day
