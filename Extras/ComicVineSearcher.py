@@ -250,7 +250,8 @@ class ComicVineSearcher:
         contador_intentos = 0
         while self.cantidad_hilos > 0:
             print("ESPERANDO A TERMINAR Hilos: {}".format(self.cantidad_hilos))
-            print("hilos {}".format(self.lista_hilos_ejecucion.keys()))
+            elementos = [(self.comicIds[index], index) for index, elemento in self.lista_hilos_ejecucion.items()]
+            print("hilos {}".format(elementos))
             time.sleep(5)
             if contador_intentos == 3:
                 contador_intentos = 0
@@ -262,11 +263,6 @@ class ComicVineSearcher:
                     hilo[1].join(1)
                     hilo_nuevo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
                                                   args=[self.comicIds[index], volumen, index])
-                    self.lock.acquire(True)
-                    del self.lista_hilos_ejecucion[index]
-                    self.lista_hilos_ejecucion[index] = hilo_nuevo
-                    self.lock.release()
-
             contador_intentos += 1
         print("TERMINAMOSSSSSSSSSSSSSSSSSSSSSs")
         if self.detener:

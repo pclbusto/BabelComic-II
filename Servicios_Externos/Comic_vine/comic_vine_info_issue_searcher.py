@@ -42,7 +42,7 @@ class Comic_Vine_Info_Searcher():
         return True
 
     def search_issue(self, url):
-        html = urlopen(url).read().decode('utf-8')
+        html = urlopen(url, timeout=30).read().decode('utf-8')
         #print(html)
         print(url)
         comicbook_info = Comicbook_Info()
