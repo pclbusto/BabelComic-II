@@ -113,9 +113,9 @@ class Volume_lookup_gtk():
 
 
     def click_boton_aceptar(self,widget):
-        self.gtk_tree_view_volumen.get_selection().unselect_all()
-        # self.campo_retorno(self.volume.id_volume)
-        # self.window.close()
+
+        self.campo_retorno(self.volume.id_volume)
+        self.window.close()
 
 
 if (__name__ == '__main__'):

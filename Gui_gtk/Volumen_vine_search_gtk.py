@@ -1,7 +1,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, Gdk
 from Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 from gi.repository import GLib
@@ -34,7 +34,8 @@ class Volumen_vine_search_Gtk():
                          'click_aceptar': self.click_aceptar,
                          'entry_id_editorial_change': self.entry_id_editorial_change,
                          'seleccion': self.seleccion,
-                         'click_detener': self.click_detener
+                         'click_detener': self.click_detener,
+                         'intro_detection': self.intro_detection
                          }
 
         self.builder = Gtk.Builder()
@@ -57,6 +58,10 @@ class Volumen_vine_search_Gtk():
         self.cargarResultado(self.listmodel_volumenes)
         # self.entry_id_editorial.set_text('2707')
         # self.entry_serie_nombre.set_text('iron man')
+
+    def intro_detection(self,  widget, event):
+        if event.keyval == Gdk.KEY_Return :
+            self.click_buscar_serie(None)
 
     def click_detener(self, widget):
         self.comicVineSearcher.detener = True
@@ -115,7 +120,8 @@ class Volumen_vine_search_Gtk():
         self.offset = 0
         self.comicVineSearcher.clearFilter()
         self.comicVineSearcher.setEntidad("volumes")
-        self.comicVineSearcher.addFilter("name:" + self.entry_serie_nombre.get_text())
+        lista_palabras = '+'.join(str(palabra) for palabra in self.entry_serie_nombre.get_text().split(' '))
+        self.comicVineSearcher.addFilter("name:" + lista_palabras)
         self.comicVineSearcher.vine_Search_all()
         GLib.idle_add(self.cargarResultado, self.comicVineSearcher.listaBusquedaVine)
 
@@ -322,9 +328,15 @@ if __name__ == "__main__":
     # from Entidades.Agrupado_Entidades import Arco_Argumental,Arcos_Argumentales_Comics_Reference,Volume
     # from Entidades.Agrupado_Entidades import Comicbook_Info_Cover_Url, Comicbook_Info
     #
-    volumen = Volumen_vine_search_Gtk()
-    volumen.window.show()
-    volumen.window.connect("destroy", Gtk.main_quit)
+
+
+    # volumen = Volumen_vine_search_Gtk()
+    # volumen.window.show()
+    # volumen.entry_serie_nombre.set_text("adventures+of+superman")
+    # volumen.window.connect("destroy", Gtk.main_quit)
+    #Gtk.main()
+
+
     # volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()
     # volumen.session.query(Arco_Argumental).delete()
     # volumen.session.query(Volume).delete()
@@ -338,5 +350,7 @@ if __name__ == "__main__":
     # volumen.session.commit()
     # volumen.click_aceptar(None)
     # volumen.click_aceptar2(None)
-    Gtk.main()
+    cadena = 'Adventures of superman'
+    print('+'.join(str(palabra) for palabra in cadena.split(' ')))
+
 

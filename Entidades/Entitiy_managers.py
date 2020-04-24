@@ -103,9 +103,13 @@ class Comicbooks_Info(Entity_manager):
         return entidad
 
     def get(self, id_comicbook_info):
+        #print("Revision existencia de comickbook_info: {}".format(id_comicbook_info))
         entidad = super().get(id_comicbook_info)
-        self.load_cover_list()
-        self.load_arcs_list()
+        if entidad is not None:
+            self.load_cover_list()
+            self.load_arcs_list()
+        else:
+            print("comickbook_info: {} no existe".format(id_comicbook_info))
         return entidad
 
     def getNext(self):
@@ -347,12 +351,9 @@ if (__name__=='__main__'):
     # cbd.ordenPagina = 1
     # cbd.tipoPagina = Comicbook_Detail.COVER
     # cbdm.save()
-    cbm = Commicbooks_detail()
-    cbm.getFirst()
-    cb = cbm.entidad
-    cb.openCbFile()
-    cb.getImagePage().show()
-    print(cb)
+    cbm = Comicbooks_Info()
+    cbm.get(30843)
+    print(cbm.entidad)
 
 
     #print(arco.getCantidadTitulos())

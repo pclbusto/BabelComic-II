@@ -260,6 +260,7 @@
                 <property name="can_focus">True</property>
                 <property name="width_chars">50</property>
                 <property name="placeholder_text" translatable="yes">detective</property>
+                <signal name="key-press-event" handler="intro_detection" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>

@@ -2,7 +2,7 @@ from datetime import datetime
 from Servicios_Externos.Comic_vine.comic_vine_info_issue_searcher import Comic_Vine_Info_Searcher
 from Entidades.Agrupado_Entidades import Comicbook, Comicbook_Info, Publisher, Arco_Argumental
 from Entidades.Agrupado_Entidades import Arcos_Argumentales_Comics_Reference, Volume, Comics_In_Volume
-from Entidades.Entitiy_managers import Volumens
+from Entidades.Entitiy_managers import Comicbooks_Info
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -50,6 +50,8 @@ class ComicVineSearcher:
         self.limit = 100
         self.lista_hilos_ejecucion = {}
         self.detener = False
+        self.actualizar_solo_numeros_nuevos = True
+        self.comicbooks_info_manager = Comicbooks_Info(self.session)
         ##1:OK
         ##100:Invalid API Key
         ##101:Object Not Found
@@ -230,16 +232,17 @@ class ComicVineSearcher:
         cantidad_elementos = len(self.comicIds)
         while index < cantidad_elementos and not self.detener:
             if self.cantidad_hilos < 30:
-                hilo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
-                                        args=[self.comicIds[index], volumen, index])
-                # hilo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
-                #                         args=[self.comicIds[index], volumen, index])
-                self.lock.acquire(True)
-                self.lista_hilos_ejecucion[index] = hilo
-                self.cantidad_hilos += 1
-                self.lock.release()
+                cbi = self.session.query(Comicbook_Info).get(self.comicIds[index].id_comicbook_info)
+                if cbi is None or not self.actualizar_solo_numeros_nuevos:
+                    hilo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
+                                            args=[self.comicIds[index], volumen, index])
+                    self.lock.acquire(True)
+                    self.lista_hilos_ejecucion[index] = hilo
+                    self.cantidad_hilos += 1
+                    self.lock.release()
+                    hilo.start()
+
                 index += 1
-                hilo.start()
                 '''multiplicamos por dos porque una vez que cargue todo los issues vamos a buscar los arcos
                 en el peor de los casos tenemos un arco por issue por eso es el 2'''
                 self.porcentaje_procesado = int(100 * (index - 1) / (2 * cantidad_elementos))
