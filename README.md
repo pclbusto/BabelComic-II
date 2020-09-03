@@ -23,6 +23,7 @@ Actualmente BabelComics no tiene versión 1.0 porque considero que falta mucho p
 * armado de procesos de formateo o normalización de nombres para poder organizar los comics a nivel de archivo.
 
 # capturas
+pepep
 
 
 
