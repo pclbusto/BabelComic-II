@@ -47,7 +47,7 @@ class ReadAcomicParser():
             if nombreArchivo[-4:-3] != '.':
                 nombreArchivo = "pagina" + str(index).zfill(3) + ".jpg"
             url = match[:-1]
-            self.listaUrlNombreArchivo.append((url,nombreArchivo,index))
+            self.listaUrlNombreArchivo.append((url, nombreArchivo, index))
             index += 1
 
     def downloadImages(self):

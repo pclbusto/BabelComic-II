@@ -586,15 +586,17 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopover">
+  <object class="GtkPopover" id="menu_panel_izquierdo">
     <property name="can_focus">False</property>
     <property name="relative_to">panel_izquierdo</property>
+    <property name="position">bottom</property>
     <child>
       <object class="GtkButton" id="boton_menu_maestros">
         <property name="label" translatable="yes">Abrir</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
+        <signal name="clicked" handler="click_boton_abrir_menu_panel_izquierdo" swapped="no"/>
       </object>
     </child>
   </object>
