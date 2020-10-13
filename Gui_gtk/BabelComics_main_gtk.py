@@ -68,7 +68,8 @@ class BabelComics_main_gtk():
                          'lanzador_funciones': self.lanzador_funciones,
                          'pop_up_menu': self.pop_up_menu,
                          'enviar_papelera': self.enviar_papelera,
-                         'quitar_de_papelera': self.quitar_de_papelera}
+                         'quitar_de_papelera': self.quitar_de_papelera,
+                         'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -393,6 +394,13 @@ class BabelComics_main_gtk():
         if self.menu_comic is not None:
             self.menu_comic.popdown()
 
+    def click_derecho_panel_izquierdo(self, widget, event):
+        if event.button == 3:
+            select = self.gtk_tree_view_publisher.get_selection()
+            model, treeiter = select.get_selected()
+            if treeiter is not None:
+                print("You selected", model[treeiter][0])
+            print("colgarse de aca")
 
     def click_derecho(self, widget, event):
         # click derecho
