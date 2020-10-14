@@ -164,11 +164,12 @@ class VolumeGuiGtk():
             self.loadVolume(volume)
     def return_lookup(self, id_volume):
         if id_volume != '':
-            self.list_entry_id[self.index].set_text(str(id_volume))
-            print("Recuperando info: {}".format(id_volume))
-            volume = self.volumens_manager.get(self.list_entry_id[self.index].get_text())
-            self.loadVolume(volume)
+            self.goto(id_volume)
 
+    def goto(self, id_volume):
+        self.list_entry_id[self.index].set_text(str(id_volume))
+        volume = self.volumens_manager.get(self.list_entry_id[self.index].get_text())
+        self.loadVolume(volume)
     def loadVolume(self, volumen):
         if self.volume is not None:
             if volumen == self.volume:

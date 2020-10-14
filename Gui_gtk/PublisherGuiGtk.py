@@ -72,10 +72,13 @@ class PublisherGtk():
             self._copy_to_window(publisher)
 
     def return_lookup(self, id_publisher):
-        if id_publisher  !='':
-            self.list_entry_id[self.index].set_text(str(id_publisher))
-            publisher = self.publishers_manager.get(self.entry_id.get_text())
-            self._copy_to_window(publisher)
+        if id_publisher != '':
+            self.goto(id_publisher)
+
+    def goto(self, id_publisher):
+        self.list_entry_id[self.index].set_text(str(id_publisher))
+        publisher = self.publishers_manager.get(self.list_entry_id[self.index].get_text())
+        self._copy_to_window(publisher)
 
     def open_lookup(self, widget):
         lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.return_lookup)

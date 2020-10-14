@@ -70,7 +70,8 @@ class BabelComics_main_gtk():
                          'enviar_papelera': self.enviar_papelera,
                          'quitar_de_papelera': self.quitar_de_papelera,
                          'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo,
-                         'click_boton_abrir_menu_panel_izquierdo':self.click_boton_abrir_menu_panel_izquierdo}
+                         'click_boton_abrir_menu_panel_izquierdo':self.click_boton_abrir_menu_panel_izquierdo,
+                         'doble_click_panel_izquierdo':self.doble_click_panel_izquierdo}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -144,6 +145,24 @@ class BabelComics_main_gtk():
         # else:
         #     self.imagen_papelera.set_from_file("../iconos/Trash-Empty-icon.png")
 
+    def doble_click_panel_izquierdo(self, widget , event, doble):
+        select = self.gtk_tree_view_publisher.get_selection()
+        model, treeiter = select.get_selected()
+        if treeiter is not None:
+            if self.manager.seccion_activa == 0:
+                editorial = PublisherGtk(self.session)
+                editorial.window.show()
+                editorial.goto(model[treeiter][2])
+
+            if self.manager.seccion_activa == 1:
+                serie = VolumeGuiGtk(self.session)
+                serie.window.show()
+                self.popovermenu.popdown()
+                serie.goto(model[treeiter][2])
+
+            if self.manager.seccion_activa == 2:
+                print("Arco Argumental")
+
 
     def click_boton_abrir_menu_panel_izquierdo(self, widget):
         select = self.gtk_tree_view_publisher.get_selection()
@@ -152,9 +171,14 @@ class BabelComics_main_gtk():
             if self.manager.seccion_activa == 0:
                 editorial = PublisherGtk(self.session)
                 editorial.window.show()
-                editorial.
+                editorial.goto(model[treeiter][2])
+
             if self.manager.seccion_activa == 1:
-                self.click_boton_serie(None)
+                serie = VolumeGuiGtk(self.session)
+                serie.window.show()
+                self.popovermenu.popdown()
+                serie.goto(model[treeiter][2])
+
             if self.manager.seccion_activa == 2:
                 print("Arco Argumental")
 
@@ -415,7 +439,7 @@ class BabelComics_main_gtk():
         if event.button == 3:
             rect = Gdk.Rectangle()
             rect.x = event.x
-            rect.y = event.y+50
+            rect.y = event.y+70
             rect.width = rect.height = 1
             self.menu_panel_izquierdo.set_pointing_to(rect)
             self.menu_panel_izquierdo.show_all()
@@ -424,8 +448,8 @@ class BabelComics_main_gtk():
         # click derecho
         if event.button == 3:
             rect = Gdk.Rectangle()
-            rect.height=10
-            rect.width= 10
+            rect.height = 10
+            rect.width = 10
             rect.x= int(event.x)
             rect.y = int(event.y + (event.y_root-event.y)-80)
             self.menu_comic.set_pointing_to(rect)

@@ -240,7 +240,7 @@
                     <property name="can_focus">True</property>
                     <property name="model">list_navegacion</property>
                     <property name="enable_search">False</property>
-                    <signal name="button-release-event" handler="click_derecho_panel_izquierdo" swapped="no"/>
+                    <signal name="row-activated" handler="doble_click_panel_izquierdo" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
