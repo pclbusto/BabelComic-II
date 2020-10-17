@@ -42,26 +42,26 @@ class BabelComics_main_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
 
-        self.handlers = {'click_editorial': self.click_editorial, 'click_boton_serie':self.click_boton_serie,
+        self.handlers = {'click_editorial': self.click_editorial, 'click_boton_serie': self.click_boton_serie,
                          'item_seleccionado': self.item_seleccionado, 'click_derecho': self.click_derecho,
-                         'click_boton_refresh':self.click_boton_refresh, 'click_catalogar':self.click_catalogar,
-                         'click_boton_open_scanear':self.click_boton_open_scanear,
-                         'click_boton_catalogar':self.click_boton_catalogar,
-                         'click_boton_configurar_comicbook':self.click_boton_configurar_comicbook,
-                         'click_boton_config':self.click_boton_config,
-                         'click_boton_buscar':self.click_boton_buscar,
-                         'search_change':self.search_change,
-                         'search_change_panel_filtro':self.search_change_panel_filtro,
-                         'atajos_teclado':self.atajos_teclado,
-                         'evento_cierre':self.evento_cierre,
-                         'click_primero':self.click_primero,
-                         'click_anterior':self.click_anterior,
-                         'click_siguiente':self.click_siguiente,
-                         'click_ultimo':self.click_ultimo,
-                         'cambio_pagina':self.cambio_pagina,
-                         'seleccion_item_view':self.seleccion_item_view,
-                         'click_boton_comic_info':self.click_boton_comic_info,
-                         'click_boton_acerca_de':self.click_boton_acerca_de,
+                         'click_boton_refresh': self.click_boton_refresh, 'click_catalogar': self.click_catalogar,
+                         'click_boton_open_scanear': self.click_boton_open_scanear,
+                         'click_boton_catalogar': self.click_boton_catalogar,
+                         'click_boton_configurar_comicbook': self.click_boton_configurar_comicbook,
+                         'click_boton_config': self.click_boton_config,
+                         'click_boton_buscar': self.click_boton_buscar,
+                         'search_change': self.search_change,
+                         'search_change_panel_filtro': self.search_change_panel_filtro,
+                         'atajos_teclado': self.atajos_teclado,
+                         'evento_cierre': self.evento_cierre,
+                         'click_primero': self.click_primero,
+                         'click_anterior': self.click_anterior,
+                         'click_siguiente': self.click_siguiente,
+                         'click_ultimo': self.click_ultimo,
+                         'cambio_pagina': self.cambio_pagina,
+                         'seleccion_item_view': self.seleccion_item_view,
+                         'click_boton_comic_info': self.click_boton_comic_info,
+                         'click_boton_acerca_de': self.click_boton_acerca_de,
                          'click_next_view': self.click_next_view,
                          'click_prev_view': self.click_prev_view,
                          'marca_filtro': self.marca_filtro,
@@ -70,8 +70,8 @@ class BabelComics_main_gtk():
                          'enviar_papelera': self.enviar_papelera,
                          'quitar_de_papelera': self.quitar_de_papelera,
                          'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo,
-                         'click_boton_abrir_menu_panel_izquierdo':self.click_boton_abrir_menu_panel_izquierdo,
-                         'doble_click_panel_izquierdo':self.doble_click_panel_izquierdo}
+                         'click_boton_abrir_menu_panel_izquierdo': self.click_boton_abrir_menu_panel_izquierdo,
+                         'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -408,13 +408,16 @@ class BabelComics_main_gtk():
         self.popovermenu.popdown()
 
     def click_boton_configurar_comicbook(self, widget):
-        print("AAAAAAAAAAAAAAAAAAAAAAA")
+        lista_comicbooks_id = []
         for path in self.iconview.get_selected_items():
             indice = path
-            print(self.listaComics[indice[0]].id_comicbook)
-        #
-        cbi = Comicbook_Detail_Gtk()
+            lista_comicbooks_id.append(self.listaComics[indice[0]].id_comicbook)
+            #print(self.listaComics[indice[0]].id_comicbook)
+        #lista_comicbooks_id = [id_comicbook for id_comicbook in self.iconview.get_selected_items()[0].id_comicbook]
+        print(lista_comicbooks_id)
+        cbi = Comicbook_Detail_Gtk(lista_comicbooks_id)
         cbi.set_comicbook(self.listaComics[indice[0]].id_comicbook)
+        cbi.set_filter(self.filtro)
         cbi.window.show()
 
         if self.popovermenu is not None:

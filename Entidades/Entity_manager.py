@@ -25,7 +25,8 @@ class Entity_manager:
         self.filtro = None
         self.order = None
         self.direccion = 0
-        self.offset=0
+        self.offset = 0
+        self.atributo_clave = None
         directorioBase  = self.session.query(Setup).first().directorioBase
         self.pahThumnails = directorioBase + os.sep + 'images' + os.sep + 'logo publisher'+ os.path.sep
         self.status = Entity_manager.CTE_OK
@@ -60,7 +61,7 @@ class Entity_manager:
 
     def get(self, id_entidad):
         if not self.hay_cambios_pendientes():
-            #print("ID: {}".format(id_entidad))
+            # Vamos a calcular el offset para poder navegar de forma correcta
             self.entidad = self.session.query(self.clase).get(id_entidad)
         else:
             self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES

@@ -314,7 +314,7 @@ class Commicbooks_detail(Entity_manager):
 
 
 class Comicbooks(Entity_manager):
-    def __init__(self, session = None):
+    def __init__(self, session=None, lista_comics_id=None):
         Entity_manager.__init__(self, session=session, clase=Comicbook)
 
         if session is not None:
@@ -324,23 +324,23 @@ class Comicbooks(Entity_manager):
 
         self.set_order(Comicbook.id_comicbook, 0)
         self.lista_opciones = {'Id': Comicbook.id_comicbook, 'Path':Comicbook.path}
-
+        if lista_comics_id is not None:
+            filtro = self.session.query(Comicbook).filter(Comicbook.id_comicbook.in_(lista_comics_id))
+            self.set_filtro()
         self.status = 1
         self.entidad = Comicbook()
         self.filtro = None
         self.set_order(Comicbook.path)
         self.direccion = 0
+        self.atributo_clave = Comicbook.id_comicbook
 
     def hay_comics_en_papelera(self):
-        print("CALCULANDO CANTIDAD DE REGISTROS EN PAPELERA")
         retorno = self.session.query(Comicbook).filter(Comicbook.en_papelera == True).count() > 0
         print(retorno)
         return(retorno)
 
     def tiene_detalle(self):
-        print("IIIIIID {}".format(self.entidad.id_comicbook))
         cantidad_registros = self.session.query(Comicbook_Detail.indicePagina).filter(Comicbook_Detail.comicbook_id == self.entidad.id_comicbook).count()
-        print("Cantidad {}".format(cantidad_registros))
         return cantidad_registros > 0
 
 if (__name__=='__main__'):

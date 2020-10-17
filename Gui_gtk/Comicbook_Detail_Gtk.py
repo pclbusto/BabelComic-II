@@ -1,6 +1,6 @@
 import os
 import Entidades.Init
-from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Comicbooks
+from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Comicbooks, Comicbook
 import datetime
 
 import gi
@@ -11,19 +11,25 @@ from bs4 import BeautifulSoup
 class Comicbook_Detail_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
 
-    def __init__(self,  session=None):
+    def __init__(self,  session=None, lista_comics_id=None):
         if session is not None:
             self.session = session
         else:
             self.session = Entidades.Init.Session()
 
         self.comicbooks_detail_manager = Commicbooks_detail(session=self.session)
-        self.comicbooks_manager = Comicbooks(session=self.session)
+        self.comicbooks_manager = Comicbooks(session=self.session, lista_comics_id=lista_comics_id)
 
         self.handlers = {"seleccion_fila": self.seleccion_fila,
                          "click_marcar_como_cover": self.click_marcar_como_cover,
                          "click_marcar_como_page": self.click_marcar_como_page,
-                         'click_derecho': self.click_derecho}
+                         'click_derecho': self.click_derecho,
+                         'pop_up_menu': self.pop_up_menu,
+                         'get_first': self.get_first,
+                         'get_prev': self.get_prev,
+                         'get_next': self.get_next,
+                         'get_last': self.get_last,
+                         }
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Comicbook_Detail_gtk.glade")
@@ -36,11 +42,39 @@ class Comicbook_Detail_Gtk():
         self.entry_path = self.builder.get_object("entry_path")
         self.menu_comic = self.builder.get_object("menu_comic")
         self.tree_view_paginas = self.builder.get_object("tree_view_paginas")
+        self.menu_principal = self.builder.get_object('menu_principal')
+        self.stack = self.builder.get_object('stack')
 
         self.comicbook = None
         self.labels = ["Página", "Cover"]
         print("Creacion de formulario exitosa")
         # inicializamos el modelo con rotulos del manager
+
+    def set_filter(self, cadena):
+        self.comicbooks_manager.set_filtro(Comicbook.path.like("%{}%".format(cadena)))
+
+    def get_first(self, widget):
+        comicbook = self.comicbooks_manager.getFirst()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
+        self.set_comicbook(comicbook.id_comicbook)
+
+    def get_next(self, widget):
+        comicbook = self.comicbooks_manager.getNext()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT   )
+        self.set_comicbook(comicbook.id_comicbook)
+
+    def get_prev(self, widget):
+        comicbook = self.comicbooks_manager.getPrev()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT  )
+        self.set_comicbook(comicbook.id_comicbook)
+
+    def get_last(self, widget):
+        comicbook = self.comicbooks_manager.getLast()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
+        self.set_comicbook(comicbook.id_comicbook)
+
+    def pop_up_menu(self, widget):
+        self.menu_principal.show_all()
 
     def click_marcar_como_cover(self, widget):
         self._marcar_como(widget, Comicbook_Detail.PAGE_TYPE_COVER)
@@ -74,7 +108,6 @@ class Comicbook_Detail_Gtk():
             stream.scale_simple(int(stream.get_width() * ancho), int(stream.get_height() * ancho), 1))
 
     def set_comicbook(self, comicbook_id):
-
         self.comicbook = self.comicbooks_manager.get(comicbook_id)
         self.entry_id_comicbook.set_text(str(self.comicbook.id_comicbook))
         self.entry_id_comicbook_info.set_text(self.comicbook.id_comicbook_info)
@@ -93,7 +126,6 @@ class Comicbook_Detail_Gtk():
         if not tiene_detalle:
             cbdtl = Commicbooks_detail()
             for elemento in range(0, cantidad_paginas):
-                print("insertando registro {}".format(elemento))
                 cbdtl.new_record()
                 cbdtl.entidad.comicbook_id = comicbook_id
                 cbdtl.entidad.indicePagina = elemento
