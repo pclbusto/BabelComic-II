@@ -324,12 +324,11 @@ class Comicbooks(Entity_manager):
 
         self.set_order(Comicbook.id_comicbook, 0)
         self.lista_opciones = {'Id': Comicbook.id_comicbook, 'Path':Comicbook.path}
+        self.filtro = None
         if lista_comics_id is not None:
-            filtro = self.session.query(Comicbook).filter(Comicbook.id_comicbook.in_(lista_comics_id))
-            self.set_filtro()
+            self.set_filtro(Comicbook.id_comicbook.in_(lista_comics_id))
         self.status = 1
         self.entidad = Comicbook()
-        self.filtro = None
         self.set_order(Comicbook.path)
         self.direccion = 0
         self.atributo_clave = Comicbook.id_comicbook

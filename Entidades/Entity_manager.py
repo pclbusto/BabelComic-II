@@ -91,6 +91,9 @@ class Entity_manager:
     def set_filtro(self, filtro):
         self.filtro = filtro
 
+        print('=================')
+        print(self.filtro)
+
     def getList(self):
         consulta = self._get_consulta()
         return consulta.all()
@@ -107,6 +110,7 @@ class Entity_manager:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
+        print(consulta)
         return consulta
 
     def getNext(self):

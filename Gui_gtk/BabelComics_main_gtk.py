@@ -412,14 +412,10 @@ class BabelComics_main_gtk():
         for path in self.iconview.get_selected_items():
             indice = path
             lista_comicbooks_id.append(self.listaComics[indice[0]].id_comicbook)
-            #print(self.listaComics[indice[0]].id_comicbook)
-        #lista_comicbooks_id = [id_comicbook for id_comicbook in self.iconview.get_selected_items()[0].id_comicbook]
         print(lista_comicbooks_id)
-        cbi = Comicbook_Detail_Gtk(lista_comicbooks_id)
-        cbi.set_comicbook(self.listaComics[indice[0]].id_comicbook)
-        cbi.set_filter(self.filtro)
+        cbi = Comicbook_Detail_Gtk(lista_comics_id=lista_comicbooks_id)
+        cbi.get_first(None)
         cbi.window.show()
-
         if self.popovermenu is not None:
             self.popovermenu.popdown()
         if self.menu_comic is not None:
