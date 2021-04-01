@@ -19,9 +19,9 @@ class PublisherGtk():
             self.session = Entidades.Init.Session()
 
         self.handlers = {'getFirst': self.getFirst, 'getPrev': self.getPrev, 'getNext': self.getNext,
-                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed':self.id_changed,
-                         'click_cargar_desde_web':self.click_cargar_desde_web, 'boton_guardar':self.boton_guardar,
-                         'combobox_change':self.combobox_change, 'click_limpiar':self.click_limpiar,
+                         'getLast': self.getLast, 'click_lookup_button':self.open_lookup, 'id_changed': self.id_changed,
+                         'click_cargar_desde_web':self.click_cargar_desde_web, 'click_nuevo': self.click_nuevo,
+                         'combobox_change':self.combobox_change, 'click_guardar': self.click_guardar,
                          'pop_up_menu': self.pop_up_menu}
 
         self.builder = Gtk.Builder()
@@ -31,7 +31,6 @@ class PublisherGtk():
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self.publishers_manager = Publishers(session=self.session)
-        self.publisher = None
         self.stack = self.builder.get_object('stack')
         self.index = 0
         self.menu = self.builder.get_object("menu")
@@ -59,8 +58,14 @@ class PublisherGtk():
         if widget.get_active_iter() is not None:
             self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
-    def boton_guardar(self,widget):
+    def click_guardar(self, widget):
         self.publishers_manager.save()
+
+    def click_nuevo(self, widget):
+        self.publishers_manager.new_record()
+        print(self.publishers_manager.entidad)
+        self.load_publisher(self.publishers_manager.entidad)
+
 
     def click_cargar_desde_web(self, widget):
         publisher_vine_search = Publisher_vine_search_gtk(self.session)
@@ -69,7 +74,7 @@ class PublisherGtk():
     def id_changed(self,widget, test):
         if self.list_entry_id[self.index].get_text()!='':
             publisher = self.publishers_manager.get(self.list_entry_id[self.index].get_text())
-            self._copy_to_window(publisher)
+            self.load_publisher(publisher)
 
     def return_lookup(self, id_publisher):
         if id_publisher != '':
@@ -78,7 +83,7 @@ class PublisherGtk():
     def goto(self, id_publisher):
         self.list_entry_id[self.index].set_text(str(id_publisher))
         publisher = self.publishers_manager.get(self.list_entry_id[self.index].get_text())
-        self._copy_to_window(publisher)
+        self.load_publisher(publisher)
 
     def open_lookup(self, widget):
         lookup = Publisher_lookup_gtk.Publisher_lookup_gtk(self.session, self.return_lookup)
@@ -88,27 +93,27 @@ class PublisherGtk():
         publisher = self.publishers_manager.getFirst()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
         print(publisher)
-        self._copy_to_window(publisher)
+        self.load_publisher(publisher)
 
     def getPrev(self, widget):
         publisher = self.publishers_manager.getPrev()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
         print(publisher)
-        self._copy_to_window(publisher)
+        self.load_publisher(publisher)
 
     def getNext(self, widget):
         publisher = self.publishers_manager.getNext()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         print(publisher)
-        self._copy_to_window(publisher)
+        self.load_publisher(publisher)
 
     def getLast(self, widget):
         publisher = self.publishers_manager.getLast()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         print(publisher)
-        self._copy_to_window(publisher)
+        self.load_publisher(publisher)
 
-    def _copy_to_window(self, publisher):
+    def load_publisher(self, publisher):
         if self.publisher is not None:
             if publisher == self.publisher:
                 return
@@ -163,7 +168,6 @@ class PublisherGtk():
 
 
 if __name__ == "__main__":
-
     pub = PublisherGtk()
     pub.window.show_all()
     pub.window.connect("destroy", Gtk.main_quit)

@@ -9,8 +9,8 @@ import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
-from bs4 import BeautifulSoup
-
+from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
+from html2text import html2text
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
     # todo clase que administre el comportamiento completo de alta, baja mdoficacion navegacion y borrado
@@ -26,6 +26,7 @@ class VolumeGuiGtk():
                          'selecion_pagina': self.selecion_pagina, 'click_guardar': self.click_guardar,
                          'evento': self.evento,
                          'click_eliminar': self.click_eliminar, 'click_derecho':self.click_derecho,
+                         'click_lookup_editorial': self.click_lookup_editorial,
                          'pop_up_menu': self.pop_up_menu}
 
         self.builder = Gtk.Builder()
@@ -153,6 +154,11 @@ class VolumeGuiGtk():
         lookup = Volume_lookup_gtk(self.session, self.return_lookup)
         lookup.window.show()
 
+    def click_lookup_editorial(self, widget):
+        print("Holaaaaaaaa")
+        lookup = Publisher_lookup_gtk(self.session, self.return_lookup)
+        lookup.window.show()
+
     def change_id_volume(self, widget, event):
         self.editorial = None
         self.set_volumen_id(self.list_entry_id[self.index].get_text())
@@ -162,14 +168,20 @@ class VolumeGuiGtk():
         if (self.list_entry_id[self.index].get_text() != ''):
             volume = self.volumens_manager.get(volumen_id)
             self.loadVolume(volume)
+
     def return_lookup(self, id_volume):
         if id_volume != '':
             self.goto(id_volume)
+
+    def return_lookup_editorial(self, id_editorial):
+        if id_editorial != '':
+            self.volumens_manager.entidad.id_publisher = id_editorial
 
     def goto(self, id_volume):
         self.list_entry_id[self.index].set_text(str(id_volume))
         volume = self.volumens_manager.get(self.list_entry_id[self.index].get_text())
         self.loadVolume(volume)
+
     def loadVolume(self, volumen):
         if self.volume is not None:
             if volumen == self.volume:
@@ -212,7 +224,7 @@ class VolumeGuiGtk():
             self.list_label_nombre_editorial[self.index].set_text(volumen.publisher_name)
             self.list_entry_anio_inicio[self.index].set_text(str(volumen.anio_inicio))
             self.list_entry_cantidad_numeros[self.index].set_text(str(volumen.cantidad_numeros))
-            self.list_resumen_volumen[self.index].set_text(BeautifulSoup(volumen.descripcion, features="lxml").get_text("\n"))
+            self.list_resumen_volumen[self.index].set_text(html2text(volumen.descripcion))
             if volumen.cantidad_numeros>0:
                 self.list_progressbar_procentaje_completado[self.index].set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
             else:
@@ -262,18 +274,20 @@ class VolumeGuiGtk():
         pass
 
     def copyFromWindowsToEntity(self):
-        self.volumens_manager.entidad.nombre = self.entry_nombre.get_text()
+        self.volumens_manager.entidad.nombre = self.list_entry_nombre[self.index].get_text()
         #self.volume.deck = self..get()
         # self.volumens_manager.entidad.descripcion = self.entradaId.get()
-        self.volumens_manager.entidad.url = self.label_url.get_uri()
-        self.volumens_manager.entidad.image_url = self.label_cover_url.get_uri()
-        self.volumens_manager.entidad.anio_inicio = self.entry_anio_inicio.get_text()
-        self.volumens_manager.entidad.cantidad_numeros = self.entry_cantidad_numeros.get_text()
+        self.volumens_manager.entidad.url = self.list_label_url[self.index].get_uri()
+        self.volumens_manager.entidad.image_url = self.list_label_cover_url[self.index].get_uri()
+        self.volumens_manager.entidad.anio_inicio = self.list_entry_anio_inicio[self.index].get_text()
+        self.volumens_manager.entidad.cantidad_numeros = self.list_entry_cantidad_numeros[self.index].get_text()
 
     def click_guardar(self, widget):
         self.copyFromWindowsToEntity()
-        self.session.add(self.volumens_manager.entidad)
-        self.session.commit()
+        self.volumens_manager.save()
+        # self.session.add(self.volumens_manager.entidad)
+        # self.session.commit()
+
 
 
 
