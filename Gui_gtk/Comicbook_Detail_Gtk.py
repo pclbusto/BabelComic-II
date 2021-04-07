@@ -6,7 +6,6 @@ import datetime
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, Gdk
-from bs4 import BeautifulSoup
 
 class Comicbook_Detail_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar

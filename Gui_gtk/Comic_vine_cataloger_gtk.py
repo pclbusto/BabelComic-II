@@ -77,6 +77,8 @@ class Comic_vine_cataloger_gtk():
         self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
         self.entry_id_volumen_catalogar.set_text(self.setup.ultimoVolumeIdUtilizado)
         self.gui_updating = False
+        screen = Gdk.Screen.get_default()
+        self.window.set_default_size(screen.width(), self.window.get_size()[1])
 
     def click_boton_label_volumen_id(self,widget):
         serie = VolumeGuiGtk(self.session)

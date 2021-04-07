@@ -10,7 +10,6 @@ import  threading
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
-from bs4 import BeautifulSoup
 
 class Comicbook_Info_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -172,7 +171,7 @@ class Comicbook_Info_Gtk():
             self.entry_api_url.set_text(comicbook_info.api_detail_url)
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
-            self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
+            self.textbuffer.set_text(comicbook_info.resumen)
             print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
             self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
             self._load_cover()
