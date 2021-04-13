@@ -2,10 +2,14 @@ import os
 import Entidades.Init
 from Entidades.Entitiy_managers import Commicbooks_detail, Comicbook_Detail, Comicbooks, Comicbook
 import datetime
+from PIL import Image, ImageDraw
+
+import threading, io
+
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf, Gdk
+from gi.repository import Gtk, GdkPixbuf, Gdk, GLib
 
 class Comicbook_Detail_Gtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -43,6 +47,19 @@ class Comicbook_Detail_Gtk():
         self.tree_view_paginas = self.builder.get_object("tree_view_paginas")
         self.menu_principal = self.builder.get_object('menu_principal')
         self.stack = self.builder.get_object('stack')
+        self.iconview = self.builder.get_object("iconview_paginas")
+        self.liststore1 = Gtk.ListStore(GdkPixbuf.Pixbuf, str, str)
+        self.iconview.set_model(self.liststore1)
+        self.iconview.set_pixbuf_column(0)
+        self.iconview.set_text_column(1)
+        self.iconview.set_text_column(2)
+        self.iconview.set_column_spacing(-1)
+        self.iconview.set_item_padding(10)
+        self.iconview.set_item_width(1)
+        self.iconview.set_spacing(30)
+        self.thumnail_height = 80
+        self.dictionary = {}
+
 
         self.comicbook = None
         self.labels = ["Página", "Cover"]
@@ -84,21 +101,36 @@ class Comicbook_Detail_Gtk():
         self._marcar_como(widget, Comicbook_Detail.PAGE_TYPE_COMMON_PAGE)
 
     def _marcar_como(self, widget, tipo):
-        model, treeiter = self.tree_view_paginas.get_selection().get_selected()
-        if treeiter is not None:
-            self.comicbooks_detail_manager.set_page_type(model[treeiter][0], tipo)
-            self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
+        # model, treeiter = self.tree_view_paginas.get_selection().get_selected()
+        # if treeiter is not None:
+        #     self.comicbooks_detail_manager.set_page_type(model[treeiter][0], tipo)
+        #     self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
+        #     if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
+        #         self.comicbooks_detail_manager.crear_thumnail_cover(True)
+        selected_list = self.iconview.get_selected_items()
+        if len(selected_list) == 1:
+            print(selected_list)
+            index = selected_list[0].get_indices()[0]
+            self.comicbook.goto(index)
+            self.comicbooks_detail_manager.set_page_type(index, tipo)
+            #self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
             if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
                 self.comicbooks_detail_manager.crear_thumnail_cover(True)
         self.menu_comic.popdown()
 
     def seleccion_fila(self, widget):
         #print(widget)
-        model, treeiter = widget.get_selection().get_selected()
-        if treeiter is not None:
-            self.comicbook.goto(model[treeiter][0])
-            #print("You selected", model[treeiter][0])
+        #model, treeiter = widget.get_selection().get_selected()
+        #if treeiter is not None:
+            # self.comicbook.goto(model[treeiter][0])
+            # #print("You selected", model[treeiter][0])
+        selected_list = widget.get_selected_items()
+        print(selected_list[0])
+        if len(selected_list) == 1:
+            self.comicbook.goto(selected_list[0].get_indices()[0])
         self._load_page_picture()
+
+
 
     def _load_page_picture(self):
         stream = self.comicbook.get_image_page_gtk()
@@ -137,31 +169,83 @@ class Comicbook_Detail_Gtk():
         else:
             for elemento in lista_paginas:
                 self.liststore_comicbook.append([elemento.ordenPagina, "pagina {}".format(elemento.ordenPagina), 0, self.labels[elemento.tipoPagina]])
+        self.load_zip_file()
 
-        # cb.getImagePage().show()
+    def image2pixbuf(self, im):
+        """Convert Pillow image to GdkPixbuf"""
+        data = im.tobytes()
+        w, h = im.size
+        data = GLib.Bytes.new(data)
+        pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+                                              False, 8, w, h, w * 3)
+        return pix
+
+
+    def create_thumnail(self, archivo_nombre, index):
+        #archivo_nombre: es el nombre del archivo dentro del zip
+        data = self.comicbook.cbFile.read(archivo_nombre)
+        image = Image.open(io.BytesIO(data)).convert("RGB")
+        size = (self.thumnail_height, int(image.size[1] * self.thumnail_height / image.size[0]))
+        image.thumbnail(size, 3, 3)
+        img_aux = image.copy()
+        d1 = ImageDraw.Draw(img_aux)
+        d1.polygon([(0, 0), (size[0]-1, 0), (size[0]-1, size[1]-1), (0, size[1]-1)], outline=(0, 0, 0))
+
+        gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
+
+        GLib.idle_add(self.update_progess, gdkpixbuff_thumnail, index, archivo_nombre)
+
+
+    def update_progess(self, gdkpixbuff_thumnail, index, nombre_archivo):
+
+        self.liststore1[index][0] = gdkpixbuff_thumnail
+        self.liststore1[index][2] = nombre_archivo
+        self.dictionary[str(index)] = 'nombre_archivo'
+
+    def update_progess2(self, gdkpixbuff_thumnail, archivo_nombre):
+        self.liststore1.append([gdkpixbuff_thumnail, archivo_nombre, archivo_nombre])
+
+    def create_grey_tumnails(self, cantidad):
+        img = Image.new("RGB", (self.thumnail_height, self.thumnail_height*2), (150, 150, 150))
+        for i in range(0, cantidad):
+            img_aux = img.copy()
+            d1 = ImageDraw.Draw(img_aux)
+            d1.text(((self.thumnail_height/2)-20, self.thumnail_height/2), str(i),  fill=(255, 255, 255))
+            d1.polygon([(0, 0), (self.thumnail_height, 0), (self.thumnail_height, self.thumnail_height*2), (0, self.thumnail_height*2)], outline=(0, 0, 0))
+            gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
+            self.dictionary[str(i)] = ''
+            GLib.idle_add(self.update_progess2, gdkpixbuff_thumnail, str(i))
+
+    def create_thumnails(self):
+        lista_archivos = self.comicbook.name_list()
+        lista_nombre_archivos = [nombre_archivo for nombre_archivo in lista_archivos if
+                                 nombre_archivo[-3:] in ['jpg', 'png']]
+        for index, archivo_nombre in enumerate(lista_nombre_archivos):
+            print(archivo_nombre)
+            t = threading.Thread(name=archivo_nombre, args=(archivo_nombre, index,), target=self.create_thumnail)
+            t.start()
+
+    def load_zip_file(self):
+        self.comicbook.openCbFile()
+        lista_archivos = self.comicbook.name_list()
+        lista_nombre_archivos = [nombre_archivo for nombre_archivo in lista_archivos if nombre_archivo[-3:] in ['jpg', 'png']]
+        self.create_grey_tumnails(len(lista_nombre_archivos))
+        t = threading.Thread(name='my_service', target=self.create_thumnails)
+        t.start()
 
     def click_derecho(self, widget, event):
-        # click derecho
         if event.button == 3:
-            # print(self.tree_left.get_allocation().width)
-            # print('mostrando menu')
-            # help(event)
-            # self.menu_comic.set_relative_to(None)
             rect = Gdk.Rectangle()
-            rect.height=10
-            rect.width= 10
-            # print(event.x_root, event.y_root)
-            # print(event.x,event.y)
-            rect.x= int(event.x)
-            rect.y = int(event.y)
-            #rect.y = int(event.y + (event.y_root-event.y)-80)
-            # print(self.iconview.get_item_at_pos(event.x_root, event.y_root))
-            # print(self.iconview.get_item_at_pos(event.x, event.y)[1])
+            rect.height = 10
+            rect.width = 10
+            rect.x = int(event.x)
+            #por bug o funciona asi pero el click en iconview trae las coordenadas sin tener en cuenta que es una scroll
+            #como resultado si no ajustamos se correr el popup
+            rect.y = int(event.y-self.iconview.get_vadjustment().get_value())
             # print(event.x_root,event.y_root)
             self.menu_comic.set_pointing_to(rect)
             self.menu_comic.set_position(3)
             self.menu_comic.set_relative_to(widget)
-            # self.menu_comic.show_all()
             self.menu_comic.popup()
 
     def change_cover(self, widget):
@@ -193,7 +277,7 @@ class Comicbook_Detail_Gtk():
             self.entry_api_url.set_text(comicbook_info.api_detail_url)
             self.entry_url.set_text(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
-            self.textbuffer.set_text(BeautifulSoup(comicbook_info.resumen).get_text("\n"))
+            self.textbuffer.set_text(comicbook_info.resumen)
             #print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))
             self.combo_paginas.set_active(self.comicbooks_manager.index_lista_covers)
             self._load_cover()
@@ -235,7 +319,7 @@ class Comicbook_Detail_Gtk():
 
 
 if __name__ == "__main__":
-    id = "6645"
+    id = "14769"
 
     cbi = Comicbook_Detail_Gtk()
     cbi.window.connect("destroy", Gtk.main_quit)

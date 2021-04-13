@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
-from Entidades.Agrupado_Entidades import Comicbook, Volume,Comicbook_Info_Cover_Url, Setup, Comicbook_Info
+from Entidades.Agrupado_Entidades import Volume, Comicbook_Info_Cover_Url, Setup, Comicbook_Info
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 import urllib.request

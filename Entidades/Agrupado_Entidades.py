@@ -161,6 +161,9 @@ class Comicbook(Entidades.Init.Base):
     def closeCbFile(self):
         self.cbFile.close()
 
+    def name_list(self):
+        return(self.paginas)
+
     def has_xml(self):
         self.openCbFile()
         xmls = [x for x in self.cbFile.namelist() if (x[-3:].lower() in ["xml"])]
@@ -207,7 +210,6 @@ class Comicbook(Entidades.Init.Base):
         self.paginas.sort()
         self.indicePaginaActual = 0
 
-
     def getImagePage(self):
         pagina = self.getPage()
         print("LA PAGINA: {}".format(type(pagina)))
@@ -248,9 +250,13 @@ class Comicbook(Entidades.Init.Base):
 
         return (self.paginas[self.indicePaginaActual][index:])
 
-    def goto(self,index):
+    def goto(self, index):
         if index < len(self.paginas):
             self.indicePaginaActual = index
+
+    def goto_page_by_name(self, page_name):
+        if page_name in self.paginas:
+            self.indicePaginaActual = self.paginas.index(page_name)
 
     def getTitulo(self):
         return(self.titulo)
