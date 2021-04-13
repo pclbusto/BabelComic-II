@@ -125,9 +125,11 @@ class Comicbook_Detail_Gtk():
             # self.comicbook.goto(model[treeiter][0])
             # #print("You selected", model[treeiter][0])
         selected_list = widget.get_selected_items()
-        print(selected_list[0])
+        # print(selected_list[0])
         if len(selected_list) == 1:
-            self.comicbook.goto(selected_list[0].get_indices()[0])
+            print("Nombre :", self.dictionary[str(selected_list[0].get_indices()[0])])
+            self.comicbook.goto_page_by_name(self.dictionary[str(selected_list[0].get_indices()[0])])
+            # self.comicbook.goto(selected_list[0].get_indices()[0])
         self._load_page_picture()
 
 
@@ -200,7 +202,7 @@ class Comicbook_Detail_Gtk():
 
         self.liststore1[index][0] = gdkpixbuff_thumnail
         self.liststore1[index][2] = nombre_archivo
-        self.dictionary[str(index)] = 'nombre_archivo'
+        self.dictionary[str(index)] = nombre_archivo
 
     def update_progess2(self, gdkpixbuff_thumnail, archivo_nombre):
         self.liststore1.append([gdkpixbuff_thumnail, archivo_nombre, archivo_nombre])
@@ -319,7 +321,7 @@ class Comicbook_Detail_Gtk():
 
 
 if __name__ == "__main__":
-    id = "14769"
+    id = "48847"
 
     cbi = Comicbook_Detail_Gtk()
     cbi.window.connect("destroy", Gtk.main_quit)
