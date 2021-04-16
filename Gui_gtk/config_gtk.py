@@ -36,6 +36,8 @@ class Config_gtk():
         self.entry_directorio_base = self.builder.get_object("entry_directorio_base")
         self.entry_spinner_cantidad_por_pagina = self.builder.get_object("entry_spinner_cantidad_por_pagina")
         self.label_status = self.builder.get_object("label_status")
+        self.anchoThumnail = self.builder.get_object("anchoThumnail")
+        self.recrear_imagenes_switch = self.builder.get_object("recrear_imagenes_switch")
         self.treeview_directorios_comics = self.builder.get_object("treeview_directorios_comics")
 
         self._copy_to_window()
@@ -96,8 +98,7 @@ class Config_gtk():
         self.babelComicConfig.setListaDirectorios(directorios)
         self.babelComicConfig.setListaTipos(self.entry_lista_extensiones_soportadas.get_text().split(','))
         self.babelComicConfig.setListaClaves([clave])
-        print(int(self.entry_spinner_cantidad_por_pagina.get_value()))
-        self.babelComicConfig.setConfig(self.entry_directorio_base.get_text(), int(self.entry_spinner_cantidad_por_pagina.get_value()))
+        self.babelComicConfig.setConfig(self.entry_directorio_base.get_text(), int(self.entry_spinner_cantidad_por_pagina.get_value()), self.recrear_imagenes_switch.get_state(), self.anchoThumnail.get_value())
         self.label_status.set_text('Status: Gurdado exitosamente')
 
 

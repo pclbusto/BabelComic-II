@@ -120,8 +120,8 @@ class BabelComics_main_gtk():
 
         self.liststore = Gtk.ListStore(Pixbuf, str, int)
         self.lista_pendientes = []
-        self.filtro=''
-        self.limit = 500
+        self.filtro =   ''
+        self.limit = self.session.query(Setup).first().cantidadComicsPorPagina
         self.offset = 0
         self.query = None
         self.manager = BabelComics_Manager.BabelComics_Manager()

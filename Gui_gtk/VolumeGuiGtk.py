@@ -303,6 +303,7 @@ if __name__ == '__main__':
     if __name__ == "__main__":
         pub = VolumeGuiGtk()
         pub.window.show_all()
+        pub.set_volumen_id(1995)
         pub.window.connect("destroy", Gtk.main_quit)
         Gtk.main()
 

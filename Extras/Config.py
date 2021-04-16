@@ -191,15 +191,17 @@ class Config:
         self.session.query(Entidades.Agrupado_Entidades.Setup).delete()
         self.session.commit()
 
-    def setConfig(self, directorioBase, cantidadComicsPorPagina):
-        self.__borrarCrearDirectoriosDesdeBase__(directorioBase)
+    def setConfig(self, directorioBase, cantidadComicsPorPagina, recrear_imagenes, anchoThumnail):
+        if recrear_imagenes:
+            self.__borrarCrearDirectoriosDesdeBase__(directorioBase)
         if directorioBase is not None:
             self.setup.directorioBase = directorioBase
         else:
             self.setup.directorioBase = ''
-        if cantidadComicsPorPagina<=30 and cantidadComicsPorPagina>=1:
+        if cantidadComicsPorPagina >= 1:
             self.setup.cantidadComicsPorPagina = cantidadComicsPorPagina
 
+        self.setup.anchoThumnail = anchoThumnail
         self.addSetup(self.setup)
 
     def __borrarCrearDirectoriosDesdeBase__(self,directorioBase):
@@ -212,6 +214,8 @@ class Config:
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coverIssuesThumbnails')
         shutil.copyfile("../sin_caratula.jpg", "../images/coverIssuesThumbnails/sin_caratula.jpg")
         shutil.copyfile("../sin_caratula_publisher.jpg", "../images/logo publisher/sin_caratula_publisher.jpg")
+        shutil.copyfile("../error_caratula.png", "../images/logo coverIssuesThumbnails/error_caratula.png")
+
 
     def addSetup(self, setup):
         setupObj = setup

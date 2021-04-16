@@ -31,10 +31,12 @@ class Setup(Entidades.Init.Base):
     '''guarda el ultimo numero consultado'''
     anchoArbol = Column(Integer,default=100)
     '''Expresion regular para calcular donde esta el numeradoer en path del archivo'''
-    expresionRegularNumero= Column(String,default='.* (\d*) \(', nullable=False)
+    expresionRegularNumero = Column(String,default='.* (\d*) \(', nullable=False)
     '''Manejo las sucuencias de forma manual porque la idea es usar el id externo como clave
     para esto los id externos son positivos y los internos son negativos. con esto espero que no haya coliciones'''
-
+    '''Fija el ancho de todo thumnail de sistema
+    '''
+    anchoThumnail = Column(Integer, nullable=False, default=120)
 
     def __repr__(self):
         return "<Setup(setupkey = '%s'\n" \
