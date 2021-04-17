@@ -60,6 +60,7 @@ class Entity_manager:
         self.new_record()
 
     def get(self, id_entidad):
+        print("------------------------")
         if not self.hay_cambios_pendientes():
             # Vamos a calcular el offset para poder navegar de forma correcta
             self.entidad = self.session.query(self.clase).get(id_entidad)
@@ -68,8 +69,7 @@ class Entity_manager:
         return self.entidad
 
     def hay_cambios_pendientes(self):
-        if self.session.is_modified(self.entidad):
-            print("aca")
+        if self.entidad != None and self.session.is_modified(self.entidad):
             return True
         else:
             return False
