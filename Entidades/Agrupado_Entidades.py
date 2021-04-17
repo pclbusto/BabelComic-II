@@ -368,6 +368,9 @@ class Comicbook_Detail(Entidades.Init.Base):
     ordenPagina = Column(Integer, nullable=False, default=0)
     #portada = 1, pagina = 2
     tipoPagina = Column(Integer, nullable=False, default=2)
+    #deberia ser la clave pero para no perder lo que tengo en piledrive se agrega como un dato extra el campo indice no
+    # se tendria que usar mas y ser reemplazado por este campo.
+    nombre_pagina = Column(String, default=0)
 
 class Publisher(Entidades.Init.Base):
     __tablename__='publishers'

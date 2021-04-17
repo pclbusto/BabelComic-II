@@ -316,6 +316,8 @@ class Commicbooks_detail(Entity_manager):
 class Comicbooks(Entity_manager):
     def __init__(self, session=None, lista_comics_id=None):
         Entity_manager.__init__(self, session=session, clase=Comicbook)
+        # lista_comics_id: Lista de ids con las que quiero que trabaje el manager. Si seteo se usa como filtro contra
+        # la base de datos para recuperar los comicbook que se correspondan con los Ids pasados como parametros.
 
         if session is not None:
             self.session = session
@@ -323,7 +325,7 @@ class Comicbooks(Entity_manager):
             self.session = Init.Session()
 
         self.set_order(Comicbook.id_comicbook, 0)
-        self.lista_opciones = {'Id': Comicbook.id_comicbook, 'Path':Comicbook.path}
+        self.lista_opciones = {'Id': Comicbook.id_comicbook, 'Path': Comicbook.path}
         self.filtro = None
         if lista_comics_id is not None:
             self.set_filtro(Comicbook.id_comicbook.in_(lista_comics_id))
@@ -339,7 +341,10 @@ class Comicbooks(Entity_manager):
         return(retorno)
 
     def tiene_detalle(self):
+        print("CONTANDO")
         cantidad_registros = self.session.query(Comicbook_Detail.indicePagina).filter(Comicbook_Detail.comicbook_id == self.entidad.id_comicbook).count()
+        print("CONTANDO", cantidad_registros)
+
         return cantidad_registros > 0
 
 if (__name__=='__main__'):
