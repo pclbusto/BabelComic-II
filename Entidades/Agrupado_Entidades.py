@@ -214,7 +214,6 @@ class Comicbook(Entidades.Init.Base):
 
     def getImagePage(self):
         pagina = self.getPage()
-        print("LA PAGINA: {}".format(type(pagina)))
         if pagina is None:
             return None
         else:
@@ -222,7 +221,6 @@ class Comicbook(Entidades.Init.Base):
 
     def get_image_page_gtk(self):
         pagina = self.getPage()
-        print("LA PAGINA: {}".format(type(pagina)))
         if pagina is None:
             return None
         else:

@@ -55,12 +55,13 @@ class Config_gtk():
             for extension in self.babelComicConfig.listaTipos:
                 lista_extenesiones += extension+","
 
-            if len(lista_extenesiones)>0 and lista_extenesiones[-1] ==',':
+            if len(lista_extenesiones)>0 and lista_extenesiones[-1] == ',':
                 lista_extenesiones=  lista_extenesiones[:-1]
                 self.entry_lista_extensiones_soportadas.set_text(lista_extenesiones)
 
             self.entry_directorio_base.set_text(self.babelComicConfig.setup.directorioBase)
             self.entry_spinner_cantidad_por_pagina.set_value(self.babelComicConfig.setup.cantidadComicsPorPagina)
+            self.anchoThumnail.set_value(self.babelComicConfig.setup.anchoThumnail)
 
     def click_boton_agregar_directorio_comic(self, widget):
         dialogo = Gtk.FileChooserDialog(title='Selección de Directorios de Comics', parent= self.window,  action=Gtk.FileChooserAction.SELECT_FOLDER)

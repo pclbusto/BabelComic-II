@@ -108,25 +108,8 @@ class Comicbook_Detail_Gtk():
                 self.comicbooks_detail_manager.crear_thumnail_cover(True)
         self.menu_comic.popdown()
 
-        #
-        #
-        # selected_list = self.iconview.get_selected_items()
-        # if len(selected_list) == 1:
-        #     print(selected_list)
-        #     index = selected_list[0].get_indices()[0]
-        #     self.comicbook.goto(index)
-        #     self.comicbooks_detail_manager.set_page_type(index, tipo)
-        #     #self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
-        #     if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
-        #         self.comicbooks_detail_manager.crear_thumnail_cover(True)
-        # self.menu_comic.popdown()
-
     def seleccion_fila(self, widget):
-        #print(widget)
-        #model, treeiter = widget.get_selection().get_selected()
-        #if treeiter is not None:
-            # self.comicbook.goto(model[treeiter][0])
-            # #print("You selected", model[treeiter][0])
+
         selected_list = widget.get_selected_items()
         # print(selected_list[0])
         if len(selected_list) == 1:

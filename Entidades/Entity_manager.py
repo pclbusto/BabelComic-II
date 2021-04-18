@@ -69,7 +69,8 @@ class Entity_manager:
         return self.entidad
 
     def hay_cambios_pendientes(self):
-        if self.entidad != None and self.session.is_modified(self.entidad):
+
+        if self.entidad is not None and self.session.is_modified(self.entidad):
             return True
         else:
             return False

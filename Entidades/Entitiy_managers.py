@@ -7,6 +7,12 @@ import os
 import urllib.request
 from PIL import Image
 import threading
+import gi
+
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk
+from gi.repository.GdkPixbuf import Pixbuf
 
 class Comicbooks_Info(Entity_manager):
 
@@ -34,6 +40,9 @@ class Comicbooks_Info(Entity_manager):
         self.lock = threading.Lock()
         self.lista_covers_downloading = []
         self.callback = None
+
+
+
     def load_cover_list(self):
         self.index_lista_covers = 0
         self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
@@ -252,7 +261,7 @@ class Comicbooks_Detail(Entity_manager):
         self.direccion = 0
 
 class Commicbooks_detail(Entity_manager):
-    def __init__(self, session = None):
+    def __init__(self, session=None):
         Entity_manager.__init__(self, session=session, clase=Comicbook_Detail)
 
         if session is not None:
@@ -270,18 +279,18 @@ class Commicbooks_detail(Entity_manager):
         self.direccion = 0
         self.comicbook_id = None
 
+    def load_setup(self):
+        self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
+                            "coverIssuesThumbnails" + os.path.sep
+        self.ancho_thumnail = self.session.query(Setup).first().anchoThumnail
+
+        print("self.pahThumnails", self.pahThumnails)
+
     def save_page_datail(self, id_page):
         self.new_record()
 
     def set_comicbook(self, comicbookid):
         self.comicbook_id = comicbookid
-
-    # def set_page_type(self, nro_pagina, tipo):
-    #     print("set_page_type nro_pagina{}".format(nro_pagina))
-    #     #recuperamos una instancia de comic_detail que representa la pagina que le vamos a cambiar el tipo
-    #     self.get((self.comicbook_id, nro_pagina))
-    #     self.entidad.tipoPagina = tipo
-    #     self.save()
 
     def set_page_type(self, page_name, tipo):
         self.entidad = self.session.query(Comicbook_Detail).filter(Comicbook_Detail.nombre_pagina == page_name).one()
@@ -290,32 +299,66 @@ class Commicbooks_detail(Entity_manager):
 
     def crear_thumnail_cover(self, recrear=False):
         try:
-            pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
-                               "coverIssuesThumbnails" + os.path.sep
-
+            # pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
+            #                    "coverIssuesThumbnails" + os.path.sep
+            self.load_setup()
             comicbooks = Comicbooks(self.session)
             comicbooks.get(self.comicbook_id)
-            nombreThumnail = pahThumnails + str(comicbooks.entidad.id_comicbook) + '.jpg'
+            nombreThumnail = self.pahThumnails + str(comicbooks.entidad.id_comicbook) + '.jpg'
             print("Generando thumnail {}".format(nombreThumnail))
             cover = None
             if not os.path.isfile(nombreThumnail) or recrear:
                 if comicbooks.entidad.openCbFile() == -1:
-                    raise Exception("Error añ abrir el archuivo {}".format(comicbooks.entidad.id_comicbook))
+                    print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                    cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
                 else:
-                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
                     #vampos a buscar que nro de page es la cover
                     self.set_filtro(and_(Comicbook_Detail.comicbook_id == self.comicbook_id, Comicbook_Detail.tipoPagina == Comicbook_Detail.PAGE_TYPE_COVER))
-                    get_nro_pagina_cover_nro_uno = self.getFirst()
-                    print("NUMERO PAGINA COVER: {}".format(get_nro_pagina_cover_nro_uno.ordenPagina))
-                    comicbooks.entidad.goto(get_nro_pagina_cover_nro_uno.ordenPagina)
-                    imagen_height_percent = 350 / comicbooks.entidad.getImagePage().size[1]
-                    self.size = (int(imagen_height_percent * comicbooks.entidad.getImagePage().size[0]), int(350))
-                    cover = comicbooks.entidad.getImagePage().resize(self.size, Image.LANCZOS)
+                    print("recuperamos el detalle------------")
+
+                    pagina_cover = self.getFirst()
+                    if pagina_cover is not None:
+                        print("NUMERO PAGINA COVER: {}".format(pagina_cover.nombre_pagina))
+                        comicbooks.entidad.goto_page_by_name(pagina_cover.nombre_pagina)
+                    else:
+                        comicbooks.entidad.goto(0)
+
+                    imagen_ancho_porcentaje = self.ancho_thumnail / comicbooks.entidad.getImagePage().size[0]
+                    self.size = (int(self.ancho_thumnail), int(imagen_ancho_porcentaje * comicbooks.entidad.getImagePage().size[1]))
+                    cover = comicbooks.entidad.getImagePage()
+                    cover = cover.resize(self.size, Image.LANCZOS).crop((0, 0, self.size[0], self.size[1]))
+                    cover.convert('RGB').save(nombreThumnail)
                     cover.save(nombreThumnail)
                     comicbooks.entidad.closeCbFile()
+                    cover = Pixbuf.new_from_file(nombreThumnail)
+            else:
+                if os.path.isfile(nombreThumnail):
+                    cover = Pixbuf.new_from_file(nombreThumnail)
+            #------------------------------
+                    #     print("No tiene thumnail vamos a crearlo")
+                    #     nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
+                    #     if not os.path.isfile(nombreThumnail):
+                    #         first_comicbook_detail = self.session.query(Comicbook_Detail).filter(
+                    #             Comicbook_Detail.comicbook_id == comic.id_comicbook).filter(
+                    #             Comicbook_Detail.tipoPagina == Comicbook_Detail.PAGE_TYPE_COVER).first()
+                    #         if first_comicbook_detail:
+                    #             comic.goto(first_comicbook_detail.indicePagina)
+                    #         print("cover", comic.getImagePage().size[0])
+                    #         imagen_ancho_porcentaje = self.ancho_thumnail / comic.getImagePage().size[0]
+                    #         print("Procentaje ancho: ", imagen_ancho_porcentaje)
+                    #         self.size = (int(self.ancho_thumnail), int(imagen_ancho_porcentaje*comic.getImagePage().size[1]))
+                    #         cover = comic.getImagePage()
+                    #         cover = cover.resize(self.size, Image.LANCZOS).crop((0, 0, self.size[0], self.size[1]))
+                    #         cover.convert('RGB').save(nombreThumnail)
+                    #     cover = Pixbuf.new_from_file(nombreThumnail)
+                    #     comic.closeCbFile()
+                    #
+            #--------------------------------
         except Exception :
             print('error en el archivo ' + self.entidad.path)
         print('termiando crear_thumnails_background')
+        return cover
 
 
 class Comicbooks(Entity_manager):

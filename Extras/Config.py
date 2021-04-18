@@ -45,8 +45,8 @@ class Config:
         self.setup = self.session.query(Entidades.Agrupado_Entidades.Setup).first()
         if not self.setup:
             self.setup = Entidades.Agrupado_Entidades.Setup()
-            self.setup.setupkey=1
-            self.setup.directorioBase=""
+            self.setup.setupkey = 1
+            self.setup.directorioBase = ""
 
     def getPublisherTempLogoPath(self):
         return self.__getTempPath__("publisher")
@@ -214,7 +214,7 @@ class Config:
         os.makedirs(directorioBase + os.sep + 'images' + os.sep + 'coverIssuesThumbnails')
         shutil.copyfile("../sin_caratula.jpg", "../images/coverIssuesThumbnails/sin_caratula.jpg")
         shutil.copyfile("../sin_caratula_publisher.jpg", "../images/logo publisher/sin_caratula_publisher.jpg")
-        shutil.copyfile("../error_caratula.png", "../images/logo coverIssuesThumbnails/error_caratula.png")
+        shutil.copyfile("../error_caratula.png", "../images/coverIssuesThumbnails/error_caratula.png")
 
 
     def addSetup(self, setup):

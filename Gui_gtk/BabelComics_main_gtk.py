@@ -12,7 +12,8 @@ from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
-
+#lo usamos para reutilizar la generacion de thumnails
+from Entidades.Entitiy_managers import Commicbooks_detail
 
 from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
@@ -24,7 +25,6 @@ import os.path
 import math
 from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
-import time
 import threading
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
@@ -39,8 +39,7 @@ class BabelComics_main_gtk():
 
         self.listaEditoriales = self.session.query(Publisher).all()
 
-        self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
-                            "coverIssuesThumbnails" + os.path.sep
+        self.load_setup()
 
         self.handlers = {'click_editorial': self.click_editorial, 'click_boton_serie': self.click_boton_serie,
                          'item_seleccionado': self.item_seleccionado, 'click_derecho': self.click_derecho,
@@ -135,6 +134,11 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         self.update_panel_filtros()
         # self.update_imagen_papelera()
+
+    def load_setup(self):
+        self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
+                            "coverIssuesThumbnails" + os.path.sep
+        self.ancho_thumnail = self.session.query(Setup).first().anchoThumnail
 
     def update_imagen_papelera(self):
         pass
@@ -486,78 +490,27 @@ class BabelComics_main_gtk():
         self.popover.show_all()
         self.popover.popup()
 
-    # def crear_todo_thumnails_background(self):
-    #     lista = self.session.query(Comicbook)
-    #     for comicbook in lista:
-    #         while len(self.lista_pendientes) > 0:
-    #             print("DURMIENDO UNN RATO")
-    #             time.sleep(5)
-    #         try:
-    #
-    #             nombreThumnail = self.pahThumnails + str(comicbook.id_comicbook) + '.jpg'
-    #             print("Generando thumnail {}".format(nombreThumnail))
-    #             cover = None
-    #             # pregunto lo mismo porque puede que el proceso de pagina esta creando thumnails y puede que este ya
-    #             # la haya generado.
-    #             if not os.path.isfile(nombreThumnail):
-    #                 if comicbook.openCbFile() == -1:
-    #                     raise Exception("Error añ abrir el archuivo {}".format(comicbook.id_comicbook))
-    #                 else:
-    #                     print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-    #                     #retornamos la primer pagina configurada como cover, pueden haber varias o ninguna
-    #                     first_comicbook_detail = self.session.query(Comicbook_Detail).filter(Comicbook_Detail.comicbook_id == comicbook.id_comicbook).filter(Comicbook_Detail.tipoPagina == Comicbook_Detail.PAGE_TYPE_COVER).first()
-    #                     if first_comicbook_detail:
-    #                         comicbook.goto(first_comicbook_detail.indicePagina)
-    #                     imagen_height_percent = 350 / comicbook.getImagePage().size[1]
-    #                     self.size = (int(imagen_height_percent * comicbook.getImagePage().size[0]), int(350))
-    #                     cover = comicbook.getImagePage().resize(self.size, Image.LANCZOS)
-    #                     cover.save(nombreThumnail)
-    #                     comicbook.closeCbFile()
-    #         except Exception :
-    #             print('error en el archivo ' + comicbook.path)
-    #
-    #     print('termiando crear_thumnails_background')
-
     def crear_thumnail(self, comic, iter):
-
-        if comic.openCbFile() == -1:
-            cover = Pixbuf.new_from_file(self.pahThumnails + "error_caratula.png")
-        else:
-            print("No tiene thumnail vamos a crearlo")
-            nombreThumnail = self.pahThumnails + str(comic.id_comicbook) + '.jpg'
-            if not os.path.isfile(nombreThumnail):
-                first_comicbook_detail = self.session.query(Comicbook_Detail).filter(
-                    Comicbook_Detail.comicbook_id == comic.id_comicbook).filter(
-                    Comicbook_Detail.tipoPagina == Comicbook_Detail.PAGE_TYPE_COVER).first()
-                if first_comicbook_detail:
-                    comic.goto(first_comicbook_detail.indicePagina)
-
-                print("size y: {}".format(comic.getImagePage()))
-                size_y = comic.getImagePage().size[1]
-
-                imagen_height_percent = 350 / comic.getImagePage().size[1]
-                self.size = (int(imagen_height_percent * comic.getImagePage().size[0]), int(350))
-                cover = comic.getImagePage()
-                cover = cover.resize(self.size, Image.LANCZOS).crop((0, 0, 229, 350))
-                cover.convert('RGB').save(nombreThumnail)
-            cover = Pixbuf.new_from_file(nombreThumnail)
-            comic.closeCbFile()
+        '''Recibe el comic y el iter para poder refresacar el thumnail del cover'''
+        comicbooks_detail_manager = Commicbooks_detail(self.session)
+        comicbooks_detail_manager.set_comicbook(comic.id_comicbook)
+        cover = comicbooks_detail_manager.crear_thumnail_cover()
         GLib.idle_add(self.liststore.set_value, iter, 0, cover)
 
     def crear_thumnails_de_pagina_background(self):
-        '''Recibe el comic y el iter para poder refresacar el thumnail del cover'''
-        # esta asignacion deberia cortar la generacion de thumnails general
+        # hilo que solo lanza la creacion individual de thumnails
+        self.load_setup()
         self.cantidad_thumnails_pendiente = len(self.lista_pendientes)
         print(self.cantidad_thumnails_pendiente)
         self.salir_thread=False
         print("CARGANDO THUMNAIL {}".format(self.cantidad_thumnails_pendiente))
         for iter, comic in self.lista_pendientes:
             cover = None
-            print(comic)
             t = threading.Thread(target=self.crear_thumnail, args=(comic, iter,))
             t.start()
 
-            self.cantidad_thumnails_pendiente-=1
+            self.cantidad_thumnails_pendiente -= 1
+            self.cantidad_thumnails_pendiente -= 1
             if self.salir_thread:
                 print("SALIENDO DEL THREAD")
                 break
@@ -566,7 +519,7 @@ class BabelComics_main_gtk():
         if not self.updating_gui:
             # sacamo el hilo que puede estar creando los thumnails para la pagina anterior porque ahora la vamos a
             # recreear
-            self.salir_thread=True
+            self.salir_thread = True
             self.liststore.clear()
             self.lista_pendientes.clear()
             self.listaComics = self.query.limit(self.limit).offset(self.offset).all()
