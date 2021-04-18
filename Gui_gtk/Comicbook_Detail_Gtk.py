@@ -101,22 +101,25 @@ class Comicbook_Detail_Gtk():
         self._marcar_como(widget, Comicbook_Detail.PAGE_TYPE_COMMON_PAGE)
 
     def _marcar_como(self, widget, tipo):
-        # model, treeiter = self.tree_view_paginas.get_selection().get_selected()
-        # if treeiter is not None:
-        #     self.comicbooks_detail_manager.set_page_type(model[treeiter][0], tipo)
-        #     self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
-        #     if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
-        #         self.comicbooks_detail_manager.crear_thumnail_cover(True)
         selected_list = self.iconview.get_selected_items()
         if len(selected_list) == 1:
-            print(selected_list)
-            index = selected_list[0].get_indices()[0]
-            self.comicbook.goto(index)
-            self.comicbooks_detail_manager.set_page_type(index, tipo)
-            #self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
+            self.comicbooks_detail_manager.set_page_type(self.dictionary[str(selected_list[0].get_indices()[0])], tipo)
             if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
                 self.comicbooks_detail_manager.crear_thumnail_cover(True)
         self.menu_comic.popdown()
+
+        #
+        #
+        # selected_list = self.iconview.get_selected_items()
+        # if len(selected_list) == 1:
+        #     print(selected_list)
+        #     index = selected_list[0].get_indices()[0]
+        #     self.comicbook.goto(index)
+        #     self.comicbooks_detail_manager.set_page_type(index, tipo)
+        #     #self.liststore_comicbook[model[treeiter][0]][3] = self.labels[tipo]
+        #     if tipo == Comicbook_Detail.PAGE_TYPE_COVER:
+        #         self.comicbooks_detail_manager.crear_thumnail_cover(True)
+        # self.menu_comic.popdown()
 
     def seleccion_fila(self, widget):
         #print(widget)
@@ -328,5 +331,4 @@ if __name__ == "__main__":
     cbi.window.connect("destroy", Gtk.main_quit)
     cbi.set_comicbook(id)
     cbi.window.show()
-
     Gtk.main()
