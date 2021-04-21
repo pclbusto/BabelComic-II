@@ -217,6 +217,7 @@ class Config:
         shutil.copyfile("../error_caratula.png", "../images/coverIssuesThumbnails/error_caratula.png")
 
 
+
     def addSetup(self, setup):
         setupObj = setup
         self.session.add(setupObj)

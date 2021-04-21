@@ -7,7 +7,7 @@
     <property name="can-focus">False</property>
     <property name="icon-name">system-search-symbolic</property>
   </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="Volumens">
     <property name="can-focus">False</property>
     <child>
       <object class="GtkBox">
@@ -15,15 +15,18 @@
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkSearchBar">
+          <object class="GtkSearchBar" id="barra_busqueda">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="hexpand">True</property>
+            <property name="show-close-button">True</property>
             <child>
-              <!-- n-columns=3 n-rows=3 -->
+              <!-- n-columns=3 n-rows=2 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="row-spacing">6</property>
+                <property name="column-spacing">6</property>
                 <child>
                   <object class="GtkSearchEntry">
                     <property name="visible">True</property>
@@ -55,7 +58,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="halign">end</property>
+                    <property name="halign">start</property>
                     <property name="hexpand">False</property>
                     <property name="label" translatable="yes">Nombre</property>
                   </object>
@@ -78,16 +81,14 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
                 </child>
               </object>
             </child>
@@ -104,10 +105,11 @@
             <property name="can-focus">True</property>
             <property name="shadow-type">in</property>
             <child>
-              <object class="GtkIconView">
+              <object class="GtkIconView" id="iconview_volumens">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="margin">6</property>
+                <signal name="key-release-event" handler="activar_busqueda" swapped="no"/>
               </object>
             </child>
           </object>

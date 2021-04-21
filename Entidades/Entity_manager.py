@@ -154,7 +154,9 @@ class Entity_manager:
     def getFirst(self):
         if not self.hay_cambios_pendientes():
             self.offset = 0
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             self.entidad = self._get_consulta().first()
+            print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb")
         else:
             self.status = Entity_manager.CTE_CAMBIOS_PENDIENTES
         return self.entidad
