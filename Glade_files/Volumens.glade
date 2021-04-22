@@ -20,6 +20,7 @@
             <property name="can-focus">False</property>
             <property name="hexpand">True</property>
             <property name="show-close-button">True</property>
+            <signal name="key-release-event" handler="entrada_teclado_barra_busqueda" swapped="no"/>
             <child>
               <!-- n-columns=3 n-rows=2 -->
               <object class="GtkGrid">
@@ -28,7 +29,7 @@
                 <property name="row-spacing">6</property>
                 <property name="column-spacing">6</property>
                 <child>
-                  <object class="GtkSearchEntry">
+                  <object class="GtkSearchEntry" id="volumen_search_entry">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>

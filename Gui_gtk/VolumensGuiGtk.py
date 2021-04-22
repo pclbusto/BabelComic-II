@@ -40,7 +40,8 @@ class Volumens_gtk():
 
         self.load_setup()
 
-        self.handlers = {'activar_busqueda': self.activar_busqueda}
+        self.handlers = {'activar_busqueda': self.activar_busqueda,
+                         'entrada_teclado_barra_busqueda': self.entrada_teclado_barra_busqueda}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
@@ -81,7 +82,13 @@ class Volumens_gtk():
 
     def activar_busqueda(self, widget, event):
         self.barra_busqueda.set_search_mode(True)
-        self.volumen_search_entry.set_focus()
+        self.volumen_search_entry.grab_focus()
+
+    def entrada_teclado_barra_busqueda(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.barra_busqueda.set_search_mode(False)
+            self.volumen_search_entry.set_text('')
+            self.iconview_volumens.grab_focus()
 
 if __name__ == "__main__":
     GLib.set_prgname('Babelcomics')
