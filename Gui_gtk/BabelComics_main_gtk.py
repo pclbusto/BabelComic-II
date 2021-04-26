@@ -12,6 +12,7 @@ from Entidades.Agrupado_Entidades import Setup
 from Gui_gtk.ScannerGtk import ScannerGtk
 from Gui_gtk.PublisherGuiGtk import PublisherGtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+from Gui_gtk.VolumensGuiGtk import Volumens_gtk
 #lo usamos para reutilizar la generacion de thumnails
 from Entidades.Entitiy_managers import Commicbooks_detail
 
@@ -470,7 +471,7 @@ class BabelComics_main_gtk():
 
 
     def click_boton_serie(self, widget):
-        serie = VolumeGuiGtk(self.session)
+        serie = Volumens_gtk(self.session)
         serie.window.show()
         self.popovermenu.popdown()
 

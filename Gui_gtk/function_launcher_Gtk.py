@@ -52,7 +52,6 @@ class Function_launcher_gtk():
         self.babel_comic_window.click_boton_config(None)
         self.window.close()
     def enter_serie(self, widget):
-        print("enter_serie")
         self.babel_comic_window.click_boton_serie(None)
         self.window.close()
     def enter_acerca_de(self, widget):

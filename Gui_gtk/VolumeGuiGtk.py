@@ -230,6 +230,7 @@ class VolumeGuiGtk():
             else:
                 self.list_progressbar_procentaje_completado[self.index].set_fraction(0)
             self.list_label_cantidad_comics_asociados[self.index].set_text(str(self.volumens_manager.get_cantidad_comics_asociados_al_volumen()))
+            print("PATH: {}".format(volumen.getImagePath()))
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                 filename=volumen.getImagePath(),
                 width=250,

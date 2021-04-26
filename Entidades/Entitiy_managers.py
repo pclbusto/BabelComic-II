@@ -187,7 +187,7 @@ class Volumens(Entity_manager):
         self.lista_opciones = {'Id': Volume.id_volume, 'Volumen': Volume.nombre}
 
         self.status = 1
-        self.entidad=Volume()
+        self.entidad = Volume()
         self.filtro = None
         self.set_order(Volume.id_volume)
         self.direccion = 0

@@ -533,7 +533,9 @@ class Volume(Entidades.Init.Base):
             fullPath = setup.directorioBase + os.sep + 'images' + os.sep + 'coversvolumes' + os.sep + self.image_url[
                                                                                                       self.image_url.rindex(
                                                                                                           '/') + 1:]
+
             if not (os.path.isfile(fullPath)):
+                print("BAJANDO COVEEEER")
                 jpg = urllib.request.urlopen(self.image_url)
                 jpgImage = jpg.read()
                 fImage = open(fullPath, 'wb')
@@ -581,7 +583,7 @@ class Volume(Entidades.Init.Base):
         return (Image.open(fImage))
 
 class Setup_Directorio(Entidades.Init.Base):
-    __tablename__='setup_directorios'
+    __tablename__= 'setup_directorios'
     pathDirectorio = Column(String, primary_key=True)
 
     def __repr__(self):

@@ -2,7 +2,7 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
 from gi.repository import Gdk
@@ -10,22 +10,19 @@ from gi.repository import Gdk
 import Entidades.Init
 from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook_Info, Arcos_Argumentales_Comics_Reference, Comicbook_Detail
 from Entidades.Agrupado_Entidades import Setup
-from Gui_gtk.ScannerGtk import ScannerGtk
-from Gui_gtk.PublisherGuiGtk import PublisherGtk
-from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
-#lo usamos para reutilizar la generacion de thumnails
-from Entidades.Entitiy_managers import Commicbooks_detail
+from Entidades.Entitiy_managers import Volumens
 
-from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
-from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
-from Gui_gtk.config_gtk import Config_gtk
+from Gui_gtk.PublisherGuiGtk import Publisher_lookup_gtk
+from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
+
 from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
 from Gui_gtk.function_launcher_Gtk import Function_launcher_gtk
 from Extras import BabelComics_Manager
 import os.path
 import math
-from PIL import Image, ImageFile
-import threading
+from PIL import Image, ImageFile, ImageDraw
+import threading, io
+
 
 
 
@@ -41,7 +38,10 @@ class Volumens_gtk():
         self.load_setup()
 
         self.handlers = {'activar_busqueda': self.activar_busqueda,
-                         'entrada_teclado_barra_busqueda': self.entrada_teclado_barra_busqueda}
+                         'entrada_teclado_barra_busqueda': self.entrada_teclado_barra_busqueda,
+                         'evento_busqueda': self.evento_busqueda,
+                         'seleccion_volumen': self.seleccion_volumen,
+                         'doble_click': self.doble_click}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
@@ -49,6 +49,7 @@ class Volumens_gtk():
         self.builder.add_from_file("../Glade_files/Volumens.glade")
         self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("Volumens")
+        self.window.set_title("Series")
         self.app_icon = Pixbuf.new_from_file_at_size('../iconos/iconoBabelComics-buuf.png', 32, 32)
         self.window.set_icon_from_file('../iconos/iconoBabelComics-buuf.png')
         self.window.set_default_icon_list([self.app_icon])
@@ -60,25 +61,98 @@ class Volumens_gtk():
         self.updating_gui = False
         self.salir_thread = False
 
-        self.liststore = Gtk.ListStore(Pixbuf, str)
+        self.liststore = self.builder.get_object('liststore')
         self.lista_pendientes = []
         self.filtro = ''
         self.limit = self.session.query(Setup).first().cantidadComicsPorPagina
         self.offset = 0
         self.query = None
-        self.manager = BabelComics_Manager.BabelComics_Manager()
-
-        self.cantidad_thumnails_pendiente=0
+        self.manager = Volumens(session)
+        self.dictionary = {}
+        self.cantidad_thumnails_pendiente = 0
         #self.search_change(None)
 
+        self.iconview_volumens.set_pixbuf_column(0)
+        self.iconview_volumens.set_text_column(1)
+        self.iconview_volumens.set_text_column(2)
         self.iconview_volumens.set_column_spacing(-1)
         self.iconview_volumens.set_item_padding(10)
         self.iconview_volumens.set_item_width(1)
         self.iconview_volumens.set_spacing(30)
 
+
+        self.load_volumens()
+
+    def doble_click(self, widget, event):
+        print(event.get_click_count())
+        if event.get_click_count().click_count == 2:
+            selected_list = widget.get_selected_items()
+            if len(selected_list) == 1:
+                print("Nombre :", str(self.liststore[selected_list[0]][2]))
+                volumen = VolumeGuiGtk()
+                volumen.window.show_all()
+                volumen.set_volumen_id(int(self.liststore[selected_list[0]][2]))
+
+    def image2pixbuf(self, im):
+        """Convert Pillow image to GdkPixbuf"""
+        data = im.tobytes()
+        w, h = im.size
+        data = GLib.Bytes.new(data)
+        pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+                                              False, 8, w, h, w * 3)
+        return pix
+
+    def create_grey_tumnails(self, lista):
+
+        img = Image.new("RGB", (self.ancho_thumnail, int(self.ancho_thumnail*1.3)), (150, 150, 150))
+        for i in range(0, len(lista)):
+            img_aux = img.copy()
+            d1 = ImageDraw.Draw(img_aux)
+            d1.text(((self.ancho_thumnail/2)-20, self.ancho_thumnail/2), str(i),  fill=(255, 255, 255))
+            d1.polygon([(0, 0), (self.ancho_thumnail, 0), (self.ancho_thumnail, self.ancho_thumnail*2), (0, self.ancho_thumnail*2)], outline=(0, 0, 0))
+            gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
+            #self.dictionary[str(i)] = ''
+            GLib.idle_add(self.update_progess2, gdkpixbuff_thumnail, lista[i].nombre, lista[i].id_volume)
+
+    def update_progess2(self, gdkpixbuff_thumnail, archivo_nombre, id_volume):
+        self.liststore.append([gdkpixbuff_thumnail, archivo_nombre, id_volume])
+
+
     def load_setup(self):
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + "coverIssuesThumbnails" + os.path.sep
         self.ancho_thumnail = self.session.query(Setup).first().anchoThumnail
+
+    def load_volumens(self):
+        self.liststore.clear()
+        lista = self.manager.getList()
+        self.create_grey_tumnails(lista)
+        t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
+        t.start()
+
+    def load_volumens_second_part(self, lista):
+
+        for index, volumen in enumerate(lista):
+            t = threading.Thread(target=self.load_volumen_cover, args=(volumen, index,))
+            t.start()
+
+
+    def seleccion_volumen(self, widget):
+        selected_list = widget.get_selected_items()
+        if len(selected_list) == 1:
+            print("Nombre :", str(self.liststore[selected_list[0]][2]))
+
+    def load_volumen_cover(self, volumen, index):
+        image = Image.open(volumen.getImagePath()).convert("RGB")
+        size = (self.ancho_thumnail, int(image.size[1] * self.ancho_thumnail / image.size[0]))
+        image.thumbnail(size, 3, 3)
+        img_aux = image.copy()
+        d1 = ImageDraw.Draw(img_aux)
+        d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
+        gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
+        GLib.idle_add(self.update_cover, gdkpixbuff_thumnail, index)
+
+    def update_cover(self, pixbuf, index):
+        self.liststore[index][0] = pixbuf
 
     def activar_busqueda(self, widget, event):
         self.barra_busqueda.set_search_mode(True)
@@ -89,6 +163,10 @@ class Volumens_gtk():
             self.barra_busqueda.set_search_mode(False)
             self.volumen_search_entry.set_text('')
             self.iconview_volumens.grab_focus()
+
+    def evento_busqueda(self, event):
+        self.manager.set_filtro(Volume.nombre.like('%{}%'.format(self.volumen_search_entry.get_text())))
+        self.load_volumens()
 
 if __name__ == "__main__":
     GLib.set_prgname('Babelcomics')
