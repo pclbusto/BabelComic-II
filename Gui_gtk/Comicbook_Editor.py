@@ -46,7 +46,8 @@ class Comicbook_editor_gtk():
                          'actualizar_imagen': self.actualizar_imagen,
                          'seleccion_arbol': self.seleccion_arbol,
                          'guardar_coordenadas': self.guardar_coordenadas,
-                         'mover_texto': self.mover_texto}
+                         'mover_texto': self.mover_texto,
+                         'delete_nodo': self.delete_nodo}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
@@ -61,6 +62,7 @@ class Comicbook_editor_gtk():
         self.spinner_pos_y_0 = builder.get_object("spinner_pos_y_0")
         self.spinner_pos_x_1 = builder.get_object("spinner_pos_x_1")
         self.spinner_pos_y_1 = builder.get_object("spinner_pos_y_1")
+        self.arbol = builder.get_object('arbol')
         self.liststore_arbol = builder.get_object("liststore_arbol")
         self.entry_text = builder.get_object("entry_text")
         self.labels_coords = builder.get_object('labels_coords')
@@ -85,6 +87,12 @@ class Comicbook_editor_gtk():
             self.load_page(lista_comics_id[0])
         self.load_json_file()
 
+    def delete_nodo(self, widget):
+        model, treeiter = self.arbol.get_selection().get_selected()
+        del(self.diccionario_globos[str(model[treeiter][0])])
+        model.remove(treeiter)
+        self._load_page_picture()
+
     def mover_texto(self, widget, event):
         print("moviendo {}".format(event.x))
         delta_x = 0
@@ -108,7 +116,7 @@ class Comicbook_editor_gtk():
         model, treeiter = selection.get_selection().get_selected()
         if treeiter is not None:
             self.load_node_data(str(model[treeiter][0]))
-            print("You selected", model[treeiter][0])
+        self._load_page_picture()
 
     def guardar_coordenadas(self, widget):
         self.modo = self.GUARDANDO_COORDS
@@ -122,7 +130,7 @@ class Comicbook_editor_gtk():
         self.spinner_pos_y_1.set_value(self.diccionario_globos[index]['lista'][3])
         self.entry_text.set_text(self.diccionario_globos[str(index)]['texto']['esp'])
         coords = self.diccionario_globos[str(index)]['texto']['coordenadas']
-        self.labels_coords.set_text('({},{})'.format(coords[0],coords[1]))
+        self.labels_coords.set_text('({},{})'.format(coords[0], coords[1]))
 
     def set_node_data(self, index):
         self.diccionario_globos[index]['lista'][0] = self.spinner_pos_x_0.get_value()
@@ -220,7 +228,12 @@ class Comicbook_editor_gtk():
         stream = self.comicbook.getImagePage()
         draw = ImageDraw.Draw(stream)
         for key in self.diccionario_globos.keys():
-            draw.ellipse(self.diccionario_globos[key]['lista'], width=10, fill=(255, 255, 255))
+            print(key, self.current_node)
+            if key == self.current_node:
+                draw.ellipse(self.diccionario_globos[key]['lista'], width=10, outline=(55, 255, 255))
+                print("iguales")
+            else:
+                draw.ellipse(self.diccionario_globos[key]['lista'], width=10, fill=(255, 255, 255))
             font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
             coords = self.diccionario_globos[key]['texto']['coordenadas']
             draw.multiline_text((coords[0], coords[1]), self.diccionario_globos[key]['texto']['esp'], (0, 0, 0), font=font, spacing=-5, align='center', anchor='ls')

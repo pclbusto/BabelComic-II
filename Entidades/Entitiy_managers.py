@@ -13,6 +13,7 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf
+from sqlalchemy import func
 
 class Comicbooks_Info(Entity_manager):
 
@@ -222,6 +223,15 @@ class Volumens(Entity_manager):
 
         return cantidad
 
+    def get_cantidad_comics_asociados_a_volumenes(self):
+        #join para saber a que coicbook_info pertenece y asi tener el volumen id
+        lista_cantidades = self.session.query(Volume.id_volume, Volume.cantidad_numeros, func.count(Comicbook.id_comicbook)).filter(Comicbook_Info.id_volume==Volume.id_volume).filter(Comicbook.id_comicbook_info==Comicbook_Info.id_comicbook_info).group_by(Volume.id_volume).all()
+        self.cantidades_por_volumen = {}
+        for registro in lista_cantidades:
+            self.cantidades_por_volumen[str(registro[0])] = (registro[1], registro[2])
+
+        #print(self.cantidades_por_volumen)
+
     def new_record(self):
         super().new_record()
         setup = self.session.query(Setup).first()
@@ -403,9 +413,8 @@ if (__name__=='__main__'):
     # cbd.ordenPagina = 1
     # cbd.tipoPagina = Comicbook_Detail.COVER
     # cbdm.save()
-    cbm = Comicbooks_Info()
-    cbm.get(30843)
-    print(cbm.entidad)
+    cbm = Volumens()
+    print(cbm.get_cantidad_comics_asociados_a_volumenes())
 
 
     #print(arco.getCantidadTitulos())

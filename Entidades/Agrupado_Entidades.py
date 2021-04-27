@@ -494,7 +494,7 @@ class Volume(Entidades.Init.Base):
         :param session: para poder obtener el resultado mas fresco y no tener errores de threads y esas cosas.
         :return: la cantidad total de issues asociados a este volumen sin importar si estan duplicados.
         '''
-        return session.query(Entidades.ComicBooks.ComicBook.ComicBook).filter(Entidades.ComicBooks.ComicBook.ComicBook.volumeId==self.id).count()
+        return session.query(Entidades.Agrupado_Entidades.Comicbook).filter(Entidades.Agrupado_Entidades.Comicbook.volumeId==self.id).count()
 
     def get_api_url(self):
         if self.id_volume<0:

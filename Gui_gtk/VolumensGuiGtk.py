@@ -22,6 +22,7 @@ import os.path
 import math
 from PIL import Image, ImageFile, ImageDraw
 import threading, io
+from PIL import ImageFont
 
 
 
@@ -125,6 +126,9 @@ class Volumens_gtk():
     def load_volumens(self):
         self.liststore.clear()
         lista = self.manager.getList()
+        #calcular las cantidades
+        self.manager.get_cantidad_comics_asociados_a_volumenes()
+
         self.create_grey_tumnails(lista)
         t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
         t.start()
@@ -148,7 +152,17 @@ class Volumens_gtk():
         img_aux = image.copy()
         d1 = ImageDraw.Draw(img_aux)
         d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
-        gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
+        d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
+        new_image = Image.new(mode='RGB', size=(img_aux.size[0], img_aux.size[1]+50))
+        d1 = ImageDraw.Draw(new_image)
+        font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
+        if str(volumen.id_volume) in self.manager.cantidades_por_volumen.keys():
+            d1.text((10, 20), "{}/{}".format(self.manager.cantidades_por_volumen[str(volumen.id_volume)][1], self.manager.cantidades_por_volumen[str(volumen.id_volume)][0]), font=font, fill=(200, 200, 200))
+        else:
+           d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
+
+        new_image.paste(img_aux, (0, 50))
+        gdkpixbuff_thumnail = self.image2pixbuf(new_image)
         GLib.idle_add(self.update_cover, gdkpixbuff_thumnail, index)
 
     def update_cover(self, pixbuf, index):
