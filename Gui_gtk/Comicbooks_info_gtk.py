@@ -13,7 +13,6 @@ from Entidades.Agrupado_Entidades import Setup
 from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
 
 from Gui_gtk.PublisherGuiGtk import Publisher_lookup_gtk
-from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 
 from Gui_gtk.acerca_de_gtk import Acerca_de_gtk
 from Gui_gtk.function_launcher_Gtk import Function_launcher_gtk
@@ -137,13 +136,13 @@ class Comicbooks_info_gtk():
         # self.manager.get_cantidad_comics_asociados_a_volumenes()
         #
         self.create_grey_tumnails(lista)
-        # t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
-        # t.start()
+        t = threading.Thread(target=self.load_comicbooks_info_second_part, args=(lista,))
+        t.start()
 
-    def load_volumens_second_part(self, lista):
+    def load_comicbooks_info_second_part(self, lista):
 
-        for index, volumen in enumerate(lista):
-            t = threading.Thread(target=self.load_volumen_cover, args=(volumen, index,))
+        for index, comicbook_info in enumerate(lista):
+            t = threading.Thread(target=self.load_comicbook_info_cover, args=(comicbook_info, index,))
             t.start()
 
 
@@ -152,8 +151,10 @@ class Comicbooks_info_gtk():
         if len(selected_list) == 1:
             print("Nombre :", str(self.liststore[selected_list[0]][2]))
 
-    def load_volumen_cover(self, volumen, index):
-        image = Image.open(volumen.getImagePath()).convert("RGB")
+    def load_comicbook_info_cover(self, comicbook_info, index):
+        comicbook_info_manager = Comicbooks_Info(session=self.session)
+        comicbook_info_manager.get(comicbook_info.id_comicbook_info)
+        image = Image.open(comicbook_info_manager.get_cover_complete_path()).convert("RGB")
         size = (self.ancho_thumnail, int(image.size[1] * self.ancho_thumnail / image.size[0]))
         image.thumbnail(size, 3, 3)
         img_aux = image.copy()
@@ -163,10 +164,10 @@ class Comicbooks_info_gtk():
         new_image = Image.new(mode='RGB', size=(img_aux.size[0], img_aux.size[1]+50))
         d1 = ImageDraw.Draw(new_image)
         font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
-        if str(volumen.id_volume) in self.manager.cantidades_por_volumen.keys():
-            d1.text((10, 20), "{}/{}".format(self.manager.cantidades_por_volumen[str(volumen.id_volume)][1], self.manager.cantidades_por_volumen[str(volumen.id_volume)][0]), font=font, fill=(200, 200, 200))
-        else:
-           d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
+        # if str(volumen.id_volume) in self.manager.cantidades_por_volumen.keys():
+        #     d1.text((10, 20), "{}/{}".format(self.manager.cantidades_por_volumen[str(volumen.id_volume)][1], self.manager.cantidades_por_volumen[str(volumen.id_volume)][0]), font=font, fill=(200, 200, 200))
+        # else:
+        #    d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
 
         new_image.paste(img_aux, (0, 50))
         gdkpixbuff_thumnail = self.image2pixbuf(new_image)

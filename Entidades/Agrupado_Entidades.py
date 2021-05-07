@@ -335,7 +335,7 @@ class Comicbook_Info_Cover_Url(Entidades.Init.Base):
     no trae'''
     __tablename__ = 'comicbooks_info_cover_url'
 
-    id_comicbook_info= Column(Integer, ForeignKey('comicbooks_info.id_comicbook_info'), primary_key=True)
+    id_comicbook_info = Column(Integer, ForeignKey('comicbooks_info.id_comicbook_info'), primary_key=True)
     thumb_url = Column(String, primary_key=True)
 
     def __repr__(self):

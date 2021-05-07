@@ -10,7 +10,9 @@ from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
+from Gui_gtk.Comicbooks_info_gtk import Comicbooks_info_gtk
 from html2text import html2text
+
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
     # todo clase que administre el comportamiento completo de alta, baja mdoficacion navegacion y borrado
@@ -27,7 +29,8 @@ class VolumeGuiGtk():
                          'evento': self.evento,
                          'click_eliminar': self.click_eliminar, 'click_derecho':self.click_derecho,
                          'click_lookup_editorial': self.click_lookup_editorial,
-                         'pop_up_menu': self.pop_up_menu}
+                         'pop_up_menu': self.pop_up_menu,
+                         'abrir_covers': self.abrir_covers}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Volumen.glade")
@@ -75,6 +78,11 @@ class VolumeGuiGtk():
         #     self.liststore_combobox.append([clave])
         # self.combobox_orden.set_active(0)
         # self.getFirst("")
+
+    def abrir_covers(self, widget):
+        bc = Comicbooks_info_gtk(volumen_id=self.volumens_manager.entidad.id_volume)
+        bc.window.show()
+        self.menu.popdown()
 
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
@@ -304,7 +312,7 @@ if __name__ == '__main__':
     if __name__ == "__main__":
         pub = VolumeGuiGtk()
         pub.window.show_all()
-        pub.set_volumen_id(1995)
+        pub.set_volumen_id(92557)
         pub.window.connect("destroy", Gtk.main_quit)
         Gtk.main()
 

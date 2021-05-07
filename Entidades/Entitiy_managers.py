@@ -65,9 +65,25 @@ class Comicbooks_Info(Entity_manager):
             self.descargar_imagen(web_image, path + nombreImagen)
         return path + nombreImagen
 
+    def _get_cover_complete_path_no_thread(self):
+        comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
+        #comicbook_info_cover_url = self.lista_covers[0]
+        web_image = comicbook_info_cover_url.thumb_url
+        nombreImagen = web_image[web_image.rindex('/') + 1:]
+        if not os.path.isdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep):
+            os.mkdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep)
+        path = self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep
+        if not (os.path.isfile(path + nombreImagen)):
+            #esto se llama sin Thread porque se maneja mas arriba esto para poder sincronizar con Gui
+            self.descargar_imagen_thread(web_image, path + nombreImagen)
+        return path + nombreImagen
+
     def descargar_imagen(self, web_image, nombre_imagen):
         threading.Thread(target=self.descargar_imagen_thread, args=[web_image, nombre_imagen]).start()
 
+
+    def get_cover_complete_path(self):
+        return self._get_cover_complete_path_no_thread()
 
     def descargar_imagen_thread(self, web_image, nombre_imagen):
         if nombre_imagen not in self.lista_covers_downloading:
@@ -90,7 +106,7 @@ class Comicbooks_Info(Entity_manager):
             self.index_lista_covers += 1
 
         print(self.index_lista_covers)
-        # return self._get_cover_complete_path()
+        return self._get_cover_complete_path()
 
     def get_prev_cover_complete_path(self):
         if self.index_lista_covers > 0:
