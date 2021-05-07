@@ -10,7 +10,7 @@ from gi.repository import Gdk
 import Entidades.Init
 from Entidades.Agrupado_Entidades import Comicbook, Publisher, Volume, Comicbook_Info, Arcos_Argumentales_Comics_Reference, Comicbook_Detail
 from Entidades.Agrupado_Entidades import Setup
-from Entidades.Entitiy_managers import Volumens
+from Entidades.Entitiy_managers import Comicbooks_Info, Volumens
 
 from Gui_gtk.PublisherGuiGtk import Publisher_lookup_gtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
@@ -27,36 +27,39 @@ from PIL import ImageFont
 
 
 
-class Volumens_gtk():
+class Comicbooks_info_gtk():
 
-    def __init__(self, session=None):
+    def __init__(self, session=None, volumen_id=None):
         ImageFile.LOAD_TRUNCATED_IMAGES = True
         if session is None:
             self.session = Entidades.Init.Session()
         else:
             self.session = session
+        self.volumens_manager = Volumens(session)
+
+        #Nos posicionamos en algun volumen ya se el pasado por parametro si existo o el primero
+        if volumen_id is None:
+            self.volumens_manager.getFirst()
+        else:
+            volumen = self.volumens_manager.get(volumen_id)
+            if volumen is None:
+                self.volumens_manager.getFirst()
 
         self.load_setup()
 
-        self.handlers = {'activar_busqueda': self.activar_busqueda,
-                         'entrada_teclado_barra_busqueda': self.entrada_teclado_barra_busqueda,
-                         'evento_busqueda': self.evento_busqueda,
-                         'seleccion_volumen': self.seleccion_volumen,
-                         'doble_click': self.doble_click}
+        self.handlers = {}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Glade_files/Volumens.glade")
+        self.builder.add_from_file("../Glade_files/Comicbooks_info.glade")
         self.builder.connect_signals(self.handlers)
-        self.window = self.builder.get_object("Volumens")
-        self.window.set_title("Series")
+        self.window = self.builder.get_object("Comicbooks_info")
+        self.window.set_title("Comicbooks info")
         self.app_icon = Pixbuf.new_from_file_at_size('../iconos/iconoBabelComics-buuf.png', 32, 32)
         self.window.set_icon_from_file('../iconos/iconoBabelComics-buuf.png')
         self.window.set_default_icon_list([self.app_icon])
-        self.iconview_volumens = self.builder.get_object('iconview_volumens')
-        self.barra_busqueda = self.builder.get_object('barra_busqueda')
-        self.volumen_search_entry = self.builder.get_object('volumen_search_entry')
+        self.iconview_volumens = self.builder.get_object('iconview_Comicbooks_info')
         self.thread_creacion_thumnails = None
         self.lista_comics_esperando_por_thumnail=[]
         self.updating_gui = False
@@ -68,7 +71,7 @@ class Volumens_gtk():
         self.limit = self.session.query(Setup).first().cantidadComicsPorPagina
         self.offset = 0
         self.query = None
-        self.manager = Volumens(session)
+        self.manager = Comicbooks_Info(session)
         self.dictionary = {}
         self.cantidad_thumnails_pendiente = 0
         #self.search_change(None)
@@ -82,7 +85,7 @@ class Volumens_gtk():
         self.iconview_volumens.set_spacing(30)
 
 
-        self.load_volumens()
+        self.load_comicbooks_info()
         screen = Gdk.Screen.get_default()
         self.window.set_default_size(screen.width(), self.window.get_size()[1])
 
@@ -106,7 +109,6 @@ class Volumens_gtk():
         return pix
 
     def create_grey_tumnails(self, lista):
-
         img = Image.new("RGB", (self.ancho_thumnail, int(self.ancho_thumnail*1.3)), (150, 150, 150))
         for i in range(0, len(lista)):
             img_aux = img.copy()
@@ -114,8 +116,8 @@ class Volumens_gtk():
             d1.text(((self.ancho_thumnail/2)-20, self.ancho_thumnail/2), str(i),  fill=(255, 255, 255))
             d1.polygon([(0, 0), (self.ancho_thumnail, 0), (self.ancho_thumnail, self.ancho_thumnail*2), (0, self.ancho_thumnail*2)], outline=(0, 0, 0))
             gdkpixbuff_thumnail = self.image2pixbuf(img_aux)
-            #self.dictionary[str(i)] = ''
-            GLib.idle_add(self.update_progess2, gdkpixbuff_thumnail, lista[i].nombre, lista[i].id_volume)
+            print(lista[i].titulo, lista[i].id_volume)
+            GLib.idle_add(self.update_progess2, gdkpixbuff_thumnail, lista[i].titulo, lista[i].id_comicbook_info)
 
     def update_progess2(self, gdkpixbuff_thumnail, archivo_nombre, id_volume):
         self.liststore.append([gdkpixbuff_thumnail, archivo_nombre, id_volume])
@@ -125,15 +127,18 @@ class Volumens_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + "coverIssuesThumbnails" + os.path.sep
         self.ancho_thumnail = self.session.query(Setup).first().anchoThumnail
 
-    def load_volumens(self):
+    def load_comicbooks_info(self):
         self.liststore.clear()
+        self.manager.set_filtro(Comicbook_Info.id_volume == self.volumens_manager.entidad.id_volume)
+        print(self.volumens_manager.entidad.id_volume)
         lista = self.manager.getList()
+        print(lista)
         #calcular las cantidades
-        self.manager.get_cantidad_comics_asociados_a_volumenes()
-
+        # self.manager.get_cantidad_comics_asociados_a_volumenes()
+        #
         self.create_grey_tumnails(lista)
-        t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
-        t.start()
+        # t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
+        # t.start()
 
     def load_volumens_second_part(self, lista):
 
@@ -186,7 +191,7 @@ class Volumens_gtk():
 
 if __name__ == "__main__":
     GLib.set_prgname('Babelcomics')
-    bc = Volumens_gtk()
+    bc = Comicbooks_info_gtk(volumen_id=91273)
     bc.window.connect("destroy", Gtk.main_quit)
     bc.window.show()
     bc.window.maximize()
