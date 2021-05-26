@@ -3,6 +3,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
 
 from Entidades.Agrupado_Entidades import Volume, Comicbook_Info_Cover_Url, Setup, Comicbook_Info
+from Entidades.Entitiy_managers import Comicbooks_Info
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 import urllib.request
@@ -266,9 +267,6 @@ class Comic_vine_cataloger_gtk():
         if iter:
             comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
             self.index_lista_covers = 0
-            print("------------------------")
-            print(comicbook_info_de_volumen.id_comicbook_info)
-
             self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
             self.boton_cantidad_covers.set_label("1/{}".format(str(len(self.lista_covers))))
             self.load_cover_comic_info(comicbook_info_de_volumen)
@@ -276,24 +274,15 @@ class Comic_vine_cataloger_gtk():
     def load_cover_comic_info(self, comicbook_info_de_volumen):
         self.boton_cantidad_covers.set_label("{}/{}".format(self.index_lista_covers + 1, len(self.lista_covers)))
         if not self.gui_updating:
-            comicbook_info_cover_url = self.lista_covers[self.index_lista_covers]
-            webImage = comicbook_info_cover_url.thumb_url
-            nombreImagen = webImage[webImage.rindex('/') + 1:]
-            print(webImage)
-            print(nombreImagen)
-            path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
-            if not (os.path.isfile(path + nombreImagen)):
-                print('no existe')
-                print(nombreImagen)
-                self.descargar_imagen(webImage, path, nombreImagen)
-                # jpg = urllib.request.urlopen(webImage)
-                # jpgImage = jpg.read()
-                # fImage = open(path + nombreImagen, 'wb')
-                # fImage.write(jpgImage)
-                # fImage.close()
+            comicbook_info_manager = Comicbooks_Info(session=self.session)
+            comicbook_info_manager.get(comicbook_info_de_volumen.id_comicbook_info)
+            #inicio el spinner y despues veo si existe o no el archivo, sino existe el metodo
+            #get_cover_complete_path lo baja.
+            comicbook_info_manager.get_cover_complete_path()
             self.comicBookVine = comicbook_info_de_volumen
-            self.comicBookVine.path = path + nombreImagen
+            self.comicBookVine.path = comicbook_info_manager.get_cover_complete_path()
             self._load_comic_vine(self.comicBookVine)
+
 
     def descargar_imagen(self, web_image, path, nombre_imagen):
         threading.Thread(target=self.descargar_imagen_thread, args=[web_image, path, nombre_imagen]).start()

@@ -5,13 +5,11 @@ from gi.repository import Gtk, GdkPixbuf
 from gi.repository import Gdk
 import Entidades.Init
 from Entidades.Entitiy_managers import Volumens
-import Entidades.Init
 from Gui_gtk.Volumen_lookup_gtk import Volume_lookup_gtk
 from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Gui_gtk.Comicbooks_info_gtk import Comicbooks_info_gtk
-from html2text import html2text
 
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -232,7 +230,7 @@ class VolumeGuiGtk():
             self.list_label_nombre_editorial[self.index].set_text(volumen.publisher_name)
             self.list_entry_anio_inicio[self.index].set_text(str(volumen.anio_inicio))
             self.list_entry_cantidad_numeros[self.index].set_text(str(volumen.cantidad_numeros))
-            self.list_resumen_volumen[self.index].set_text(html2text(volumen.descripcion))
+            self.list_resumen_volumen[self.index].set_text(volumen.descripcion)
             if volumen.cantidad_numeros>0:
                 self.list_progressbar_procentaje_completado[self.index].set_fraction(self.volumens_manager.get_volume_status()/volumen.cantidad_numeros)
             else:
@@ -307,12 +305,11 @@ class VolumeGuiGtk():
         print(self.volumens_manager.entidad)
         self.loadVolume(self.volumens_manager.entidad)
 
-if __name__ == '__main__':
-
-    if __name__ == "__main__":
-        pub = VolumeGuiGtk()
-        pub.window.show_all()
-        pub.set_volumen_id(92557)
-        pub.window.connect("destroy", Gtk.main_quit)
-        Gtk.main()
+if __name__ == "__main__":
+    print("Hola")
+    pub = VolumeGuiGtk()
+    pub.window.show_all()
+    pub.set_volumen_id(92557)
+    pub.window.connect("destroy", Gtk.main_quit)
+    Gtk.main()
 

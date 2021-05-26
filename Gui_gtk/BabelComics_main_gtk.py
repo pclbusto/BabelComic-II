@@ -26,7 +26,7 @@ import os.path
 import math
 from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
-import threading
+import threading, subprocess
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
 
@@ -71,7 +71,8 @@ class BabelComics_main_gtk():
                          'quitar_de_papelera': self.quitar_de_papelera,
                          'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo,
                          'click_boton_abrir_menu_panel_izquierdo': self.click_boton_abrir_menu_panel_izquierdo,
-                         'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo}
+                         'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo,
+                         'click_abrir_nautilus': self.click_abrir_nautilus}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -135,6 +136,15 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         self.update_panel_filtros()
         # self.update_imagen_papelera()
+
+    def click_abrir_nautilus(self, widget):
+        comic = self.get_id_comics_from_selection()[0]
+        # comic_manager = Comicbooks(self.session)
+        # comic_manager.get(comic_id)
+        print(comic.path[:comic.path.rfind('/')])
+        subprocess.Popen(['xdg-open', comic.path[:comic.path.rfind('/')]])
+        self.popovermenu.popdown()
+        self.menu_comic.popdown()
 
     def load_setup(self):
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \

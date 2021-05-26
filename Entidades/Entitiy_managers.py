@@ -39,6 +39,7 @@ class Comicbooks_Info(Entity_manager):
         self.lista_covers = []
         self.lista_arcs = []
         self.lock = threading.Lock()
+        self.lock_principal = threading.Lock()
         self.lista_covers_downloading = []
         self.callback = None
 
@@ -48,7 +49,6 @@ class Comicbooks_Info(Entity_manager):
         self.index_lista_covers = 0
         self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
             Comicbook_Info_Cover_Url.id_comicbook_info == self.entidad.id_comicbook_info).all()
-
     def load_arcs_list(self):
         self.index_lista_arcs = 0
         self.lista_arcs = self.session.query(Arcos_Argumentales_Comics_Reference).filter(
@@ -60,7 +60,10 @@ class Comicbooks_Info(Entity_manager):
         #comicbook_info_cover_url = self.lista_covers[0]
         web_image = comicbook_info_cover_url.thumb_url
         nombreImagen = web_image[web_image.rindex('/') + 1:]
-        path = self.setup.directorioBase + os.sep + "images" + os.sep + "searchCache" + os.sep
+        carpeta_volumen_covers = self.entidad.nombre_volumen.replace('/', '-').replace('\\', '-')
+        if not os.path.isdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers) + os.sep):
+            os.mkdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers) + os.sep)
+        path = self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers) + os.sep
         if not (os.path.isfile(path + nombreImagen)):
             self.descargar_imagen(web_image, path + nombreImagen)
         return path + nombreImagen
@@ -70,9 +73,10 @@ class Comicbooks_Info(Entity_manager):
         #comicbook_info_cover_url = self.lista_covers[0]
         web_image = comicbook_info_cover_url.thumb_url
         nombreImagen = web_image[web_image.rindex('/') + 1:]
-        if not os.path.isdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep):
-            os.mkdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep)
-        path = self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, self.entidad.nombre_volumen)+os.sep
+        carpeta_volumen_covers = self.entidad.nombre_volumen.replace('/', '-').replace('\\', '-')
+        if not os.path.isdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers)+os.sep):
+            os.mkdir(self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers)+os.sep)
+        path = self.setup.directorioBase + os.sep + "images" + os.sep + "issues_covers" + os.sep + "{}-{}".format(self.entidad.id_volume, carpeta_volumen_covers)+os.sep
         if not (os.path.isfile(path + nombreImagen)):
             #esto se llama sin Thread porque se maneja mas arriba esto para poder sincronizar con Gui
             self.descargar_imagen_thread(web_image, path + nombreImagen)
@@ -82,10 +86,29 @@ class Comicbooks_Info(Entity_manager):
         threading.Thread(target=self.descargar_imagen_thread, args=[web_image, nombre_imagen]).start()
 
 
+    '''
+    Descarga todas las imagenes y retorna la primera
+    '''
+    def get_first_cover_complete_path(self):
+        #esta imagen la recuperamos sin hilo para estar seguros que bajamos la primera o si ya esta retornarla
+        path = self._get_cover_complete_path_no_thread()
+        #esto deberia de crear n hilos pero retornar a la ventana
+        for index in range(1, len(self.lista_covers)):
+            self.index_lista_covers = index
+            self._get_cover_complete_path(None)
+        return path
+
     def get_cover_complete_path(self):
-        return self._get_cover_complete_path_no_thread()
+        #esta imagen la recuperamos sin hilo para estar seguros que bajamos la primera o si ya esta retornarla
+        path = self._get_cover_complete_path_no_thread()
+        #esto deberia de crear n hilos pero retornar a la ventana
+        for index in range(1, len(self.lista_covers)):
+            self.index_lista_covers = index
+            self._get_cover_complete_path(None)
+        return path
 
     def descargar_imagen_thread(self, web_image, nombre_imagen):
+        self.lock_principal.acquire(True)
         if nombre_imagen not in self.lista_covers_downloading:
             self.lock.acquire(True)
             self.lista_covers_downloading.append(nombre_imagen)
@@ -100,18 +123,18 @@ class Comicbooks_Info(Entity_manager):
             self.lock.acquire(True)
             self.lista_covers_downloading.remove(nombre_imagen)
             self.lock.release()
+        self.lock_principal.release()
 
     def get_next_cover_complete_path(self):
         if self.index_lista_covers < len(self.lista_covers)-1:
             self.index_lista_covers += 1
-
         print(self.index_lista_covers)
-        return self._get_cover_complete_path()
+        return self._get_cover_complete_path(None)
 
     def get_prev_cover_complete_path(self):
         if self.index_lista_covers > 0:
             self.index_lista_covers -= 1
-        return self._get_cover_complete_path()
+        return self._get_cover_complete_path(None)
 
     def set_volume(self, id_volume):
         self.id_volume = id_volume
@@ -281,7 +304,7 @@ class Comicbooks_Detail(Entity_manager):
         self.lista_opciones = {'Id': Comicbook_Detail.comicbook_id}
 
         self.status = 1
-        self.entidad=Comicbook_Detail()
+        self.entidad = Comicbook_Detail()
         self.filtro = None
         self.set_order(Comicbook_Detail.comicbook_id)
         self.direccion = 0
@@ -319,7 +342,7 @@ class Commicbooks_detail(Entity_manager):
         self.comicbook_id = comicbookid
 
     def set_page_type(self, page_name, tipo):
-        self.entidad = self.session.query(Comicbook_Detail).filter(Comicbook_Detail.nombre_pagina == page_name).one()
+        self.entidad = self.session.query(Comicbook_Detail).filter(Comicbook_Detail.nombre_pagina == page_name, Comicbook_Detail.comicbook_id == self.comicbook_id).one()
         self.entidad.tipoPagina = tipo
         self.save()
 

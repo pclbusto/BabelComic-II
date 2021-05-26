@@ -60,7 +60,6 @@ class Entity_manager:
         self.new_record()
 
     def get(self, id_entidad):
-        print("------------------------")
         if not self.hay_cambios_pendientes():
             # Vamos a calcular el offset para poder navegar de forma correcta
             self.entidad = self.session.query(self.clase).get(id_entidad)
@@ -92,8 +91,8 @@ class Entity_manager:
     def set_filtro(self, filtro):
         self.filtro = filtro
 
-        print('=================')
-        print(self.filtro)
+        # print('=================')
+        # print(self.filtro)
 
     def getList(self):
         consulta = self._get_consulta()
@@ -111,7 +110,7 @@ class Entity_manager:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
-        print(consulta)
+        # print(consulta)
         return consulta
 
     def getNext(self):

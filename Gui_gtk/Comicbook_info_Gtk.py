@@ -41,12 +41,12 @@ class Comicbook_Info_Gtk():
 
         self.window.set_icon_from_file('../iconos/BabelComic.png')
         self.label_nombre_volumen = self.builder.get_object("label_nombre_volumen")
-        self.entry_orden= self.builder.get_object("entry_orden")
-        self.entry_numero= self.builder.get_object("entry_numero")
-        self.entry_titulo= self.builder.get_object("entry_titulo")
+        self.entry_orden = self.builder.get_object("entry_orden")
+        self.entry_numero = self.builder.get_object("entry_numero")
+        self.entry_titulo = self.builder.get_object("entry_titulo")
         self.label_fecha_tapa = self.builder.get_object("label_fecha_tapa")
-        self.entry_api_url = self.builder.get_object("entry_api_url")
-        self.entry_url = self.builder.get_object("entry_url")
+        self.btn_link_api_url = self.builder.get_object("btn_link_api_url")
+        self.btn_link_url = self.builder.get_object("btn_link_url")
         self.scale_raiting = self.builder.get_object("scale_raiting")
         self.text_resumen = self.builder.get_object("text_resumen")
         self.textbuffer = self.text_resumen.get_buffer()
@@ -168,8 +168,8 @@ class Comicbook_Info_Gtk():
             else:
                 self.label_fecha_tapa.set_text(
                     datetime.date.fromordinal(1).strftime("%d/%m/%Y"))
-            self.entry_api_url.set_text(comicbook_info.api_detail_url)
-            self.entry_url.set_text(comicbook_info.url)
+            self.btn_link_api_url.set_uri(comicbook_info.api_detail_url)
+            self.btn_link_url.set_uri(comicbook_info.url)
             self.scale_raiting.get_adjustment().set_value(comicbook_info.rating)
             self.textbuffer.set_text(comicbook_info.resumen)
             print("self.comicbooks_manager.index_lista_covers {}".format(self.comicbooks_manager.index_lista_covers))

@@ -72,8 +72,6 @@ class Comicbook_Detail_Gtk():
     def get_first(self, widget):
         comicbook = self.comicbooks_manager.getFirst()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
-        print('------------------------------------------------')
-        print(comicbook)
         self.set_comicbook(comicbook.id_comicbook)
 
     def get_next(self, widget):
