@@ -26,13 +26,13 @@ class Comic_vine_cataloger_gtk():
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
         self.handlers = {'click_boton_lookup_serie':self.click_boton_lookup_serie,
-                         'click_boton_calcular_numeracion':self.click_boton_calcular_numeracion,
                          'tree_view_archivos_para_catalogar_selection_change':self.tree_view_archivos_para_catalogar_selection_change,
                          'change_entry_id_volumen_catalogar':self.change_entry_id_volumen_catalogar,
-                         'treeview_issues_in_volumen_selection_change':self.treeview_issues_in_volumen_selection_change,
+                         'treeview_issues_in_volumen_selection_change': self.treeview_issues_in_volumen_selection_change,
                          'click_boton_traer_solo_para_catalogar': self.click_boton_traer_solo_para_catalogar,
                          'boton_catalogar_grupo': self.boton_catalogar_grupo,
                          'text_edited': self.text_edited,
+                         'calcular_numeracion': self.calcular_numeracion,
                          'borrar_linea': self.borrar_linea,
                          'siguiente_cover': self.siguiente_cover,
                          'anterior_cover':self.anterior_cover,
@@ -63,6 +63,7 @@ class Comic_vine_cataloger_gtk():
         self.boton_cantidad_covers = self.builder.get_object("boton_cantidad_covers")
         self.box_cover_vine = self.builder.get_object("box_cover_vine")
         self.spinner = Gtk.Spinner()
+        self.comicbooks_info_manager = Comicbooks_Info()
         self.lista_covers = []
         self.index_lista_covers = 0
         self.listaAMostrar = []
@@ -71,12 +72,13 @@ class Comic_vine_cataloger_gtk():
         self.listore_comics_para_catalogar.clear()
         # contine la lista de comics que vamos a catalogar
         self.comicbooks = comicbooks
-        for index,comic in enumerate(comicbooks):
+        for index, comic in enumerate(comicbooks):
             self.listore_comics_para_catalogar.append(['', comic.path, index, 0, 0])
 
         self._load_comic(comicbooks[0])
         self.entry_expresion_regular_numeracion.set_text(self.setup.expresionRegularNumero)
         self.entry_id_volumen_catalogar.set_text(self.setup.ultimoVolumeIdUtilizado)
+
         self.gui_updating = False
         screen = Gdk.Screen.get_default()
         self.window.set_default_size(screen.width(), self.window.get_size()[1])
@@ -87,14 +89,12 @@ class Comic_vine_cataloger_gtk():
         serie.window.show()
 
     def siguiente_cover(self, widget):
-        if len(self.lista_covers)-1 > self.index_lista_covers:
-            self.index_lista_covers += 1
-        self.load_cover_comic_info(self.comicBookVine)
+        self.comicbooks_info_manager.get_next_cover_complete_path()
+        self.load_cover_comic_info()
 
     def anterior_cover(self, widget):
-        if self.index_lista_covers > 0:
-            self.index_lista_covers -= 1
-        self.load_cover_comic_info(self.comicBookVine)
+        self.comicbooks_info_manager.get_prev_cover_complete_path()
+        self.load_cover_comic_info()
 
     def borrar_linea(self,widget, event):
         if event.keyval == Gdk.KEY_Delete:
@@ -114,7 +114,7 @@ class Comic_vine_cataloger_gtk():
     def return_lookup(self,id_volume):
         if id_volume != '':
             self.entry_id_volumen_catalogar.set_text(str(id_volume))
-        self.click_boton_calcular_numeracion(None)
+        self.calcular_numeracion(None)
 
     def tree_view_archivos_para_catalogar_selection_change(self,selection):
         (model, iter) = selection.get_selected()
@@ -135,7 +135,7 @@ class Comic_vine_cataloger_gtk():
 
         return True
 
-    def click_boton_calcular_numeracion (self, widget):
+    def calcular_numeracion(self, widget):
 
         if self.entry_expresion_regular_numeracion.get_text() != '':
             expresion = self.entry_expresion_regular_numeracion.get_text()
@@ -191,19 +191,20 @@ class Comic_vine_cataloger_gtk():
         self.image_cover_comic_local.set_from_pixbuf(pixbuf)
         self.comicbook = comic
 
-    def _load_comic_vine(self, comic):
+    def _load_comic_vine(self):
 
-        self.entry_serie_vine.set_text(comic.nombre_volumen)
-        if comic.fecha_tapa==0:
+        self.entry_serie_vine.set_text(self.comicbooks_info_manager.entidad.nombre_volumen)
+        if self.comicbooks_info_manager.entidad.fecha_tapa == 0:
             dt = datetime.fromordinal(1)
         else:
-            dt = datetime.fromordinal(comic.fecha_tapa)
-        self.entry_fecha_vine.set_text("{}/{}/{}".format(dt.year,dt.month,dt.day))
-        self.entry_titulo_vine.set_text(comic.titulo)
-        self.entry_numero_vine.set_text(comic.numero)
+            dt = datetime.fromordinal(self.comicbooks_info_manager.entidad.fecha_tapa)
+        self.entry_fecha_vine.set_text("{}/{}/{}".format(dt.year, dt.month, dt.day))
+        self.entry_titulo_vine.set_text(self.comicbooks_info_manager.entidad.titulo)
+        self.entry_numero_vine.set_text(self.comicbooks_info_manager.entidad.numero)
         # comic.openCbFile()
-        nombreThumnail = comic.path
-        print("PATH COVER {}".format(nombreThumnail))
+
+        nombreThumnail = self.comicbooks_info_manager.get_cover_complete_path()
+
         if (os.path.isfile(nombreThumnail)):
             self.mostrar_cover(nombreThumnail)
         else:
@@ -265,23 +266,19 @@ class Comic_vine_cataloger_gtk():
     def treeview_issues_in_volumen_selection_change(self, selection):
         (model, iter) = selection.get_selected()
         if iter:
-            comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
-            self.index_lista_covers = 0
-            self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
-            self.boton_cantidad_covers.set_label("1/{}".format(str(len(self.lista_covers))))
-            self.load_cover_comic_info(comicbook_info_de_volumen)
+            self.comicbooks_info_manager.get(model[iter][2])
+            # comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
+            # self.index_lista_covers = 0
+            # self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
+            # self.boton_cantidad_covers.set_label("1/{}".format(str(len(self.lista_covers))))
+            self.load_cover_comic_info()
 
-    def load_cover_comic_info(self, comicbook_info_de_volumen):
-        self.boton_cantidad_covers.set_label("{}/{}".format(self.index_lista_covers + 1, len(self.lista_covers)))
+    def load_cover_comic_info(self):
+        print("DASDASDSADAS: {}".format(self.comicbooks_info_manager.index_lista_covers))
+        self.boton_cantidad_covers.set_label("{}/{}".format(self.comicbooks_info_manager.index_lista_covers + 1, len(self.comicbooks_info_manager.lista_covers)))
+
         if not self.gui_updating:
-            comicbook_info_manager = Comicbooks_Info(session=self.session)
-            comicbook_info_manager.get(comicbook_info_de_volumen.id_comicbook_info)
-            #inicio el spinner y despues veo si existe o no el archivo, sino existe el metodo
-            #get_cover_complete_path lo baja.
-            comicbook_info_manager.get_cover_complete_path()
-            self.comicBookVine = comicbook_info_de_volumen
-            self.comicBookVine.path = comicbook_info_manager.get_cover_complete_path()
-            self._load_comic_vine(self.comicBookVine)
+            self._load_comic_vine()
 
 
     def descargar_imagen(self, web_image, path, nombre_imagen):

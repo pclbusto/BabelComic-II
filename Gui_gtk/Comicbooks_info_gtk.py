@@ -123,8 +123,8 @@ class Comicbooks_info_gtk():
             #por bug o funciona asi pero el click en iconview trae las coordenadas sin tener en cuenta que es una scroll
             #como resultado si no ajustamos se correr el popup
             rect.y = int(event.y-self.iconview_Comicbooks_info.get_vadjustment().get_value())
-
-            p = self.iconview_Comicbooks_info.get_path_at_pos(rect.x, rect.y)
+            #usamos las coordenadas del evento para saber donde estamos detro de la scroll.
+            p = self.iconview_Comicbooks_info.get_path_at_pos(event.x, event.y)
             if p is not None:
                 self.iconview_Comicbooks_info.select_path(p)
 
@@ -194,26 +194,6 @@ class Comicbooks_info_gtk():
         #se hace local el manager para que casa hilo pueda buscar la info sin compartir el manager de comicbooks_info
         self.comicbooks_info_manager[str(index)].get(comicbook_info.id_comicbook_info)
         image = Image.open(self.comicbooks_info_manager[str(index)].get_first_cover_complete_path()).convert("RGB")
-        # size = (self.ancho_thumnail, int(image.size[1] * self.ancho_thumnail / image.size[0]))
-        # image.thumbnail(size, 3, 3)
-        # img_aux = image.copy()
-        # d1 = ImageDraw.Draw(img_aux)
-        # d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
-        # d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
-        # new_image = Image.new(mode='RGB', size=(img_aux.size[0], img_aux.size[1]+50))
-        # d1 = ImageDraw.Draw(new_image)
-        # #pregunto por el ancho para saber si puedo poner o no todo el contenido
-        # if size[0] > 120:
-        #     font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
-        #     d1.text((10, 10), "{}/{}".format(10, 100), font=font,  fill=(200, 200, 200))
-        #     font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 18)
-        #     d1.text((size[0]-35, 10), "{}/{}".format(1, len(self.comicbooks_info_manager[str(index)].lista_covers)), font=font, fill=(200, 200, 200))
-        #
-        # # else:
-        # #    d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
-        #
-        # new_image.paste(img_aux, (0, 50))
-        # gdkpixbuff_thumnail = self.image2pixbuf(new_image)
         GLib.idle_add(self.update_cover,  index, image)
 
 

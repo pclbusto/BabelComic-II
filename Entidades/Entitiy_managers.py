@@ -49,6 +49,7 @@ class Comicbooks_Info(Entity_manager):
         self.index_lista_covers = 0
         self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(
             Comicbook_Info_Cover_Url.id_comicbook_info == self.entidad.id_comicbook_info).all()
+
     def load_arcs_list(self):
         self.index_lista_arcs = 0
         self.lista_arcs = self.session.query(Arcos_Argumentales_Comics_Reference).filter(
@@ -96,15 +97,12 @@ class Comicbooks_Info(Entity_manager):
         for index in range(1, len(self.lista_covers)):
             self.index_lista_covers = index
             self._get_cover_complete_path(None)
+        self.index_lista_covers = 0
         return path
 
     def get_cover_complete_path(self):
         #esta imagen la recuperamos sin hilo para estar seguros que bajamos la primera o si ya esta retornarla
         path = self._get_cover_complete_path_no_thread()
-        #esto deberia de crear n hilos pero retornar a la ventana
-        for index in range(1, len(self.lista_covers)):
-            self.index_lista_covers = index
-            self._get_cover_complete_path(None)
         return path
 
     def descargar_imagen_thread(self, web_image, nombre_imagen):

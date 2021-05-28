@@ -160,6 +160,8 @@
       <object class="GtkStack" id="stack">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
