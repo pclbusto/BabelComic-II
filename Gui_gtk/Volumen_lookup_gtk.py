@@ -14,9 +14,11 @@ class Volume_lookup_gtk():
         else:
             self.session = session
 
-        self.handlers = {'search_volumen': self.search_volumen, 'search_editorial': self.search_editorial,
+        self.handlers = {'search_volumen': self.search_volumen,
+                         'search_editorial': self.search_editorial,
                          'click_lookup_editorial': self.click_lookup_editorial,
-                         'seleccion_volumen':self.seleccion_volumen, 'click_boton_aceptar': self.click_boton_aceptar,
+                         'seleccion_volumen': self.seleccion_volumen,
+                         'click_boton_aceptar': self.click_boton_aceptar,
                          'gtk_tree_view_volumen_double_click': self.gtk_tree_view_volumen_double_click,
                          'combobox_change':self.combobox_change,
                          'foco_busquedas': self.foco_busquedas}
@@ -34,6 +36,7 @@ class Volume_lookup_gtk():
         self.search_entry_volumen = self.builder.get_object('search_entry_volumen')
         self.search_entry_editorial = self.builder.get_object('search_entry_editorial')
         self.volumens_manager = Volumens(session=self.session)
+        self.volumens_manager.set_order(Volume.nombre)
         self.combobox_orden = self.builder.get_object("combobox_orden")
         self.liststore_combobox = self.builder.get_object("liststore_combobox")
         self._load_data()
@@ -46,7 +49,7 @@ class Volume_lookup_gtk():
     def foco_busquedas(self, widget):
         print("foco ganado")
 
-    def combobox_change(self,widget):
+    def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
             self._load_data()
@@ -58,15 +61,14 @@ class Volume_lookup_gtk():
     def search_volumen(self, widget):
         self.gtk_tree_view_volumen.get_selection().unselect_all()
         self.gtk_tree_view_volumen.get_selection().set_mode(0)
-        if self.search_entry_volumen.get_text() == '' and not self.publisher:
-            self.volumens = self.session.query(Volume).all()
-        elif self.search_entry_volumen.get_text()=='' and self.publisher:
-            self.volumens = self.session.query(Volume).filter(Volume.id_publisher == self.publisher.id_publisher)
-        elif self.search_entry_volumen.get_text() != '' and not self.publisher:
-            self.volumens = self.session.query(Volume).filter(Volume.nombre.like('%{}%'.format(self.search_entry_volumen.get_text())))
-        else:
-            self.volumens = self.session.query(Volume).filter(Volume.nombre.like(
-                '%{}%'.format(self.search_entry_volumen.get_text())),Volume.publisherId==self.publisher.id_publisher)
+        self.volumens_manager.clear_filtro()
+        if self.search_entry_volumen.get_text() == '':
+            self.volumens_manager.clear_filtro()
+        if self.publisher:
+            self.volumens_manager.set_filtro(Volume.id_publisher == self.publisher.id_publisher)
+        if self.search_entry_volumen.get_text() != '':
+            self.volumens_manager.set_filtro(Volume.nombre.like('%{}%'.format(self.search_entry_volumen.get_text())))
+        self.volumens = self.volumens_manager.getList()
         self._load_data()
         self.gtk_tree_view_volumen.get_selection().set_mode(1)
 
@@ -108,7 +110,7 @@ class Volume_lookup_gtk():
 
 
     def return_lookup_editorial(self,id_editorial):
-        if id_editorial!='':
+        if id_editorial != '':
             self.search_entry_editorial.set_text(str(id_editorial))
 
 

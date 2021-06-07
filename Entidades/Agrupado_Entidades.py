@@ -535,7 +535,7 @@ class Volume(Entidades.Init.Base):
                                                                                                           '/') + 1:]
 
             if not (os.path.isfile(fullPath)):
-                print("BAJANDO COVEEEER")
+                print("BAJANDO COVEEEER: {}".format(self.image_url))
                 jpg = urllib.request.urlopen(self.image_url)
                 jpgImage = jpg.read()
                 fImage = open(fullPath, 'wb')

@@ -260,12 +260,14 @@ class ComicVineSearcher:
                 contador_intentos = 0
                 lista = self.lista_hilos_ejecucion.items()
                 for hilo in lista:
+                    print("HILO: {}".format(hilo))
                     index = hilo[0]
                     print("Relanzando hilo {}".format(index))
                     # lo mato con un timeout y luego lo
                     hilo[1].join(1)
                     hilo_nuevo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
                                                   args=[self.comicIds[index], volumen, index])
+                    hilo_nuevo.start()
             contador_intentos += 1
         print("TERMINAMOSSSSSSSSSSSSSSSSSSSSSs")
         if self.detener:

@@ -170,6 +170,7 @@ class Comicbooks_info_gtk():
         self.liststore.clear()
         comicbook_info_manager = Comicbooks_Info(self.session)
         comicbook_info_manager.set_filtro(Comicbook_Info.id_volume == self.volumens_manager.entidad.id_volume)
+        comicbook_info_manager.set_order(Comicbook_Info.orden)
         lista = comicbook_info_manager.getList()
         # print(lista)
 

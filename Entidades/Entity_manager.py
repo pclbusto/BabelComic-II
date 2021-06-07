@@ -33,6 +33,7 @@ class Entity_manager:
         self.lista_estados_mansajes={0:"OK",
                                      1:"Hay cambios pendientes",
                                      2:"Entidad Nula."}
+        self.consulta = self.session.query(self.clase)
 
     def get_mensaje(self, clave):
         return self.lista_estados_mansajes[clave]
@@ -89,22 +90,26 @@ class Entity_manager:
         self.direccion=direccion
 
     def set_filtro(self, filtro):
-        self.filtro = filtro
+        if self.consulta is None:
+            self.consulta = self.session.query(self.clase).filter(filtro)
+        else:
+            self.consulta = self.consulta.filter(filtro)
 
-        # print('=================')
-        # print(self.filtro)
+    def clear_filtro(self):
+        self.consulta = self.session.query(self.clase)
 
     def getList(self):
         consulta = self._get_consulta()
         return consulta.all()
 
     def get_by_id_externo(self, id_externo):
-        return self.session.query(self.clase).filter(self.id_externo==id_externo).first()
+        return self.session.query(self.clase).filter(self.id_externo == id_externo).first()
 
     def _get_consulta(self):
-        consulta = self.session.query(self.clase)
-        if self.filtro is not None:
-            consulta = consulta.filter(self.filtro)
+        # consulta = self.session.query(self.clase)
+        consulta = self.consulta
+        # if self.filtro is not None:
+        #     consulta = consulta.filter(self.filtro)
         if self.order is not None:
             if self.direccion == 0:
                 consulta = consulta.order_by(self.order)

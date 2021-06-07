@@ -262,7 +262,8 @@ class Volumens(Entity_manager):
 
     def get_cantidad_comics_asociados_a_volumenes(self):
         #join para saber a que coicbook_info pertenece y asi tener el volumen id
-        lista_cantidades = self.session.query(Volume.id_volume, Volume.cantidad_numeros, func.count(Comicbook.id_comicbook)).filter(Comicbook_Info.id_volume==Volume.id_volume).filter(Comicbook.id_comicbook_info==Comicbook_Info.id_comicbook_info).group_by(Volume.id_volume).all()
+        lista_cantidades = [Volume.id_volume, 0, 0]
+        lista_cantidades = self.session.query(Volume.id_volume, Volume.cantidad_numeros, func.count(Comicbook.id_comicbook)).filter(Comicbook_Info.id_volume == Volume.id_volume).filter(Comicbook.id_comicbook_info == Comicbook_Info.id_comicbook_info).group_by(Volume.id_volume).all()
         self.cantidades_por_volumen = {}
         for registro in lista_cantidades:
             self.cantidades_por_volumen[str(registro[0])] = (registro[1], registro[2])

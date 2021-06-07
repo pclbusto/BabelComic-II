@@ -42,7 +42,7 @@ class Volumens_gtk():
                          'entrada_teclado_barra_busqueda': self.entrada_teclado_barra_busqueda,
                          'evento_busqueda': self.evento_busqueda,
                          'seleccion_volumen': self.seleccion_volumen,
-                         'doble_click': self.doble_click}
+                         'clicks': self.clicks}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
@@ -80,13 +80,14 @@ class Volumens_gtk():
         self.iconview_volumens.set_item_padding(10)
         self.iconview_volumens.set_item_width(1)
         self.iconview_volumens.set_spacing(30)
+        self.grey_cover = Image.new("RGB", (self.ancho_thumnail, int(self.ancho_thumnail*1.3)), (150, 150, 150))
 
 
         self.load_volumens()
         screen = Gdk.Screen.get_default()
         self.window.set_default_size(screen.width(), self.window.get_size()[1])
 
-    def doble_click(self, widget, event):
+    def clicks(self, widget, event):
         print(event.get_click_count())
         if event.get_click_count().click_count == 2:
             selected_list = widget.get_selected_items()
@@ -107,9 +108,9 @@ class Volumens_gtk():
 
     def create_grey_tumnails(self, lista):
 
-        img = Image.new("RGB", (self.ancho_thumnail, int(self.ancho_thumnail*1.3)), (150, 150, 150))
+
         for i in range(0, len(lista)):
-            img_aux = img.copy()
+            img_aux = self.grey_cover.copy()
             d1 = ImageDraw.Draw(img_aux)
             d1.text(((self.ancho_thumnail/2)-20, self.ancho_thumnail/2), str(i),  fill=(255, 255, 255))
             d1.polygon([(0, 0), (self.ancho_thumnail, 0), (self.ancho_thumnail, self.ancho_thumnail*2), (0, self.ancho_thumnail*2)], outline=(0, 0, 0))
@@ -132,14 +133,12 @@ class Volumens_gtk():
         self.manager.get_cantidad_comics_asociados_a_volumenes()
 
         self.create_grey_tumnails(lista)
-        t = threading.Thread(target=self.load_volumens_second_part, args=(lista,))
-        t.start()
+        threading.Thread(target=self.load_volumens_second_part, args=(lista,)).start()
 
     def load_volumens_second_part(self, lista):
-
         for index, volumen in enumerate(lista):
-            t = threading.Thread(target=self.load_volumen_cover, args=(volumen, index,))
-            t.start()
+            threading.Thread(target=self.load_volumen_cover, args=(volumen, index,)).start()
+
 
 
     def seleccion_volumen(self, widget):
@@ -148,7 +147,11 @@ class Volumens_gtk():
             print("Nombre :", str(self.liststore[selected_list[0]][2]))
 
     def load_volumen_cover(self, volumen, index):
-        image = Image.open(volumen.getImagePath()).convert("RGB")
+        try:
+            image = Image.open(volumen.getImagePath()).convert("RGB")
+        except:
+            print("imagen de cover volumen {} {}".format(volumen.id_volume, volumen.getImagePath()))
+            return
         size = (self.ancho_thumnail, int(image.size[1] * self.ancho_thumnail / image.size[0]))
         image.thumbnail(size, 3, 3)
         img_aux = image.copy()
@@ -156,14 +159,16 @@ class Volumens_gtk():
         d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
         d1.rectangle([(0, 0), (size[0] - 1, size[1] - 1)], outline=(0, 0, 0), width=3)
         new_image = Image.new(mode='RGB', size=(img_aux.size[0], img_aux.size[1]+50))
+        # new_image = Image.new(mode='RGB', size=(image.size[0], image.size[1]+50))
         d1 = ImageDraw.Draw(new_image)
         font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
         if str(volumen.id_volume) in self.manager.cantidades_por_volumen.keys():
             d1.text((10, 20), "{}/{}".format(self.manager.cantidades_por_volumen[str(volumen.id_volume)][1], self.manager.cantidades_por_volumen[str(volumen.id_volume)][0]), font=font, fill=(200, 200, 200))
         else:
-           d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
+            d1.text((10, 20), "{}/{}".format(0, volumen.cantidad_numeros), font=font, fill=(200, 200, 200))
 
         new_image.paste(img_aux, (0, 50))
+        # new_image.paste(image, (0, 50))
         gdkpixbuff_thumnail = self.image2pixbuf(new_image)
         GLib.idle_add(self.update_cover, gdkpixbuff_thumnail, index)
 
