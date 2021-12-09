@@ -210,7 +210,7 @@ class Comicbooks_info_gtk():
         # pregunto por el ancho para saber si puedo poner o no todo el contenido
         if size[0] > 120:
             font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 26)
-        d1.text((10, 10), "{}/{}".format(10, 100), font=font, fill=(200, 200, 200))
+        d1.text((10, 10), "{}/{}".format(self.comicbooks_info_manager[str(index)].entidad.numero, self.volumens_manager.entidad.cantidad_numeros), font=font, fill=(200, 200, 200))
         font = ImageFont.truetype('/home/pedro/PycharmProjects/BabelComic-II/Extras/fonts/Comic Book.otf', 18)
         d1.text((size[0] - 35, 10), "{}/{}".format(self.comicbooks_info_manager[str(index)].index_lista_covers+1, len(self.comicbooks_info_manager[str(index)].lista_covers)),
                 font=font, fill=(200, 200, 200))

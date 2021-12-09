@@ -366,7 +366,7 @@
                     <property name="search-mode-enabled">True</property>
                     <property name="show-close-button">True</property>
                     <child>
-                      <!-- n-columns=3 n-rows=3 -->
+                      <!-- n-columns=2 n-rows=2 -->
                       <object class="GtkGrid" id="none_check">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -379,7 +379,7 @@
                             <property name="primary-icon-name">edit-find-symbolic</property>
                             <property name="primary-icon-activatable">False</property>
                             <property name="primary-icon-sensitive">False</property>
-                            <signal name="search-changed" handler="search_change" swapped="no"/>
+                            <signal name="key-press-event" handler="search_entry_change" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left-attach">0</property>
@@ -464,21 +464,6 @@
                             <property name="top-attach">1</property>
                             <property name="width">2</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                     </child>

@@ -36,7 +36,7 @@ class ScannerGtk():
         self.progerss_bar.set_fraction(self.manager.porcentajeCompletado / 100.0)
 
     def testScanning(self):
-        while (self.manager.scanerDir.isAlive()):
+        while (self.manager.scanerDir.is_alive()):
             print("PROCENTAJE COMPLETADO {}".format(self.manager.porcentajeCompletado/100.0))
             GLib.idle_add(self.actualizar_scroll)
         print("Finalizado")

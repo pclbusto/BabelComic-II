@@ -185,9 +185,14 @@ class Volumens_gtk():
             self.volumen_search_entry.set_text('')
             self.iconview_volumens.grab_focus()
 
-    def evento_busqueda(self, event):
+    def do_search(self):
         self.manager.set_filtro(Volume.nombre.like('%{}%'.format(self.volumen_search_entry.get_text())))
         self.load_volumens()
+
+    def evento_busqueda(self, widget, event):
+        if event.keyval == Gdk.KEY_Return:
+            self.do_search()
+
 
 if __name__ == "__main__":
     GLib.set_prgname('Babelcomics')

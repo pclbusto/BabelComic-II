@@ -72,7 +72,9 @@ class BabelComics_main_gtk():
                          'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo,
                          'click_boton_abrir_menu_panel_izquierdo': self.click_boton_abrir_menu_panel_izquierdo,
                          'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo,
-                         'click_abrir_nautilus': self.click_abrir_nautilus}
+                         'click_abrir_nautilus': self.click_abrir_nautilus,
+                         'search_entry_change': self.search_entry_change    
+                         }
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
         #self.cataloged_pix = Pixbuf.new_from_file_at_size('/home/pclbusto/PycharmProjects/BabelComic-II/iconos/Cataloged.png', 32, 32)
@@ -128,7 +130,7 @@ class BabelComics_main_gtk():
         self.manager = BabelComics_Manager.BabelComics_Manager()
 
         self.cantidad_thumnails_pendiente=0
-        self.search_change(None)
+        self.do_search()
 
         self.iconview.set_column_spacing(-1)
         self.iconview.set_item_padding(10)
@@ -136,6 +138,8 @@ class BabelComics_main_gtk():
         self.iconview.set_spacing(30)
         self.update_panel_filtros()
         # self.update_imagen_papelera()
+
+
 
     def click_abrir_nautilus(self, widget):
         comic = self.get_id_comics_from_selection()[0]
@@ -227,7 +231,7 @@ class BabelComics_main_gtk():
         else:
             self.list_navegacion[args][1] = 1
 
-        self.search_change(None)
+        self.do_search()
 
     def click_next_view(self, widget):
         self.manager.next_seccion()
@@ -314,7 +318,14 @@ class BabelComics_main_gtk():
         self.manager.set_filtro(self.search_entry_filtro_general.get_text())
         self.update_panel_filtros()
 
+    def search_entry_change(self, widget, event):
+        if event.keyval == Gdk.KEY_Return:
+            self.do_search()
+
     def search_change(self, widget):
+        self.do_search()
+
+    def do_search(self):
 
         self.menu_comic = self.builder.get_object("menu_comic")
         self.filtro = self.search_entry_filtro_comics.get_text()

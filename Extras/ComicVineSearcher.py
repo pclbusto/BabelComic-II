@@ -204,12 +204,14 @@ class ComicVineSearcher:
             self.statusMessage = 'Subscriber only video is for subscribers only'
 
     def hilo_procesar_comic_in_volume(self, comic_in_volume, volumen, index):
+        print("Ejecutando {}".format(comic_in_volume))
         comics_searcher = Comic_Vine_Info_Searcher(self.session)
         comicbook_info = comics_searcher.search_issue(comic_in_volume.site_detail_url)
         comicbook_info.id_comicbook_info = comic_in_volume.id_comicbook_info
         comicbook_info.id_volume = volumen.id_volume
         comicbook_info.nombre_volumen = volumen.nombre
         self.lista_comicbooks_info.append(comicbook_info)
+        print('Lista Comics {}'.format(self.lista_comicbooks_info))
         self.lock.acquire(True)
         self.cantidad_hilos -= 1
         del self.lista_hilos_ejecucion[index]
@@ -234,6 +236,7 @@ class ComicVineSearcher:
             if self.cantidad_hilos < 30:
                 cbi = self.session.query(Comicbook_Info).get(self.comicIds[index].id_comicbook_info)
                 if cbi is None or not self.actualizar_solo_numeros_nuevos:
+                    print("ACCCCCCCCCCCCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAAAAAaA")
                     hilo = threading.Thread(target=self.hilo_procesar_comic_in_volume, name=str(index),
                                             args=[self.comicIds[index], volumen, index])
                     self.lock.acquire(True)
@@ -270,6 +273,7 @@ class ComicVineSearcher:
                     hilo_nuevo.start()
             contador_intentos += 1
         print("TERMINAMOSSSSSSSSSSSSSSSSSSSSSs")
+        print(self.lista_comicbooks_info)
         if self.detener:
             print("Proceso detenido")
             return
@@ -279,6 +283,7 @@ class ComicVineSearcher:
         # vamos a recuperar los arcos que haya en los comics usamos conjunto para eliminar repetidos
         set_ids_arcos = set()
         for issue in self.lista_comicbooks_info:
+            print('ISSIE {}'.format(issue.id_comicbook_info))
             for arco in issue.lista_ids_arcos_para_procesar:
                 set_ids_arcos.add(arco.id_arco_argumental)
 
@@ -307,44 +312,8 @@ class ComicVineSearcher:
         for arco in self.lista_arcos:
             print(arco)
 
-        self.porcentaje_procesado = 99
-        # guardamos los arcos para probar eliminar error
-        # tengo los arcos y los issues armamos la relacion
-        # print("LISTADO DE COMICBOOK INFO ANTES DE REVISAR LOS ARCOS")
-        # for cbi in self.lista_comicbooks_info:
-        #     print(cbi)
-        # print("LISTO CBI LIST")
-        # print("Lista de comics en el ARCO")
-        # for cbi in self.lista_arco_argumental_comic_reference:
-        #     print(cbi)
-        # print("LISTO lista de comics en el ARCO")
-        # for arco_comic_referencia in self.lista_arcos:
-        #     existe = False
-        #     for issue in self.lista_comicbooks_info:
-        #         # print("COMICBOOKID:{} CBI del ARCO:{}".format(issue.id_comicbook_Info, arco_comic_referencia.ids_comicbooks_Info.id_comicbook_Info))
-        #         if int(arco_comic_referencia.ids_comicbooks_info.id_comicbook_info) == int(issue.id_comicbook_info):
-        #             # relacionamos el iise de la lista a arco porque es el que vamso a guarda en la bs
-        #             arco_comic_referencia.ids_comicbooks_Info = issue
-        #             existe= True
-        #             print("Corte")
-        #             break
-        #     if not existe:
-        #         # No esta en los issues por agrgar, puede estar en la base de datos o no exisistir.
-        #         # print("buscando en la base de datos")
-        #         comicbook_info_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(arco_comic_referencia.ids_comicbooks_info.id_comicbook_info)
-        #         if comicbook_info_db  is None:
-        #           # no esta en la base lo agregamos para que quede
-        #             self.lista_comicbooks_info.append(arco_comic_referencia.ids_comicbooks_Info)
-        #         else:
-        #             arco_comic_referencia.ids_comicbooks_Info = comicbook_info_db
-        # for arco in self.lista_arcos:
-        #     arco.ids_comicbooks_Info.clear()
 
-        # print("imprimimos info arcos de los comics info")
-        # for issue in self.lista_comicbooks_info:
-        #     for arco_issue in issue.ids_arco_argumental:
-        #         print("comic info {}".format(issue.id_comicbook_Info))
-        #         print(arco_issue)
+
         self.porcentaje_procesado = 100
         print("TERMINO")
 

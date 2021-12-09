@@ -6,7 +6,7 @@ from Extras.ComicVineSearcher import ComicVineSearcher
 from Extras.Config import Config
 from gi.repository import GLib
 import Entidades.Init
-from Entidades.Entitiy_managers import Publishers
+from Entidades.Entitiy_managers import Publishers, Comicbooks_Info
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Entidades.Agrupado_Entidades import Comicbook_Info, Volume, Arcos_Argumentales_Comics_Reference, Arco_Argumental
 import threading
@@ -136,9 +136,6 @@ class Volumen_vine_search_Gtk():
 
     def hilo_cargar_volume(self, id_volume_externo):
 
-        #cnf = Config(self.session)
-        #cv = ComicVineSearcher(cnf.getClave('volume'), self.session)
-        #cv.entidad = 'volume'
         self.comicVineSearcher.entidad = 'volume'
         volumen = self.comicVineSearcher.getVineEntity(id_volume_externo)
         # recuperamos los isseues del volumen estan en una lista de comic_vine_searcher
@@ -235,6 +232,14 @@ class Volumen_vine_search_Gtk():
                             self.session.add(arco_argumental_comicsbook_reference)
                             self.session.commit()
 
+        # Descargamos los covers de los issues del volumen
+        for comicbook_info in self.comicVineSearcher.lista_comicbooks_info:
+            print('Bajando covers {}'.format(comicbook_info.id_comicbook_info))
+            # comicbook_info.get_first_cover_complete_path()
+            comicbooks_info_manager = Comicbooks_Info(session=self.session)
+            comicbooks_info_manager.get(comicbook_info.id_comicbook_info)
+            print(comicbooks_info_manager.get)
+            threading.Thread(target=comicbooks_info_manager.get_first_cover_complete_path).start()
 
     def click_aceptar(self, widget):
         self.comicVineSearcher.detener = False
@@ -330,11 +335,11 @@ if __name__ == "__main__":
     #
 
 
-    # volumen = Volumen_vine_search_Gtk()
-    # volumen.window.show()
-    # volumen.entry_serie_nombre.set_text("adventures+of+superman")
-    # volumen.window.connect("destroy", Gtk.main_quit)
-    #Gtk.main()
+    volumen = Volumen_vine_search_Gtk()
+    volumen.window.show()
+    volumen.entry_serie_nombre.set_text("uncanny avengers")
+    volumen.window.connect("destroy", Gtk.main_quit)
+    Gtk.main()
 
 
     # volumen.session.query(Arcos_Argumentales_Comics_Reference).delete()

@@ -77,7 +77,7 @@
                     <property name="primary-icon-name">edit-find-symbolic</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="primary-icon-sensitive">False</property>
-                    <signal name="search-changed" handler="evento_busqueda" swapped="no"/>
+                    <signal name="key-press-event" handler="evento_busqueda" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>

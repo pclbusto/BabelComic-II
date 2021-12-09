@@ -2,6 +2,56 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkImage" id="aceptar">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-save</property>
+  </object>
+  <object class="GtkImage" id="buscar_volumen">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">system-search</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">process-stop</property>
+  </object>
+  <object class="GtkImage" id="imagen_buscar_editorial">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">system-search</property>
+  </object>
+  <object class="GtkListStore" id="listmodel_volumenes">
+    <columns>
+      <!-- column-name Id -->
+      <column type="gchararray"/>
+      <!-- column-name Serie -->
+      <column type="gchararray"/>
+      <!-- column-name Números -->
+      <column type="gint"/>
+      <!-- column-name Editorial -->
+      <column type="gchararray"/>
+      <!-- column-name Año -->
+      <column type="gint"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">21321</col>
+        <col id="1" translatable="yes">Detctive comics</col>
+        <col id="2">750</col>
+        <col id="3" translatable="yes">DC Comics</col>
+        <col id="4">1952</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">213</col>
+        <col id="1" translatable="yes">Spiderman Vol. 2</col>
+        <col id="2">312</col>
+        <col id="3" translatable="yes">Marvel</col>
+        <col id="4">1975</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkWindow" id="Volumen_vine_search_Gtk">
     <property name="name">volumen_vine_seach_gtk</property>
     <property name="can-focus">False</property>
@@ -13,8 +63,10 @@
       <object class="GtkGrid">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-top">18</property>
-        <property name="margin-bottom">18</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
         <property name="orientation">vertical</property>
         <property name="row-spacing">12</property>
         <property name="column-spacing">12</property>
@@ -356,55 +408,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="aceptar">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">document-save</property>
-  </object>
-  <object class="GtkImage" id="buscar_volumen">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">system-search</property>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">process-stop</property>
-  </object>
-  <object class="GtkImage" id="imagen_buscar_editorial">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">system-search</property>
-  </object>
-  <object class="GtkListStore" id="listmodel_volumenes">
-    <columns>
-      <!-- column-name Id -->
-      <column type="gchararray"/>
-      <!-- column-name Serie -->
-      <column type="gchararray"/>
-      <!-- column-name Números -->
-      <column type="gint"/>
-      <!-- column-name Editorial -->
-      <column type="gchararray"/>
-      <!-- column-name Año -->
-      <column type="gint"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">21321</col>
-        <col id="1" translatable="yes">Detctive comics</col>
-        <col id="2">750</col>
-        <col id="3" translatable="yes">DC Comics</col>
-        <col id="4">1952</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">213</col>
-        <col id="1" translatable="yes">Spiderman Vol. 2</col>
-        <col id="2">312</col>
-        <col id="3" translatable="yes">Marvel</col>
-        <col id="4">1975</col>
-      </row>
-    </data>
   </object>
 </interface>
