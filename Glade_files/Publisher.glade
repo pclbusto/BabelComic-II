@@ -70,18 +70,12 @@
   </object>
   <object class="GtkWindow" id="PublisherGtk">
     <property name="can-focus">False</property>
-    <property name="window-position">center</property>
     <property name="default-width">440</property>
     <property name="default-height">400</property>
-    <property name="icon">../iconos/iconfinder_Tardis_Folder_73426.png</property>
     <child>
       <object class="GtkStack" id="stack">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">6</property>
-        <property name="margin-right">6</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
         <property name="transition-type">slide-right</property>
         <child>
           <!-- n-columns=3 n-rows=4 -->
@@ -103,7 +97,7 @@
                   <object class="GtkEntry" id="entry_id">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <signal name="focus-out-event" handler="id_changed" swapped="no"/>
+                    <signal name="changed" handler="id_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>

@@ -168,7 +168,7 @@
         <property name="margin-right">6</property>
         <property name="margin-top">6</property>
         <property name="margin-bottom">6</property>
-        <property name="position">400</property>
+        <property name="position">420</property>
         <property name="position-set">True</property>
         <property name="wide-handle">True</property>
         <signal name="key-press-event" handler="atajos_teclado" swapped="no"/>
@@ -262,6 +262,7 @@
                     <child>
                       <object class="GtkTreeViewColumn">
                         <property name="resizable">True</property>
+                        <property name="fixed-width">370</property>
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort-indicator">True</property>
@@ -604,6 +605,7 @@
   </object>
   <object class="GtkPopover" id="menu_panel_izquierdo">
     <property name="can-focus">False</property>
+    <property name="double-buffered">False</property>
     <property name="relative-to">panel_izquierdo</property>
     <property name="position">bottom</property>
     <child>
@@ -618,6 +620,7 @@
   </object>
   <object class="GtkPopoverMenu" id="popovermenu">
     <property name="can-focus">False</property>
+    <property name="double-buffered">False</property>
     <property name="relative-to">boton_menu</property>
     <child>
       <!-- n-columns=3 n-rows=10 -->
