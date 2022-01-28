@@ -6,13 +6,15 @@ from Gui_gtk4.Publisher_lookup_Gtk4 import Publisher_lookup_gtk
 from Gui_gtk4.Publisher_Vine_Search_gtk4 import Publisher_vine_search_gtk
 
 import gi
+
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GdkPixbuf
 
-class PublisherGtk():
+
+class PublisherGtk(Gtk.ApplicationWindow):
     # todo implementar los botones de limpiar, guardar y borrar
 
-    def __init__(self,  session=None,):
+    def __init__(self, session=None, application=None):
         if session is not None:
             self.session = session
         else:
@@ -24,8 +26,7 @@ class PublisherGtk():
         #                  'combobox_change':self.combobox_change, 'click_guardar': self.click_guardar,
         #                  'pop_up_menu': self.pop_up_menu}
         self.handlers = {}
-        self.builder = Gtk.Builder()
-        self.builder.add_from_file("../Glade_files/Publisher_gtk4.glade")
+
         # self.builder.connect_signals(self.handlers)
         self.window = self.builder.get_object("PublisherGtk")
         # self.window.set_icon_from_file('../iconos/BabelComic.png')
@@ -37,26 +38,30 @@ class PublisherGtk():
         self.lista_items = [self.builder.get_object("item_0"), self.builder.get_object("item_1")]
         self.list_entry_id = [self.builder.get_object('entry_id'), self.builder.get_object('entry_id1')]
         self.list_entry_nombre = [self.builder.get_object('entry_nombre'), self.builder.get_object('entry_nombre1')]
-        self.list_entry_id_externo = [self.builder.get_object('entry_id_externo'), self.builder.get_object('entry_id_externo1')]
+        self.list_entry_id_externo = [self.builder.get_object('entry_id_externo'),
+                                      self.builder.get_object('entry_id_externo1')]
         self.list_entry_url = [self.builder.get_object('entry_url'), self.builder.get_object('entry_url1')]
-        self.list_publisher_logo_image = [self.builder.get_object('publisher_logo_image'), self.builder.get_object('publisher_logo_image1')]
+        self.list_publisher_logo_image = [self.builder.get_object('publisher_logo_image'),
+                                          self.builder.get_object('publisher_logo_image1')]
         self.list_label_resumen = [self.builder.get_object('label_resumen'), self.builder.get_object('label_resumen1')]
         # self.list_combobox_orden = self.builder.get_object('combobox_orden')
-        self.path_publisher_logo = self.session.query(Setup).first().directorioBase+ os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
+        self.path_publisher_logo = self.session.query(
+            Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + "logo publisher" + os.path.sep
         self.publisher = None
         # inicializamos el modelo con rotulos del manager
         self.liststore_combobox.clear()
         # for clave in self.publishers_manager.lista_opciones.keys():
         #     self.liststore_combobox.append([clave])
 
-    def pop_up_menu(self,widget):
+    def pop_up_menu(self, widget):
         # self.popover.set_relative_to(button)
         self.menu.show_all()
         self.menu.popup()
 
-    def combobox_change(self,widget):
+    def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
-            self.publishers_manager.set_order(self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
+            self.publishers_manager.set_order(
+                self.publishers_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
 
     def click_guardar(self, widget):
         self.publishers_manager.save()
@@ -66,13 +71,12 @@ class PublisherGtk():
         print(self.publishers_manager.entidad)
         self.load_publisher(self.publishers_manager.entidad)
 
-
     def click_cargar_desde_web(self, widget):
         publisher_vine_search = Publisher_vine_search_gtk(self.session)
         publisher_vine_search.window.show()
 
-    def id_changed(self,widget, test):
-        if self.list_entry_id[self.index].get_text()!='':
+    def id_changed(self, widget, test):
+        if self.list_entry_id[self.index].get_text() != '':
             publisher = self.publishers_manager.get(self.list_entry_id[self.index].get_text())
             self.load_publisher(publisher)
 
@@ -158,13 +162,13 @@ class PublisherGtk():
         #                                   self.builder.get_object('publisher_logo_image1')]
         self.list_label_resumen[self.index].set_text('')
 
-
     def click_limpiar(self, widget):
         print("dsldsa")
         self.entry_url.clear()
         # self.entradaNombre.delete(0, END)
         # self.entradaUrl.delete(0, END)
         # self.textoDescripcion.config(text='')
+
 
 def activate(app):
     win = Gtk.ApplicationWindow(application=app)
@@ -184,6 +188,7 @@ def activate(app):
     header.pack_end(boton_prev)
     header.pack_end(boton_first)
     win.set_titlebar(header)
+
     label_id = label_creator(label="Id")
     label_nombre = label_creator(label="Nombre")
     lable_id_externo = label_creator(label="Id. Externo")
@@ -198,11 +203,11 @@ def activate(app):
     grid.set_margin_end(6)
     win.set_child(grid)
 
-    grid.attach(label_id,0,0,1,1)
-    grid.attach(label_nombre,0,1,1,1)
-    grid.attach(lable_id_externo,0,2,1,1)
-    grid.attach(lable_url,0,3,1,1)
-    grid.attach(lable_resumen,0,4,1,1)
+    grid.attach(label_id, 0, 0, 1, 1)
+    grid.attach(label_nombre, 0, 1, 1, 1)
+    grid.attach(lable_id_externo, 0, 2, 1, 1)
+    grid.attach(lable_url, 0, 3, 1, 1)
+    grid.attach(lable_resumen, 0, 4, 1, 1)
 
     entry_id = Gtk.Entry()
     entry_nombre = Gtk.Entry()
@@ -218,26 +223,28 @@ def activate(app):
     boton_lookup_publisher.set_halign(Gtk.Align.START)
     boton_edit_resumen = Gtk.Button.new_from_icon_name("edit-symbolic")
     boton_edit_resumen.set_halign(Gtk.Align.START)
-    grid.attach_next_to(boton_lookup_publisher, entry_id, Gtk.PositionType.RIGHT,1,1)
-    grid.attach_next_to(boton_edit_resumen, lable_resumen, Gtk.PositionType.RIGHT,1,1)
+    grid.attach_next_to(boton_lookup_publisher, entry_id, Gtk.PositionType.RIGHT, 1, 1)
+    grid.attach_next_to(boton_edit_resumen, lable_resumen, Gtk.PositionType.RIGHT, 1, 1)
 
-    scroll_window_resumen= Gtk.ScrolledWindow()
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale("/home/pedro/PycharmProjects/BabelComic-II/images/logo publisher/5213245-dc_logo_blue_final.jpg", -1, -1, False)
+    publisher_logo_image = Gtk.Image.new_from_pixbuf(pixbuf)
+    grid.attach_next_to(publisher_logo_image, boton_lookup_publisher, Gtk.PositionType.RIGHT, 4, 4)
+    scroll_window_resumen = Gtk.ScrolledWindow()
     text_view_resumen = Gtk.TextView()
     text_view_resumen.set_halign(Gtk.Align.FILL)
     text_view_resumen.set_valign(Gtk.Align.FILL)
     scroll_window_resumen.set_vexpand(True)
     scroll_window_resumen.set_hexpand(True)
-    # text_view_resumen.set_size_request(100, 200)
     scroll_window_resumen.set_child(text_view_resumen)
-
-    grid.attach_next_to(scroll_window_resumen, lable_resumen, Gtk.PositionType.BOTTOM, 10, 4)
-
+    grid.attach_next_to(scroll_window_resumen, lable_resumen, Gtk.PositionType.BOTTOM, 8, 8)
     win.show()
 
-def label_creator(label)->Gtk.Label:
+
+def label_creator(label) -> Gtk.Label:
     label = Gtk.Label(label=label)
     label.set_halign(Gtk.Align.END)
     return label
+
 
 if __name__ == "__main__":
     app = Gtk.Application(application_id="test.BabelComics")
