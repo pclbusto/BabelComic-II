@@ -2,6 +2,10 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkMenu">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="lower">60</property>
     <property name="upper">999</property>
@@ -17,22 +21,32 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-new</property>
+    <property name="icon-name">list-add-symbolic</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-delete</property>
+    <property name="icon-name">list-remove-symbolic</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-open</property>
+    <property name="icon-name">folder-new-symbolic</property>
+  </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">open-menu-symbolic</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-ok</property>
+    <property name="icon-name">document-save-symbolic</property>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-save-symbolic</property>
   </object>
   <object class="GtkListStore" id="liststore_directorios_comics">
     <columns>
@@ -53,7 +67,10 @@
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="double-buffered">False</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
@@ -86,6 +103,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="model">liststore_directorios_comics</property>
+                    <property name="search-column">0</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -116,6 +134,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkButton">
                     <property name="visible">True</property>
@@ -235,7 +254,7 @@
                 <property name="valign">center</property>
                 <property name="max-length">4</property>
                 <property name="width-chars">2</property>
-                <property name="text" translatable="yes">18</property>
+                <property name="text" translatable="yes">60</property>
                 <property name="progress-fraction">1</property>
                 <property name="progress-pulse-step">1</property>
                 <property name="input-purpose">digits</property>
@@ -243,7 +262,7 @@
                 <property name="climb-rate">1</property>
                 <property name="numeric">True</property>
                 <property name="wrap">True</property>
-                <property name="value">18</property>
+                <property name="value">60</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -264,24 +283,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="image">image5</property>
-                <property name="always-show-image">True</property>
-                <signal name="clicked" handler="click_guardar" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">6</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="halign">start</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Claves servicio Comicvine</property>
               </object>
               <packing>
@@ -316,6 +321,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Recrear Directorios Imágenes</property>
               </object>
               <packing>
@@ -339,6 +345,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">end</property>
                 <property name="label" translatable="yes">Ancho thumnail</property>
               </object>
               <packing>
@@ -354,24 +361,19 @@
                 <property name="receives-default">True</property>
                 <property name="relief">none</property>
                 <property name="orientation">vertical</property>
+                <property name="value">60</property>
                 <property name="size">button</property>
                 <property name="adjustment">adjustment2</property>
                 <child internal-child="plus_button">
                   <object class="GtkButton">
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="relief">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
                   </object>
                 </child>
                 <child internal-child="minus_button">
                   <object class="GtkButton">
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="relief">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
                   </object>
                 </child>
               </object>
@@ -384,7 +386,9 @@
               <object class="GtkSpinButton" id="anchoThumnail">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="text" translatable="yes">60</property>
                 <property name="adjustment">adjustment2</property>
+                <property name="value">60</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -399,25 +403,20 @@
                 <property name="receives-default">True</property>
                 <property name="relief">none</property>
                 <property name="orientation">vertical</property>
+                <property name="value">60</property>
                 <property name="size">button</property>
                 <property name="adjustment">adjustment1</property>
                 <property name="icons">- +</property>
                 <child internal-child="plus_button">
                   <object class="GtkButton">
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="relief">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
                   </object>
                 </child>
                 <child internal-child="minus_button">
                   <object class="GtkButton">
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="relief">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
                   </object>
                 </child>
               </object>
@@ -425,6 +424,9 @@
                 <property name="left-attach">2</property>
                 <property name="top-attach">3</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -437,6 +439,85 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="title" translatable="yes">Configuracion</property>
+        <property name="show-close-button">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="halign">start</property>
+                <property name="image">image6</property>
+                <property name="always-show-image">True</property>
+                <signal name="clicked" handler="click_guardar" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="boton_menu">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">image4</property>
+                <signal name="clicked" handler="pop_up_menu" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopoverMenu" id="menu">
+    <property name="can-focus">False</property>
+    <property name="relative-to">boton_menu</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="image">image5</property>
+            <property name="always-show-image">True</property>
+            <signal name="clicked" handler="click_guardar" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
+        <property name="position">1</property>
+      </packing>
     </child>
   </object>
 </interface>

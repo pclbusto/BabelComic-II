@@ -5,17 +5,17 @@
   <object class="GtkImage" id="aceptar">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">document-save</property>
+    <property name="icon-name">document-save-as-symbolic</property>
   </object>
   <object class="GtkImage" id="buscar_volumen">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">system-search</property>
+    <property name="icon-name">edit-find-symbolic</property>
   </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">process-stop</property>
+    <property name="icon-name">media-playback-stop-symbolic</property>
   </object>
   <object class="GtkImage" id="imagen_buscar_editorial">
     <property name="visible">True</property>
@@ -274,6 +274,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkButton">
                     <property name="visible">True</property>

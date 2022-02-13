@@ -5,32 +5,27 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-refresh</property>
+    <property name="icon-name">view-refresh-symbolic</property>
   </object>
   <object class="GtkImage" id="image_anterior">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-go-back</property>
+    <property name="icon-name">go-previous-symbolic</property>
   </object>
   <object class="GtkImage" id="image_copiar_grupo">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-dnd-multiple</property>
+    <property name="icon-name">edit-copy-symbolic</property>
   </object>
   <object class="GtkImage" id="image_lookup_volumen">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-find</property>
+    <property name="icon-name">system-search-symbolic</property>
   </object>
   <object class="GtkImage" id="image_siguiente">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-go-forward</property>
-  </object>
-  <object class="GtkImage" id="image_traer_coincidentes">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="stock">gtk-find-and-replace</property>
+    <property name="icon-name">go-next-symbolic.symbolic</property>
   </object>
   <object class="GtkListStore" id="listore_comics_para_catalogar">
     <columns>
@@ -84,20 +79,128 @@
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="margin-left">6</property>
-        <property name="margin-right">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
         <property name="margin-top">6</property>
         <property name="margin-bottom">6</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
-        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">6</property>
+            <property name="homogeneous">True</property>
+            <child type="center">
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="spacing">6</property>
+                <child type="center">
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Volumen</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="relief">none</property>
+                    <signal name="clicked" handler="click_boton_label_volumen_id" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="entry_id_volumen_catalogar">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <signal name="changed" handler="change_entry_id_volumen_catalogar" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">start</property>
+                    <property name="image">image_lookup_volumen</property>
+                    <signal name="clicked" handler="click_boton_lookup_serie" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="entry_descripcion_volumen_catalogar">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="editable">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="justify">right</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="pack-type">end</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="spacing">6</property>
             <child>
-              <!-- n-columns=3 n-rows=3 -->
+              <!-- n-columns=2 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -262,33 +365,12 @@
                     <property name="height-request">250</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="stock">gtk-missing-image</property>
+                    <property name="icon-name">dialog-question-symbolic</property>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
                     <property name="top-attach">0</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -298,92 +380,7 @@
               </packing>
             </child>
             <child>
-              <!-- n-columns=3 n-rows=3 -->
-              <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="row-spacing">6</property>
-                <property name="column-spacing">6</property>
-                <child>
-                  <object class="GtkEntry" id="entry_id_volumen_catalogar">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <signal name="changed" handler="change_entry_id_volumen_catalogar" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">start</property>
-                    <property name="image">image_lookup_volumen</property>
-                    <signal name="clicked" handler="click_boton_lookup_serie" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Descrpción</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="entry_descripcion_volumen_catalogar">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="editable">False</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Volumen</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="relief">none</property>
-                    <signal name="clicked" handler="click_boton_label_volumen_id" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <!-- n-columns=3 n-rows=3 -->
+              <!-- n-columns=2 n-rows=1 -->
               <object class="GtkGrid" id="grid_comic_vine">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -587,7 +584,7 @@
                         <property name="height-request">250</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="stock">gtk-missing-image</property>
+                        <property name="icon-name">dialog-question-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -604,40 +601,19 @@
                     <property name="top-attach">0</property>
                   </packing>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="pack-type">end</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -802,23 +778,6 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="image">image_traer_coincidentes</property>
-                    <signal name="clicked" handler="click_boton_traer_solo_para_catalogar" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
@@ -836,14 +795,15 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="pack-type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

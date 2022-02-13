@@ -18,10 +18,8 @@ class Comic_vine_cataloger_gtk():
     def __init__(self,  comicbooks=None, session=None):
         if session is not None:
             self.session = session
-            print("usnado session existente")
         else:
             self.session = Entidades.Init.Session()
-            print("SESSION NEW")
         self.setup = self.session.query(Setup).first()
         self.pahThumnails = self.session.query(Setup).first().directorioBase + os.path.sep + "images" + os.path.sep + \
                             "coverIssuesThumbnails" + os.path.sep
@@ -81,7 +79,7 @@ class Comic_vine_cataloger_gtk():
 
         self.gui_updating = False
         screen = Gdk.Screen.get_default()
-        self.window.set_default_size(screen.width(), self.window.get_size()[1])
+        self.window.set_default_size(screen.width(), self.window.get_size()[1]*(1.5))
 
     def click_boton_label_volumen_id(self,widget):
         serie = VolumeGuiGtk(self.session)
@@ -245,7 +243,7 @@ class Comic_vine_cataloger_gtk():
             nro = numero[0]
             comicbook = self.comicbooks[numero[2]]
             for comicbook_info in self.lista_comicbook_info_por_volumen:
-                print(nro,type(nro),comicbook_info.numero, type(comicbook_info.numero))
+                print(nro, type(nro), comicbook_info.numero, type(comicbook_info.numero))
                 if nro==comicbook_info.numero:
                     comicbook.id_comicbook_info = comicbook_info.id_comicbook_info
                     numero[3]=True
@@ -274,7 +272,6 @@ class Comic_vine_cataloger_gtk():
             self.load_cover_comic_info()
 
     def load_cover_comic_info(self):
-        print("DASDASDSADAS: {}".format(self.comicbooks_info_manager.index_lista_covers))
         self.boton_cantidad_covers.set_label("{}/{}".format(self.comicbooks_info_manager.index_lista_covers + 1, len(self.comicbooks_info_manager.lista_covers)))
 
         if not self.gui_updating:
@@ -307,19 +304,20 @@ class Comic_vine_cataloger_gtk():
     def click_boton_traer_solo_para_catalogar(self, widget):
         self.gui_updating = True
         lista_numeros = []
-        print(self.listore_comics_para_catalogar)
+        # print(self.listore_comics_para_catalogar)
         for comic in self.listore_comics_para_catalogar:
             lista_numeros.append(str(comic[0]))
-        print(lista_numeros)
-        self.lista_comicbook_info_por_volumen = self.session.query(Comicbook_Info).filter(
-            Comicbook_Info.id_volume == self.volume.id_volume).all()
-        self.lista_comicbook_info_por_volumen = [comicbook_info for comicbook_info in self.lista_comicbook_info_por_volumen if comicbook_info.numero in lista_numeros ]
-        print(self.lista_comicbook_info_por_volumen)
-        self.listaAMostrar.clear()
-        self.liststore_comics_in_volumen.clear()
-        for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
-            self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_info), index, comicbook_info.orden])
-        self.gui_updating = False
+        # print(lista_numeros)
+        if hasattr(self, "volume"):
+            self.lista_comicbook_info_por_volumen = self.session.query(Comicbook_Info).filter(
+                Comicbook_Info.id_volume == self.volume.id_volume).all()
+            self.lista_comicbook_info_por_volumen = [comicbook_info for comicbook_info in self.lista_comicbook_info_por_volumen if comicbook_info.numero in lista_numeros ]
+            # print(self.lista_comicbook_info_por_volumen)
+            self.listaAMostrar.clear()
+            self.liststore_comics_in_volumen.clear()
+            for index, comicbook_info in enumerate(self.lista_comicbook_info_por_volumen):
+                self.liststore_comics_in_volumen.append([comicbook_info.numero, comicbook_info.titulo, int(comicbook_info.id_comicbook_info), index, comicbook_info.orden])
+            self.gui_updating = False
 
 if __name__ == '__main__':
 

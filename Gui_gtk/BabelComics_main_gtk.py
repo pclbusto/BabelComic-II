@@ -2,7 +2,7 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 from gi.repository.GdkPixbuf import Pixbuf
 from gi.repository import GLib, GObject
 from gi.repository import Gdk
@@ -27,16 +27,20 @@ import math
 from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
 import threading, subprocess
+from sqlalchemy import and_
+
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
 
 class BabelComics_main_gtk():
+    BASE_KEY = "github.com.BabelComics"
     # todo el panel izquiero que tiene el arbol. hay que implementarlo completo. No tiene ni eventos.
     # todo que tengan iconos las ventanas.
     # todo implementar ventana de datos comics
     def __init__(self):
         ImageFile.LOAD_TRUNCATED_IMAGES = True
         self.session = Entidades.Init.Session()
+        self.settings = Gio.Settings.new(self.BASE_KEY)
 
         self.listaEditoriales = self.session.query(Publisher).all()
 
@@ -73,7 +77,8 @@ class BabelComics_main_gtk():
                          'click_boton_abrir_menu_panel_izquierdo': self.click_boton_abrir_menu_panel_izquierdo,
                          'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo,
                          'click_abrir_nautilus': self.click_abrir_nautilus,
-                         'search_entry_change': self.search_entry_change    
+                         'search_entry_change': self.search_entry_change,
+                         'guardar_settings': self.guardar_settings
                          }
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
@@ -110,6 +115,7 @@ class BabelComics_main_gtk():
         self.list_navegacion = self.builder.get_object("list_navegacion")
         self.mostrar_papelera = self.builder.get_object("mostrar_papelera")
         self.menu_panel_izquierdo = self.builder.get_object("menu_panel_izquierdo")
+        self.panel_izquierdo = self.builder.get_object("panel_izquierdo")
 
         self.thread_creacion_thumnails = None
 
@@ -137,9 +143,12 @@ class BabelComics_main_gtk():
         self.iconview.set_item_width(1)
         self.iconview.set_spacing(30)
         self.update_panel_filtros()
-        # self.update_imagen_papelera()
+        self.panel_izquierdo.set_position(self.settings.get_int("position-handle"))
 
 
+    def guardar_settings(self, widget):
+
+        self.settings.set_int("position-handle", self.panel_izquierdo.get_position())
 
     def click_abrir_nautilus(self, widget):
         comic = self.get_id_comics_from_selection()[0]
@@ -283,6 +292,7 @@ class BabelComics_main_gtk():
 
     def atajos_teclado(self, widget, event):
 
+
         ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
         if ctrl and event.keyval == Gdk.KEY_f:
             self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
@@ -307,6 +317,8 @@ class BabelComics_main_gtk():
         if event.keyval == Gdk.KEY_F1:
             fl = Function_launcher_gtk(self)
             fl.window.show()
+        if event.keyval == Gdk.KEY_Delete:
+            self.enviar_papelera(None)
 
     def click_boton_buscar(self, event):
         self.search_bar.set_search_mode(not self.search_bar.get_search_mode())
@@ -345,8 +357,14 @@ class BabelComics_main_gtk():
             self.menu_comic = self.builder.get_object("menu_comic")
 
         if self.filtro != '':
-            self.query = self.session.query(Comicbook).filter(
-                Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == check)
+
+            # self.query = self.session.query(Comicbook).filter(
+            #     Comicbook.path.like("%{}%".format(self.filtro))).filter(Comicbook.en_papelera == check)
+            self.query = self.session.query(Comicbook)
+            for word in self.filtro.split():
+                self.query = self.query.filter(Comicbook.path.like("%{}%".format(word)))
+
+            self.query = self.query.filter(Comicbook.en_papelera == check)
         else:
             self.query = self.session.query(Comicbook).filter(Comicbook.en_papelera == check)
 

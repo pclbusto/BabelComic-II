@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="github.com.BabelComics">
+  <schema id="github.com.BabelComics" path="/github/com/BabelComics/">
+    <key name="position-handle" type="i">
+    <default>450</default>
+      <summary>position handle</summary>
+      <description>
+        The position handle is the value for the handel in the BableComics main window.
+      </description>
+    </key>
+    <key name="Babelwindow-xpostion" type="i">
+    <default>0</default>
+      <summary>BabelComic main X window postion</summary>
+      <description>
+        The BableComics main window's X position .
+      </description>
+    </key>
+    <key name="Babelwindow-ypostion" type="i">
+    <default>0</default>
+      <summary>BabelComic main Y window postion</summary>
+      <description>
+        The BableComics main window's Y position .
+      </description>
+    </key>
+    <key name="position-handle" type="i">
+    <default>450</default>
+      <summary>position handle</summary>
+      <description>
+        The position handle is the value for the handel in the BableComics main window.
+      </description>
+    </key>
+  </schema>
+</schemalist>

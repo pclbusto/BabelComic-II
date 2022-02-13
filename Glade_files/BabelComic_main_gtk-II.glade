@@ -496,6 +496,7 @@
         <property name="can-focus">False</property>
         <property name="title" translatable="yes">Babelcomics</property>
         <property name="show-close-button">True</property>
+        <signal name="destroy" handler="guardar_settings" swapped="no"/>
         <signal name="key-press-event" handler="atajos_teclado" swapped="no"/>
         <child>
           <object class="GtkBox">

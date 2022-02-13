@@ -25,7 +25,7 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">system-search</property>
+    <property name="icon-name">system-search-symbolic</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
@@ -70,7 +70,7 @@
   <object class="GtkImage" id="lookup_editorial">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-find</property>
+    <property name="icon-name">system-search-symbolic</property>
   </object>
   <object class="GtkMenu" id="menu2">
     <property name="visible">True</property>
@@ -79,7 +79,7 @@
   <object class="GtkImage" id="nuevo">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="icon-name">document-new</property>
+    <property name="icon-name">list-add-symbolic</property>
   </object>
   <object class="GtkImage" id="primero">
     <property name="visible">True</property>

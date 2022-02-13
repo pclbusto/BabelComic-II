@@ -8,6 +8,8 @@ import urllib.request
 from PIL import Image
 import threading
 import gi
+import ssl
+
 
 gi.require_version('Gtk', '3.0')
 
@@ -42,6 +44,7 @@ class Comicbooks_Info(Entity_manager):
         self.lock_principal = threading.Lock()
         self.lista_covers_downloading = []
         self.callback = None
+        ssl._create_default_https_context = ssl._create_unverified_context
 
 
 

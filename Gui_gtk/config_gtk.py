@@ -22,7 +22,8 @@ class Config_gtk():
         self.handlers = {"click_guardar":self.click_guardar,
                          'click_boton_borrar_directorio_comic':self.click_boton_borrar_directorio_comic,
                          'click_boton_agregar_directorio_comic':self.click_boton_agregar_directorio_comic,
-                         'click_boton_directorio_base':self.click_boton_directorio_base}
+                         'click_boton_directorio_base':self.click_boton_directorio_base,
+                         'pop_up_menu': self.pop_up_menu}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Config_gtk.glade")
@@ -39,9 +40,13 @@ class Config_gtk():
         self.anchoThumnail = self.builder.get_object("anchoThumnail")
         self.recrear_imagenes_switch = self.builder.get_object("recrear_imagenes_switch")
         self.treeview_directorios_comics = self.builder.get_object("treeview_directorios_comics")
-
+        self.menu = self.builder.get_object("menu")
         self._copy_to_window()
 
+    def pop_up_menu(self,widget):
+        # self.popover.set_relative_to(button)
+        self.menu.show_all()
+        self.menu.popup()
 
     def _copy_to_window(self):
         # self.clearWindow()
