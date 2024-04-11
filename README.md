@@ -55,6 +55,35 @@ comicbooks_info_cover_url {
  integer id_comicbook_info PK "restrincción que exista el id_comicbook_info en la tabla comicbook_info"
  string thumb_url PK
 }
+comicbooks_info }o..|{ arcos_argumentales_comics_reference: " (id_comicbook_info)"
+arcos_argumentales }o..|{ arcos_argumentales_comics_reference: " (id_arco_argumental)"
+
+arcos_argumentales_comics_reference{
+	integer id_comicbook_info FK "REFERENCES comicbooks_info(id_comicbook_info"
+	integer id_arco_argumental FK "REFERENCES arcos_argumentales(id_arco_argumental)"	
+	integer orden
+}
+
+
+arcos_argumentales  {
+	integer id_arco_argumental PK
+	string nombre
+	string deck
+	string descripcion
+	integer ultimaFechaActualizacion
+	integer cantidad_comicbooks
+}
+
+comicbooks }o..|{ comicbooks_detail: "detalla (comicbook_id)"
+
+comicbooks_detail {
+	integer comicbook_id FK
+	integer indicePagina PK
+	integer ordenPagina
+	integer tipoPagina
+	string nombre_pagina
+}
+
 
 ```
 
