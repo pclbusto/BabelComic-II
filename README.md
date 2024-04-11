@@ -1,3 +1,63 @@
+```mermaid
+  erDiagram
+      volumens }o--|| publishers : "es editado por"
+      volumens{
+               integer id_volume PK
+               string nombre
+               string deck
+               string descripcion
+               string url
+               string image_url
+               string id_publisher FK "Deberìa ser entero pero esta como string"
+               string publisher_name
+               integer anio_inicio
+               integer cantidad_numeros
+      }
+publishers{
+ integer id_publisher PK
+		string name
+		string deck
+		string description
+		string logoImagePath
+		string localLogoImagePath
+		string siteDetailUrl
+}
+comicbooks ||--|| comicbooks_info : "obtiene info de" 
+
+comicbooks{
+	string	path
+	integer	id_comicbook PK
+	string	id_comicbook_info
+	integer	calidad
+	integer	en_papelera
+}
+
+comicbooks_info }|..|| volumens : "pertenece a (id_volume)"
+comicbooks_info {
+integer id_comicbook_info PK
+string titulo	
+integer id_volume
+string nombre_volumen	
+string numero	
+integer fecha_tapa
+string resumen	
+string nota	
+float rating
+string api_detail_url	
+string url	
+float orden
+boolean actualizado_externamente  "Se verifica que sea un valor entre 0 y 1"
+}
+
+comicbooks_info }|..|| comicbooks_info_cover_url : "tiene (id_comicbook_info)"
+
+comicbooks_info_cover_url {
+ integer id_comicbook_info PK "restrincción que exista el id_comicbook_info en la tabla comicbook_info"
+ string thumb_url PK
+}
+
+```
+
 # BabelComic-II
 Un catalogador de comics. Este proyecto arranca por no tener una herramienta en linux como una muy conocida en el SO de la ventana. El autor de ese software dijo que no tenía intenciones de portarlo a linux asi que arranque con el propio. No intenta ser ni de cerca un clon de ese software el cual anda muy bien es gratuito. 
 Basicamente quiero tener una base de catalogo para mis comics y el que quierar usarlo. No tengo ni idea sobre como es el tema de licencias para su publicacion y esas cosas por lo cual es bastante amateur este proyecto y le voy metiendo horas cuando puedo. 
