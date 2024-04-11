@@ -21,6 +21,7 @@ class Comicbook_Detail_Gtk():
             self.session = Entidades.Init.Session()
 
         self.comicbooks_detail_manager = Commicbooks_detail(session=self.session)
+        print("LA LISTA {}".format(lista_comics_id))
         self.comicbooks_manager = Comicbooks(session=self.session, lista_comics_id=lista_comics_id)
 
         self.handlers = {"seleccion_fila": self.seleccion_fila,

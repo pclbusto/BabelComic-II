@@ -345,6 +345,7 @@
                     <property name="margin">6</property>
                     <property name="selection-mode">multiple</property>
                     <signal name="button-release-event" handler="click_derecho" swapped="no"/>
+                    <signal name="key-press-event" handler="comic_iconview_keypress" swapped="no"/>
                     <signal name="selection-changed" handler="seleccion_item_view" swapped="no"/>
                   </object>
                 </child>

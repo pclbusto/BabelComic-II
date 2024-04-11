@@ -251,8 +251,14 @@ class Comicbook(Entidades.Init.Base):
         return (self.paginas[self.indicePaginaActual][index:])
 
     def goto(self, index):
-        if index < len(self.paginas):
+        if (index < len(self.paginas)) and (index >= 0):
             self.indicePaginaActual = index
+
+    def next_page(self):
+        self.goto(self.indicePaginaActual + 1)
+
+    def prev_page(self):
+        self.goto(self.indicePaginaActual - 1)
 
     def goto_page_by_name(self, page_name):
         if page_name in self.paginas:

@@ -116,6 +116,7 @@ class Comicbooks_Info(Entity_manager):
             self.lock.release()
             print('no existe')
             print(nombre_imagen)
+            print(web_image)
             jpg = urllib.request.urlopen(web_image)
             jpgImage = jpg.read()
             fImage = open(nombre_imagen, 'wb')

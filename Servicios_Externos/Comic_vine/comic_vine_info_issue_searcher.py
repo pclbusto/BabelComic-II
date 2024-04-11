@@ -142,6 +142,8 @@ class Comic_Vine_Info_Searcher():
                 lista_ids_issues_para_procesar.append(int(match.group(1)))
 
         return  lista_ids_issues_para_procesar
+
+
 if __name__ == "__main__":
 
     comcis_org_searcher = Comic_Vine_Info_Searcher()

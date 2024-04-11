@@ -78,7 +78,8 @@ class BabelComics_main_gtk():
                          'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo,
                          'click_abrir_nautilus': self.click_abrir_nautilus,
                          'search_entry_change': self.search_entry_change,
-                         'guardar_settings': self.guardar_settings
+                         'guardar_settings': self.guardar_settings,
+                         'comic_iconview_keypress': self.comic_iconview_keypress
                          }
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
@@ -290,6 +291,11 @@ class BabelComics_main_gtk():
     def evento_cierre(self,event):
         print("hola")
 
+
+    def comic_iconview_keypress(self, widget, event):
+        if event.keyval == Gdk.KEY_Return:
+            print("ABRIR LECTOR")
+
     def atajos_teclado(self, widget, event):
 
 
@@ -455,7 +461,7 @@ class BabelComics_main_gtk():
             indice = path
             lista_comicbooks_id.append(self.listaComics[indice[0]].id_comicbook)
         print(lista_comicbooks_id)
-        cbi = Comicbook_Detail_Gtk(lista_comics_id=lista_comicbooks_id)
+        cbi = Comicbook_Detail_Gtk(session=self.session, lista_comics_id=lista_comicbooks_id)
         cbi.get_first(None)
         cbi.window.show()
         if self.popovermenu is not None:
