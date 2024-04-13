@@ -61,6 +61,14 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#seccion-2">Sección 2</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#seccion-3">Sección 3</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#numero_1">Número</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#titulo">Título</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#notas">Notas</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#1">[1]</a>
@@ -77,15 +85,14 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../temp/">test</a>
                   </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Técnica</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../tecnica/configuracion_tecnica/">configuración</a>
-                  </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Técnica</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../tecnica/configuracion_tecnica/">configuración</a>
                 </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -137,6 +144,23 @@ este contiene el número del archivo.  </p>
 <p>En esta sección el usuario selecciona el volumen al cual pertenecen los comics seleccionados. Una vez seleccionado
 el volumen, si la lista de comics tiene asignado algún número, Babelcomics buscará entre todos los números que 
 tiene el volumen encontrar los asignados. </p>
+<h2 id="seccion-3">Sección 3</h2>
+<p>Es similar a la sección 1, pero en esta grilla se ven los comics que se encontraron basados en los numeros que se
+cargaron en la sección 1 y están dentro del volumen que se seleccionó en la sección dos. Hay unos botones que<br />
+permiten a usuario ver las distintas portadas que ese número puede llegar a tener. La grilla tienen 2 campos:</p>
+<h3 id="numero_1">Número</h3>
+<p>Es el número de comic. Esto permite al usuario poder comparar la portada del comic a catalogar con la metadata
+encontrada. El usuario tiene que hacer una inspección visual aca para determinar si esta bien lo que esta por
+asignar.</p>
+<h3 id="titulo">Título</h3>
+<p>Es el título que tiene este número. </p>
+<p>Una vez configuradas las dos primeras secciones y haciendo una revisión hay que asignar la metadata al archivo. 
+En la esquina inferior derecha hay un botón con el icono de los hojitas, como el icono de copiar. Al hacer click 
+en este botón se ejecuta el proceso de asignación de metadata. El proceso básicamente busca para cada comic de
+la izquierda una metadata que tenga la misma numeración. Cuando encuentra la coicidencia asigna y sigue con el 
+siguiente comic de la izquierda hasta revisarlos a todos. Si no puede asignar a almenon 1 comic de la izquierda 
+el proceso se revierte, por esto hay que tener en claro que cada comic de la lista hizquierda debe tener un número
+y debe existir una metadata en la parte derecha.</p>
 <hr />
 <h2 id="notas">Notas</h2>
 <h6 id="1">[1]</h6>
