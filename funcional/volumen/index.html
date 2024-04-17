@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Volumen - Documentación BabelComics</title>
+    <title>Volumen o Serie - Documentación BabelComics</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Volumen";
+        var mkdocs_page_name = "Volumen o Serie";
         var mkdocs_page_input_path = "funcional/volumen.md";
         var mkdocs_page_url = null;
       </script>
@@ -40,7 +40,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Funcionalidad</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../">Home</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../configuracion/">Configuración</a>
@@ -53,7 +53,47 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../arco_argumental/">Arco Argumental</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../temp/">test</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Volumen o Serie</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#campos">Campos</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#id-volumen">Id Volumen</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nombre">Nombre</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#editorial">Editorial</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#descripcion">Descripción</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ano-inicio">Año inicio</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cantidad-de-numeros">Cantidad de números</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#url">URL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#api-url">API URL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#url-cover">URL Cover</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#porcentaje-completado-volumen">Porcentaje completado Volumen</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cantidad-comics-asociados">Cantidad Comics Asociados</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#resumen">Resumen</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#estado-volumen">Estado Volumen</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#numeros">Números</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#menu">Menu</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-deberia-de-tener-un-proceso-automatico-que-cada-x-cantidad-de-tiempo-desde-su-ultima-actualizacion-haga">[1] debería de tener un proceso automatico que cada X cantidad de tiempo desde su ultima actualización haga</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="#">Técnica</a>
     <ul>
@@ -78,7 +118,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Volumen</li>
+          <li class="breadcrumb-item">Funcionalidad</li>
+      <li class="breadcrumb-item active">Volumen o Serie</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -87,10 +128,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                
+                <h1 id="volumen">Volumen</h1>
+<p>Ventana de administración de los volúmenes o series. Los comics pertenecen a una serie o volumen, por ejemplo Batman, 
+Superman o lox X-men. Cada una de estas series está compuesta por uno o varios ejemplares o números que dentro de
+Babelcomics se llaman<a href="../comic_info/">información de comic, metada o comic info</a>. Las series o volumenes son estos 
+contenedores. </p>
+<p><img alt="Volumen.png" src="../../imagenes/Volumen.png" /></p>
+<h2 id="campos">Campos</h2>
+<h3 id="id-volumen">Id Volumen</h3>
+<p>Identificador unico. Al usar Comicvine como proveedor de metadata para los comics. Este id se corresponde con el id 
+de este sitio. Igualmente, Babelcomics permite cargar de forma manual un volumen en este caso el id que usa es 
+negativo. De esta manera se diferencia una serie o volumen externo de una interna</p>
+<h3 id="nombre">Nombre</h3>
+<p>Nombre del Volumen o serie</p>
+<h3 id="editorial">Editorial</h3>
+<p>Id de la editorial que creo este volumen o serie.</p>
+<h3 id="descripcion">Descripción</h3>
+<p>Nombre de la Editorial </p>
+<h3 id="ano-inicio">Año inicio</h3>
+<p>Año en el que se creo el volumen o serie</p>
+<h3 id="cantidad-de-numeros">Cantidad de números</h3>
+<p>Cantidad de números que se tiene sobre este volumen. Tener en cuenta que para series que todavía se sigan 
+imprimiendo va a ser necesario actualizar cada tanto. <a href="./#1-">1</a></p>
+<h3 id="url">URL</h3>
+<p>Dirección web del volumen.</p>
+<h3 id="api-url">API URL</h3>
+<p>Url de la api. Agregando la key de servicio se debería poder ver el Json que este retorna  </p>
+<h3 id="url-cover">URL Cover</h3>
+<p>Cada Volumen tiene un cover que por lo general se corresponde con el primer número. Lo que se muestra aca es el 
+link a esta imagen.</p>
+<h3 id="porcentaje-completado-volumen">Porcentaje completado Volumen</h3>
+<p>Esto es un cálculo que retorna la cantidad de comics digitales distintos que se tienen de este volumen. </p>
+<h3 id="cantidad-comics-asociados">Cantidad Comics Asociados</h3>
+<p>Esto es un cálculo que retorna la cantidad de comics digitales que se tienen de este volumen.</p>
+<h3 id="resumen">Resumen</h3>
+<p>Resumen del volumen.</p>
+<h3 id="estado-volumen">Estado Volumen</h3>
+<p>completar</p>
+<h3 id="numeros">Números</h3>
+<p>completar</p>
+<h2 id="menu">Menu</h2>
+<hr />
+<h3 id="1-deberia-de-tener-un-proceso-automatico-que-cada-x-cantidad-de-tiempo-desde-su-ultima-actualizacion-haga">[1] debería de tener un proceso automatico que cada X cantidad de tiempo desde su ultima actualización haga</h3>
+<p>una consulta a servicio de Comicvine para ver si hay cambios.</p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../arco_argumental/" class="btn btn-neutral float-left" title="Arco Argumental"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../tecnica/configuracion_tecnica/" class="btn btn-neutral float-right" title="configuración">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -112,6 +199,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../arco_argumental/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../tecnica/configuracion_tecnica/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
