@@ -1,0 +1,14 @@
+site_name: Documentación BabelComics
+nav:
+  - Funcionalidad:
+    - Home: funcional/index.md
+    - Configuración: funcional/configuracion.md
+    - Principal: funcional/principal.md
+    - Catalogación: funcional/catalogacion.md
+    - Editorial: funcional/editorial.md
+    - Arco Argumental: funcional/arco_argumental.md
+    - Volumen o Serie: funcional/volumen.md
+    - Técnica:
+       - configuración: tecnica/configuracion_tecnica.md
+    - About: about.md
+theme: readthedocs

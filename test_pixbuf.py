@@ -1,54 +1,29 @@
-import asyncio
-import time
-import random
+import re
+linea = ""
+with open("input.txt","r") as archivo:
+    linea = archivo.readline()
+    salida = ""
+    ids_comic = set()
+    expresion = "(\d+)\s(.*)"
+    while linea:
+        linea = archivo.readline()
+        # print(linea)
+        match = re.findall(expresion, linea)
 
-class Test ():
-    CANT_MAX_TAREAS = 10
-    CANT_MAX_TAREAS_SIMULTANEAS = 15
+        if match:
+            ids_comic.add((match[0][0], match[0][1]))
 
-    def __init__(self):
-        self.variable = 0
-        self.lock_cantidad_tareas_en_ejecucion = asyncio.Condition()
+    lista = list(ids_comic)
+    lista_cadena = "{}".format(lista)
+    # print(lista_cadena)
+    lista_cadena = lista_cadena.replace("[", "")
+    lista_cadena = lista_cadena.replace("]", "")
+    lista_cadena = lista_cadena.replace("), (", "),\n (")
+    # print(lista_cadena)
+    # salida = salida+"delete  FROM comicbooks_info_cover_url where id_comicbook_info in ({})".format(lista_cadena)
+    salida = "INSERT INTO comicbooks_info_cover_url(\"id_comicbook_info\", \"thumb_url\") VALUES {};".format(lista_cadena)
+    with open("salida.txt", "w") as salida_f:
+        salida_f.write(salida)
+    # print(salida)
 
-        self.cantidad_tareas_ejecutadas = 0
-        self.cantidad_tareas_en_ejecucion = 0
 
-    def puede_ejectuar(self):
-        # print("preguntando {}".format(self.cantidad_tareas_en_ejecucion))
-        return (self.cantidad_tareas_en_ejecucion < Test.CANT_MAX_TAREAS_SIMULTANEAS)
-
-    async def say_after(self, delay, what):
-        print("ejectuando {} duracion {}".format(what, delay))
-        #Esto deberia bloquear hasta que se cumpla la condiion y luego ejectur y liberar la cerradura al terminar
-        async with self.lock_cantidad_tareas_en_ejecucion:
-            await self.lock_cantidad_tareas_en_ejecucion.wait_for(self.puede_ejectuar)
-            self.cantidad_tareas_en_ejecucion = self.cantidad_tareas_en_ejecucion + 1
-        await asyncio.sleep(delay)
-        async with self.lock_cantidad_tareas_en_ejecucion:
-            self.cantidad_tareas_en_ejecucion = self.cantidad_tareas_en_ejecucion - 1
-            self.lock_cantidad_tareas_en_ejecucion.notify(1)
-            self.cantidad_tareas_ejecutadas = self.cantidad_tareas_ejecutadas + 1
-
-    async def main(self):
-        lista_tiempos = [15, 10, 13, 6, 12, 14, 14, 9, 15]
-        lista_tareas = []
-        for i in range(0, Test.CANT_MAX_TAREAS-1):
-            # tarea = asyncio.create_task(self.say_after(random.randint(1, 15), 'tarea {}'.format(i)))
-            tarea = asyncio.create_task(self.say_after(lista_tiempos[i], 'tarea {}'.format(i)))
-            lista_tareas.append(tarea)
-
-        print(f"started at {time.strftime('%X')}")
-
-        await asyncio.gather(*lista_tareas)
-
-        print(f"finished at {time.strftime('%X')}")
-
-test = Test()
-
-asyncio.run(test.main())
-# print(test.variable)
-#
-# print()
-#
-# for i in range(1, 10000):
-#     print()

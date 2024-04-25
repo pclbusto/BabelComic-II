@@ -88,15 +88,15 @@ comicbooks_detail {
 ```
 
 # BabelComic-II
-Un catalogador de comics. Este proyecto arranca por no tener una herramienta en linux como una muy conocida en el SO de la ventana. El autor de ese software dijo que no tenía intenciones de portarlo a linux asi que arranque con el propio. No intenta ser ni de cerca un clon de ese software el cual anda muy bien es gratuito. 
-Basicamente quiero tener una base de catalogo para mis comics y el que quierar usarlo. No tengo ni idea sobre como es el tema de licencias para su publicacion y esas cosas por lo cual es bastante amateur este proyecto y le voy metiendo horas cuando puedo. 
+Es un catalogador de comics. Este proyecto arranca por no tener una herramienta en linux como una muy conocida en el SO de la ventana. El autor de ese software dijo que no tenía intenciones de portarlo a linux asi que arranque con el propio. No intenta ser ni de cerca un clon de ese software el cual anda muy bien y es gratuito. 
+Basicamente quiero tener una base de catalogo para mis comics y el que quierar usarlo que lo use. No tengo ni idea sobre como es el tema de licencias para su publicacion y esas cosas por lo cual es bastante amateur este proyecto y le voy metiendo horas cuando puedo. 
 Actualmente BabelComics no tiene versión 1.0 porque considero que falta mucho por terminar.
 
 # Funcionalidades deseadas para liberar versión 1.0
 -------------------------------------
 * ABM
   * Editoriales (falta implementar eliminación)
-  * Serie o volumen (falta implementar eliminación)
+  * Serie o volumen tiene eliminacion pero no funciona de forma correcta
   * Comic (falta implementar completamente)
   * Arcos Argumentales (falta implementar completamente)
 * Búqueda 
