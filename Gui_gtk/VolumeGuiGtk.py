@@ -95,14 +95,6 @@ class VolumeGuiGtk():
         if volume is not None:
             self.loadVolume(volume)
 
-#         self.index=self.index-1
-#         self.label_siguiente.set_text("label "+ str(self.index))
-# #        print(self.label_siguiente.get_text())
-#         self.stack.set_visible_child(self.label_siguiente)
-#
-#         aux = self.label_actual
-#         self.label_actual = self.label_siguiente
-#         self.label_siguiente = aux
 
     def getLast(self, widget):
         volume = self.volumens_manager.getLast()
@@ -198,7 +190,6 @@ class VolumeGuiGtk():
 
         self.volume = volumen
         self.clear()
-        print("dasdasdasdas")
         if self.volumens_manager.entidad is not None:
             #print("Volumen {}".format(self.volume))
             self.index += 1

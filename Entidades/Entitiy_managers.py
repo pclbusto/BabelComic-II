@@ -9,7 +9,7 @@ from PIL import Image
 import threading
 import gi
 import ssl
-
+import shutil
 
 gi.require_version('Gtk', '3.0')
 
@@ -235,7 +235,7 @@ class Volumens(Entity_manager):
         self.direccion = 0
 
     def get_comicbook_info_by_volume(self):
-        sq = self.session.query(Comicbook.id_comicbook_info, func.count(1).label('cantidad')).join(Comicbook_Info,
+        sq = self.session.query(Comicbook.id_comicbook_info, func.count(Comicbook.id_comicbook).label('cantidad')).filter(Comicbook.en_papelera==False).join(Comicbook_Info,
                                                                                               Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).group_by(
             Comicbook.id_comicbook_info).subquery("sq")
         comics = self.session.query(Comicbook_Info.id_comicbook_info, Comicbook_Info.numero,Comicbook_Info.titulo, sq.c.cantidad, Comicbook_Info.orden).outerjoin(sq,
@@ -256,7 +256,7 @@ class Volumens(Entity_manager):
         return cantidad
 
     def get_cantidad_comics_asociados_al_volumen(self):
-        sq = self.session.query(Comicbook.id_comicbook_info).join(Comicbook_Info,
+        sq = self.session.query(Comicbook.id_comicbook_info).filter(Comicbook.en_papelera==False).join(Comicbook_Info,
                                                              Comicbook_Info.id_comicbook_info == Comicbook.id_comicbook_info).filter(
             Comicbook_Info.id_volume == self.entidad.id_volume).subquery("sq")
         cantidad = self.session.query(Comicbook_Info.id_comicbook_info).join(sq,
@@ -447,16 +447,63 @@ class Comicbooks(Entity_manager):
 
         return cantidad_registros > 0
 
+    def listar_comic_del_volumen(self, id_volumen=""):
+        comics_info = Comicbooks_Info()
+        comics_info.set_filtro(Comicbook_Info.id_volume == id_volumen)
+        lista_ids_comic_info = []
+        for comic_info in comics_info.getList():
+            lista_ids_comic_info.append(comic_info.id_comicbook_info)
+        self.set_filtro(Comicbook.id_comicbook_info.in_(lista_ids_comic_info))
+        self.set_filtro(Comicbook.en_papelera == False)
+        return self.getList()
+
+    def copiar_normalizar(self):
+        pass
+    def copiar_a_nueva_carpeta(self, new_path=None):
+        if new_path is not None:
+            lista_comics = self.getList()
+            for comicbook in lista_comics:
+                comics_info = Comicbooks_Info()
+                comic_info = None
+                if comicbook.id_comicbook_info != '':
+                    comics_info.set_filtro(Comicbook_Info.id_comicbook_info == comicbook.id_comicbook_info)
+                    comic_info = comics_info.getList()[0]
+                if comics_info is not None:
+                    volumens = Volumens()
+                    volumens.set_filtro(Volume.id_volume == comic_info.id_volume)
+                    volume = volumens.getList()[0]
+
+                    new_file_path = new_path+os.sep+volume.nombre+" - V"+str(volume.anio_inicio)+" - " +comic_info.numero.rjust(4,"0")+"."+comicbook.getTipo()
+                else:
+                    new_file_path = new_path + os.sep + comicbook.getNombreArchivo()
+
+                print("copiando {} a {}".format(comicbook.path,new_file_path))
+                shutil.copyfile(comicbook.path,new_file_path)
+
 if (__name__=='__main__'):
-    # cbdm = Comicbooks_Detail()
-    # cbd = cbdm.entidad
-    # cbd.comicbook_id = 1
-    # cbd.indicePagina = 1
-    # cbd.ordenPagina = 1
-    # cbd.tipoPagina = Comicbook_Detail.COVER
-    # cbdm.save()
-    cbm = Volumens()
-    print(cbm.get_cantidad_comics_asociados_a_volumenes())
+    # # cbdm = Comicbooks_Detail()
+    # # cbd = cbdm.entidad
+    # # cbd.comicbook_id = 1
+    # # cbd.indicePagina = 1
+    # # cbd.ordenPagina = 1
+    # # cbd.tipoPagina = Comicbook_Detail.COVER
+    # # cbdm.save()
+    # volumenes = Volumens()
+    # volumenes.set_filtro(and_(Volume.nombre.like("%green%"), Volume.anio_inicio == 2023))
+    # # print(volumenes.getList())
+    # id_volumen = volumenes.getList()[0].id_volume
+    # # print(id_volumen)
+    # comics_info = Comicbooks_Info()
+    # comics_info.set_filtro(Comicbook_Info.id_volume == id_volumen)
+    # lista_ids_comic_info = []
+    # for comic_info in comics_info.getList():
+    #     lista_ids_comic_info.append(comic_info.id_comicbook_info)
+    comics = Comicbooks()
+    comics.listar_comic_del_volumen(id_volumen=2407)
+    comics.copiar_a_nueva_carpeta("/home/pedro/Documentos/temp")
+
+    # comics.set_filtro(Comicbook.id_comicbook_info.in_(lista_ids_comic_info))
+    print()
 
 
     #print(arco.getCantidadTitulos())

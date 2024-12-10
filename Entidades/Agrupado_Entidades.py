@@ -114,7 +114,7 @@ class Comicbook(Entidades.Init.Base):
     en_papelera = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return "\nid ={}\npath={}\ncomic_info_id:*{}*\nEn Papelera*{}*".format(self.id_comicbook, self.getPath(), self.id_comicbook_info, self.en_papelera)
+        return "\nid ={}\npath={}\ncomic_info_id:{}\nEn Papelera{}".format(self.id_comicbook, self.getPath(), self.id_comicbook_info, self.en_papelera)
 
     def tieneArcoAlterno(self):
         return self.arcoArgumentalId != '0'
@@ -277,7 +277,7 @@ class Comicbook(Entidades.Init.Base):
         return(self.path)
 
     def getTipo(self):
-        return(self.path[-3:])
+        return(self.path[-3:].lower())
 
     def getSize(self):
         tam = os.stat(self.path).st_size
