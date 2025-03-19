@@ -2,7 +2,7 @@ from Entidades.Entitiy_managers import Publisher, Volumens
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, Gdk
 from Entidades.Agrupado_Entidades import  Volume
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 
@@ -21,7 +21,8 @@ class Volume_lookup_gtk():
                          'click_boton_aceptar': self.click_boton_aceptar,
                          'gtk_tree_view_volumen_double_click': self.gtk_tree_view_volumen_double_click,
                          'combobox_change':self.combobox_change,
-                         'foco_busquedas': self.foco_busquedas}
+                         'foco_busquedas': self.foco_busquedas,
+                         'tecla_presionada': self.tecla_presionada}
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Volumen_lookup_gtk.glade")
         self.builder.connect_signals(self.handlers)
@@ -49,6 +50,12 @@ class Volume_lookup_gtk():
     def foco_busquedas(self, widget):
         print("foco ganado")
 
+    def tecla_presionada(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.window.close()
+        if event.keyval == Gdk.KEY_Return:
+            self.click_boton_aceptar(widget)
+
     def combobox_change(self, widget):
         if widget.get_active_iter() is not None:
             self.volumens_manager.set_order(self.volumens_manager.lista_opciones[widget.get_model()[widget.get_active_iter()][0]])
@@ -57,6 +64,7 @@ class Volume_lookup_gtk():
     def gtk_tree_view_volumen_double_click(self,widget, event):
         if event.get_click_count()[1]==2:
             self.click_boton_aceptar(widget)
+
 
     def search_volumen(self, widget):
         self.gtk_tree_view_volumen.get_selection().unselect_all()

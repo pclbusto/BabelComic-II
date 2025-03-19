@@ -50,7 +50,7 @@ class Entity_manager:
             self.session.delete(self.entidad)
             self.session.commit()
             self.status = Entity_manager.CTE_OK
-            print("Eliinado")
+            print("Eliminado")
         else:
             self.status = Entity_manager.CTE_ENTIDAD_NULA
 
@@ -59,6 +59,14 @@ class Entity_manager:
         self.session.query(self.clase).delete()
         self.session.commit()
         self.new_record()
+
+    def rm_by_filter(self):
+        print(self.consulta)
+        if self.consulta is not None:
+            print("finalmente")
+            self.consulta.delete()
+            self.session.commit()
+            self.new_record()
 
     def get(self, id_entidad):
         if not self.hay_cambios_pendientes():
@@ -106,16 +114,12 @@ class Entity_manager:
         return self.session.query(self.clase).filter(self.id_externo == id_externo).first()
 
     def _get_consulta(self):
-        # consulta = self.session.query(self.clase)
         consulta = self.consulta
-        # if self.filtro is not None:
-        #     consulta = consulta.filter(self.filtro)
         if self.order is not None:
             if self.direccion == 0:
                 consulta = consulta.order_by(self.order)
             else:
                 consulta = consulta.order_by(self.order.desc())
-        # print(consulta)
         return consulta
 
     def getNext(self):

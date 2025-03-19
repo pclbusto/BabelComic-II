@@ -1,4 +1,3 @@
-from Entidades.Entitiy_managers import Publishers
 from Entidades.Agrupado_Entidades import Publisher
 import Entidades.Init
 import gi

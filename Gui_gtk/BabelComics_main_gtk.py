@@ -1,3 +1,5 @@
+import shutil
+
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -15,6 +17,7 @@ from Gui_gtk.VolumeGuiGtk import VolumeGuiGtk
 from Gui_gtk.VolumensGuiGtk import Volumens_gtk
 #lo usamos para reutilizar la generacion de thumnails
 from Entidades.Entitiy_managers import Commicbooks_detail
+from Entidades.Entitiy_managers import Volumens
 
 from Gui_gtk.Comicbook_Detail_Gtk import Comicbook_Detail_Gtk
 from Gui_gtk.Comic_vine_cataloger_gtk import Comic_vine_cataloger_gtk
@@ -27,7 +30,7 @@ import math
 from PIL import Image, ImageFile
 from rarfile import NotRarFile, BadRarFile
 import threading, subprocess
-from sqlalchemy import and_
+from Entidades.Entitiy_managers import Comicbooks
 
 
 icons = ["edit-cut", "edit-paste", "edit-copy"]
@@ -72,14 +75,17 @@ class BabelComics_main_gtk():
                          'lanzador_funciones': self.lanzador_funciones,
                          'pop_up_menu': self.pop_up_menu,
                          'enviar_papelera': self.enviar_papelera,
-                         'quitar_de_papelera': self.quitar_de_papelera,
+                         'click_restaurar': self.click_restaurar,
                          'click_derecho_panel_izquierdo': self.click_derecho_panel_izquierdo,
                          'click_boton_abrir_menu_panel_izquierdo': self.click_boton_abrir_menu_panel_izquierdo,
                          'doble_click_panel_izquierdo': self.doble_click_panel_izquierdo,
                          'click_abrir_nautilus': self.click_abrir_nautilus,
                          'search_entry_change': self.search_entry_change,
                          'guardar_settings': self.guardar_settings,
-                         'comic_iconview_keypress': self.comic_iconview_keypress
+                         'comic_iconview_keypress': self.comic_iconview_keypress,
+                         'click_exportar_a': self.click_exportar_a,
+                         'click_organizar_Volumen': self.click_organizar_Volumen,
+                         'click_borrar_comics_de_papelera':self.click_borrar_comics_de_papelera
                          }
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
@@ -146,7 +152,13 @@ class BabelComics_main_gtk():
         self.update_panel_filtros()
         self.panel_izquierdo.set_position(self.settings.get_int("position-handle"))
 
-
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-theme-name", "Adwaita")
+        settings.set_property("gtk-application-prefer-dark-theme",
+                              True)  # if you want use dark theme, set second arg to True
+        # print(settings.get_property("gtk-theme-name"))
+        # for i in settings.list_properties():
+        #     print(i)
     def guardar_settings(self, widget):
 
         self.settings.set_int("position-handle", self.panel_izquierdo.get_position())
@@ -158,6 +170,32 @@ class BabelComics_main_gtk():
         print(comic.path[:comic.path.rfind('/')])
         subprocess.Popen(['xdg-open', comic.path[:comic.path.rfind('/')]])
         self.popovermenu.popdown()
+        self.menu_comic.popdown()
+
+    def click_exportar_a(self, widget):
+        comics = self.get_id_comics_from_selection()
+        for comic in comics:
+            shutil.copyfile(comic.path, "/home/pedro/test/"+comic.getNombreArchivo(conExtension=True))
+        # self.manager.enviar_quitar_papelera(comics, True)
+        self.menu_comic.popdown()
+        self.update_imagen_papelera()
+        self.click_boton_refresh(None)
+
+    def click_borrar_comics_de_papelera(self,widget):
+        lista_comics = self.get_id_comics_from_selection()
+        # todo implementar dialogo que pregunte si esta seguro de borrar estos archivos de forma definitiva
+        self.menu_comic.popdown()
+        comics = Comicbooks()
+        comics.borrar_comics_de_papelera(lista_comics=lista_comics)
+        self.update_imagen_papelera()
+        self.click_boton_refresh(None)
+
+    def click_organizar_Volumen(self, widget):
+        select = self.gtk_tree_view_publisher.get_selection()
+        model, treeiter = select.get_selected()
+        volumenes = Volumens(session=self.session)
+        volumenes.get(model[treeiter][2])
+        volumenes.normalizar_comics_vinculados()
         self.menu_comic.popdown()
 
     def load_setup(self):
@@ -219,7 +257,7 @@ class BabelComics_main_gtk():
         self.update_imagen_papelera()
         self.click_boton_refresh(None)
 
-    def quitar_de_papelera(self, widget):
+    def click_restaurar(self, widget):
         comics = self.get_id_comics_from_selection()
         self.manager.enviar_quitar_papelera(comics, False)
         self.menu_comic.popdown()
@@ -323,6 +361,8 @@ class BabelComics_main_gtk():
         if event.keyval == Gdk.KEY_F1:
             fl = Function_launcher_gtk(self)
             fl.window.show()
+        if event.keyval == Gdk.KEY_F2:
+            self.click_catalogar(None)
         if event.keyval == Gdk.KEY_Delete:
             self.enviar_papelera(None)
 

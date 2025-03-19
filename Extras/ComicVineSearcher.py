@@ -73,6 +73,104 @@ class ComicVineSearcher:
             print([item[x] for x in self.columnas])
             ##                item[7],'---',item[1],'---', item[3])
 
+    def insert_update_volumen(self, volumen):
+        volumen_in_db = self.session.query(Volume).filter(Volume.id_volume == volumen.id_volume).first()
+        if volumen_in_db is not None:
+            # actualizo la cantidad de ejemplares nada mas
+            print(volumen)
+            volumen_in_db.actualizar_con(volumen)
+            volumen = volumen_in_db
+        self.session.add(volumen)
+        self.session.commit()
+        for comicbook_info in self.lista_comicbooks_info:
+            cbi_db = self.session.query(Entidades.Agrupado_Entidades.Comicbook_Info).get(
+                comicbook_info.id_comicbook_info)
+            if cbi_db is not None and not cbi_db.actualizado_externamente:
+                self.session.query(Comicbook_Info).filter(
+                    Comicbook_Info.id_comicbook_info == comicbook_info.id_comicbook_info).delete()
+                self.session.commit()
+                self.session.add(comicbook_info)
+            elif cbi_db is not None and cbi_db.actualizado_externamente:
+                print("Actualizando info de comicbook_info DATOS A ACTUALIZAR")
+                cbi_db.numero = comicbook_info.numero
+                cbi_db.fecha_tapa = comicbook_info.fecha_tapa
+                cbi_db.orden = comicbook_info.orden
+                cbi_db.url = comicbook_info.url
+                cbi_db.api_detail_url = comicbook_info.api_detail_url
+
+                for url_cover in comicbook_info.thumbs_url:
+                    copiar_cover = True;
+                    for url_cover_cbi in cbi_db.thumbs_url:
+                        if url_cover.thumb_url == url_cover_cbi.thumb_url:
+                            copiar_cover = False
+                            break;
+
+                    if copiar_cover:
+                        cbi_db.thumbs_url.append(url_cover)
+
+                    # cbi_db.thumbs_url = comicbook_info.thumbs_url
+                print(cbi_db)
+            else:
+                print("agregando comic por primera vez")
+                print(cbi_db)
+                self.session.add(comicbook_info)
+            self.session.commit()
+        lista_arcos = []
+        for arco in self.lista_arcos:
+            arco_db = self.session.query(Arco_Argumental).filter(
+                Arco_Argumental.id_arco_argumental == arco.id_arco_argumental).first()
+            if arco_db is not None:
+                lista_arcos.append(arco_db)
+                arco_db.lista_ids_comicbook_info_para_procesar = arco.lista_ids_comicbook_info_para_procesar
+            else:
+                self.session.add(arco)
+                lista_arcos.append(arco)
+        self.session.commit()
+        # reemplazo todos los arcos por los que estan la base o los que acabo de guardar
+        self.lista_arcos = lista_arcos
+        # construimos la relacion para cada arco con la lista de comics.
+        for arco in self.lista_arcos:
+            try:
+                print("Lista de arcos de cv {}".format(arco.lista_ids_comicbook_info_para_procesar))
+            except Exception:
+                print("Arco con error {}".format(arco))
+                raise
+            for comicbook_info in self.lista_comicbooks_info:
+                for pos, arco_comicbook_info in enumerate(arco.lista_ids_comicbook_info_para_procesar):
+                    # print("Comic Info {} tipo {} comic info arco {} tipo {}".format(comicbook_info.id_comicbook_info,
+                    #                                                                 type(comicbook_info.id_comicbook_info),
+                    #                                                                 arco_comicbook_info,
+                    #                                                                 type(arco_comicbook_info)))
+                    if int(comicbook_info.id_comicbook_info) == arco_comicbook_info:
+                        comicbook_info_db = self.session.query(Comicbook_Info).get(comicbook_info.id_comicbook_info)
+                        rel = self.session.query(Arcos_Argumentales_Comics_Reference).get(
+                            (comicbook_info.id_comicbook_info, arco.id_arco_argumental))
+                        if rel is None:
+                            print("El comic book_info {} pertenece al arco {}".format(comicbook_info.id_comicbook_info,
+                                                                                      arco.id_arco_argumental))
+                            arco_argumental_comicsbook_reference = Arcos_Argumentales_Comics_Reference()
+                            arco_argumental_comicsbook_reference.orden = pos
+                            arco_argumental_comicsbook_reference.ids_arco_argumental = arco
+                            print("COMIC A RELACIONAR")
+                            print(type(comicbook_info))
+                            print(type(comicbook_info_db))
+                            if comicbook_info_db is not None:
+                                arco_argumental_comicsbook_reference.ids_comicbooks_info = comicbook_info_db
+                            else:
+                                arco_argumental_comicsbook_reference.ids_comicbooks_info = comicbook_info
+                            self.session.add(arco_argumental_comicsbook_reference)
+                            self.session.commit()
+
+        # Descargamos los covers de los issues del volumen
+        for comicbook_info in self.lista_comicbooks_info:
+            print('Bajando covers {}'.format(comicbook_info.id_comicbook_info))
+            # comicbook_info.get_first_cover_complete_path()
+            comicbooks_info_manager = Comicbooks_Info(session=self.session)
+            comicbooks_info_manager.get(comicbook_info.id_comicbook_info)
+            print(comicbooks_info_manager.get)
+            threading.Thread(target=comicbooks_info_manager.get_first_cover_complete_path).start()
+
+
     def clearFilter(self):
         self.filter = ""
         self.listaBusquedaVine.clear()

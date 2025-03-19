@@ -49,7 +49,8 @@ class Comicbooks_info_gtk():
         self.handlers = {'click_derecho': self.click_derecho,
                          'cambio_seleccion': self.cambio_seleccion,
                          'get_prev_cover': self.get_prev_cover,
-                         'get_next_cover': self.get_next_cover}
+                         'get_next_cover': self.get_next_cover,
+                         'tecla_presionada': self.tecla_presionada}
 
         self.cataloged_pix = Pixbuf.new_from_file_at_size('../iconos/Cataloged.png', 32, 32)
 
@@ -96,6 +97,10 @@ class Comicbooks_info_gtk():
         self.cambio_cover(False)
     def get_next_cover(self, wiget):
         self.cambio_cover(True)
+
+    def tecla_presionada(self, widget, args):
+        if args.keyval == Gdk.KEY_Escape:
+            self.window.close()
 
     def cambio_cover(self, siguiente):
         selected_list = self.iconview_Comicbooks_info.get_selected_items()

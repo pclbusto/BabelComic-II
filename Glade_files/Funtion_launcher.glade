@@ -1,256 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Batprefs_73347.png</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Lantern_73389.png</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_A_73341.png</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Techified_Ironfolder_73427.png</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Tardis_Folder_73426.png</property>
   </object>
   <object class="GtkImage" id="image6">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Directory_73366.png</property>
   </object>
   <object class="GtkImage" id="image7">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Steves_Files_73422.png</property>
   </object>
   <object class="GtkImage" id="image8">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="pixbuf">../iconos/iconfinder_Ironman_Hand_73383.png</property>
   </object>
+  <object class="GtkImage" id="image9">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">../iconos/Sync-Update-derp-Im-sleepy-icon.png</property>
+  </object>
   <object class="GtkWindow" id="Function_launcher">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
+    <property name="opacity">0.90</property>
     <property name="title" translatable="yes">Lanzador de funciones</property>
     <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="hide_titlebar_when_maximized">True</property>
+    <property name="window-position">center</property>
+    <property name="hide-titlebar-when-maximized">True</property>
     <property name="decorated">False</property>
     <signal name="key-press-event" handler="evento" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">6</property>
-        <property name="margin_right">6</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
+        <property name="can-focus">False</property>
+        <property name="margin-left">6</property>
+        <property name="margin-right">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
           <object class="GtkSearchEntry" id="function_searcher">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="margin_left">6</property>
-            <property name="margin_right">6</property>
-            <property name="margin_top">6</property>
-            <property name="margin_bottom">6</property>
-            <property name="primary_icon_name">edit-find-symbolic</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">False</property>
+            <property name="can-focus">True</property>
+            <property name="margin-left">6</property>
+            <property name="margin-right">6</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="primary-icon-name">edit-find-symbolic</property>
+            <property name="primary-icon-activatable">False</property>
+            <property name="primary-icon-sensitive">False</property>
             <signal name="search-changed" handler="search_changed" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
+          <!-- n-columns=3 n-rows=3 -->
           <object class="GtkGrid" id="function_list">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">6</property>
-            <property name="row_homogeneous">True</property>
-            <property name="column_homogeneous">True</property>
+            <property name="can-focus">False</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">6</property>
+            <property name="row-homogeneous">True</property>
+            <property name="column-homogeneous">True</property>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Configuración</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image1</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_configuracion" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Escanear dir</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image2</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_escanear_dir" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Catalogar</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image7</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_catalogar" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Refrescar</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image8</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_refrescar" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Editorial</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image5</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_editorial" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Serie</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image6</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_serie" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Comic info</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image4</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_comic_info" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">acerca de</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image3</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_acerca_de" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Serie Vine</property>
-                <property name="width_request">150</property>
-                <property name="height_request">150</property>
+                <property name="width-request">150</property>
+                <property name="height-request">150</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image9</property>
-                <property name="image_position">top</property>
-                <property name="always_show_image">True</property>
+                <property name="image-position">top</property>
+                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="enter_serie_vine_search" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
           </object>
@@ -262,10 +266,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="image9">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">../iconos/Sync-Update-derp-Im-sleepy-icon.png</property>
   </object>
 </interface>

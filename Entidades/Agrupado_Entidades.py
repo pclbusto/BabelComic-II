@@ -128,7 +128,9 @@ class Comicbook(Entidades.Init.Base):
                     self.cbFile = zipfile.ZipFile(self.path, 'r')
                     for x in self.cbFile.namelist():
                         if '.' in x:
+                            print(x[(x.rindex('.')-len(x)+1):].lower())
                             if x[(x.rindex('.')-len(x)+1):].lower() in self.extensionesSoportadas:
+                                print(x)
                                 self.paginas.append(x)
                 except BadZipFile:
                     self.cbFile = rarfile.RarFile(self.path, 'r')
@@ -476,6 +478,9 @@ class Volume(Entidades.Init.Base):
     publisher_name=Column(String,nullable=False,default='')
     anio_inicio = Column(Integer,nullable=False,default=0)
     cantidad_numeros = Column(Integer,nullable=False,default=0)
+
+
+
 
 
 

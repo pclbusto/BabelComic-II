@@ -10,6 +10,11 @@ from Gui_gtk.Volumen_vine_search_gtk import Volumen_vine_search_Gtk
 from Gui_gtk.Comicbook_info_Gtk import Comicbook_Info_Gtk
 from Gui_gtk.Publisher_lookup_gtk import Publisher_lookup_gtk
 from Gui_gtk.Comicbooks_info_gtk import Comicbooks_info_gtk
+from Extras.ComicVineSearcher import ComicVineSearcher
+from Extras.Config import Config #usado para instanciar el ComicVineSearcher
+import time #Para poder temporizar la actualización del porcentaje de avance de actualización volumen
+from gi.repository import GLib #para poder planificar actualizaciones recurrentes mientras se actualiza el volumen
+import threading
 
 class VolumeGuiGtk():
     # todo implementar los botones de limpiar, guardar y borrar
@@ -28,7 +33,8 @@ class VolumeGuiGtk():
                          'click_eliminar': self.click_eliminar, 'click_derecho':self.click_derecho,
                          'click_lookup_editorial': self.click_lookup_editorial,
                          'pop_up_menu': self.pop_up_menu,
-                         'abrir_covers': self.abrir_covers}
+                         'abrir_covers': self.abrir_covers,
+                         'click_actualizar_volumen':self.click_actualizar_volumen}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Volumen.glade")
@@ -57,6 +63,7 @@ class VolumeGuiGtk():
         self.list_treeview_comics_in_volumen = [self.builder.get_object("treeview_comics_in_volumen"), self.builder.get_object("treeview_comics_in_volumen1")]
         self.list_progressbar_procentaje_completado = [self.builder.get_object("progressbar_procentaje_completado"), self.builder.get_object("progressbar_procentaje_completado1")]
         self.list_label_cantidad_comics_asociados = [self.builder.get_object("label_cantidad_comics_asociados"), self.builder.get_object("label_cantidad_comics_asociados1")]
+        self.label_status = self.builder.get_object("label_status")
 
         self.volumens_manager = Volumens(session=self.session)
         self.volume = None
@@ -70,17 +77,41 @@ class VolumeGuiGtk():
         self.cantidadRegistros = self.volumens_manager.get_count()
         self.pagina_actual = 0
         self.menu = self.builder.get_object("menu")
-        # # inicializamos el modelo con rotulos del manager
-        # self.liststore_combobox.clear()
-        # for clave in self.volumens_manager.lista_opciones.keys():
-        #     self.liststore_combobox.append([clave])
-        # self.combobox_orden.set_active(0)
-        # self.getFirst("")
+
 
     def abrir_covers(self, widget):
         bc = Comicbooks_info_gtk(volumen_id=self.volumens_manager.entidad.id_volume)
         bc.window.show()
         self.menu.popdown()
+
+    def click_actualizar_volumen(self, widget):
+        # , args=[self.volume.id_volume]
+        threading.Thread(target=self.hilo_cargar_volumen).start()
+
+    def hilo_cargar_volumen(self):
+        config = Config()
+        comic_vine_searcher = ComicVineSearcher(config.getClave('volumes'), session=self.session)
+        comic_vine_searcher.detener = False
+        comic_vine_searcher.entidad = 'volume'
+        volumen = comic_vine_searcher.getVineEntity(self.list_entry_id[self.index].get_text())
+        # recuperamos los issues del volumen actual
+        comic_vine_searcher.cargar_comicbook_info(volumen)
+        while comic_vine_searcher.porcentaje_procesado != 100 and not comic_vine_searcher.detener:
+            GLib.idle_add(self.cargar_mensaje_status,
+                          "Porcentaje de info descargada {}%".format(comic_vine_searcher.porcentaje_procesado))
+            time.sleep(2)
+        GLib.idle_add(self.cargar_mensaje_status,
+                      "Porcentaje de info descargada {}%".format(100))
+
+        print(volumen.cantidad_numeros)
+        comic_vine_searcher.insert_update_volumen(volumen)
+        self.menu.popdown()
+
+
+
+    def cargar_mensaje_status(self, mensaje):
+        self.label_status.set_text(mensaje)
+        return 1
 
     def pop_up_menu(self,widget):
         # self.popover.set_relative_to(button)
@@ -256,20 +287,7 @@ class VolumeGuiGtk():
         self.volumens_manager.rm()
 
     def clear(self):
-        print(type(self.list_entry_id[self.index]))
-
         self.list_entry_id[self.index].set_text('')
-        print(type(self.list_entry_id[self.index]))
-
-        # self.entry_nombre.set_text('')
-        # self.label_url.set_uri('')
-        # self.list_label_api_url[self.index].set_uri('')
-        # self.label_cover_url.set_uri('')
-        # self.entry_id_editorial.set_text('')
-        # self.label_nombre_editorial.set_text('')
-        # self.entry_anio_inicio.set_text('')
-        # self.entry_cantidad_numeros.set_text('')
-        pass
 
     def copyFromWindowsToEntity(self):
         self.volumens_manager.entidad.nombre = self.list_entry_nombre[self.index].get_text()
@@ -300,7 +318,7 @@ if __name__ == "__main__":
     print("Hola")
     pub = VolumeGuiGtk()
     pub.window.show_all()
-    pub.set_volumen_id(92557)
+    pub.set_volumen_id(153465)
     pub.window.connect("destroy", Gtk.main_quit)
     Gtk.main()
 

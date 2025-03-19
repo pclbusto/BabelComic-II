@@ -24,9 +24,6 @@ class Function_launcher_gtk():
                          "enter_serie_vine_search": self.enter_serie_vine_search,
                          "evento": self.evento,
                          "search_changed": self.search_changed}
-        #                  'click_boton_borrar_directorio_comic':self.click_boton_borrar_directorio_comic,
-        #                  'click_boton_agregar_directorio_comic':self.click_boton_agregar_directorio_comic,
-        #                  'click_boton_directorio_base':self.click_boton_directorio_base}
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file("../Glade_files/Funtion_launcher.glade")

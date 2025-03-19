@@ -1,3 +1,5 @@
+
+
 from Entidades.Entity_manager import Entity_manager
 from Entidades.Agrupado_Entidades import Arco_Argumental, Arcos_Argumentales_Comics_Reference, Setup, Comicbook_Detail
 from Entidades.Agrupado_Entidades import Publisher, Volume, Comicbook_Detail, Comicbook_Info, Comicbook, Comicbook_Info_Cover_Url
@@ -173,6 +175,14 @@ class Comicbooks_Info(Entity_manager):
         self.load_cover_list()
         return entidad
 
+    def rm_from_volumen(self, id_volumen):
+        self.set_filtro(Comicbook_Info.id_volume == id_volumen)
+        print("aca estamos ahora por borrar el filtro")
+        for item in self.getList():
+            print(item.titulo)
+        self.rm_by_filter()
+
+
 
 class ArcosArgumentales(Entity_manager):
     def __init__(self, session = None):
@@ -291,6 +301,29 @@ class Volumens(Entity_manager):
         self.entidad.nombre= ''
         self.entidad.publisher_name = ''
         self.entidad.url = ''
+
+    def normalizar_comics_vinculados(self):
+        path_final = '/mnt/Green/Comics/Biblioteca de Babelcomics'
+        print("Volumen:{} Año:{}".format(self.entidad.nombre, self.entidad.anio_inicio))
+        publishers = Publishers(session=self.session)
+        publishers.get(self.entidad.id_publisher)
+        print(publishers.entidad.name)
+        path_final = path_final +os.sep+"{}".format(publishers.entidad.name)
+        if not os.path.exists(path_final):
+            os.mkdir(path_final)
+        path_final = path_final+os.sep+"{}-{}".format(self.entidad.nombre, self.entidad.anio_inicio)
+        print(path_final)
+        if not os.path.exists(path_final):
+            os.mkdir(path_final)
+        comics = Comicbooks(session=self.session)
+        comics.listar_comic_del_volumen(id_volumen=self.entidad.id_volume)
+        comics.copiar_a_nueva_carpeta(new_path=path_final, create_new_comicbooks_entry=True)
+
+    def rm(self):
+        print("aca estamos")
+        super().rm()
+        comicbooks_info = Comicbooks_Info(session=self.session)
+        comicbooks_info.rm_from_volumen(self.entidad.id_volume)
 
 
 class Comicbooks_Detail(Entity_manager):
@@ -457,53 +490,66 @@ class Comicbooks(Entity_manager):
         self.set_filtro(Comicbook.en_papelera == False)
         return self.getList()
 
-    def copiar_normalizar(self):
-        pass
-    def copiar_a_nueva_carpeta(self, new_path=None):
+    def borrar_comics_de_papelera(self, lista_comics = None):
+        if lista_comics is not None:
+            print(lista_comics)
+            for comicbook in lista_comics:
+                comicbook_aux = self.get(int(comicbook.id_comicbook))
+                if os.path.exists(comicbook_aux.path):
+                    os.remove(comicbook_aux.path)
+                self.rm()
+
+    def copiar_a_nueva_carpeta(self, new_path=None, create_new_comicbooks_entry=False):
         if new_path is not None:
             lista_comics = self.getList()
             for comicbook in lista_comics:
                 comics_info = Comicbooks_Info()
                 comic_info = None
-                if comicbook.id_comicbook_info != '':
-                    comics_info.set_filtro(Comicbook_Info.id_comicbook_info == comicbook.id_comicbook_info)
-                    comic_info = comics_info.getList()[0]
-                if comics_info is not None:
-                    volumens = Volumens()
-                    volumens.set_filtro(Volume.id_volume == comic_info.id_volume)
-                    volume = volumens.getList()[0]
+                if "Biblioteca de Babelcomics" not in comicbook.path:
+                    if comicbook.id_comicbook_info != '':
+                        comics_info.set_filtro(Comicbook_Info.id_comicbook_info == comicbook.id_comicbook_info)
+                        comic_info = comics_info.getList()[0]
+                    if comics_info is not None:
+                        volumens = Volumens()
+                        volumens.set_filtro(Volume.id_volume == comic_info.id_volume)
+                        volume = volumens.getList()[0]
 
-                    new_file_path = new_path+os.sep+volume.nombre+" - V"+str(volume.anio_inicio)+" - " +comic_info.numero.rjust(4,"0")+"."+comicbook.getTipo()
-                else:
-                    new_file_path = new_path + os.sep + comicbook.getNombreArchivo()
+                        new_file_path = new_path+os.sep+volume.nombre+" - V"+str(volume.anio_inicio)+" - " +comic_info.numero.rjust(4,"0")+"."+comicbook.getTipo()
+                    else:
+                        new_file_path = new_path + os.sep + comicbook.getNombreArchivo()
+                    secuencia = 0
+                    if os.path.exists(new_file_path):
+                        secuencia = 1
+                        file_path_aux = new_file_path[:-4] + "-" + str(secuencia).rjust(2, "0") + new_file_path[-4:]
+                        while os.path.exists(file_path_aux):
+                            secuencia += 1
+                            file_path_aux = new_file_path[:-4] + "-" + str(secuencia).rjust(2, "0") + new_file_path[-4:]
+                            print(file_path_aux)
 
-                print("copiando {} a {}".format(comicbook.path,new_file_path))
-                shutil.copyfile(comicbook.path,new_file_path)
+                    if secuencia >=1:
+                    #     la estructura de new_file_path es nombre.<extension>
+                        new_file_path = new_file_path[:-4]+"-"+str(secuencia).rjust(2,"0")+new_file_path[-4:]
+                    print(new_file_path)
+                    shutil.copyfile(comicbook.path,new_file_path)
+                    # Creamos la nueva entrada en la base de datos para mantener los comics que ya estan catalogados como catalogados y no perder esa info
+                    new_comicbook = Comicbook()
+                    new_comicbook.path = str(new_file_path)
+                    new_comicbook.id_comicbook_info = comicbook.id_comicbook_info
+                    comic_aux = self.session.query(Comicbook).filter(Comicbook.path == new_file_path).first()
+                    if comic_aux is None:
+                        self.session.add(new_comicbook)
+                        comicbook.en_papelera = True
+                        self.session.commit()
+
 
 if (__name__=='__main__'):
-    # # cbdm = Comicbooks_Detail()
-    # # cbd = cbdm.entidad
-    # # cbd.comicbook_id = 1
-    # # cbd.indicePagina = 1
-    # # cbd.ordenPagina = 1
-    # # cbd.tipoPagina = Comicbook_Detail.COVER
-    # # cbdm.save()
-    # volumenes = Volumens()
-    # volumenes.set_filtro(and_(Volume.nombre.like("%green%"), Volume.anio_inicio == 2023))
-    # # print(volumenes.getList())
-    # id_volumen = volumenes.getList()[0].id_volume
-    # # print(id_volumen)
-    # comics_info = Comicbooks_Info()
-    # comics_info.set_filtro(Comicbook_Info.id_volume == id_volumen)
-    # lista_ids_comic_info = []
-    # for comic_info in comics_info.getList():
-    #     lista_ids_comic_info.append(comic_info.id_comicbook_info)
-    comics = Comicbooks()
-    comics.listar_comic_del_volumen(id_volumen=2407)
-    comics.copiar_a_nueva_carpeta("/home/pedro/Documentos/temp")
 
-    # comics.set_filtro(Comicbook.id_comicbook_info.in_(lista_ids_comic_info))
-    print()
+    path = "/home/pedro/test"
+    lista = os.listdir(path)
+    lista_directorios = []
+    for item in lista:
+        if os.path.isdir(path+os.sep+item):
+            lista_directorios.append(path+os.sep+item)
+    for item in lista_directorios:
+        print('zip -r "{}.cbz" "{}"'.format(item, item))
 
-
-    #print(arco.getCantidadTitulos())

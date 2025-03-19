@@ -35,7 +35,8 @@ class Comic_vine_cataloger_gtk():
                          'siguiente_cover': self.siguiente_cover,
                          'anterior_cover':self.anterior_cover,
                          'cerrar_ventana':self.cerrar_ventana,
-                         'click_boton_label_volumen_id': self.click_boton_label_volumen_id}
+                         'click_boton_label_volumen_id': self.click_boton_label_volumen_id,
+                         'tecla_presionada': self.tecla_presionada}
 
 
 
@@ -48,6 +49,7 @@ class Comic_vine_cataloger_gtk():
         self.entry_serie_local = self.builder.get_object("entry_serie_local")
         self.entry_nombre_archivo_local = self.builder.get_object("entry_nombre_archivo_local")
         self.treeview_comics_para_catalogar = self.builder.get_object("treeview_comics_para_catalogar")
+        self.treeview_comics_in_volumen = self.builder.get_object("treeview_comics_in_volumen")
         self.listore_comics_para_catalogar = self.builder.get_object("listore_comics_para_catalogar")
         self.liststore_comics_in_volumen = self.builder.get_object("liststore_comics_in_volumen")
         self.entry_expresion_regular_numeracion = self.builder.get_object("entry_expresion_regular_numeracion")
@@ -80,6 +82,15 @@ class Comic_vine_cataloger_gtk():
         self.gui_updating = False
         screen = Gdk.Screen.get_default()
         self.window.set_default_size(screen.width(), self.window.get_size()[1]*(1.5))
+
+    def tecla_presionada(self, widget, args):
+        print(args.keyval)
+        if args.keyval == Gdk.KEY_Escape:
+            self.window.close()
+        if args.keyval == Gdk.KEY_Return:
+            if len(self.lista_botones_visibles) > 0:
+                self.lista_botones_visibles[0].clicked()
+                self.window.close()
 
     def click_boton_label_volumen_id(self,widget):
         serie = VolumeGuiGtk(self.session)
@@ -117,10 +128,20 @@ class Comic_vine_cataloger_gtk():
     def tree_view_archivos_para_catalogar_selection_change(self,selection):
         (model, iter) = selection.get_selected()
         if iter:
-            # comicbook = self.session.query(ComicBook).filter(
-            #     Publisher.id_publisher == model[iter][0]).first()
             self._load_comic(self.comicbooks[model[iter][2]])
-            # print(self.c model[iter][2])
+            if model[iter][0] != '':
+                print("nro comicbook: {}".format(model[iter][0]))
+                nro_comic = model[iter][0]
+                index = 0
+                for row in  self.liststore_comics_in_volumen:
+                    if nro_comic == row[0]:
+                        break
+                    index += 1
+                c = self.treeview_comics_in_volumen.get_column(0)
+                self.treeview_comics_in_volumen.set_cursor(index, c, True)
+            else:
+                print("Nada")
+
 
     def is_number(self, s):
         try:
@@ -265,10 +286,6 @@ class Comic_vine_cataloger_gtk():
         (model, iter) = selection.get_selected()
         if iter:
             self.comicbooks_info_manager.get(model[iter][2])
-            # comicbook_info_de_volumen = self.lista_comicbook_info_por_volumen[model[iter][3]]
-            # self.index_lista_covers = 0
-            # self.lista_covers = self.session.query(Comicbook_Info_Cover_Url).filter(Comicbook_Info_Cover_Url.id_comicbook_info==comicbook_info_de_volumen.id_comicbook_info).all()
-            # self.boton_cantidad_covers.set_label("1/{}".format(str(len(self.lista_covers))))
             self.load_cover_comic_info()
 
     def load_cover_comic_info(self):
