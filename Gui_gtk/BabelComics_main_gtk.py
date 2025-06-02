@@ -338,7 +338,11 @@ class BabelComics_main_gtk():
 
 
         ctrl = (event.state & Gdk.ModifierType.CONTROL_MASK)
-        if ctrl and event.keyval == Gdk.KEY_f:
+        print(ctrl)
+        print(event.state)
+        # if ctrl and event.keyval == Gdk.KEY_f:
+        if event.keyval == Gdk.KEY_f:
+            print(self.search_bar_general.get_search_mode())
             self.search_bar_general.set_search_mode(not self.search_bar_general.get_search_mode())
             if self.search_bar_general.get_search_mode():
                 self.search_entry_filtro_general.grab_focus()

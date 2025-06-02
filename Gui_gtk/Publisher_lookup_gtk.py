@@ -1,4 +1,5 @@
 from Entidades.Agrupado_Entidades import Publisher
+from Entidades.Entitiy_managers import Publishers
 import Entidades.Init
 import gi
 gi.require_version('Gtk', '3.0')
@@ -34,7 +35,6 @@ class Publisher_lookup_gtk():
         if campo_retorno is None:
             print("error campo retorno requerido")
         self.campo_retorno = campo_retorno
-
         # inicializamos el modelo con rotulos del manager
         self.liststore_combobox.clear()
         for clave in self.publishers_manager.lista_opciones.keys():

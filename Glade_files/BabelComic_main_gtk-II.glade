@@ -293,6 +293,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="shadow-type">in</property>
+                <signal name="key-press-event" handler="atajos_teclado" swapped="no"/>
                 <child>
                   <object class="GtkTreeView" id="tree_general">
                     <property name="visible">True</property>
